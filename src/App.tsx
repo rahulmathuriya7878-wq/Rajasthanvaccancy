@@ -115,7 +115,7 @@ export default function App() {
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType | 'ALL'>('ALL');
   const [sortBy, setSortBy] = useState<'latest' | 'deadline' | 'posts'>('latest');
 
-  // Modals
+  // Modals & Selection
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
   const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
   const [ageCalcParams, setAgeCalcParams] = useState<{ asOnDate?: string; minAge?: number; maxAge?: number }>({});
@@ -124,6 +124,46 @@ export default function App() {
   const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+
+  // Deep linking sync for SEO (reads ?vacancy=... and ?category=... from URL/sitemap)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const vacancyParam = params.get('vacancy');
+      const categoryParam = params.get('category');
+
+      if (vacancyParam) {
+        const found = vacancies.find((v) => v.id === vacancyParam);
+        if (found) {
+          setSelectedVacancy(found);
+        }
+      }
+
+      if (categoryParam && categoryParam !== 'ALL') {
+        setSelectedCategory(categoryParam as CategoryType);
+      }
+    } catch (e) {
+      console.error('Error parsing URL params for SEO', e);
+    }
+  }, []);
+
+  // Update URL and document title when selectedVacancy changes
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      if (selectedVacancy) {
+        url.searchParams.set('vacancy', selectedVacancy.id);
+        window.history.replaceState({}, '', url.toString());
+        document.title = `${lang === 'hi' ? selectedVacancy.titleHi : selectedVacancy.title} - Rajasthan Vacancy`;
+      } else {
+        url.searchParams.delete('vacancy');
+        window.history.replaceState({}, '', url.toString());
+        document.title = 'RAJASTHAN VACCANCY/JOBS - Govt Job Alerts & Recruitment Portal';
+      }
+    } catch (e) {
+      console.error('Error updating URL params', e);
+    }
+  }, [selectedVacancy, lang]);
 
   // Toast message
   const [toastMessage, setToastMessage] = useState<string | null>(null);
