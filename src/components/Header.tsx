@@ -4,8 +4,11 @@ import {
   ExternalLink, 
   ShieldCheck,
   Send,
-  MessageCircle
+  MessageCircle,
+  LogIn,
+  User as UserIcon
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.tsx';
 import { LanguageMode } from '../types';
 
 interface HeaderProps {
@@ -33,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSSOGuide,
   onGoHome,
 }) => {
+  const { user, signInWithGoogle, logout } = useAuth();
   const isHi = lang === 'hi';
 
   const marqueeAlerts = isHi ? [
@@ -132,6 +136,38 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
+          {/* User Account / Google Sign-In */}
+          <div className="flex items-center gap-2">
+            {user ? (
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-amber-600 text-white text-xs flex items-center justify-center font-bold">
+                    {(user.displayName || user.email || 'U')[0].toUpperCase()}
+                  </div>
+                )}
+                <span className="text-xs font-semibold text-slate-700 hidden sm:inline max-w-[120px] truncate">
+                  {user.displayName || user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-[11px] text-slate-500 hover:text-red-600 font-medium ml-1 transition cursor-pointer"
+                  title="लॉगआउट"
+                >
+                  {isHi ? 'लॉगआउट' : 'Logout'}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={signInWithGoogle}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition shadow-xs cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5 text-amber-300" />
+                <span>{isHi ? 'Google लॉगिन' : 'Google Sign In'}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>
