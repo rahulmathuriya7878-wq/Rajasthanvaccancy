@@ -7,7 +7,10 @@ import {
   MessageCircle,
   LogIn,
   User as UserIcon,
-  HelpCircle
+  HelpCircle,
+  Search,
+  X,
+  Menu
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { LanguageMode, VacancyItem } from '../types';
@@ -25,6 +28,8 @@ interface HeaderProps {
   onGoHome?: () => void;
   latestVacancies?: VacancyItem[];
   onSelectVacancy?: (item: VacancyItem) => void;
+  searchQuery?: string;
+  setSearchQuery?: (q: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -40,12 +45,17 @@ export const Header: React.FC<HeaderProps> = ({
   onGoHome,
   latestVacancies = [],
   onSelectVacancy,
+  searchQuery = '',
+  setSearchQuery,
 }) => {
   const { user, signInWithGoogle, logout } = useAuth();
   const isHi = lang === 'hi';
 
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
   // Take top 8 latest added vacancies/schemes to display in the ticker
   const tickerItems = latestVacancies.slice(0, 8);
+  const displayItems = tickerItems.length > 0 ? [...tickerItems, ...tickerItems] : [];
 
   return (
     <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40">
@@ -62,8 +72,8 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Marquee Ticker with latest added posts */}
           <div className="overflow-hidden whitespace-nowrap flex-1 relative group">
             <div className="animate-marquee inline-flex items-center gap-6">
-              {tickerItems.length > 0 ? (
-                tickerItems.map((item, idx) => (
+              {displayItems.length > 0 ? (
+                displayItems.map((item, idx) => (
                   <button
                     key={`${item.id}-${idx}`}
                     onClick={() => onSelectVacancy && onSelectVacancy(item)}
@@ -117,7 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
             </a>
 
             <a 
-              href="https://whatsapp.com" 
+              href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded transition text-white text-[11px] font-semibold"
@@ -146,53 +156,93 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-1">
                   <span>RAJASTHAN</span>
                   <span className="text-amber-600">VACCANCY/JOBS</span>
                 </h1>
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                  {isHi ? 'भर्ती पोर्टल 2025' : 'Official Alerts'}
-                </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">
-                {isHi 
-                  ? 'राजस्थान सरकारी भर्तियां, प्रवेश पत्र, आंसर की व परिणाम अपडेट्स'
-                  : 'Rajasthan & Central Govt Job Notifications, Admit Card & Results'}
-              </p>
             </div>
           </div>
 
+          {/* Center Navigation Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-xs font-bold text-slate-700">
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+              }}
+              className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
+            >
+              {isHi ? 'होम (Home)' : 'Home'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+              }}
+              className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
+            >
+              {isHi ? 'नवीनतम (Latest)' : 'Latest'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+              }}
+              className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
+            >
+              {isHi ? 'नौकरियां (Latest Jobs)' : 'Latest Jobs'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+              }}
+              className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
+            >
+              {isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Card'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+              }}
+              className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
+            >
+              {isHi ? 'परिणाम (Results)' : 'Results'}
+            </button>
+          </nav>
+
           {/* Right Header Navigation */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* FAQ Quick Link */}
-            <a 
-              href="#faq-section" 
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('faq-section');
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-amber-700 hover:bg-amber-50 transition border border-slate-200 cursor-pointer"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
-              <span>{isHi ? 'FAQ' : 'FAQ'}</span>
-            </a>
+            {/* Header Search Component */}
+            <div className="relative hidden lg:block w-48 xl:w-60">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+                placeholder={isHi ? 'भर्तियां खोजें...' : 'Search jobs...'}
+                className="w-full bg-slate-100 hover:bg-slate-50 focus:bg-white text-slate-900 text-xs pl-8 pr-7 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:border-amber-500 transition placeholder:text-slate-400"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery && setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
 
-            {/* Language Switcher */}
+            {/* Mobile Menu Toggle Button */}
             <button
-              onClick={() => setLang(isHi ? 'en' : 'hi')}
-              className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200 cursor-pointer"
-              title={isHi ? 'Switch to English' : 'हिंदी में बदलें'}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+              aria-label="Toggle Menu"
             >
-              {isHi ? 'English' : 'हिंदी'}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* User Account / Google Sign-In */}
-            {user ? (
-              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+            {/* User Account / Profile */}
+            {user && (
+              <div className="hidden sm:flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
                 {user.photoURL ? (
                   <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full" />
                 ) : (
@@ -200,7 +250,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {(user.displayName || user.email || 'U')[0].toUpperCase()}
                   </div>
                 )}
-                <span className="text-xs font-semibold text-slate-700 hidden sm:inline max-w-[120px] truncate">
+                <span className="text-xs font-semibold text-slate-700 max-w-[100px] truncate">
                   {user.displayName || user.email}
                 </span>
                 <button
@@ -211,17 +261,80 @@ export const Header: React.FC<HeaderProps> = ({
                   {isHi ? 'लॉगआउट' : 'Logout'}
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={signInWithGoogle}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition shadow-xs cursor-pointer"
-              >
-                <LogIn className="w-3.5 h-3.5 text-amber-300" />
-                <span>{isHi ? 'Google लॉगिन' : 'Google Sign In'}</span>
-              </button>
             )}
           </div>
         </div>
+
+        {/* Mobile Navigation Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-2 text-xs font-bold text-slate-700 animate-fadeIn">
+            {/* Mobile Search Bar */}
+            <div className="relative w-full mb-1">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+                placeholder={isHi ? 'भर्तियां खोजें...' : 'Search jobs...'}
+                className="w-full bg-slate-100 focus:bg-white text-slate-900 text-xs pl-8 pr-7 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-amber-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery && setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+            >
+              {isHi ? 'होम (Home)' : 'Home'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+            >
+              {isHi ? 'नवीनतम (Latest)' : 'Latest'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+            >
+              {isHi ? 'नौकरियां (Latest Jobs)' : 'Latest Jobs'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+            >
+              {isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Card'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+            >
+              {isHi ? 'परिणाम (Results)' : 'Results'}
+            </button>
+          </nav>
+        )}
       </div>
     </header>
   );

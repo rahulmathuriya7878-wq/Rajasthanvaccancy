@@ -638,7 +638,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </td>
               <td className="py-3 px-4">
                 <a
-                  href="https://whatsapp.com"
+                  href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer"

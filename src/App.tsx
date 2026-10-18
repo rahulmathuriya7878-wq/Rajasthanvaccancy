@@ -12,6 +12,9 @@ import {
   FAQSection 
 } from './components/FAQSection';
 import { 
+  FloatingSocialButtons 
+} from './components/FloatingSocialButtons';
+import { 
   AgeCalculatorModal 
 } from './components/AgeCalculatorModal';
 import { 
@@ -68,7 +71,7 @@ try {
 } catch (e) {}
 
 export default function App() {
-  // Pure Hindi language
+  // Default language set to Hindi
   const [lang, setLang] = useState<LanguageMode>('hi');
 
   // Vacancies state with localStorage sync (loads Sainik School Chittorgarh recruitment by default)
@@ -308,6 +311,8 @@ export default function App() {
           setSelectedVacancy(item);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       {/* Main Body Container */}
@@ -411,6 +416,9 @@ export default function App() {
         lang={lang}
         onAddVacancy={handleAddVacancy}
       />
+
+      {/* Floating Sticky Telegram & WhatsApp Buttons (As seen on screenshot) */}
+      <FloatingSocialButtons />
     </div>
   );
 }
