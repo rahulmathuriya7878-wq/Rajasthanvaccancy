@@ -6,11 +6,11 @@ import {
   FastUpdatesGrid 
 } from './components/FastUpdatesGrid';
 import { 
-  DepartmentVacancyChart 
-} from './components/DepartmentVacancyChart';
-import { 
   VacancyDetailPage 
 } from './components/VacancyDetailPage';
+import { 
+  FAQSection 
+} from './components/FAQSection';
 import { 
   AgeCalculatorModal 
 } from './components/AgeCalculatorModal';
@@ -51,7 +51,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v6';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v7';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 
@@ -62,6 +62,7 @@ try {
   localStorage.removeItem('raj_vacancies_v3');
   localStorage.removeItem('raj_vacancies_v4');
   localStorage.removeItem('raj_vacancies_v5');
+  localStorage.removeItem('raj_vacancies_v6');
   localStorage.removeItem('raj_saved_ids_v1');
   localStorage.removeItem('raj_saved_ids_v2');
 } catch (e) {}
@@ -302,6 +303,11 @@ export default function App() {
           setSelectedVacancy(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        latestVacancies={vacancies}
+        onSelectVacancy={(item) => {
+          setSelectedVacancy(item);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
       {/* Main Body Container */}
@@ -324,18 +330,8 @@ export default function App() {
             }}
           />
         ) : (
-          /* Home View: Department Vacancy Chart + Fast Access Updates */
+          /* Home View: 5-Box Fast Access Updates & FAQ */
           <div className="space-y-6">
-            {/* Visual Recharts Bar Chart: Department-wise Vacancies */}
-            <DepartmentVacancyChart
-              vacancies={vacancies}
-              lang={lang}
-              onSelectVacancy={(item) => {
-                setSelectedVacancy(item);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-
             {/* 5-Box Fast Access Updates (Home View) */}
             <FastUpdatesGrid
               vacancies={vacancies}
@@ -345,6 +341,9 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
+
+            {/* Frequently Asked Questions (FAQ / FQA) Section */}
+            <FAQSection lang={lang} />
           </div>
         )}
       </main>

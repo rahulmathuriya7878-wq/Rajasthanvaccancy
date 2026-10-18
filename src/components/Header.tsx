@@ -6,10 +6,11 @@ import {
   Send,
   MessageCircle,
   LogIn,
-  User as UserIcon
+  User as UserIcon,
+  HelpCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
-import { LanguageMode } from '../types';
+import { LanguageMode, VacancyItem } from '../types';
 
 interface HeaderProps {
   lang: LanguageMode;
@@ -22,6 +23,8 @@ interface HeaderProps {
   onOpenAddJob?: () => void;
   onOpenSSOGuide: () => void;
   onGoHome?: () => void;
+  latestVacancies?: VacancyItem[];
+  onSelectVacancy?: (item: VacancyItem) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,55 +38,79 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAddJob,
   onOpenSSOGuide,
   onGoHome,
+  latestVacancies = [],
+  onSelectVacancy,
 }) => {
   const { user, signInWithGoogle, logout } = useAuth();
   const isHi = lang === 'hi';
 
-  const marqueeAlerts = isHi ? [
-    '⚡ राजस्थान सरकारी भर्ती एवं परीक्षा परिणाम पोर्टल (RAJASTHAN VACCANCY/JOBS) पर आपका स्वागत है',
-    '📢 राजस्थान कर्मचारी चयन बोर्ड (RSMSSB) एवं राजस्थान लोक सेवा आयोग (RPSC) की आधिकारिक सूचनाएं',
-    '🔔 नई सरकारी भर्ती, प्रवेश पत्र एवं परिणाम सूचनाएं प्रकाशित होने पर यहां प्रदर्शित की जाएंगी'
-  ] : [
-    '⚡ Welcome to RAJASTHAN VACCANCY/JOBS Portal',
-    '📢 Official recruitment updates for RSMSSB, RPSC, Police & State Departments',
-    '🔔 New job notifications and results will appear here as soon as announced'
-  ];
+  // Take top 8 latest added vacancies/schemes to display in the ticker
+  const tickerItems = latestVacancies.slice(0, 8);
 
   return (
-    <header className="w-full bg-white shadow-sm border-b border-slate-200 sticky top-0 z-40">
-      {/* Top Flash Bar / Live Ticker */}
-      <div className="bg-amber-600 text-white text-xs sm:text-sm font-medium py-1.5 px-3">
+    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40">
+      {/* Top Scrolling Ticker Bar for Latest Added Posts */}
+      <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-xs font-medium py-1.5 px-3 shadow-inner">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 shrink-0 bg-amber-700/80 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider">
-            <span className="w-2-h-2 rounded-full bg-red-400 animate-ping inline-block"></span>
-            <Bell className="w-3.5 h-3.5" />
-            <span>{isHi ? 'भर्ती सूचना' : 'Alerts'}</span>
+          {/* Badge */}
+          <div className="flex items-center gap-1.5 shrink-0 bg-black/25 hover:bg-black/35 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide border border-white/20 select-none">
+            <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping inline-block"></span>
+            <Bell className="w-3.5 h-3.5 text-amber-200" />
+            <span>{isHi ? 'नवीनतम सूचनाएं' : 'Latest Posts'}</span>
           </div>
 
-          <div className="overflow-hidden whitespace-nowrap flex-1 relative group cursor-pointer">
-            <div className="inline-block animate-[marquee_28s_linear_infinite] group-hover:[animation-play-state:paused]">
-              {marqueeAlerts.join('  •  ')}
+          {/* Marquee Ticker with latest added posts */}
+          <div className="overflow-hidden whitespace-nowrap flex-1 relative group">
+            <div className="animate-marquee inline-flex items-center gap-6">
+              {tickerItems.length > 0 ? (
+                tickerItems.map((item, idx) => (
+                  <button
+                    key={`${item.id}-${idx}`}
+                    onClick={() => onSelectVacancy && onSelectVacancy(item)}
+                    className="inline-flex items-center gap-2 hover:text-amber-200 transition text-xs font-semibold cursor-pointer group/item text-left"
+                    title={isHi ? item.titleHi : item.title}
+                  >
+                    <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider text-amber-100">
+                      {item.organization || (isHi ? 'भर्ती' : 'Job')}
+                    </span>
+                    <span className="group-hover/item:underline underline-offset-2">
+                      {isHi ? (item.titleHi || item.title) : item.title}
+                    </span>
+                    {typeof item.totalPosts === 'number' && item.totalPosts > 0 && (
+                      <span className="text-[10px] font-bold bg-amber-400 text-slate-900 px-1.5 py-0.5 rounded-full">
+                        {item.totalPosts} {isHi ? 'पद' : 'Posts'}
+                      </span>
+                    )}
+                    <span className="text-white/40 font-mono select-none mx-2">•</span>
+                  </button>
+                ))
+              ) : (
+                <span className="text-xs text-white/90">
+                  {isHi ? 'नई सरकारी भर्ती एवं परिणाम सूचनाएं यहां प्रदर्शित होंगी' : 'New job announcements will scroll here'}
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-3 shrink-0 text-xs">
+          {/* Right Quick Links */}
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0 text-xs">
             <a 
               href="https://sso.rajasthan.gov.in" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded transition"
+              className="flex items-center gap-1 bg-white/15 hover:bg-white/25 px-2 py-0.5 rounded transition text-[11px] font-semibold"
               title="Rajasthan SSO Portal"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-200" />
+              <ShieldCheck className="w-3 h-3 text-amber-200" />
               <span>SSO Login</span>
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-2.5 h-2.5" />
             </a>
 
             <a 
               href="https://telegram.org" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-sky-500/80 hover:bg-sky-500 px-2 py-0.5 rounded transition text-white"
+              className="flex items-center gap-1 bg-sky-500/80 hover:bg-sky-500 px-2 py-0.5 rounded transition text-white text-[11px] font-semibold"
             >
               <Send className="w-3 h-3" />
               <span>Telegram</span>
@@ -93,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
               href="https://whatsapp.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded transition text-white"
+              className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded transition text-white text-[11px] font-semibold"
             >
               <MessageCircle className="w-3 h-3" />
               <span>WhatsApp</span>
@@ -136,8 +163,34 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* User Account / Google Sign-In */}
-          <div className="flex items-center gap-2">
+          {/* Right Header Navigation */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* FAQ Quick Link */}
+            <a 
+              href="#faq-section" 
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('faq-section');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-amber-700 hover:bg-amber-50 transition border border-slate-200 cursor-pointer"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+              <span>{isHi ? 'FAQ' : 'FAQ'}</span>
+            </a>
+
+            {/* Language Switcher */}
+            <button
+              onClick={() => setLang(isHi ? 'en' : 'hi')}
+              className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200 cursor-pointer"
+              title={isHi ? 'Switch to English' : 'हिंदी में बदलें'}
+            >
+              {isHi ? 'English' : 'हिंदी'}
+            </button>
+
+            {/* User Account / Google Sign-In */}
             {user ? (
               <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
                 {user.photoURL ? (
