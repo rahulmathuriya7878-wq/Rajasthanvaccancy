@@ -59,7 +59,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
 
   const categories: { id: CategoryType | 'ALL'; labelEn: string; labelHi: string }[] = [
     { id: 'ALL', labelEn: 'All Categories', labelHi: 'सभी सूचनाएं' },
-    { id: 'latest_job', labelEn: 'Latest Jobs', labelHi: 'ताजा भर्तियां' },
+    { id: 'latest_job', labelEn: 'Govt Jobs', labelHi: 'सरकारी भर्तियां' },
     { id: 'admit_card', labelEn: 'Admit Cards', labelHi: 'प्रवेश पत्र' },
     { id: 'result', labelEn: 'Results', labelHi: 'रिजल्ट' },
     { id: 'answer_key', labelEn: 'Answer Keys', labelHi: 'उत्तर कुंजी' },

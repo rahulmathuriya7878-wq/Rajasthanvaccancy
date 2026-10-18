@@ -6,7 +6,13 @@ import {
   FileText, 
   Calendar, 
   CheckCircle2, 
-  ExternalLink 
+  ExternalLink,
+  Briefcase,
+  Landmark,
+  Ticket,
+  Award,
+  KeyRound,
+  Sparkles
 } from 'lucide-react';
 import { 
   VacancyItem, 
@@ -24,6 +30,8 @@ interface AddVacancyModalProps {
   onAddVacancy: (newJob: VacancyItem) => void;
 }
 
+type PostSectionType = 'gov_job' | 'gov_yojana' | 'admit_card' | 'result' | 'answer_key';
+
 export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   isOpen,
   onClose,
@@ -33,6 +41,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   if (!isOpen) return null;
   const isHi = lang === 'hi';
 
+  // Section Type (Gov job vs Gov yojana vs others)
+  const [postSection, setPostSection] = useState<PostSectionType>('gov_job');
+
+  // Form Fields
   const [title, setTitle] = useState('');
   const [titleHi, setTitleHi] = useState('');
   const [organization, setOrganization] = useState<BoardType>('RSMSSB');
@@ -55,6 +67,28 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [officialWebsiteUrl, setOfficialWebsiteUrl] = useState('https://rajasthan.gov.in');
   const [description, setDescription] = useState('Recruitment notice for eligible candidates in Rajasthan.');
 
+  // Switch section and auto-configure category & board
+  const handleSectionChange = (sec: PostSectionType) => {
+    setPostSection(sec);
+    if (sec === 'gov_job') {
+      setCategory('latest_job');
+      if (organization === 'Sarkari Yojana') {
+        setOrganization('RSMSSB');
+      }
+      setDepartment('School Education / Revenue / Police Dept');
+    } else if (sec === 'gov_yojana') {
+      setCategory('scheme');
+      setOrganization('Sarkari Yojana');
+      setDepartment('Social Justice & Empowerment / Food & Civil Supplies / WCD');
+    } else if (sec === 'admit_card') {
+      setCategory('admit_card');
+    } else if (sec === 'result') {
+      setCategory('result');
+    } else if (sec === 'answer_key') {
+      setCategory('answer_key');
+    }
+  };
+
   const toggleQual = (q: QualificationType) => {
     if (selectedQualifications.includes(q)) {
       if (selectedQualifications.length > 1) {
@@ -69,14 +103,37 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     e.preventDefault();
     if (!title.trim()) return;
 
+    // Determine final category and organization based on section
+    const finalCategory: CategoryType = 
+      postSection === 'gov_yojana' 
+        ? 'scheme' 
+        : postSection === 'gov_job' 
+        ? 'latest_job' 
+        : category;
+
+    const finalOrg: BoardType = 
+      postSection === 'gov_yojana' 
+        ? 'Sarkari Yojana' 
+        : organization;
+
+    const finalStatus: JobStatusType =
+      postSection === 'admit_card'
+        ? 'admit_card_out'
+        : postSection === 'result'
+        ? 'result_declared'
+        : postSection === 'answer_key'
+        ? 'answer_key_out'
+        : 'active';
+
     const newVacancy: VacancyItem = {
       id: `custom-${Date.now()}`,
       title: title.trim(),
       titleHi: titleHi.trim() || title.trim(),
-      organization,
+      organization: finalOrg,
       department: department.trim(),
+      departmentHi: department.trim(),
       advtNo: advtNo.trim(),
-      category,
+      category: finalCategory,
       totalPosts: isNaN(Number(totalPosts)) ? totalPosts : Number(totalPosts),
       postName: postName.trim(),
       postNameHi: postName.trim(),
@@ -87,12 +144,12 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         min: Number(minAge),
         max: Number(maxAge),
         asOnDate,
-        relaxationNotes: 'Standard 5 years age relaxation for reserved categories in Rajasthan.'
+        relaxationNotes: 'Standard age relaxation for reserved categories in Rajasthan.'
       },
       applicationFee: {
-        genObc: 600,
-        scSt: 400,
-        ews: 400,
+        genObc: postSection === 'gov_yojana' ? 0 : 600,
+        scSt: postSection === 'gov_yojana' ? 0 : 400,
+        ews: postSection === 'gov_yojana' ? 0 : 400,
         otrNote: 'Covered under Rajasthan SSO One Time Registration.'
       },
       importantDates: {
@@ -101,12 +158,13 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         applyLastDate,
         examDate: examDate || undefined,
       },
-      status: 'active',
-      salary,
+      status: finalStatus,
+      salary: salary.trim(),
+      salaryHi: salary.trim(),
       jobLocation: 'Rajasthan',
-      selectionProcess: ['Written Examination', 'Document Verification'],
-      selectionProcessHi: ['लिखित परीक्षा', 'दस्तावेज सत्यापन'],
-      tags: [organization, 'Recent Update', category],
+      selectionProcess: ['Written Examination / Direct Benefit', 'Document Verification'],
+      selectionProcessHi: ['लिखित परीक्षा / डीबीटी सत्यापन', 'दस्तावेज सत्यापन'],
+      tags: [finalOrg, postSection === 'gov_yojana' ? 'सरकारी योजना' : 'सरकारी भर्ती', finalCategory],
       officialLinks: {
         applyOnlineUrl: applyOnlineUrl.trim() || undefined,
         notificationPdfUrl: notificationPdfUrl.trim() || undefined,
@@ -134,10 +192,12 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-black">
-                {isHi ? 'नई भर्ती सूचना जोड़ें (Post Job Alert)' : 'Post New Govt Job Alert'}
+                {isHi ? 'नई सूचना जोड़ें (Post Section Wise)' : 'Post New Notice (Section Wise)'}
               </h2>
               <p className="text-xs text-amber-100">
-                {isHi ? 'नवीनतम नोटिफिकेशन या रोजगार सूचना डेटाबेस में शामिल करें' : 'Add a new recruitment notification to the portal database'}
+                {isHi 
+                  ? 'सरकारी भर्ती को जॉब सेक्शन में तथा सरकारी योजना को योजना सेक्शन में जोड़ें' 
+                  : 'Add Gov Jobs to Job Section and Government Yojana to Yojana Section'}
               </p>
             </div>
           </div>
@@ -152,109 +212,199 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm">
+          {/* SECTION WISE SELECTION TABS */}
+          <div className="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200">
+            <label className="font-bold text-slate-800 block mb-2 text-xs">
+              {isHi ? 'सेक्शन का चयन करें (Select Target Section):' : 'Select Target Section:'}
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleSectionChange('gov_job')}
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  postSection === 'gov_job'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Briefcase className="w-4 h-4 shrink-0" />
+                <span>{isHi ? 'सरकारी भर्ती (Gov Job)' : 'Govt Job'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSectionChange('gov_yojana')}
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  postSection === 'gov_yojana'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Landmark className="w-4 h-4 shrink-0" />
+                <span>{isHi ? 'सरकारी योजना (Yojana)' : 'Govt Yojana'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSectionChange('admit_card')}
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  postSection === 'admit_card'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Ticket className="w-4 h-4 shrink-0" />
+                <span>{isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Card'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSectionChange('result')}
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  postSection === 'result'
+                    ? 'bg-rose-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Award className="w-4 h-4 shrink-0" />
+                <span>{isHi ? 'परीक्षा परिणाम (Result)' : 'Result'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSectionChange('answer_key')}
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                  postSection === 'answer_key'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <KeyRound className="w-4 h-4 shrink-0" />
+                <span>{isHi ? 'उत्तर कुंजी (Answer Key)' : 'Answer Key'}</span>
+              </button>
+            </div>
+
+            {/* Target Section Confirmation Indicator */}
+            <div className="mt-3 text-xs flex items-center gap-2 font-medium">
+              <span className="text-slate-500">{isHi ? 'प्रकाशित होने वाला बॉक्स:' : 'Destination Box:'}</span>
+              <span className={`px-2 py-0.5 rounded font-bold ${
+                postSection === 'gov_job' ? 'bg-emerald-100 text-emerald-800' :
+                postSection === 'gov_yojana' ? 'bg-purple-100 text-purple-800' :
+                postSection === 'admit_card' ? 'bg-blue-100 text-blue-800' :
+                postSection === 'result' ? 'bg-rose-100 text-rose-800' :
+                'bg-amber-100 text-amber-900'
+              }`}>
+                {postSection === 'gov_job' && (isHi ? '✓ सरकारी भर्तियां (Govt Jobs) सेक्शन' : 'Govt Jobs Section')}
+                {postSection === 'gov_yojana' && (isHi ? '✓ सरकारी योजनाएं (Government Yojana) सेक्शन' : 'Government Yojana Section')}
+                {postSection === 'admit_card' && (isHi ? '✓ प्रवेश पत्र (Admit Card) सेक्शन' : 'Admit Card Section')}
+                {postSection === 'result' && (isHi ? '✓ परीक्षा परिणाम (Results) सेक्शन' : 'Results Section')}
+                {postSection === 'answer_key' && (isHi ? '✓ उत्तर कुंजी व सिलेबस सेक्शन' : 'Answer Key Section')}
+              </span>
+            </div>
+          </div>
+
           {/* Title EN & HI */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'भर्ती शीर्षक (English):' : 'Title (English) *:'}
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'योजना का शीर्षक (English):' : 'Scheme Title (English) *:')
+                  : (isHi ? 'भर्ती का शीर्षक (English):' : 'Job Title (English) *:')
+                }
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. RSMSSB Junior Assistant 2026"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
+                placeholder={postSection === 'gov_yojana' ? 'e.g. Mukhyamantri Free Scooty Yojana 2026' : 'e.g. RSMSSB Junior Assistant 2026'}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
               />
             </div>
 
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'भर्ती शीर्षक (हिन्दी):' : 'Title (Hindi):'}
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'योजना का शीर्षक (हिन्दी):' : 'Scheme Title (Hindi):')
+                  : (isHi ? 'भर्ती का शीर्षक (हिन्दी):' : 'Job Title (Hindi):')
+                }
               </label>
               <input
                 type="text"
                 value={titleHi}
                 onChange={(e) => setTitleHi(e.target.value)}
-                placeholder="उदा. राजस्थान कनिष्ठ सहायक भर्ती 2026"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
+                placeholder={postSection === 'gov_yojana' ? 'उदा. मुख्यमंत्री स्कूटी योजना 2026' : 'उदा. राजस्थान कनिष्ठ सहायक भर्ती 2026'}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
               />
             </div>
           </div>
 
-          {/* Board & Category */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Organization / Board & Total Posts / Beneficiaries */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'बोर्ड / आयोग:' : 'Board / Commission:'}
+                {isHi ? 'बोर्ड / आयोग / विभाग प्रकार:' : 'Board / Commission / Authority:'}
               </label>
               <select
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value as BoardType)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               >
-                <option value="RSMSSB">RSMSSB (कर्मचारी चयन बोर्ड)</option>
-                <option value="RPSC">RPSC (लोक सेवा आयोग)</option>
-                <option value="Rajasthan Police">Rajasthan Police</option>
-                <option value="Rajasthan High Court">Rajasthan High Court</option>
-                <option value="Education Department">Education Dept / REET</option>
-                <option value="Discom / RVUNL">Discom / Bijli Vibhag</option>
-                <option value="Health RUHS / NHM">Health NHM / CHO</option>
-                <option value="Central Govt">Central Govt (SSC/Railway)</option>
-                <option value="Sarkari Yojana">Sarkari Yojana / Scholarship</option>
+                {postSection === 'gov_yojana' ? (
+                  <option value="Sarkari Yojana">सरकारी योजना / छात्रवृत्ति (Sarkari Yojana)</option>
+                ) : (
+                  <>
+                    <option value="RSMSSB">RSMSSB (कर्मचारी चयन बोर्ड)</option>
+                    <option value="RPSC">RPSC (लोक सेवा आयोग)</option>
+                    <option value="Rajasthan Police">Rajasthan Police (पुलिस विभाग)</option>
+                    <option value="Rajasthan High Court">Rajasthan High Court (उच्च न्यायालय)</option>
+                    <option value="Education Department">Education Dept (शिक्षा विभाग / REET)</option>
+                    <option value="Discom / RVUNL">Discom / RVUNL (बिजली विभाग)</option>
+                    <option value="Health RUHS / NHM">Health RUHS / NHM (स्वास्थ्य विभाग)</option>
+                    <option value="Central Govt">Central Govt (केन्द्रीय भर्ती)</option>
+                  </>
+                )}
               </select>
             </div>
 
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'श्रेणी (Category):' : 'Category:'}
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as CategoryType)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
-              >
-                <option value="latest_job">Latest Job (ताजा भर्ती)</option>
-                <option value="admit_card">Admit Card (प्रवेश पत्र)</option>
-                <option value="result">Result (परीक्षा परिणाम)</option>
-                <option value="answer_key">Answer Key (उत्तर कुंजी)</option>
-                <option value="syllabus">Syllabus (सिलेबस)</option>
-                <option value="scheme">Scholarship / Scheme (योजना)</option>
-                <option value="upcoming">Upcoming (आगामी भर्ती)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'कुल रिक्त पद:' : 'Total Posts:'}
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'कुल सीटें / लाभार्थी संख्या:' : 'Total Seats / Beneficiaries:')
+                  : (isHi ? 'कुल रिक्त पद:' : 'Total Posts:')
+                }
               </label>
               <input
                 type="text"
                 value={totalPosts}
                 onChange={(e) => setTotalPosts(e.target.value)}
-                placeholder="e.g. 1,250"
+                placeholder={postSection === 'gov_yojana' ? 'उदा. 30,000+ सीटें' : 'e.g. 1,250'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
           </div>
 
-          {/* Department & Advt No */}
+          {/* Department & Advt / Scheme No */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'विभाग का नाम:' : 'Department Name:'}
+                {isHi ? 'संबंधित सरकारी विभाग:' : 'Concerned Department:'}
               </label>
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
+                placeholder="उदा. स्कूल शिक्षा विभाग / सामाजिक न्याय विभाग"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
 
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'विज्ञापन संख्या (Advt No):' : 'Advt. Number:'}
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'योजना क्रमांक / शासनादेश संख्या:' : 'Scheme Order / Advt No:')
+                  : (isHi ? 'विज्ञप्ति / विज्ञापन संख्या:' : 'Advt. Number:')
+                }
               </label>
               <input
                 type="text"
@@ -265,12 +415,47 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
 
-          {/* Qualifications Chips */}
+          {/* Post Name / Benefit Name & Salary / Financial Assistance */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'योजना का मुख्य लाभ / सुविधा:' : 'Key Benefit / Assistance:')
+                  : (isHi ? 'पद का नाम (Post Name):' : 'Post Name:')
+                }
+              </label>
+              <input
+                type="text"
+                value={postName}
+                onChange={(e) => setPostName(e.target.value)}
+                placeholder={postSection === 'gov_yojana' ? 'निःशुल्क स्कूटी / ₹40,000 भत्ता' : 'e.g. Junior Assistant / Patwari'}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">
+                {postSection === 'gov_yojana' 
+                  ? (isHi ? 'वित्तीय सहायता / लाभ विवरण:' : 'Financial Benefit Details:')
+                  : (isHi ? 'वेतनमान (Salary / Pay Level):' : 'Salary Scale:')
+                }
+              </label>
+              <input
+                type="text"
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
+                placeholder={postSection === 'gov_yojana' ? '100% निःशुल्क लाभ' : 'Pay Matrix Level L-5'}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Qualification Selection */}
           <div>
-            <label className="font-bold text-slate-700 block mb-1">
-              {isHi ? 'मान्य शैक्षणिक योग्यता (Select Qualifications):' : 'Required Qualifications:'}
+            <label className="font-bold text-slate-700 block mb-1.5">
+              {isHi ? 'न्यूनतम शैक्षणिक योग्यता:' : 'Required Education / Eligibility:'}
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {(['10th', '12th', 'Graduate', 'PostGraduate', 'B.Ed/BSTC', 'ITI/Diploma', 'Engineering', 'Medical'] as QualificationType[]).map((q) => {
                 const isSelected = selectedQualifications.includes(q);
                 return (
@@ -278,10 +463,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                     key={q}
                     type="button"
                     onClick={() => toggleQual(q)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold border transition ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold transition ${
                       isSelected
-                        ? 'bg-amber-600 text-white border-amber-600'
-                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
                     {q}
@@ -291,98 +476,97 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
 
-          {/* Qualification Details text */}
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">
-              {isHi ? 'विस्तृत योग्यता विवरण:' : 'Qualification Details:'}
-            </label>
-            <input
-              type="text"
-              value={qualDetails}
-              onChange={(e) => setQualDetails(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
-            />
-          </div>
-
-          {/* Dates */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Important Dates */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'आवेदन प्रारंभ तिथि:' : 'Start Date:'}
+                {isHi ? 'आवेदन शुरू तिथि:' : 'Start Date:'}
               </label>
               <input
                 type="date"
                 value={applyStartDate}
                 onChange={(e) => setApplyStartDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
+
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'आवेदन अंतिम तिथि:' : 'Last Date:'}
+                {isHi ? 'आवेदन की अंतिम तिथि:' : 'Last Date:'}
               </label>
               <input
                 type="date"
                 value={applyLastDate}
                 onChange={(e) => setApplyLastDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
-              />
-            </div>
-            <div>
-              <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'परीक्षा संभावित तिथि:' : 'Exam Date:'}
-              </label>
-              <input
-                type="date"
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
           </div>
 
-          {/* Links */}
+          {/* Official URLs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'ऑनलाइन आवेदन लिंक (Apply URL):' : 'Apply Online URL:'}
+                {isHi ? 'ऑनलाइन आवेदन / पोर्टल लिंक:' : 'Apply Online Link:'}
               </label>
               <input
                 type="url"
                 value={applyOnlineUrl}
                 onChange={(e) => setApplyOnlineUrl(e.target.value)}
                 placeholder="https://sso.rajasthan.gov.in"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
+
             <div>
               <label className="font-bold text-slate-700 block mb-1">
-                {isHi ? 'ऑफिशियल वेबसाइट लिंक:' : 'Official Portal URL:'}
+                {isHi ? 'आधिकारिक नोटिफिकेशन PDF लिंक:' : 'Official PDF Link:'}
               </label>
               <input
                 type="url"
-                value={officialWebsiteUrl}
-                onChange={(e) => setOfficialWebsiteUrl(e.target.value)}
-                placeholder="https://rsmssb.rajasthan.gov.in"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs"
+                value={notificationPdfUrl}
+                onChange={(e) => setNotificationPdfUrl(e.target.value)}
+                placeholder="https://..."
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
           </div>
 
-          {/* Submit buttons */}
-          <div className="pt-4 border-t border-slate-200 flex justify-end gap-2">
+          {/* Detailed Summary */}
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">
+              {isHi ? 'विस्तृत विवरण एवं मुख्य बिंदु:' : 'Brief Description & Highlights:'}
+            </label>
+            <textarea
+              rows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="इस भर्ती या योजना के बारे में संक्षिप्त जानकारी लिखें..."
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Footer Submit Buttons */}
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition"
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 transition"
             >
               {isHi ? 'रद्द करें' : 'Cancel'}
             </button>
+
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-sm"
+              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-700 text-white shadow-md transition flex items-center gap-1.5"
             >
-              {isHi ? 'भर्ती सूचना प्रकाशित करें' : 'Publish Job Alert'}
+              <CheckCircle2 className="w-4 h-4" />
+              <span>
+                {postSection === 'gov_yojana'
+                  ? (isHi ? 'सरकारी योजना सेक्शन में प्रकाशित करें' : 'Publish to Government Yojana Section')
+                  : (isHi ? 'सरकारी भर्ती सेक्शन में प्रकाशित करें' : 'Publish to Govt Jobs Section')
+                }
+              </span>
             </button>
           </div>
         </form>

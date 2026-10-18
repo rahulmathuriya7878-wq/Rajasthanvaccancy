@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2 shrink-0 bg-amber-700/80 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider">
             <span className="w-2-h-2 rounded-full bg-red-400 animate-ping inline-block"></span>
             <Bell className="w-3.5 h-3.5" />
-            <span>{isHi ? 'ताजा सूचना' : 'Breaking'}</span>
+            <span>{isHi ? 'भर्ती सूचना' : 'Alerts'}</span>
           </div>
 
           <div className="overflow-hidden whitespace-nowrap flex-1 relative group cursor-pointer">

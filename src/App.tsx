@@ -6,6 +6,9 @@ import {
   FastUpdatesGrid 
 } from './components/FastUpdatesGrid';
 import { 
+  DepartmentVacancyChart 
+} from './components/DepartmentVacancyChart';
+import { 
   VacancyDetailPage 
 } from './components/VacancyDetailPage';
 import { 
@@ -48,7 +51,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v5';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v6';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 
@@ -58,6 +61,7 @@ try {
   localStorage.removeItem('raj_vacancies_v2');
   localStorage.removeItem('raj_vacancies_v3');
   localStorage.removeItem('raj_vacancies_v4');
+  localStorage.removeItem('raj_vacancies_v5');
   localStorage.removeItem('raj_saved_ids_v1');
   localStorage.removeItem('raj_saved_ids_v2');
 } catch (e) {}
@@ -155,7 +159,11 @@ export default function App() {
 
   const handleAddVacancy = (newJob: VacancyItem) => {
     setVacancies([newJob, ...vacancies]);
-    showToast(lang === 'hi' ? 'नई भर्ती सूचना सफलतापूर्वक जोड़ी गई!' : 'New job alert posted successfully!');
+    if (newJob.category === 'scheme' || newJob.organization === 'Sarkari Yojana') {
+      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक योजना सेक्शन में जोड़ी गई!' : 'Scheme alert posted in Yojana section!');
+    } else {
+      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जॉब्स सेक्शन में जोड़ी गई!' : 'Govt job alert posted in Jobs section!');
+    }
   };
 
   const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
@@ -276,15 +284,28 @@ export default function App() {
             }}
           />
         ) : (
-          /* 4-Box Fast Access Updates (Home View) */
-          <FastUpdatesGrid
-            vacancies={vacancies}
-            lang={lang}
-            onSelectVacancy={(item) => {
-              setSelectedVacancy(item);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
+          /* Home View: Department Vacancy Chart + Fast Access Updates */
+          <div className="space-y-6">
+            {/* Visual Recharts Bar Chart: Department-wise Vacancies */}
+            <DepartmentVacancyChart
+              vacancies={vacancies}
+              lang={lang}
+              onSelectVacancy={(item) => {
+                setSelectedVacancy(item);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+
+            {/* 5-Box Fast Access Updates (Home View) */}
+            <FastUpdatesGrid
+              vacancies={vacancies}
+              lang={lang}
+              onSelectVacancy={(item) => {
+                setSelectedVacancy(item);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </div>
         )}
       </main>
 

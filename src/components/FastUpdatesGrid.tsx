@@ -44,7 +44,16 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     }));
   };
 
-  const latestJobs = vacancies.filter((v) => v.category === 'latest_job' || v.status === 'active');
+  const latestJobs = vacancies.filter((v) => {
+    if (v.organization === 'Sarkari Yojana' || v.category === 'scheme') return false;
+    return (
+      v.category === 'latest_job' ||
+      (v.status === 'active' &&
+        v.category !== 'admit_card' &&
+        v.category !== 'result' &&
+        v.category !== 'answer_key')
+    );
+  });
   const admitCards = vacancies.filter((v) => v.category === 'admit_card' || v.status === 'admit_card_out');
   const results = vacancies.filter((v) => v.category === 'result' || v.status === 'result_declared');
   const answerKeys = vacancies.filter((v) => v.category === 'answer_key' || v.status === 'answer_key_out' || v.category === 'syllabus');
@@ -55,7 +64,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   const sections = [
     {
       key: 'latest_job',
-      title: isHi ? 'ताजा भर्तियां (Latest Jobs)' : 'Latest Vacancies',
+      title: isHi ? 'सरकारी भर्तियां (Govt Jobs)' : 'Govt Job Vacancies',
       icon: Briefcase,
       headerBg: 'bg-gradient-to-r from-emerald-600 to-teal-700',
       badgeBg: 'bg-emerald-100 text-emerald-800',
