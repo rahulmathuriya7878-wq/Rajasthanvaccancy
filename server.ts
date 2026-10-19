@@ -82,6 +82,29 @@ async function startServer() {
     }
   });
 
+  // Automated Job Scraper / RSS Feed Parser Endpoint
+  app.get('/api/vacancies/feed', async (_req, res) => {
+    try {
+      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper.ts');
+      const liveItems = await fetchLiveGovernmentJobsFromRSS();
+      res.json({ success: true, count: liveItems.length, data: liveItems, fetchedAt: new Date().toISOString() });
+    } catch (error: any) {
+      console.error('Failed to scrape RSS vacancies:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch RSS feeds' });
+    }
+  });
+
+  app.post('/api/vacancies/sync', async (_req, res) => {
+    try {
+      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper.ts');
+      const liveItems = await fetchLiveGovernmentJobsFromRSS();
+      res.json({ success: true, count: liveItems.length, items: liveItems, syncedAt: new Date().toISOString() });
+    } catch (error: any) {
+      console.error('Failed to sync RSS vacancies:', error);
+      res.status(500).json({ success: false, error: 'Failed to sync RSS feeds' });
+    }
+  });
+
   // Vite dev middleware or production static files
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static('dist'));

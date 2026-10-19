@@ -3,6 +3,7 @@ import {
   Bell, 
   ExternalLink, 
   ShieldCheck,
+  PlusCircle,
   Send,
   MessageCircle,
   LogIn,
@@ -10,7 +11,8 @@ import {
   HelpCircle,
   Search,
   X,
-  Menu
+  Menu,
+  RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { LanguageMode, VacancyItem } from '../types';
@@ -24,12 +26,16 @@ interface HeaderProps {
   onOpenCalendar: () => void;
   onOpenEligibility: () => void;
   onOpenAddJob?: () => void;
+  onOpenAdminLogin?: () => void;
   onOpenSSOGuide: () => void;
   onGoHome?: () => void;
   latestVacancies?: VacancyItem[];
   onSelectVacancy?: (item: VacancyItem) => void;
   searchQuery?: string;
   setSearchQuery?: (q: string) => void;
+  onSelectCategory?: (category: string) => void;
+  onSyncRSS?: () => void;
+  isSyncing?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,24 +47,34 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCalendar,
   onOpenEligibility,
   onOpenAddJob,
+  onOpenAdminLogin,
   onOpenSSOGuide,
   onGoHome,
   latestVacancies = [],
   onSelectVacancy,
   searchQuery = '',
   setSearchQuery,
+  onSelectCategory,
+  onSyncRSS,
+  isSyncing = false,
 }) => {
-  const { user, signInWithGoogle, logout } = useAuth();
+  const { user, isAdmin, logout, toggleAdminMode } = useAuth();
   const isHi = lang === 'hi';
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
 
-  // Take top 8 latest added vacancies/schemes to display in the ticker
-  const tickerItems = latestVacancies.slice(0, 8);
+  // Sort vacancies by newest added/updated date so new posts appear at the front of header ribbon ticker
+  const sortedVacancies = [...latestVacancies].sort((a, b) => {
+    const dateA = a.createdAt || a.updatedAt || a.importantDates?.notificationDate || '';
+    const dateB = b.createdAt || b.updatedAt || b.importantDates?.notificationDate || '';
+    return dateB.localeCompare(dateA);
+  });
+  const tickerItems = sortedVacancies.slice(0, 8);
   const displayItems = tickerItems.length > 0 ? [...tickerItems, ...tickerItems] : [];
 
   return (
-    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40">
+    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40 text-[16pt]">
       {/* Top Scrolling Ticker Bar for Latest Added Posts */}
       <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-xs font-medium py-1.5 px-3 shadow-inner">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
@@ -102,40 +118,6 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right Quick Links */}
-          <div className="hidden lg:flex items-center gap-2.5 shrink-0 text-xs">
-            <a 
-              href="https://sso.rajasthan.gov.in" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-white/15 hover:bg-white/25 px-2 py-0.5 rounded transition text-[11px] font-semibold"
-              title="Rajasthan SSO Portal"
-            >
-              <ShieldCheck className="w-3 h-3 text-amber-200" />
-              <span>SSO Login</span>
-              <ExternalLink className="w-2.5 h-2.5" />
-            </a>
-
-            <a 
-              href="https://telegram.org" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-sky-500/80 hover:bg-sky-500 px-2 py-0.5 rounded transition text-white text-[11px] font-semibold"
-            >
-              <Send className="w-3 h-3" />
-              <span>Telegram</span>
-            </a>
-
-            <a 
-              href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded transition text-white text-[11px] font-semibold"
-            >
-              <MessageCircle className="w-3 h-3" />
-              <span>WhatsApp</span>
-            </a>
-          </div>
         </div>
       </div>
 
@@ -170,6 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('ALL');
               }}
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
@@ -178,6 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('latest_job');
               }}
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
@@ -186,6 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('latest_job');
               }}
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
@@ -194,6 +179,16 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('scheme');
+              }}
+              className="px-3 py-2 rounded-lg bg-amber-100/70 text-amber-900 hover:bg-amber-200 transition cursor-pointer font-extrabold border border-amber-300/60"
+            >
+              {isHi ? 'सरकारी योजना (Yojana)' : 'Government Yojana'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('admit_card');
               }}
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
@@ -202,6 +197,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('result');
               }}
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
@@ -231,14 +227,62 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
+            {/* Mobile Search Toggle Button */}
+            <button
+              onClick={() => {
+                setMobileSearchOpen(!mobileSearchOpen);
+                if (mobileMenuOpen) setMobileMenuOpen(false);
+              }}
+              className="md:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+              aria-label="Toggle Search"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             {/* Mobile Menu Toggle Button */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => {
+                setMobileMenuOpen(!mobileMenuOpen);
+                if (mobileSearchOpen) setMobileSearchOpen(false);
+              }}
               className="md:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+
+            {/* Admin Controls / Post Creation */}
+            {isAdmin ? (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={onOpenAddJob}
+                  className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-sm shadow-amber-600/30"
+                  title="Post New Job or Scheme"
+                >
+                  <PlusCircle className="w-4 h-4 text-amber-100" />
+                  <span className="hidden sm:inline">{isHi ? '+ नई पोस्ट जोड़ें' : '+ Add Post'}</span>
+                  <span className="sm:hidden">{isHi ? '+ पोस्ट' : '+ Post'}</span>
+                </button>
+
+                <button
+                  onClick={() => toggleAdminMode(false)}
+                  className="px-2 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer hover:bg-emerald-100"
+                  title="Admin Mode Active (Click to lock)"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="hidden xl:inline">{isHi ? 'एडमिन' : 'Admin'}</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onOpenAdminLogin}
+                className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
+                title="Admin Panel Login"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                <span className="hidden sm:inline">{isHi ? 'एडमिन पैनल' : 'Admin'}</span>
+              </button>
+            )}
 
             {/* User Account / Profile */}
             {user && (
@@ -265,25 +309,50 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Mobile Navigation Dropdown Drawer */}
-        {mobileMenuOpen && (
-          <nav className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-2 text-xs font-bold text-slate-700 animate-fadeIn">
-            {/* Mobile Search Bar */}
-            <div className="relative w-full mb-1">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+        {/* Mobile Search Dropdown Drawer */}
+        {mobileSearchOpen && (
+          <div className="md:hidden mt-3 pt-3 border-t border-slate-200 animate-fadeIn">
+            <div className="relative w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
-                placeholder={isHi ? 'भर्तियां खोजें...' : 'Search jobs...'}
-                className="w-full bg-slate-100 focus:bg-white text-slate-900 text-xs pl-8 pr-7 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-amber-500"
+                placeholder={isHi ? 'भर्तियां या योजनाएं खोजें...' : 'Search jobs or schemes...'}
+                className="w-full bg-slate-100 focus:bg-white text-slate-900 text-xs pl-9 pr-8 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-amber-500 font-medium"
+                autoFocus
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery && setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Navigation Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-2 text-sm font-bold text-slate-800 animate-fadeIn bg-slate-50/90 p-3 rounded-xl shadow-xs">
+            {/* Mobile Search Bar */}
+            <div className="relative w-full mb-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
+                placeholder={isHi ? 'भर्तियां या योजनाएं खोजें...' : 'Search jobs or schemes...'}
+                className="w-full bg-white text-slate-900 text-xs pl-9 pr-8 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-amber-500 font-medium"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery && setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -291,48 +360,59 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('ALL');
                 setMobileMenuOpen(false);
               }}
-              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+              className="text-left px-3.5 py-2.5 rounded-lg hover:bg-amber-100/70 hover:text-amber-900 transition flex items-center justify-between"
             >
-              {isHi ? 'होम (Home)' : 'Home'}
+              <span>{isHi ? '🏠 होम (Home)' : '🏠 Home'}</span>
             </button>
+
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('latest_job');
                 setMobileMenuOpen(false);
               }}
-              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+              className="text-left px-3.5 py-2.5 rounded-lg hover:bg-amber-100/70 hover:text-amber-900 transition"
             >
-              {isHi ? 'नवीनतम (Latest)' : 'Latest'}
+              {isHi ? '🔥 नवीनतम भर्तियां (Latest Jobs)' : '🔥 Latest Jobs'}
             </button>
+
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('scheme');
                 setMobileMenuOpen(false);
               }}
-              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+              className="text-left px-3.5 py-2.5 rounded-lg bg-amber-500 text-slate-950 font-black shadow-xs hover:bg-amber-600 transition flex items-center justify-between"
             >
-              {isHi ? 'नौकरियां (Latest Jobs)' : 'Latest Jobs'}
+              <span>{isHi ? '🏛️ सरकारी योजना (Government Yojana)' : '🏛️ Government Yojana'}</span>
+              <span className="text-[10px] bg-slate-900 text-amber-300 px-2 py-0.5 rounded font-bold uppercase">NEW</span>
             </button>
+
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('admit_card');
                 setMobileMenuOpen(false);
               }}
-              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+              className="text-left px-3.5 py-2.5 rounded-lg hover:bg-amber-100/70 hover:text-amber-900 transition"
             >
-              {isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Card'}
+              {isHi ? '🎟️ प्रवेश पत्र (Admit Card)' : '🎟️ Admit Card'}
             </button>
+
             <button
               onClick={() => {
                 if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('result');
                 setMobileMenuOpen(false);
               }}
-              className="text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition"
+              className="text-left px-3.5 py-2.5 rounded-lg hover:bg-amber-100/70 hover:text-amber-900 transition"
             >
-              {isHi ? 'परिणाम (Results)' : 'Results'}
+              {isHi ? '🏆 परिणाम (Results)' : '🏆 Results'}
             </button>
+
           </nav>
         )}
       </div>

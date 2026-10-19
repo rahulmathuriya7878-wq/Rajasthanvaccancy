@@ -44,7 +44,15 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     }));
   };
 
-  const latestJobs = vacancies.filter((v) => {
+  const sortByNewest = (items: VacancyItem[]) => {
+    return [...items].sort((a, b) => {
+      const dateA = a.createdAt || a.importantDates?.applyStartDate || '';
+      const dateB = b.createdAt || b.importantDates?.applyStartDate || '';
+      return dateB.localeCompare(dateA);
+    });
+  };
+
+  const latestJobs = sortByNewest(vacancies.filter((v) => {
     if (v.organization === 'Sarkari Yojana' || v.category === 'scheme') return false;
     return (
       v.category === 'latest_job' ||
@@ -53,13 +61,13 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         v.category !== 'result' &&
         v.category !== 'answer_key')
     );
-  });
-  const admitCards = vacancies.filter((v) => v.category === 'admit_card' || v.status === 'admit_card_out');
-  const results = vacancies.filter((v) => v.category === 'result' || v.status === 'result_declared');
-  const answerKeys = vacancies.filter((v) => v.category === 'answer_key' || v.status === 'answer_key_out' || v.category === 'syllabus');
-  const governmentYojanas = vacancies.filter(
+  }));
+  const admitCards = sortByNewest(vacancies.filter((v) => v.category === 'admit_card' || v.status === 'admit_card_out'));
+  const results = sortByNewest(vacancies.filter((v) => v.category === 'result' || v.status === 'result_declared'));
+  const answerKeys = sortByNewest(vacancies.filter((v) => v.category === 'answer_key' || v.status === 'answer_key_out' || v.category === 'syllabus'));
+  const governmentYojanas = sortByNewest(vacancies.filter(
     (v) => v.category === 'scheme' || v.organization === 'Sarkari Yojana'
-  );
+  ));
 
   const sections = [
     {
@@ -104,6 +112,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     },
   ];
 
+  const jobSections = sections.filter(sec => sec.key !== 'government_yojana');
+  const schemeSection = sections.find(sec => sec.key === 'government_yojana');
+
   return (
     <div className="w-full space-y-8">
       {/* 5-Box Grid with dedicated Government Yojana Box */}
@@ -118,12 +129,12 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
               className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition"
             >
               {/* Box Header */}
-              <div className={`${sec.headerBg} text-white px-4 py-3 flex items-center justify-between shadow-xs`}>
-                <div className="flex items-center gap-2 font-black text-sm tracking-wide">
-                  <sec.icon className="w-4 h-4 text-white/90" />
+              <div className="bg-white text-slate-950 px-4 py-3 flex items-center justify-between border-b border-slate-200">
+                <div className="flex items-center gap-2 font-black text-sm tracking-wide text-slate-900">
+                  <sec.icon className="w-4 h-4 text-amber-600" />
                   <span>{sec.title}</span>
                 </div>
-                <span className="text-[11px] font-bold bg-black/20 text-white/95 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded-full border border-slate-200">
                   {sec.items.length}
                 </span>
               </div>
@@ -144,9 +155,12 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                               {isHi ? item.titleHi : item.title}
                             </p>
                             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                              <span className="text-[10px] font-extrabold text-slate-500 uppercase bg-slate-100 px-1.5 py-0.5 rounded">
-                                {item.organization}
-                              </span>
+                              {item.category !== 'scheme' && item.organization !== 'Sarkari Yojana' && item.importantDates?.applyLastDate && (
+                                <span className="text-[10px] font-bold text-rose-800 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                  <Calendar className="w-3 h-3 text-rose-600 shrink-0" />
+                                  <span>{isHi ? `अंतिम तिथि: ${item.importantDates.applyLastDate}` : `Last Date: ${item.importantDates.applyLastDate}`}</span>
+                                </span>
+                              )}
                               {item.isHot && (
                                 <span className="text-[9px] font-black px-1.5 py-0.5 bg-rose-100 text-rose-700 rounded">
                                   HOT
@@ -171,9 +185,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                     <li className="text-center py-7 px-3">
                       <p className="text-xs font-semibold text-slate-500">
                         {isHi ? 'कोई पोस्ट उपलब्ध नहीं है' : 'No posts available'}
-                      </p>
-                      <p className="text-[11px] text-slate-400 mt-1">
-                        {isHi ? 'जल्द ही नई सूचनाएं अपडेट की जाएंगी' : 'New updates will be posted soon'}
                       </p>
                     </li>
                   )}

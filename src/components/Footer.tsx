@@ -19,6 +19,7 @@ interface FooterProps {
   onOpenAgeCalc: () => void;
   onOpenCalendar: () => void;
   onOpenSSOGuide: () => void;
+  onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
 }
 
 interface FaqItem {
@@ -38,6 +39,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenAgeCalc,
   onOpenCalendar,
   onOpenSSOGuide,
+  onSelectPolicy,
 }) => {
   const isHi = lang === 'hi';
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -123,7 +125,7 @@ export const Footer: React.FC<FooterProps> = ({
   ];
 
   return (
-    <footer className="w-full bg-slate-900 text-slate-300 pt-10 pb-8 mt-12 border-t border-slate-800">
+    <footer className="w-full bg-white text-slate-700 pt-10 pb-8 mt-12 border-t border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Col 1: About & Logo */}
@@ -132,55 +134,36 @@ export const Footer: React.FC<FooterProps> = ({
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-extrabold text-xs">
                 RV/J
               </div>
-              <span className="text-base sm:text-lg font-black text-white tracking-tight">
-                RAJASTHAN <span className="text-amber-500">VACCANCY/JOBS</span>
+              <span className="text-base sm:text-lg font-black text-slate-950 tracking-tight">
+                RAJASTHAN <span className="text-amber-600">VACCANCY/JOBS</span>
               </span>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               {isHi
-                ? 'राजस्थान के बेरोजगार युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, सटीक एवं प्रमाणित भर्ती सूचना पोर्टल। RSMSSB, RPSC, पुलिस, रीट एवं केंद्रीय परीक्षाओं के निःशुल्क अलर्ट्स।'
+                ? 'राजस्थान के सभी आकांक्षी युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, विश्वसनीय, सटीक एवं प्रामाणिक भर्ती सूचना मंच। राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), राजस्थान लोक सेवा आयोग (RPSC), राजस्थान पुलिस, रीट (REET) तथा अन्य सभी राज्य एवं केंद्रीय प्रतियोगी परीक्षाओं के नवीनतम सरकारी जॉब अलर्ट्स, एडमिट कार्ड, सिलेबस, कट-ऑफ और परीक्षा परिणामों की पल-पल की सटीक अपडेट सबसे पहले प्राप्त करें।'
                 : 'Premier recruitment and job notification portal for Rajasthan candidates. Real-time updates on RSMSSB, RPSC, Police, REET, results, admit cards, and syllabi.'}
             </p>
 
-            <div className="flex items-center gap-2 pt-1">
-              <a
-                href="https://t.me"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Telegram Alert</span>
-              </a>
-              <a
-                href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp Group</span>
-              </a>
-            </div>
+
           </div>
 
           {/* Col 2: Official Portals Directory */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 className="w-4 h-4 text-amber-500" />
+            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
+              <Building2 className="w-4 h-4 text-amber-600" />
               <span>{isHi ? 'आधिकारिक सरकारी वेबसाइटें' : 'Official Government Portals'}</span>
             </h4>
             <ul className="space-y-1.5 text-xs">
-              {officialLinks.slice(0, 5).map((l, idx) => (
+              {officialLinks.slice(0, 3).map((l, idx) => (
                 <li key={idx}>
                   <a
                     href={l.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-amber-400 transition flex items-center gap-1 text-slate-400"
+                    className="hover:text-amber-600 transition flex items-center gap-1 text-slate-600 font-medium"
                   >
-                    <ExternalLink className="w-3 h-3 text-slate-600" />
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
                     <span>{l.name}</span>
                   </a>
                 </li>
@@ -190,65 +173,29 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 3: Candidate Fast Tools */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-orange-500" />
-              <span>{isHi ? 'प्रतियोगी परीक्षार्थी टूल्स' : 'Candidate Utilities'}</span>
+            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-orange-600" />
+              <span>{isHi ? 'परीक्षा कैलेंडर' : 'Exam Calendar'}</span>
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <button
-                  onClick={onOpenAgeCalc}
-                  className="hover:text-amber-400 transition text-slate-400 text-left"
-                >
-                  👉 {isHi ? 'राजस्थान भर्ती आयु कैलकुलेटर (Age Calculator)' : 'Rajasthan Govt Age Calculator'}
-                </button>
-              </li>
-              <li>
-                <button
                   onClick={onOpenCalendar}
-                  className="hover:text-amber-400 transition text-slate-400 text-left"
+                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left"
                 >
                   👉 {isHi ? 'RSMSSB/RPSC वार्षिक परीक्षा कैलेंडर 2025-26' : 'Exam Schedule & Calendar 2025-26'}
                 </button>
-              </li>
-              <li>
-                <button
-                  onClick={onOpenSSOGuide}
-                  className="hover:text-amber-400 transition text-slate-400 text-left"
-                >
-                  👉 {isHi ? 'SSO Portal व OTR फॉर्म भरने की गाइड' : 'Rajasthan SSO OTR Registration Steps'}
-                </button>
-              </li>
-              <li>
-                <a
-                  href="https://sso.rajasthan.gov.in/signin"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-amber-400 transition text-slate-400 flex items-center gap-1"
-                >
-                  👉 <span>Rajasthan SSO Login Direct Link</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://rsmssb.rajasthan.gov.in/page?menuName=Results"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-amber-400 transition text-slate-400 flex items-center gap-1"
-                >
-                  👉 <span>RSMSSB Official Results Archive</span>
-                </a>
               </li>
             </ul>
           </div>
 
           {/* Col 4: Non-Government Disclaimer */}
           <div>
-            <h4 className="text-white font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 text-rose-500" />
+            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
+              <AlertCircle className="w-4 h-4 text-rose-600" />
               <span>{isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer & Notice'}</span>
             </h4>
-            <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 text-[11px] text-slate-400 leading-relaxed space-y-2">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-[11px] text-slate-600 leading-relaxed space-y-2">
               <p>
                 {isHi
                   ? 'RAJASTHAN VACCANCY/JOBS एक गैर-सरकारी एवं निजी सूचनात्मक पोर्टल है। हम किसी भी सरकारी एजेंसी अथवा आयोग से संबद्ध नहीं हैं।'
@@ -263,109 +210,27 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         </div>
 
-        {/* FAQ Section - Frequently Asked Questions */}
-        <div className="my-10 pt-8 border-t border-slate-800">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-2">
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>{isHi ? 'सहायता केंद्र एवं दिशा-निर्देश' : 'Help & Guidelines Center'}</span>
-              </div>
-              <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span>{isHi ? 'अक्सर पूछे जाने वाले सवाल (Frequently Asked Questions)' : 'Frequently Asked Questions (FAQ)'}</span>
-              </h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-                {isHi
-                  ? 'राजस्थान सरकारी भर्तियों की तैयारी, SSO OTR पंजीयन, आवश्यक दस्तावेज और परीक्षा नियमों से जुड़ी संपूर्ण जानकारी।'
-                  : 'Essential answers on Rajasthan recruitment processes, SSO OTR registration, document requirements, and exam rules.'}
-              </p>
-            </div>
-
-            {/* Filter pills */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {[
-                { id: 'all', labelHi: 'सभी प्रश्न', labelEn: 'All FAQs' },
-                { id: 'process', labelHi: 'भर्ती व OTR प्रक्रिया', labelEn: 'Recruitment & OTR' },
-                { id: 'docs', labelHi: 'दस्तावेज व वैधता', labelEn: 'Document Criteria' },
-                { id: 'prep', labelHi: 'परीक्षा नियम व तैयारी', labelEn: 'Exam & Rules' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-                    selectedCategory === tab.id
-                      ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
-                  }`}
-                >
-                  {isHi ? tab.labelHi : tab.labelEn}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {filteredFaqs.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-              return (
-                <div
-                  key={index}
-                  className={`rounded-xl border transition-all duration-200 overflow-hidden ${
-                    isOpen
-                      ? 'bg-slate-800/90 border-amber-500/50 shadow-md'
-                      : 'bg-slate-800/40 border-slate-700/70 hover:border-slate-600 hover:bg-slate-800/60'
-                  }`}
-                >
-                  <button
-                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                    className="w-full text-left p-4 flex items-start justify-between gap-3 cursor-pointer select-none"
-                    aria-expanded={isOpen}
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[11px] font-bold text-amber-400 shrink-0 mt-0.5">
-                        Q
-                      </span>
-                      <span className="text-sm font-semibold text-white leading-snug">
-                        {isHi ? faq.qHi : faq.qEn}
-                      </span>
-                    </div>
-                    <span className="text-slate-400 shrink-0 mt-1">
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-amber-400" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-slate-400" />
-                      )}
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-4 pb-4 pt-1 text-xs text-slate-300 leading-relaxed border-t border-slate-700/50">
-                      <p className="whitespace-pre-line text-slate-300">
-                        {isHi ? faq.aHi : faq.aEn}
-                      </p>
-                      {faq.note && (
-                        <div className="mt-2.5 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300/90 flex items-center gap-1.5">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-                          <span>{isHi ? faq.note.hi : faq.note.en}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Bottom copyright */}
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
             © {new Date().getFullYear()} RAJASTHAN VACCANCY/JOBS — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <span className="hover:text-slate-400 cursor-pointer">{isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}</span>
-            <span className="hover:text-slate-400 cursor-pointer">{isHi ? 'नियम व शर्तें' : 'Terms of Use'}</span>
-            <span className="hover:text-slate-400 cursor-pointer">{isHi ? 'संपर्क करें' : 'Contact Us'}</span>
+            <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-400 transition cursor-pointer">
+              {isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}
+            </button>
+            <button onClick={() => onSelectPolicy('terms')} className="hover:text-amber-400 transition cursor-pointer">
+              {isHi ? 'नियम व शर्तें' : 'Terms & Conditions'}
+            </button>
+            <button onClick={() => onSelectPolicy('contact')} className="hover:text-amber-400 transition cursor-pointer">
+              {isHi ? 'संपर्क करें' : 'Contact Us'}
+            </button>
+            <button onClick={() => onSelectPolicy('about')} className="hover:text-amber-400 transition cursor-pointer">
+              {isHi ? 'हमारे बारे में' : 'About Us'}
+            </button>
+            <button onClick={() => onSelectPolicy('disclaimer')} className="hover:text-amber-400 transition cursor-pointer">
+              {isHi ? 'अस्वीकरण' : 'Disclaimer'}
+            </button>
           </div>
         </div>
       </div>

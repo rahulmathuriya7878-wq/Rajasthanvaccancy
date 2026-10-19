@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   PlusCircle, 
+  Edit3,
   Building2, 
   FileText, 
   Calendar, 
@@ -23,11 +24,16 @@ import {
   LanguageMode 
 } from '../types';
 
+import { useAuth } from '../context/AuthContext.tsx';
+import { AdminLoginModal } from './AdminLoginModal.tsx';
+
 interface AddVacancyModalProps {
   isOpen: boolean;
   onClose: () => void;
   lang: LanguageMode;
   onAddVacancy: (newJob: VacancyItem) => void;
+  onUpdateVacancy?: (updatedJob: VacancyItem) => void;
+  editItem?: VacancyItem | null;
 }
 
 type PostSectionType = 'gov_job' | 'gov_yojana' | 'admit_card' | 'result' | 'answer_key';
@@ -37,9 +43,23 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   onClose,
   lang,
   onAddVacancy,
+  onUpdateVacancy,
+  editItem,
 }) => {
+  const { isAdmin } = useAuth();
   if (!isOpen) return null;
+  if (!isAdmin) {
+    return (
+      <AdminLoginModal
+        isOpen={isOpen}
+        onClose={onClose}
+        lang={lang}
+      />
+    );
+  }
+
   const isHi = lang === 'hi';
+  const isEdit = !!editItem;
 
   // Section Type (Gov job vs Gov yojana vs others)
   const [postSection, setPostSection] = useState<PostSectionType>('gov_job');
@@ -58,14 +78,53 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [minAge, setMinAge] = useState(18);
   const [maxAge, setMaxAge] = useState(40);
   const [asOnDate, setAsOnDate] = useState('2026-01-01');
-  const [applyStartDate, setApplyStartDate] = useState('2025-11-01');
-  const [applyLastDate, setApplyLastDate] = useState('2025-12-01');
+  const [applyStartDate, setApplyStartDate] = useState('2026-01-01');
+  const [applyLastDate, setApplyLastDate] = useState('2026-12-31');
   const [examDate, setExamDate] = useState('2026-04-15');
   const [salary, setSalary] = useState('Pay Matrix Level L-5 (Basic ₹20,800)');
   const [applyOnlineUrl, setApplyOnlineUrl] = useState('https://sso.rajasthan.gov.in');
   const [notificationPdfUrl, setNotificationPdfUrl] = useState('');
   const [officialWebsiteUrl, setOfficialWebsiteUrl] = useState('https://rajasthan.gov.in');
   const [description, setDescription] = useState('Recruitment notice for eligible candidates in Rajasthan.');
+
+  // Pre-fill fields when editItem is provided
+  useEffect(() => {
+    if (editItem) {
+      setTitle(editItem.title || '');
+      setTitleHi(editItem.titleHi || editItem.title || '');
+      setOrganization(editItem.organization || 'RSMSSB');
+      setDepartment(editItem.departmentHi || editItem.department || '');
+      setAdvtNo(editItem.advtNo || '');
+      setCategory(editItem.category || 'latest_job');
+      setTotalPosts(String(editItem.totalPosts || ''));
+      setPostName(editItem.postNameHi || editItem.postName || '');
+      setSelectedQualifications(editItem.qualification && editItem.qualification.length > 0 ? editItem.qualification : ['Graduate']);
+      setQualDetails(editItem.qualificationDetailsHi || editItem.qualificationDetails || '');
+      setMinAge(editItem.ageLimit?.min || 18);
+      setMaxAge(editItem.ageLimit?.max || 40);
+      setAsOnDate(editItem.ageLimit?.asOnDate || '2026-01-01');
+      setApplyStartDate(editItem.importantDates?.applyStartDate || '');
+      setApplyLastDate(editItem.importantDates?.applyLastDate || '');
+      setExamDate(editItem.importantDates?.examDate || '');
+      setSalary(editItem.salaryHi || editItem.salary || '');
+      setApplyOnlineUrl(editItem.officialLinks?.applyOnlineUrl || '');
+      setNotificationPdfUrl(editItem.officialLinks?.notificationPdfUrl || '');
+      setOfficialWebsiteUrl(editItem.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in');
+      setDescription(editItem.descriptionHi || editItem.description || '');
+
+      if (editItem.category === 'scheme' || editItem.organization === 'Sarkari Yojana') {
+        setPostSection('gov_yojana');
+      } else if (editItem.category === 'admit_card') {
+        setPostSection('admit_card');
+      } else if (editItem.category === 'result') {
+        setPostSection('result');
+      } else if (editItem.category === 'answer_key') {
+        setPostSection('answer_key');
+      } else {
+        setPostSection('gov_job');
+      }
+    }
+  }, [editItem]);
 
   // Switch section and auto-configure category & board
   const handleSectionChange = (sec: PostSectionType) => {
@@ -75,11 +134,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       if (organization === 'Sarkari Yojana') {
         setOrganization('RSMSSB');
       }
-      setDepartment('School Education / Revenue / Police Dept');
     } else if (sec === 'gov_yojana') {
       setCategory('scheme');
       setOrganization('Sarkari Yojana');
-      setDepartment('Social Justice & Empowerment / Food & Civil Supplies / WCD');
     } else if (sec === 'admit_card') {
       setCategory('admit_card');
     } else if (sec === 'result') {
@@ -125,59 +182,115 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         ? 'answer_key_out'
         : 'active';
 
-    const newVacancy: VacancyItem = {
-      id: `custom-${Date.now()}`,
-      title: title.trim(),
-      titleHi: titleHi.trim() || title.trim(),
-      organization: finalOrg,
-      department: department.trim(),
-      departmentHi: department.trim(),
-      advtNo: advtNo.trim(),
-      category: finalCategory,
-      totalPosts: isNaN(Number(totalPosts)) ? totalPosts : Number(totalPosts),
-      postName: postName.trim(),
-      postNameHi: postName.trim(),
-      qualification: selectedQualifications,
-      qualificationDetails: qualDetails.trim(),
-      qualificationDetailsHi: qualDetails.trim(),
-      ageLimit: {
-        min: Number(minAge),
-        max: Number(maxAge),
-        asOnDate,
-        relaxationNotes: 'Standard age relaxation for reserved categories in Rajasthan.'
-      },
-      applicationFee: {
-        genObc: postSection === 'gov_yojana' ? 0 : 600,
-        scSt: postSection === 'gov_yojana' ? 0 : 400,
-        ews: postSection === 'gov_yojana' ? 0 : 400,
-        otrNote: 'Covered under Rajasthan SSO One Time Registration.'
-      },
-      importantDates: {
-        notificationDate: new Date().toISOString().split('T')[0],
-        applyStartDate,
-        applyLastDate,
-        examDate: examDate || undefined,
-      },
-      status: finalStatus,
-      salary: salary.trim(),
-      salaryHi: salary.trim(),
-      jobLocation: 'Rajasthan',
-      selectionProcess: ['Written Examination / Direct Benefit', 'Document Verification'],
-      selectionProcessHi: ['लिखित परीक्षा / डीबीटी सत्यापन', 'दस्तावेज सत्यापन'],
-      tags: [finalOrg, postSection === 'gov_yojana' ? 'सरकारी योजना' : 'सरकारी भर्ती', finalCategory],
-      officialLinks: {
-        applyOnlineUrl: applyOnlineUrl.trim() || undefined,
-        notificationPdfUrl: notificationPdfUrl.trim() || undefined,
-        officialWebsiteUrl: officialWebsiteUrl.trim() || 'https://rajasthan.gov.in'
-      },
-      isHot: true,
-      isNew: true,
-      description,
-      descriptionHi: description,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
+    const formattedDate = new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    onAddVacancy(newVacancy);
+    if (isEdit && editItem) {
+      const updatedVacancy: VacancyItem = {
+        ...editItem,
+        title: title.trim(),
+        titleHi: titleHi.trim() || title.trim(),
+        shortTitle: title.trim(),
+        shortTitleHi: titleHi.trim() || title.trim(),
+        organization: finalOrg,
+        department: department.trim(),
+        departmentHi: department.trim(),
+        advtNo: advtNo.trim(),
+        category: finalCategory,
+        totalPosts: isNaN(Number(totalPosts)) ? totalPosts : Number(totalPosts),
+        postName: postName.trim(),
+        postNameHi: postName.trim(),
+        qualification: selectedQualifications,
+        qualificationDetails: qualDetails.trim(),
+        qualificationDetailsHi: qualDetails.trim(),
+        ageLimit: {
+          ...(editItem.ageLimit || { min: Number(minAge), max: Number(maxAge) }),
+          min: Number(minAge),
+          max: Number(maxAge),
+          asOnDate,
+        },
+        importantDates: {
+          ...(editItem.importantDates || {}),
+          applyStartDate,
+          applyLastDate,
+          examDate: examDate || undefined,
+        },
+        status: finalStatus,
+        salary: salary.trim(),
+        salaryHi: salary.trim(),
+        officialLinks: {
+          ...(editItem.officialLinks || {}),
+          applyOnlineUrl: applyOnlineUrl.trim() || undefined,
+          notificationPdfUrl: notificationPdfUrl.trim() || undefined,
+          officialWebsiteUrl: officialWebsiteUrl.trim() || 'https://rajasthan.gov.in'
+        },
+        description: description.trim(),
+        descriptionHi: description.trim(),
+        updatedAt: formattedDate
+      };
+
+      if (onUpdateVacancy) {
+        onUpdateVacancy(updatedVacancy);
+      } else {
+        onAddVacancy(updatedVacancy);
+      }
+    } else {
+      const newVacancy: VacancyItem = {
+        id: `custom-${Date.now()}`,
+        title: title.trim(),
+        titleHi: titleHi.trim() || title.trim(),
+        shortTitle: title.trim(),
+        shortTitleHi: titleHi.trim() || title.trim(),
+        organization: finalOrg,
+        department: department.trim(),
+        departmentHi: department.trim(),
+        advtNo: advtNo.trim(),
+        category: finalCategory,
+        totalPosts: isNaN(Number(totalPosts)) ? totalPosts : Number(totalPosts),
+        postName: postName.trim(),
+        postNameHi: postName.trim(),
+        qualification: selectedQualifications,
+        qualificationDetails: qualDetails.trim(),
+        qualificationDetailsHi: qualDetails.trim(),
+        ageLimit: {
+          min: Number(minAge),
+          max: Number(maxAge),
+          asOnDate,
+          relaxationNotes: 'Standard age relaxation for reserved categories in Rajasthan.'
+        },
+        applicationFee: {
+          genObc: postSection === 'gov_yojana' ? 0 : 600,
+          scSt: postSection === 'gov_yojana' ? 0 : 400,
+          ews: postSection === 'gov_yojana' ? 0 : 400,
+          otrNote: 'Covered under Rajasthan SSO One Time Registration.'
+        },
+        importantDates: {
+          notificationDate: new Date().toISOString().split('T')[0],
+          applyStartDate,
+          applyLastDate,
+          examDate: examDate || undefined,
+        },
+        status: finalStatus,
+        salary: salary.trim(),
+        salaryHi: salary.trim(),
+        jobLocation: 'Rajasthan',
+        selectionProcess: ['Written Examination / Direct Benefit', 'Document Verification'],
+        selectionProcessHi: ['लिखित परीक्षा / डीबीटी सत्यापन', 'दस्तावेज सत्यापन'],
+        tags: [finalOrg, postSection === 'gov_yojana' ? 'सरकारी योजना' : 'सरकारी भर्ती', finalCategory],
+        officialLinks: {
+          applyOnlineUrl: applyOnlineUrl.trim() || undefined,
+          notificationPdfUrl: notificationPdfUrl.trim() || undefined,
+          officialWebsiteUrl: officialWebsiteUrl.trim() || 'https://rajasthan.gov.in'
+        },
+        isHot: true,
+        isNew: true,
+        description: description.trim(),
+        descriptionHi: description.trim(),
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: formattedDate
+      };
+
+      onAddVacancy(newVacancy);
+    }
     onClose();
   };
 
@@ -188,23 +301,25 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <PlusCircle className="w-5 h-5 text-white" />
+              {isEdit ? <Edit3 className="w-5 h-5 text-white" /> : <PlusCircle className="w-5 h-5 text-white" />}
             </div>
             <div>
               <h2 className="text-lg font-black">
-                {isHi ? 'नई सूचना जोड़ें (Post Section Wise)' : 'Post New Notice (Section Wise)'}
+                {isEdit 
+                  ? (isHi ? 'पोस्ट संशोधित करें (Update Post Details)' : 'Edit & Update Post Notice') 
+                  : (isHi ? 'नई सूचना प्रकाशित करें (Add New Notice)' : 'Post New Notice (Section Wise)')}
               </h2>
               <p className="text-xs text-amber-100">
                 {isHi 
-                  ? 'सरकारी भर्ती को जॉब सेक्शन में तथा सरकारी योजना को योजना सेक्शन में जोड़ें' 
-                  : 'Add Gov Jobs to Job Section and Government Yojana to Yojana Section'}
+                  ? 'एडमिन अधिकार द्वारा किसी भी भर्ती या योजना के विवरण अपडेट करें' 
+                  : 'Modify & publish changes as Admin'}
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition"
+            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -221,7 +336,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleSectionChange('gov_job')}
-                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
                   postSection === 'gov_job'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -234,7 +349,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleSectionChange('gov_yojana')}
-                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
                   postSection === 'gov_yojana'
                     ? 'bg-purple-600 text-white shadow-sm'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -247,7 +362,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleSectionChange('admit_card')}
-                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
                   postSection === 'admit_card'
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -260,7 +375,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleSectionChange('result')}
-                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
                   postSection === 'result'
                     ? 'bg-rose-600 text-white shadow-sm'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -273,7 +388,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleSectionChange('answer_key')}
-                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition ${
+                className={`px-3 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
                   postSection === 'answer_key'
                     ? 'bg-amber-600 text-white shadow-sm'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -282,24 +397,6 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 <KeyRound className="w-4 h-4 shrink-0" />
                 <span>{isHi ? 'उत्तर कुंजी (Answer Key)' : 'Answer Key'}</span>
               </button>
-            </div>
-
-            {/* Target Section Confirmation Indicator */}
-            <div className="mt-3 text-xs flex items-center gap-2 font-medium">
-              <span className="text-slate-500">{isHi ? 'प्रकाशित होने वाला बॉक्स:' : 'Destination Box:'}</span>
-              <span className={`px-2 py-0.5 rounded font-bold ${
-                postSection === 'gov_job' ? 'bg-emerald-100 text-emerald-800' :
-                postSection === 'gov_yojana' ? 'bg-purple-100 text-purple-800' :
-                postSection === 'admit_card' ? 'bg-blue-100 text-blue-800' :
-                postSection === 'result' ? 'bg-rose-100 text-rose-800' :
-                'bg-amber-100 text-amber-900'
-              }`}>
-                {postSection === 'gov_job' && (isHi ? '✓ सरकारी भर्तियां (Govt Jobs) सेक्शन' : 'Govt Jobs Section')}
-                {postSection === 'gov_yojana' && (isHi ? '✓ सरकारी योजनाएं (Government Yojana) सेक्शन' : 'Government Yojana Section')}
-                {postSection === 'admit_card' && (isHi ? '✓ प्रवेश पत्र (Admit Card) सेक्शन' : 'Admit Card Section')}
-                {postSection === 'result' && (isHi ? '✓ परीक्षा परिणाम (Results) सेक्शन' : 'Results Section')}
-                {postSection === 'answer_key' && (isHi ? '✓ उत्तर कुंजी व सिलेबस सेक्शन' : 'Answer Key Section')}
-              </span>
             </div>
           </div>
 
@@ -317,7 +414,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={postSection === 'gov_yojana' ? 'e.g. Mukhyamantri Free Scooty Yojana 2026' : 'e.g. RSMSSB Junior Assistant 2026'}
+                placeholder={postSection === 'gov_yojana' ? 'e.g. PM Awas Yojana Urban 2026' : 'e.g. RSMSSB Junior Assistant 2026'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
               />
             </div>
@@ -333,7 +430,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="text"
                 value={titleHi}
                 onChange={(e) => setTitleHi(e.target.value)}
-                placeholder={postSection === 'gov_yojana' ? 'उदा. मुख्यमंत्री स्कूटी योजना 2026' : 'उदा. राजस्थान कनिष्ठ सहायक भर्ती 2026'}
+                placeholder={postSection === 'gov_yojana' ? 'उदा. प्रधानमंत्री आवास योजना शहरी 2.0' : 'उदा. राजस्थान कनिष्ठ सहायक भर्ती 2026'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
               />
             </div>
@@ -378,7 +475,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="text"
                 value={totalPosts}
                 onChange={(e) => setTotalPosts(e.target.value)}
-                placeholder={postSection === 'gov_yojana' ? 'उदा. 30,000+ सीटें' : 'e.g. 1,250'}
+                placeholder={postSection === 'gov_yojana' ? 'उदा. 1.00 लाख लाभार्थी' : 'e.g. 1,250'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -394,7 +491,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                placeholder="उदा. स्कूल शिक्षा विभाग / सामाजिक न्याय विभाग"
+                placeholder="उदा. स्कूल शिक्षा विभाग / नगरीय विकास विभाग"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -428,7 +525,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="text"
                 value={postName}
                 onChange={(e) => setPostName(e.target.value)}
-                placeholder={postSection === 'gov_yojana' ? 'निःशुल्क स्कूटी / ₹40,000 भत्ता' : 'e.g. Junior Assistant / Patwari'}
+                placeholder={postSection === 'gov_yojana' ? '₹2.50 लाख मकान अनुदान' : 'e.g. Junior Assistant / Patwari'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -444,7 +541,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="text"
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
-                placeholder={postSection === 'gov_yojana' ? '100% निःशुल्क लाभ' : 'Pay Matrix Level L-5'}
+                placeholder={postSection === 'gov_yojana' ? '₹2.50 लाख अनुदान + ₹1.80 लाख सब्सिडी' : 'Pay Matrix Level L-5'}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -463,7 +560,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                     key={q}
                     type="button"
                     onClick={() => toggleQual(q)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-semibold transition ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold transition cursor-pointer ${
                       isSelected
                         ? 'bg-amber-600 text-white shadow-xs'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -483,9 +580,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 {isHi ? 'आवेदन शुरू तिथि:' : 'Start Date:'}
               </label>
               <input
-                type="date"
+                type="text"
                 value={applyStartDate}
                 onChange={(e) => setApplyStartDate(e.target.value)}
+                placeholder="उदा. 01 जनवरी 2026 या 2026-01-01"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -495,9 +593,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 {isHi ? 'आवेदन की अंतिम तिथि:' : 'Last Date:'}
               </label>
               <input
-                type="date"
+                type="text"
                 value={applyLastDate}
                 onChange={(e) => setApplyLastDate(e.target.value)}
+                placeholder="उदा. 31 दिसंबर 2026 या 2026-12-31"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -513,7 +612,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 type="url"
                 value={applyOnlineUrl}
                 onChange={(e) => setApplyOnlineUrl(e.target.value)}
-                placeholder="https://sso.rajasthan.gov.in"
+                placeholder="https://pmaymis.gov.in"
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm"
               />
             </div>
@@ -538,10 +637,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
               {isHi ? 'विस्तृत विवरण एवं मुख्य बिंदु:' : 'Brief Description & Highlights:'}
             </label>
             <textarea
-              rows={2}
+              rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="इस भर्ती या योजना के बारे में संक्षिप्त जानकारी लिखें..."
+              placeholder="इस भर्ती या योजना के बारे में संक्षिप्त विवरण लिखें..."
               className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
             />
           </div>
@@ -551,20 +650,23 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 transition"
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 transition cursor-pointer"
             >
               {isHi ? 'रद्द करें' : 'Cancel'}
             </button>
 
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-700 text-white shadow-md transition flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl font-bold text-xs bg-amber-600 hover:bg-amber-700 text-white shadow-md transition flex items-center gap-1.5 cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>
-                {postSection === 'gov_yojana'
-                  ? (isHi ? 'सरकारी योजना सेक्शन में प्रकाशित करें' : 'Publish to Government Yojana Section')
-                  : (isHi ? 'सरकारी भर्ती सेक्शन में प्रकाशित करें' : 'Publish to Govt Jobs Section')
+                {isEdit
+                  ? (isHi ? 'संशोधित पोस्ट सहेजें (Save Updated Post)' : 'Save Post Updates')
+                  : (postSection === 'gov_yojana'
+                      ? (isHi ? 'सरकारी योजना सेक्शन में प्रकाशित करें' : 'Publish to Government Yojana Section')
+                      : (isHi ? 'सरकारी भर्ती सेक्शन में प्रकाशित करें' : 'Publish to Govt Jobs Section')
+                    )
                 }
               </span>
             </button>

@@ -36,10 +36,54 @@ export type JobStatusType =
   | 'answer_key_out'
   | 'closed';
 
+export interface PostBreakdownItem {
+  postName: string;
+  postNameHi: string;
+  categoryOrSubject?: string;
+  categoryOrSubjectHi?: string;
+  postsCount: number | string;
+  qualification: string;
+  qualificationHi: string;
+  payLevel?: string;
+}
+
+export interface PayScaleItem {
+  postName: string;
+  postNameHi: string;
+  payLevel: string;
+  payLevelHi?: string;
+  salaryRange: string;
+  salaryRangeHi?: string;
+}
+
+export interface ExamSubjectPattern {
+  subject: string;
+  subjectHi: string;
+  questions?: number | string;
+  marks: number | string;
+}
+
+export interface ExamPatternDetails {
+  examMode?: string;
+  examModeHi?: string;
+  totalMarks?: number | string;
+  duration?: string;
+  durationHi?: string;
+  negativeMarking?: string;
+  negativeMarkingHi?: string;
+  qualifyingMarks?: string;
+  qualifyingMarksHi?: string;
+  subjects?: ExamSubjectPattern[];
+  notes?: string[];
+  notesHi?: string[];
+}
+
 export interface VacancyItem {
   id: string;
   title: string;
   titleHi: string;
+  shortTitle?: string;
+  shortTitleHi?: string;
   organization: BoardType;
   department: string;
   departmentHi?: string;
@@ -77,6 +121,8 @@ export interface VacancyItem {
   status: JobStatusType;
   salary: string;
   salaryHi?: string;
+  salaryTable?: PayScaleItem[];
+  examPattern?: ExamPatternDetails;
   jobLocation: string;
   selectionProcess: string[];
   selectionProcessHi: string[];
@@ -98,18 +144,41 @@ export interface VacancyItem {
     tsp: number;
     sahariya?: number;
   };
+  postBreakdown?: PostBreakdownItem[];
   howToApply?: string[];
   howToApplyHi?: string[];
   requiredDocuments?: string[];
   requiredDocumentsHi?: string[];
   faqs?: { q: string; qHi: string; a: string; aHi: string }[];
-  examPattern?: {
-    totalMarks?: number | string;
-    duration?: string;
-    negativeMarking?: string;
-    details?: string;
-    detailsHi?: string;
+  yojanaOverview?: {
+    yojanaName?: string;
+    state?: string;
+    department?: string;
+    academicSession?: string;
+    beneficiaries?: string;
+    monthlyAssistance?: string;
+    durationPerYear?: string;
+    maxAnnualAssistance?: string;
+    totalBeneficiariesCount?: string;
+    applyStartDate?: string;
+    applyLastDate?: string;
+    applyMode?: string;
+    paymentMode?: string;
+    officialWebsite?: string;
   };
+  yojanaGeneralInfo?: {
+    headingHi?: string;
+    descriptionHi?: string;
+    objectiveHi?: string;
+    benefitsSummaryHi?: string;
+    keyPointsHi?: string[];
+  };
+  yojanaEligibility?: {
+    headingHi?: string;
+    criteriaHi?: string[];
+    incomeLimitHi?: string[];
+  };
+  updatedAt?: string;
   createdAt: string;
 }
 

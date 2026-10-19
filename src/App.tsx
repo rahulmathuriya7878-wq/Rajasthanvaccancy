@@ -15,6 +15,14 @@ import {
   FloatingSocialButtons 
 } from './components/FloatingSocialButtons';
 import { 
+  Footer 
+} from './components/Footer';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { TermsAndConditions } from './components/TermsAndConditions';
+import { ContactUs } from './components/ContactUs';
+import { AboutUs } from './components/AboutUs';
+import { Disclaimer } from './components/Disclaimer';
+import { 
   AgeCalculatorModal 
 } from './components/AgeCalculatorModal';
 import { 
@@ -32,6 +40,10 @@ import {
 import { 
   AddVacancyModal 
 } from './components/AddVacancyModal';
+import { 
+  AdminLoginModal 
+} from './components/AdminLoginModal';
+import { useAuth } from './context/AuthContext';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { 
@@ -54,7 +66,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v7';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v12';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 
@@ -66,15 +78,21 @@ try {
   localStorage.removeItem('raj_vacancies_v4');
   localStorage.removeItem('raj_vacancies_v5');
   localStorage.removeItem('raj_vacancies_v6');
+  localStorage.removeItem('raj_vacancies_v7');
+  localStorage.removeItem('raj_vacancies_v8');
+  localStorage.removeItem('raj_vacancies_v9');
+  localStorage.removeItem('raj_vacancies_v10');
+  localStorage.removeItem('raj_vacancies_v11');
   localStorage.removeItem('raj_saved_ids_v1');
   localStorage.removeItem('raj_saved_ids_v2');
 } catch (e) {}
 
 export default function App() {
+  const { isAdmin } = useAuth();
   // Default language set to Hindi
   const [lang, setLang] = useState<LanguageMode>('hi');
 
-  // Vacancies state with localStorage sync (loads Sainik School Chittorgarh recruitment by default)
+  // Vacancies state with localStorage sync
   const [vacancies, setVacancies] = useState<VacancyItem[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_VACANCIES);
@@ -120,7 +138,9 @@ export default function App() {
   const [sortBy, setSortBy] = useState<'latest' | 'deadline' | 'posts'>('latest');
 
   // Modals & Selection
-  const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
+  const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(vacancies[0] || INITIAL_VACANCIES[0]);
+  const [editingVacancy, setEditingVacancy] = useState<VacancyItem | null>(null);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
   const [ageCalcParams, setAgeCalcParams] = useState<{ asOnDate?: string; minAge?: number; maxAge?: number }>({});
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -128,6 +148,7 @@ export default function App() {
   const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | null>(null);
 
   // Deep linking sync for SEO (reads ?vacancy=... and ?category=... from URL/sitemap)
   useEffect(() => {
@@ -162,7 +183,7 @@ export default function App() {
       } else {
         url.searchParams.delete('vacancy');
         window.history.replaceState({}, '', url.toString());
-        document.title = 'RAJASTHAN VACCANCY/JOBS - Govt Job Alerts & Recruitment Portal';
+        document.title = 'Sainik School Chittorgarh Recruitment 2026 - Govt Job Portal';
       }
     } catch (e) {
       console.error('Error updating URL params', e);
@@ -203,11 +224,19 @@ export default function App() {
 
   const handleAddVacancy = (newJob: VacancyItem) => {
     setVacancies([newJob, ...vacancies]);
+    setSelectedVacancy(newJob);
     if (newJob.category === 'scheme' || newJob.organization === 'Sarkari Yojana') {
       showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक योजना सेक्शन में जोड़ी गई!' : 'Scheme alert posted in Yojana section!');
     } else {
       showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जॉब्स सेक्शन में जोड़ी गई!' : 'Govt job alert posted in Jobs section!');
     }
+  };
+
+  const handleUpdateVacancy = (updatedJob: VacancyItem) => {
+    setVacancies(prev => prev.map(v => v.id === updatedJob.id ? updatedJob : v));
+    setSelectedVacancy(updatedJob);
+    showToast(lang === 'hi' ? 'पोस्ट विवरण सफलतापूर्वक अपडेट कर दिया गया!' : 'Post details updated successfully!');
+    setEditingVacancy(null);
   };
 
   const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
@@ -282,7 +311,7 @@ export default function App() {
   const isHi = lang === 'hi';
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-800 flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-white">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-semibold border border-slate-700 animate-bounce">
@@ -300,7 +329,15 @@ export default function App() {
         onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
         onOpenCalendar={() => setIsCalendarOpen(true)}
         onOpenEligibility={() => setIsEligibilityOpen(true)}
-        onOpenAddJob={() => setIsAddJobOpen(true)}
+        onOpenAddJob={() => {
+          if (!isAdmin) {
+            setIsAdminLoginOpen(true);
+          } else {
+            setEditingVacancy(null);
+            setIsAddJobOpen(true);
+          }
+        }}
+        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onGoHome={() => {
           setSelectedVacancy(null);
@@ -313,11 +350,22 @@ export default function App() {
         }}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        onSelectCategory={(cat) => setSelectedCategory(cat as any)}
       />
 
       {/* Main Body Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 flex-1 w-full">
-        {selectedVacancy ? (
+        {activePolicyView === 'privacy' ? (
+          <PrivacyPolicy lang={lang} onBack={() => setActivePolicyView(null)} />
+        ) : activePolicyView === 'terms' ? (
+          <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
+        ) : activePolicyView === 'contact' ? (
+          <ContactUs lang={lang} onBack={() => setActivePolicyView(null)} />
+        ) : activePolicyView === 'about' ? (
+          <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
+        ) : activePolicyView === 'disclaimer' ? (
+          <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
+        ) : selectedVacancy ? (
           /* Full Page View instead of Popup Modal */
           <VacancyDetailPage
             vacancy={selectedVacancy}
@@ -333,6 +381,12 @@ export default function App() {
               setSelectedVacancy(item);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            isAdmin={isAdmin}
+            onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+            onEditVacancy={(item) => {
+              setEditingVacancy(item);
+              setIsAddJobOpen(true);
+            }}
           />
         ) : (
           /* Home View: 5-Box Fast Access Updates & FAQ */
@@ -346,24 +400,22 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             />
-
-            {/* Frequently Asked Questions (FAQ / FQA) Section */}
-            <FAQSection lang={lang} />
           </div>
         )}
       </main>
 
-      {/* Clean Minimal Light Footer */}
-      <footer className="w-full bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-600">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="font-bold text-slate-800">
-            RAJASTHAN <span className="text-amber-600">VACCANCY/JOBS</span>
-          </p>
-          <p className="text-[11px] text-slate-500">
-            © {new Date().getFullYear()} RAJASTHAN VACCANCY/JOBS — राजस्थान सरकारी भर्ती एवं परीक्षा परिणाम मंच
-          </p>
-        </div>
-      </footer>
+      {/* Full Comprehensive Footer Component */}
+      <Footer
+        lang={lang}
+        onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
+        onOpenCalendar={() => setIsCalendarOpen(true)}
+        onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
+        onSelectPolicy={(policy) => {
+          setActivePolicyView(policy);
+          setSelectedVacancy(null);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
 
       {/* Other Utility Modals */}
 
@@ -412,12 +464,23 @@ export default function App() {
 
       <AddVacancyModal
         isOpen={isAddJobOpen}
-        onClose={() => setIsAddJobOpen(false)}
+        onClose={() => {
+          setIsAddJobOpen(false);
+          setEditingVacancy(null);
+        }}
         lang={lang}
         onAddVacancy={handleAddVacancy}
+        onUpdateVacancy={handleUpdateVacancy}
+        editItem={editingVacancy}
       />
 
-      {/* Floating Sticky Telegram & WhatsApp Buttons (As seen on screenshot) */}
+      <AdminLoginModal
+        isOpen={isAdminLoginOpen}
+        onClose={() => setIsAdminLoginOpen(false)}
+        lang={lang}
+      />
+
+      {/* Floating Sticky Telegram & WhatsApp Buttons */}
       <FloatingSocialButtons />
     </div>
   );
