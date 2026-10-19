@@ -38,6 +38,7 @@ interface VacancyDetailPageProps {
   allVacancies: VacancyItem[];
   onSelectOtherVacancy: (item: VacancyItem) => void;
   onEditVacancy?: (vacancy: VacancyItem) => void;
+  onDeleteVacancy?: (id: string) => void;
   isAdmin?: boolean;
   onOpenAdminLogin?: () => void;
 }
@@ -51,6 +52,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   allVacancies,
   onSelectOtherVacancy,
   onEditVacancy,
+  onDeleteVacancy,
   isAdmin = false,
   onOpenAdminLogin,
 }) => {
@@ -310,17 +312,27 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             )}
           </div>
 
-          {/* Edit / Update Button - Shown ONLY for Admin */}
+          {/* Edit / Update & Delete Buttons - Shown ONLY for Admin */}
           {isAdmin && (
-            <button
-              type="button"
-              onClick={() => onEditVacancy && onEditVacancy(vacancy)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm shadow-amber-600/30"
-              title="Edit & Update Post Details"
-            >
-              <Edit3 className="w-4 h-4 text-amber-100" />
-              <span>{isHi ? '✏️ पोस्ट अपडेट / सम्पादित करें' : '✏️ Edit & Update Post'}</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => onEditVacancy && onEditVacancy(vacancy)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm shadow-amber-600/30"
+                title="Edit & Update Post Details"
+              >
+                <Edit3 className="w-4 h-4 text-amber-100" />
+                <span>{isHi ? '✏️ पोस्ट संशोधित / अपडेट' : '✏️ Edit & Update'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeleteVacancy && onDeleteVacancy(vacancy.id)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm shadow-rose-600/30"
+                title="Delete Post"
+              >
+                <span>{isHi ? '🗑️ डिलीट पोस्ट' : '🗑️ Delete Post'}</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -759,8 +771,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
       )}
 
-      {/* Section 4: Post Breakdown Box - Render only for Jobs (NOT for Scheme/Yojana) */}
-      {!isScheme && (
+      {/* Section 4: Post Breakdown Box - Render only if postBreakdown data exists */}
+      {!isScheme && vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           {/* Title */}
           <h2 className="text-[26px] font-bold text-slate-900 leading-tight">
@@ -769,14 +781,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               : `Post-Wise Vacancy Details for ${vacancy.title}`}
           </h2>
 
-          {/* Subtitle text */}
-          <p className="text-slate-800 text-[15px] sm:text-base leading-relaxed">
-            {isHi 
-              ? `इस भर्ती में चार अलग-अलग विषयों के लिए एक-एक TGT और एक मेस मैनेजर की नियुक्ति की जाएगी।`
-              : `Under this recruitment, one TGT teacher for four different subjects and one Mess Manager will be appointed.`}
-          </p>
-
-          {/* Clean 3-Column Table matching screenshot */}
+          {/* Clean 3-Column Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left border border-slate-300 border-collapse">
               <thead>
@@ -785,7 +790,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     {isHi ? 'पद का नाम' : 'Post Name'}
                   </th>
                   <th className="py-3 px-4 border-r border-slate-300 font-bold text-[15px] text-center w-1/4">
-                    {isHi ? 'श्रेणी' : 'Category'}
+                    {isHi ? 'श्रेणी / विषय' : 'Category / Subject'}
                   </th>
                   <th className="py-3 px-4 font-bold text-[15px] text-right w-1/4">
                     {isHi ? 'पदों की संख्या' : 'No. of Posts'}
@@ -793,35 +798,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-300 text-[15px] text-slate-800">
-                {(vacancy.postBreakdown && vacancy.postBreakdown.length > 0 ? vacancy.postBreakdown : [
-                  { postNameHi: 'TGT गणित', postName: 'TGT Mathematics', categoryOrSubjectHi: 'OBC', categoryOrSubject: 'OBC', postsCount: 1 },
-                  { postNameHi: 'TGT विज्ञान', postName: 'TGT Science', categoryOrSubjectHi: 'SC', categoryOrSubject: 'SC', postsCount: 1 },
-                  { postNameHi: 'TGT अंग्रेजी', postName: 'TGT English', categoryOrSubjectHi: 'OBC', categoryOrSubject: 'OBC', postsCount: 1 },
-                  { postNameHi: 'TGT कंप्यूटर साइंस', postName: 'TGT Computer Science', categoryOrSubjectHi: 'ST', categoryOrSubject: 'ST', postsCount: 1 },
-                  { postNameHi: 'मेस मैनेजर', postName: 'Mess Manager', categoryOrSubjectHi: 'अनारक्षित, UR', categoryOrSubject: 'Unreserved (UR)', postsCount: 1 },
-                ]).map((item, idx) => (
+                {vacancy.postBreakdown.map((item, idx) => (
                   <tr key={idx} className="bg-white">
                     <td className="py-3 px-4 border-r border-slate-300 font-medium text-slate-900">
-                      {isHi ? item.postNameHi : item.postName}
+                      {isHi ? (item.postNameHi || item.postName) : item.postName}
                     </td>
                     <td className="py-3 px-4 border-r border-slate-300 text-center font-medium">
-                      {isHi ? (item.categoryOrSubjectHi || item.categoryOrSubject || 'अनारक्षित') : (item.categoryOrSubject || 'UR')}
+                      {isHi ? (item.categoryOrSubjectHi || item.categoryOrSubject || '-') : (item.categoryOrSubject || '-')}
                     </td>
                     <td className="py-3 px-4 text-right font-bold text-slate-900">
                       {item.postsCount}
                     </td>
                   </tr>
                 ))}
-                {/* Total Row */}
-                <tr className="bg-white font-bold text-slate-900 border-t-2 border-slate-300">
-                  <td className="py-3 px-4 border-r border-slate-300 font-bold">
-                    {isHi ? 'कुल' : 'Total'}
-                  </td>
-                  <td className="py-3 px-4 border-r border-slate-300"></td>
-                  <td className="py-3 px-4 text-right font-black text-amber-800">
-                    {typeof vacancy.totalPosts === 'number' ? vacancy.totalPosts : 5}
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -832,176 +821,52 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {!isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-5">
           <h2 className="text-[26px] font-bold text-slate-900 border-b border-slate-200 pb-3">
-            {isHi ? 'आवेदन के लिए शैक्षणिक योग्यता' : 'Educational Qualification for Application'}
+            {isHi ? 'आवेदन के लिए शैक्षणिक योग्यता (Educational Qualification)' : 'Educational Qualification for Application'}
           </h2>
 
-          {/* Post-wise Eligibility Sections matching exact screenshot formatting */}
-          <div className="space-y-6 text-slate-800 text-[15px] sm:text-base leading-relaxed">
-            {/* TGT Math & TGT English */}
-            <div className="space-y-3">
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? 'TGT गणित और TGT अंग्रेजी' : 'TGT Mathematics & TGT English'}
-              </h3>
-              <p>
-                {isHi 
-                  ? 'अभ्यर्थी के पास संबंधित विषय में नीचे दिए गए विकल्पों में से निर्धारित योग्यता होनी चाहिए:' 
-                  : 'Candidates must possess the prescribed qualification from the options below in the relevant subject:'}
-              </p>
-
-              <ul className="list-disc pl-6 space-y-2 text-slate-800">
-                <li>
-                  {isHi 
-                    ? 'NCTE से मान्यता प्राप्त संस्थान या विश्वविद्यालय से चार वर्षीय एकीकृत डिग्री, जिसमें B.Ed. शामिल हो। संबंधित विषय और कुल अंकों में कम से कम 50 प्रतिशत अंक आवश्यक हैं।'
-                    : '4-year integrated degree from an NCTE recognized institution or university including B.Ed. Minimum 50% marks required in the concerned subject and aggregate.'}
-                </li>
-                <li>
-                  {isHi 
-                    ? 'अथवा मान्यता प्राप्त विश्वविद्यालय से संबंधित विषय, विषय संयोजन और कुल अंकों में कम से कम 50 प्रतिशत के साथ स्नातक या ऑनर्स डिग्री तथा NCTE से मान्यता प्राप्त संस्थान से कम से कम 50 प्रतिशत अंकों के साथ B.Ed.।'
-                    : 'OR Bachelor\'s / Honours degree from a recognized university with at least 50% marks in the concerned subject, subject combination and aggregate, and B.Ed. with at least 50% marks from an NCTE recognized institute.'}
-                </li>
-              </ul>
-
-              <p className="font-medium text-slate-900">
-                {isHi 
-                  ? 'इसके साथ CTET पेपर-II उत्तीर्ण होना और अंग्रेजी माध्यम में पढ़ाने की दक्षता आवश्यक है। गणित पद के लिए संबंधित विषय गणित और अंग्रेजी पद के लिए अंग्रेजी होना चाहिए।'
-                  : 'Along with this, passing CTET Paper-II and proficiency in teaching through English medium is required. The relevant subject must be Mathematics for the Math post and English for the English post.'}
-              </p>
-
-              <p className="text-slate-700 bg-white p-3 rounded-lg border border-slate-200 text-sm">
-                {isHi 
-                  ? 'संबंधित विषय में स्नातकोत्तर योग्यता, अंग्रेजी माध्यम के आवासीय विद्यालय में अध्यापन अनुभव, खेल एवं सह-पाठ्यक्रम गतिविधियों में दक्षता और कंप्यूटर एप्लीकेशन का ज्ञान वांछनीय हैं।'
-                  : 'Desirable: Postgraduate qualification in the subject, teaching experience in English medium residential school, proficiency in sports & co-curricular activities, and knowledge of computer applications.'}
-              </p>
-            </div>
-
-            {/* TGT Science */}
-            <div className="space-y-2 pt-3 border-t border-slate-200">
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? 'TGT विज्ञान' : 'TGT Science'}
-              </h3>
-              <p>
-                {isHi 
-                  ? 'मान्यता प्राप्त विश्वविद्यालय से भौतिकी, रसायन विज्ञान तथा वनस्पति विज्ञान / प्राणीशास्त्र विषयों के साथ कम से कम 50% अंकों में B.Sc. तथा NCTE मान्यता प्राप्त संस्थान से B.Ed.। CTET Paper-II (Science) उत्तीर्ण होना अनिवार्य है।'
-                  : 'B.Sc. with Physics, Chemistry and Botany / Zoology subjects with at least 50% marks from a recognized university and B.Ed. from NCTE recognized institute. CTET Paper-II is mandatory.'}
-              </p>
-            </div>
-
-            {/* TGT Computer Science */}
-            <div className="space-y-2 pt-3 border-t border-slate-200">
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? 'TGT कंप्यूटर साइंस' : 'TGT Computer Science'}
-              </h3>
-              <p>
-                {isHi 
-                  ? 'मान्यता प्राप्त विश्वविद्यालय से न्यूनतम 50% अंकों के साथ B.E. / B.Tech (Computer Science / IT) अथवा BCA / B.Sc (Computer Science) अथवा M.Sc (Computer Science) / MCA डिग्री उत्तीर्ण।'
-                  : 'B.E. / B.Tech (Computer Science / IT) or BCA / B.Sc (Computer Science) or M.Sc (Computer Science) / MCA degree with at least 50% marks from a recognized university.'}
-              </p>
-            </div>
-
-            {/* Mess Manager */}
-            <div className="space-y-2 pt-3 border-t border-slate-200">
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? 'मेस मैनेजर (Mess Manager)' : 'Mess Manager'}
-              </h3>
-              <p>
-                {isHi 
-                  ? 'मान्यता प्राप्त संस्था से कैटरिंग / हॉस्पिटैलिटी मैनेजमेंट में स्नातक डिग्री अथवा 10वीं पास के साथ किसी प्रतिष्ठित सरकारी या आवासीय विद्यालय हॉस्टल मेस में न्यूनतम 5 वर्ष का कार्य अनुभव।'
-                  : 'Degree / Diploma in Catering / Hospitality Management from a recognized institute or 10th Pass with minimum 5 years working experience in a reputed government or residential school hostel mess.'}
-              </p>
-            </div>
+          <div className="space-y-4 text-slate-800 text-[18px] leading-relaxed">
+            <p className="font-medium text-slate-900 bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+              {isHi ? (vacancy.qualificationDetailsHi || vacancy.qualificationDetails) : vacancy.qualificationDetails}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-slate-200">
-            <span className="font-bold text-slate-700">{isHi ? 'पात्र स्तर:' : 'Eligible Levels:'}</span>
-            {vacancy.qualification.map((q) => (
-              <span key={q} className="bg-white text-slate-800 font-semibold px-2.5 py-1 rounded border border-slate-200 text-xs">
-                {q}
-              </span>
-            ))}
-          </div>
+          {vacancy.qualification && vacancy.qualification.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-slate-200">
+              <span className="font-bold text-slate-700">{isHi ? 'पात्र स्तर / योग्यता:' : 'Eligible Levels:'}</span>
+              {vacancy.qualification.map((q) => (
+                <span key={q} className="bg-white text-slate-800 font-semibold px-2.5 py-1 rounded border border-slate-200 text-xs">
+                  {q}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Section 6: Age Limit & Relaxation Rules - Render only for Jobs (NOT for Scheme/Yojana) */}
-      {!isScheme && (
+      {/* Section 6: Age Limit & Relaxation Rules - Render only if vacancy.ageLimit exists */}
+      {!isScheme && vacancy.ageLimit && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           <h2 className="text-[26px] font-bold text-slate-900 border-b border-slate-200 pb-3">
             {isHi ? 'आयु सीमा (Age Limit Details)' : 'Age Limit Details'}
           </h2>
 
-          <p className="text-slate-800 text-[20px] leading-relaxed">
+          <p className="text-slate-800 text-[18px] leading-relaxed font-medium bg-amber-50/50 p-4 rounded-xl border border-amber-200">
             {isHi 
-              ? `आवेदकों की आयु की गणना ऑनलाइन आवेदन जमा करने की अंतिम तिथि ${vacancy.importantDates.applyLastDate || vacancy.ageLimit.asOnDate} को आधार मानकर की जाएगी।`
-              : `The age of applicants will be calculated as on the last date of application submission (${vacancy.importantDates.applyLastDate || vacancy.ageLimit.asOnDate}).`}
+              ? `न्यूनतम आयु: ${vacancy.ageLimit.min} वर्ष | अधिकतम आयु: ${vacancy.ageLimit.max} वर्ष (आयु की गणना ${vacancy.ageLimit.asOnDate || vacancy.importantDates.applyLastDate} को आधार मानकर की जाएगी)।`
+              : `Minimum Age: ${vacancy.ageLimit.min} years | Maximum Age: ${vacancy.ageLimit.max} years (Calculated as on ${vacancy.ageLimit.asOnDate || vacancy.importantDates.applyLastDate}).`}
           </p>
 
-          {/* Post-wise Age Limit Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border border-slate-300 border-collapse">
-              <thead>
-                <tr className="bg-white text-slate-900 font-bold border-b border-slate-300">
-                  <th className="py-3 px-4 border-r border-slate-300 font-bold text-[20px] w-1/2">
-                    {isHi ? 'पद का नाम' : 'Post Name'}
-                  </th>
-                  <th className="py-3 px-4 border-r border-slate-300 font-bold text-[20px] text-center w-1/4">
-                    {isHi ? 'न्यूनतम आयु' : 'Minimum Age'}
-                  </th>
-                  <th className="py-3 px-4 font-bold text-[20px] text-center w-1/4">
-                    {isHi ? 'अधिकतम आयु' : 'Maximum Age'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-300 text-[20px] text-slate-800">
-                <tr className="bg-white">
-                  <td className="py-3 px-4 border-r border-slate-300 font-medium text-slate-900">
-                    {isHi ? 'TGT शिक्षक (गणित / अंग्रेजी / विज्ञान / कंप्यूटर साइंस)' : 'TGT Teachers (Math / English / Science / Computer)'}
-                  </td>
-                  <td className="py-3 px-4 border-r border-slate-300 text-center font-bold text-slate-900">
-                    21 वर्ष
-                  </td>
-                  <td className="py-3 px-4 text-center font-bold text-slate-900">
-                    35 वर्ष
-                  </td>
-                </tr>
-                <tr className="bg-white">
-                  <td className="py-3 px-4 border-r border-slate-300 font-medium text-slate-900">
-                    {isHi ? 'मेस मैनेजर (Mess Manager)' : 'Mess Manager'}
-                  </td>
-                  <td className="py-3 px-4 border-r border-slate-300 text-center font-bold text-slate-900">
-                    18 वर्ष
-                  </td>
-                  <td className="py-3 px-4 text-center font-bold text-slate-900">
-                    50 वर्ष
-                  </td>
-                </tr>
-                <tr className="bg-white">
-                  <td className="py-3 px-4 border-r border-slate-300 font-medium text-slate-900">
-                    {isHi ? 'अन्य प्रशासनिक एवं चतुर्थ श्रेणी पद' : 'Other Administrative & Support Posts'}
-                  </td>
-                  <td className="py-3 px-4 border-r border-slate-300 text-center font-bold text-slate-900">
-                    18 वर्ष
-                  </td>
-                  <td className="py-3 px-4 text-center font-bold text-slate-900">
-                    40 वर्ष
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Government Relaxation Rules Note */}
-          <div className="bg-white p-4 rounded-xl border border-slate-300 space-y-2 text-slate-900">
-            <p className="font-bold text-[20px]">
-              {isHi ? 'आरक्षित श्रेणियों हेतु आयु सीमा में ऊपरी छूट (Age Relaxation Rules):' : 'Upper Age Relaxation Rules:'}
-            </p>
-            <ul className="list-disc pl-5 space-y-1 text-[20px] text-slate-800">
-              <li>{isHi ? 'राजस्थान के मूल निवासी OBC / EWS / MBC पुरुष अभ्यर्थियों को: 5 वर्ष की छूट' : 'OBC / EWS / MBC Male Candidates: 5 Years Relaxation'}</li>
-              <li>{isHi ? 'राजस्थान के मूल निवासी SC / ST पुरुष अभ्यर्थियों को: 5 वर्ष की छूट' : 'SC / ST Male Candidates: 5 Years Relaxation'}</li>
-              <li>{isHi ? 'सामान्य एवं अनारक्षित वर्ग की महिला अभ्यर्थियों को: 5 वर्ष की छूट' : 'General Female Candidates: 5 Years Relaxation'}</li>
-              <li>{isHi ? 'राजस्थान की आरक्षित वर्ग (SC/ST/OBC/EWS) की महिला अभ्यर्थियों को: 10 वर्ष की छूट' : 'Reserved Category Female Candidates: 10 Years Relaxation'}</li>
-              <li>{isHi ? 'भूतपूर्व सैनिक एवं नियमानुसार अन्य पात्र श्रेणी अभ्यर्थियों को सरकारी नियमानुसार अधिकतम आयु में छूट प्रदान की जाएगी।' : 'Ex-servicemen & other eligible categories will get relaxation as per Govt rules.'}</li>
-            </ul>
-          </div>
+          {/* Render Age Relaxation only if data/notes exist */}
+          {(vacancy.ageLimit.relaxationNotesHi || vacancy.ageLimit.relaxationNotes) && (
+            <div className="bg-white p-4 rounded-xl border border-slate-300 space-y-2 text-slate-900">
+              <p className="font-bold text-[18px]">
+                {isHi ? 'आरक्षित श्रेणियों हेतु आयु सीमा में ऊपरी छूट (Age Relaxation Rules):' : 'Upper Age Relaxation Rules:'}
+              </p>
+              <p className="text-[17px] text-slate-800 leading-relaxed">
+                {isHi ? vacancy.ageLimit.relaxationNotesHi : vacancy.ageLimit.relaxationNotes}
+              </p>
+            </div>
+          )}
         </div>
       )}
 

@@ -686,9 +686,111 @@ export const UGC_NET_JOB_VACANCY: VacancyItem = {
   createdAt: '2026-06-10'
 };
 
+export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
+  id: 'ugc-net-2026-dec',
+  title: 'UGC NET December 2026 Notification Released for Assistant Professor & Junior Research Fellowship (JRF)',
+  titleHi: 'यूजीसी नेट (UGC NET) दिसंबर 2026 नोटिफिकेशन जारी, असिस्टेंट प्रोफेसर एवं जेआरएफ परीक्षा हेतु ऑनलाइन आवेदन शुरू',
+  shortTitle: 'UGC NET Dec 2026 Notification',
+  shortTitleHi: 'यूजीसी नेट दिसंबर 2026 नोटिफिकेशन',
+  organization: 'UGC NET',
+  department: 'National Testing Agency (NTA) & University Grants Commission',
+  departmentHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) एवं विश्वविद्यालय अनुदान आयोग',
+  advtNo: 'UGC-NET/2026/DEC/01',
+  category: 'ugc_net',
+  totalPosts: 'विभिन्न विषय (83+ Subjects)',
+  postName: 'Assistant Professor & Junior Research Fellowship (JRF)',
+  postNameHi: 'असिस्टेंट प्रोफेसर एवं जूनियर रिसर्च फेलोशिप (JRF)',
+  qualification: ['PostGraduate'],
+  qualificationDetails: 'Master Degree (Post Graduation) in relevant subject with minimum 55% marks.',
+  qualificationDetailsHi: 'संबंधित विषय में न्यूनतम 55% अंकों के साथ स्नातकोत्तर (Post Graduation) डिग्री।',
+  description: 'National Testing Agency (NTA) has released the official notification for UGC NET December 2026 session for Assistant Professor and JRF.',
+  descriptionHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) ने यूजीसी नेट दिसंबर 2026 सत्र के लिए असिस्टेंट प्रोफेसर और जेआरएफ हेतु आधिकारिक नोटिफिकेशन जारी कर दिया है।',
+  jobLocation: 'All India (Exam Centers across Rajasthan & India)',
+  salary: 'JRF Fellowship ~₹37,000 to ₹42,000 + HRA per month',
+  salaryHi: 'जेआरएफ फैलोशिप: ₹37,000 से ₹42,000/- प्रतिमाह + एचआरए',
+  ageLimit: {
+    min: 21,
+    max: 30,
+    asOnDate: '2026-12-01',
+    relaxationNotes: 'JRF max age 30 years with relaxation for reserved categories.',
+    relaxationNotesHi: 'जेआरएफ हेतु अधिकतम आयु 30 वर्ष (आरक्षित वर्गों को नियमानुसार छूट)।'
+  },
+  applicationFee: {
+    genObc: 1150,
+    scSt: 325,
+    ews: 600,
+    otrNote: 'Gen: ₹1150, OBC/EWS: ₹600, SC/ST: ₹325',
+    otrNoteHi: 'सामान्य: ₹1150, ओबीसी/ईडब्ल्यूएस: ₹600, एससी/एसटी: ₹325'
+  },
+  importantDates: {
+    notificationDate: 'अक्टूबर 2026',
+    applyStartDate: '2026-10-20',
+    applyLastDate: '2026-11-20',
+    feeLastDate: '2026-11-21',
+    examDate: 'दिसंबर 2026 (CBT Exam)',
+    admitCardDate: 'परीक्षा से 10 दिन पूर्व'
+  },
+  selectionProcess: ['Computer Based Test (CBT) - Paper I & Paper II'],
+  selectionProcessHi: ['कंप्यूटर आधारित परीक्षा (CBT) - पेपर I एवं पेपर II'],
+  officialLinks: {
+    applyOnlineUrl: 'https://ugcnet.nta.ac.in',
+    notificationPdfUrl: 'https://ugcnet.nta.ac.in',
+    officialWebsiteUrl: 'https://ugcnet.nta.ac.in'
+  },
+  postBreakdown: [
+    {
+      postName: 'Junior Research Fellowship (JRF) & Assistant Professor (Dec Session)',
+      postNameHi: 'जूनियर रिसर्च फेलोशिप (JRF) एवं असिस्टेंट प्रोफेसर (दिसंबर सत्र)',
+      categoryOrSubjectHi: 'राष्ट्रीय पात्रता परीक्षा',
+      postsCount: 'विभिन्न पद',
+      qualification: 'Master Degree',
+      qualificationHi: 'स्नातकोत्तर डिग्री'
+    }
+  ],
+  salaryTable: [
+    {
+      postName: 'JRF Fellowship',
+      postNameHi: 'जेआरएफ फैलोशिप',
+      payLevel: 'UGC Fellowship',
+      payLevelHi: 'यूजीसी फेलोशिप',
+      salaryRange: '₹37,000 + HRA',
+      salaryRangeHi: '₹37,000/- प्रतिमाह + एचआरए'
+    }
+  ],
+  examPattern: {
+    examMode: 'Online CBT',
+    examModeHi: 'ऑनलाइन सीबीटी परीक्षा',
+    totalMarks: 300,
+    duration: '3 Hours',
+    durationHi: '3 घंटे',
+    negativeMarking: 'No',
+    negativeMarkingHi: 'नहीं',
+    subjects: [
+      { subject: 'Paper I (50 Qs)', subjectHi: 'पेपर I (50 प्रश्न)', marks: 100 },
+      { subject: 'Paper II (100 Qs)', subjectHi: 'पेपर II (100 प्रश्न)', marks: 200 }
+    ],
+    notesHi: ['कुल 150 प्रश्न, कोई नेगेटिव मार्किंग नहीं।']
+  },
+  requiredDocumentsHi: ['मास्टर डिग्री मार्कशीट, फोटो, हस्ताक्षर, आईडी प्रूफ'],
+  howToApplyHi: ['ugcnet.nta.ac.in पर ऑनलाइन आवेदन करें।'],
+  faqs: [
+    {
+      q: 'When is UGC NET Dec 2026 exam?',
+      qHi: 'यूजीसी नेट दिसंबर 2026 परीक्षा कब है?',
+      a: 'December 2026',
+      aHi: 'दिसंबर 2026 में आयोजित होगी।'
+    }
+  ],
+  tags: ['ugc net', 'december 2026', 'assistant professor', 'jrf'],
+  status: 'active',
+  updatedAt: '19 अक्टूबर 2026',
+  createdAt: '2026-10-19'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,
   UGC_NET_JOB_VACANCY,
+  UGC_NET_DECEMBER_2026_VACANCY,
   AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
   PM_AWAS_YOJANA_URBAN_VACANCY
 ];

@@ -66,7 +66,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v12';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v14';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 
@@ -83,6 +83,8 @@ try {
   localStorage.removeItem('raj_vacancies_v9');
   localStorage.removeItem('raj_vacancies_v10');
   localStorage.removeItem('raj_vacancies_v11');
+  localStorage.removeItem('raj_vacancies_v12');
+  localStorage.removeItem('raj_vacancies_v13');
   localStorage.removeItem('raj_saved_ids_v1');
   localStorage.removeItem('raj_saved_ids_v2');
 } catch (e) {}
@@ -94,18 +96,31 @@ export default function App() {
 
   // Vacancies state with localStorage sync
   const [vacancies, setVacancies] = useState<VacancyItem[]>(() => {
+    let loaded = INITIAL_VACANCIES;
     try {
       const stored = localStorage.getItem(STORAGE_KEY_VACANCIES);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          loaded = parsed;
         }
       }
     } catch (e) {
       console.error('Failed to load stored vacancies', e);
     }
-    return INITIAL_VACANCIES;
+
+    // Ensure UGC NET June & Dec are always present
+    const hasJune = loaded.some(v => v.id === 'ugc-net-2026-june');
+    if (!hasJune) {
+      const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-june');
+      if (item) loaded = [item, ...loaded];
+    }
+    const hasDec = loaded.some(v => v.id === 'ugc-net-2026-dec');
+    if (!hasDec) {
+      const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-dec');
+      if (item) loaded = [item, ...loaded];
+    }
+    return loaded;
   });
 
   useEffect(() => {
@@ -138,7 +153,7 @@ export default function App() {
   const [sortBy, setSortBy] = useState<'latest' | 'deadline' | 'posts'>('latest');
 
   // Modals & Selection
-  const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(vacancies[0] || INITIAL_VACANCIES[0]);
+  const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
   const [editingVacancy, setEditingVacancy] = useState<VacancyItem | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
@@ -237,6 +252,14 @@ export default function App() {
     setSelectedVacancy(updatedJob);
     showToast(lang === 'hi' ? 'पोस्ट विवरण सफलतापूर्वक अपडेट कर दिया गया!' : 'Post details updated successfully!');
     setEditingVacancy(null);
+  };
+
+  const handleDeleteVacancy = (id: string) => {
+    if (window.confirm(lang === 'hi' ? 'क्या आप वाकई इस पोस्ट को डिलीट करना चाहते हैं?' : 'Are you sure you want to delete this post?')) {
+      setVacancies(prev => prev.filter(v => v.id !== id));
+      setSelectedVacancy(null);
+      showToast(lang === 'hi' ? 'पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : 'Post deleted successfully!');
+    }
   };
 
   const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
@@ -341,6 +364,7 @@ export default function App() {
         onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onGoHome={() => {
           setSelectedVacancy(null);
+          setActivePolicyView(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         latestVacancies={vacancies}
@@ -392,6 +416,7 @@ export default function App() {
               setEditingVacancy(item);
               setIsAddJobOpen(true);
             }}
+            onDeleteVacancy={handleDeleteVacancy}
           />
         ) : (
           /* Home View: 5-Box Fast Access Updates & FAQ */
