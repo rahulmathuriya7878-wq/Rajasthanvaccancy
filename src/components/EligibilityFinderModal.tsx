@@ -27,7 +27,6 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   lang,
   onSelectVacancy,
 }) => {
-  if (!isOpen) return null;
   const isHi = lang === 'hi';
 
   const [selectedQual, setSelectedQual] = useState<QualificationType>('12th');
@@ -35,6 +34,8 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   const [hasCetGrad, setHasCetGrad] = useState<boolean>(false);
   const [hasCet12th, setHasCet12th] = useState<boolean>(true);
   const [candidateAge, setCandidateAge] = useState<number>(23);
+
+  if (!isOpen) return null;
 
   // Filter matching vacancies
   const matchedVacancies = vacancies.filter((item) => {

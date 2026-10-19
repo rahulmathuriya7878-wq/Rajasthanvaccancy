@@ -5,9 +5,11 @@ import { ShieldCheck, ArrowLeft, Lock, Database, Eye, Bell, UserCheck } from 'lu
 interface PrivacyPolicyProps {
   lang: LanguageMode;
   onBack: () => void;
+  onOpenAdminLogin?: () => void;
+  isAdmin?: boolean;
 }
 
-export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack }) => {
+export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOpenAdminLogin, isAdmin }) => {
   const isHi = lang === 'hi';
 
   return (
@@ -114,7 +116,22 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack }) =>
               : 'We may update this privacy policy from time to time. Updates will be posted on this page.'}
           </p>
         </section>
+
+        {onOpenAdminLogin && (
+          <div className="pt-6 border-t border-slate-100 flex justify-end">
+            <button
+              type="button"
+              onClick={onOpenAdminLogin}
+              className="text-slate-400 hover:text-slate-600 transition cursor-pointer text-xs flex items-center gap-1.5"
+              title="Vacancy Updates"
+            >
+              <span>📋</span>
+              <span>{isHi ? 'वैकेंसी (Vacancy)' : 'Vacancy Updates'}</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+

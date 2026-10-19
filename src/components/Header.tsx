@@ -251,8 +251,8 @@ export const Header: React.FC<HeaderProps> = ({
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Admin Controls / Post Creation */}
-            {isAdmin ? (
+            {/* Admin Controls / Post Creation - Shown ONLY when Admin is active */}
+            {isAdmin && (
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={onOpenAddJob}
@@ -267,21 +267,12 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   onClick={() => toggleAdminMode(false)}
                   className="px-2 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer hover:bg-emerald-100"
-                  title="Admin Mode Active (Click to lock)"
+                  title="Admin Mode Active (Click to logout/lock)"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="hidden xl:inline">{isHi ? 'एडमिन' : 'Admin'}</span>
+                  <span className="hidden xl:inline">{isHi ? 'एडमिन (सक्रिय)' : 'Admin (Active)'}</span>
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={onOpenAdminLogin}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
-                title="Admin Panel Login"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-                <span className="hidden sm:inline">{isHi ? 'एडमिन पैनल' : 'Admin'}</span>
-              </button>
             )}
 
             {/* User Account / Profile */}

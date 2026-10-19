@@ -47,17 +47,6 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   editItem,
 }) => {
   const { isAdmin } = useAuth();
-  if (!isOpen) return null;
-  if (!isAdmin) {
-    return (
-      <AdminLoginModal
-        isOpen={isOpen}
-        onClose={onClose}
-        lang={lang}
-      />
-    );
-  }
-
   const isHi = lang === 'hi';
   const isEdit = !!editItem;
 
@@ -125,6 +114,18 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       }
     }
   }, [editItem]);
+
+  if (!isOpen) return null;
+
+  if (!isAdmin) {
+    return (
+      <AdminLoginModal
+        isOpen={isOpen}
+        onClose={onClose}
+        lang={lang}
+      />
+    );
+  }
 
   // Switch section and auto-configure category & board
   const handleSectionChange = (sec: PostSectionType) => {

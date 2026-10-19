@@ -29,7 +29,6 @@ export const AgeCalculatorModal: React.FC<AgeCalculatorModalProps> = ({
   initialMinAge = 18,
   initialMaxAge = 40,
 }) => {
-  if (!isOpen) return null;
   const isHi = lang === 'hi';
 
   const [dob, setDob] = useState('2001-05-15');
@@ -44,6 +43,8 @@ export const AgeCalculatorModal: React.FC<AgeCalculatorModalProps> = ({
     const res = calculateCandidateAge(dob, cutoffDate, category, gender, minAge, maxAge);
     setResult(res);
   }, [dob, cutoffDate, category, gender, minAge, maxAge]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">

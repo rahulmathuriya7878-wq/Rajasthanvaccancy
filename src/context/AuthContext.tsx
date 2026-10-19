@@ -2,18 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleAuthProvider } from '../lib/firebase.ts';
 
-const ADMIN_EMAILS = [
-  'rahulmathuriya7878@gmail.com',
-  'admin@rajasthanvacancy.com'
-];
-
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAdmin: boolean;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
-  loginWithAdminPin: (pin: string) => boolean;
   toggleAdminMode: (enabled?: boolean) => void;
 }
 
@@ -23,7 +17,6 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   signInWithGoogle: async () => {},
   logout: async () => {},
-  loginWithAdminPin: () => false,
   toggleAdminMode: () => {},
 });
 
@@ -44,13 +37,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
 
       if (currentUser) {
-        // Auto grant admin if logged in email is in ADMIN_EMAILS
-        if (currentUser.email && ADMIN_EMAILS.includes(currentUser.email.toLowerCase())) {
-          setIsAdminState(true);
-          try {
-            localStorage.setItem('raj_admin_active_v1', 'true');
-          } catch {}
-        }
+        setIsAdminState(true);
+        try {
+          localStorage.setItem('raj_admin_active_v1', 'true');
+        } catch {}
 
         try {
           const token = await currentUser.getIdToken();
@@ -75,17 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
-  const loginWithAdminPin = (pin: string): boolean => {
-    if (pin.trim() === 'admin123' || pin.trim() === '7878' || pin.trim() === '2026') {
-      setIsAdminState(true);
-      try {
-        localStorage.setItem('raj_admin_active_v1', 'true');
-      } catch {}
-      return true;
-    }
-    return false;
-  };
-
   const toggleAdminMode = (enabled?: boolean) => {
     const nextState = enabled !== undefined ? enabled : !isAdminState;
     setIsAdminState(nextState);
@@ -96,7 +75,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleAuthProvider);
+      const result = await signInWithPopup(auth, googleAuthProvider);
+      if (result.user) {
+        setUser(result.user);
+        setIsAdminState(true);
+        try {
+          localStorage.setItem('raj_admin_active_v1', 'true');
+        } catch {}
+      }
     } catch (err) {
       console.error('Google sign-in error:', err);
     }
@@ -105,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await signOut(auth);
+      setUser(null);
       setIsAdminState(false);
       try {
         localStorage.setItem('raj_admin_active_v1', 'false');
@@ -114,13 +101,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const isAdmin = isAdminState || (!!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
+  const isAdmin = isAdminState || !!user;
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, signInWithGoogle, logout, loginWithAdminPin, toggleAdminMode }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, signInWithGoogle, logout, toggleAdminMode }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+

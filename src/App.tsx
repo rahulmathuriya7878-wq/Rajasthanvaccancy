@@ -356,7 +356,12 @@ export default function App() {
       {/* Main Body Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 flex-1 w-full">
         {activePolicyView === 'privacy' ? (
-          <PrivacyPolicy lang={lang} onBack={() => setActivePolicyView(null)} />
+          <PrivacyPolicy
+            lang={lang}
+            onBack={() => setActivePolicyView(null)}
+            onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+            isAdmin={isAdmin}
+          />
         ) : activePolicyView === 'terms' ? (
           <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
         ) : activePolicyView === 'contact' ? (
@@ -415,6 +420,7 @@ export default function App() {
           setSelectedVacancy(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
       />
 
       {/* Other Utility Modals */}

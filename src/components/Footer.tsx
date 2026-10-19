@@ -20,6 +20,7 @@ interface FooterProps {
   onOpenCalendar: () => void;
   onOpenSSOGuide: () => void;
   onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
+  onOpenAdminLogin?: () => void;
 }
 
 interface FaqItem {
@@ -40,6 +41,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenCalendar,
   onOpenSSOGuide,
   onSelectPolicy,
+  onOpenAdminLogin,
 }) => {
   const isHi = lang === 'hi';
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -144,8 +146,6 @@ export const Footer: React.FC<FooterProps> = ({
                 ? 'राजस्थान के सभी आकांक्षी युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, विश्वसनीय, सटीक एवं प्रामाणिक भर्ती सूचना मंच। राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), राजस्थान लोक सेवा आयोग (RPSC), राजस्थान पुलिस, रीट (REET) तथा अन्य सभी राज्य एवं केंद्रीय प्रतियोगी परीक्षाओं के नवीनतम सरकारी जॉब अलर्ट्स, एडमिट कार्ड, सिलेबस, कट-ऑफ और परीक्षा परिणामों की पल-पल की सटीक अपडेट सबसे पहले प्राप्त करें।'
                 : 'Premier recruitment and job notification portal for Rajasthan candidates. Real-time updates on RSMSSB, RPSC, Police, REET, results, admit cards, and syllabi.'}
             </p>
-
-
           </div>
 
           {/* Col 2: Official Portals Directory */}

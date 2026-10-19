@@ -310,8 +310,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             )}
           </div>
 
-          {/* Edit / Update Button for Admin */}
-          {isAdmin ? (
+          {/* Edit / Update Button - Shown ONLY for Admin */}
+          {isAdmin && (
             <button
               type="button"
               onClick={() => onEditVacancy && onEditVacancy(vacancy)}
@@ -320,16 +320,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             >
               <Edit3 className="w-4 h-4 text-amber-100" />
               <span>{isHi ? '✏️ पोस्ट अपडेट / सम्पादित करें' : '✏️ Edit & Update Post'}</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onOpenAdminLogin}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer"
-              title="Admin Login to Edit Post"
-            >
-              <Lock className="w-3.5 h-3.5 text-slate-500" />
-              <span>{isHi ? 'एडमिन सम्पादन एक्सेस' : 'Admin Edit Access'}</span>
             </button>
           )}
         </div>
@@ -350,7 +340,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
 
         {/* Detailed Information Box */}
-        <div className="bg-white border border-slate-200 p-5 rounded-xl text-slate-800 shadow-xs space-y-2">
+        <div className="bg-white border border-slate-200 p-5 rounded-xl text-slate-800 shadow-xs space-y-3 relative">
           <p className="text-slate-800 text-[20px] leading-relaxed font-normal">
             {isScheme
               ? isHi
@@ -360,6 +350,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               ? `${vacancy.titleHi} के अंतर्गत ${vacancy.organization} (${vacancy.departmentHi || vacancy.department}) द्वारा कुल ${vacancy.totalPosts || 'अनेक'} रिक्त पदों पर भर्ती हेतु ऑनलाइन आवेदन आमंत्रित किए गए हैं। योग्य एवं इच्छुक अभ्यर्थी राजस्थान सिंगल साइन ऑन (SSO) पोर्टल के माध्यम से निर्धारित अंतिम तिथि ${vacancy.importantDates.applyLastDate} तक अपना ऑनलाइन आवेदन पत्र सफलतापूर्वक प्रस्तुत कर सकते हैं। इस भर्ती से संबंधित विस्तृत आयु सीमा, शैक्षणिक योग्यता, आवेदन शुल्क, चयन प्रक्रिया एवं अन्य महत्वपूर्ण जानकारियां नीचे दी गई सारणी एवं विवरण में उपलब्ध हैं।`
               : `${vacancy.title} has been officially announced by ${vacancy.organization} (${vacancy.department}) for a total of ${vacancy.totalPosts || 'various'} vacancies. Eligible and interested candidates can submit their online applications through the Rajasthan SSO portal on or before the last date of ${vacancy.importantDates.applyLastDate}. Complete details regarding age limits, educational qualifications, application fees, and selection procedures are detailed below.`}
           </p>
+
+          {onOpenAdminLogin && !isAdmin && (
+            <div className="pt-2 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={onOpenAdminLogin}
+                className="text-slate-400 hover:text-slate-700 transition cursor-pointer text-[11px] opacity-40 hover:opacity-100 flex items-center gap-1 font-mono"
+                title="Admin Portal Access"
+              >
+                <span>🔐 Admin Portal</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
