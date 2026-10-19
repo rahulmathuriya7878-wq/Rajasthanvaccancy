@@ -542,8 +542,153 @@ export const PM_AWAS_YOJANA_URBAN_VACANCY: VacancyItem = {
   createdAt: '2026-01-15'
 };
 
+export const UGC_NET_JOB_VACANCY: VacancyItem = {
+  id: 'ugc-net-2026-june',
+  title: 'UGC NET June 2026 Notification Released for Assistant Professor & Junior Research Fellowship (JRF)',
+  titleHi: 'यूजीसी नेट (UGC NET) जून 2026 नोटिफिकेशन जारी, असिस्टेंट प्रोफेसर एवं जेआरएफ पात्रता परीक्षा हेतु ऑनलाइन आवेदन शुरू',
+  shortTitle: 'UGC NET June 2026 Notification',
+  shortTitleHi: 'यूजीसी नेट जून 2026 नोटिफिकेशन',
+  organization: 'UGC NET',
+  department: 'National Testing Agency (NTA) & University Grants Commission',
+  departmentHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) एवं विश्वविद्यालय अनुदान आयोग',
+  advtNo: 'UGC-NET/2026/JUNE/01',
+  category: 'ugc_net',
+  totalPosts: 'विभिन्न विषय (83+ Subjects)',
+  postName: 'Assistant Professor & Junior Research Fellowship (JRF)',
+  postNameHi: 'असिस्टेंट प्रोफेसर एवं जूनियर रिसर्च फेलोशिप (JRF)',
+  qualification: ['PostGraduate'],
+  qualificationDetails: 'Master Degree (Post Graduation) in relevant subject with minimum 55% marks (50% for SC/ST/OBC/PWD). Final year appearing students can also apply.',
+  qualificationDetailsHi: 'संबंधित विषय में न्यूनतम 55% अंकों के साथ स्नातकोत्तर (Post Graduation) डिग्री (आरक्षित वर्गों को 5% की छूट)। अंतिम वर्ष के छात्र भी पात्र हैं।',
+  description: 'National Testing Agency (NTA) has released the official notification for UGC NET June 2026 for determining the eligibility of Indian nationals for Assistant Professor and Junior Research Fellowship (JRF) in Indian universities and colleges.',
+  descriptionHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) ने भारतीय विश्वविद्यालयों और महाविद्यालयों में असिस्टेंट प्रोफेसर एवं जेआरएफ (JRF) पात्रता हेतु यूजीसी नेट जून 2026 का आधिकारिक नोटिफिकेशन जारी कर दिया है।',
+  jobLocation: 'All India (Exam Centers across Rajasthan & India)',
+  salary: 'JRF Fellowship ~₹37,000 to ₹42,000 + HRA per month (As per UGC guidelines)',
+  salaryHi: 'जेआरएफ फैलोशिप: ₹37,000 से ₹42,000/- प्रतिमाह + एचआरए (यूजीसी नियमों के अनुसार)',
+  ageLimit: {
+    min: 21,
+    max: 30,
+    asOnDate: '2026-06-01',
+    relaxationNotes: 'JRF max age 30 years (Relaxation up to 5 years for SC/ST/OBC/Women/PwD). No upper age limit for Assistant Professor.',
+    relaxationNotesHi: 'जेआरएफ हेतु अधिकतम आयु 30 वर्ष (आरक्षित वर्गों को नियमानुसार 5 वर्ष की छूट)। असिस्टेंट प्रोफेसर हेतु कोई अधिकतम आयु सीमा नहीं है।'
+  },
+  applicationFee: {
+    genObc: 1150,
+    scSt: 325,
+    ews: 600,
+    otrNote: 'Gen/Unreserved: ₹1150, EWS/OBC-NCL: ₹600, SC/ST/PwD/Third Gender: ₹325',
+    otrNoteHi: 'सामान्य/अनारक्षित: ₹1150, ईडब्ल्यूएस/ओबीसी-एनसीएल: ₹600, एससी/एसटी/दिव्यांग: ₹325'
+  },
+  importantDates: {
+    notificationDate: '10 जून 2026',
+    applyStartDate: '2026-06-12',
+    applyLastDate: '2026-07-10',
+    feeLastDate: '2026-07-11',
+    examDate: 'अगस्त 2026 (Computer Based Test)',
+    admitCardDate: 'परीक्षा से 10 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Computer Based Test (CBT) - Paper I (Teaching & Research Aptitude)',
+    'Computer Based Test (CBT) - Paper II (Subject Specific)',
+    'Final Merit List based on aggregate marks & category-wise cut-off'
+  ],
+  selectionProcessHi: [
+    'कंप्यूटर आधारित परीक्षा (CBT) - पेपर I (शिक्षण एवं शोध अभिवृत्ति)',
+    'कंप्यूटर आधारित परीक्षा (CBT) - पेपर II (चयनित विषय)',
+    'श्रेणीवार कट-ऑफ एवं कुल प्राप्तांकों के आधार पर अंतिम मेरिट सूची'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://ugcnet.nta.ac.in',
+    notificationPdfUrl: 'https://ugcnet.nta.ac.in',
+    officialWebsiteUrl: 'https://ugcnet.nta.ac.in'
+  },
+  postBreakdown: [
+    {
+      postName: 'Junior Research Fellowship (JRF) & Assistant Professor',
+      postNameHi: 'जूनियर रिसर्च फेलोशिप (JRF) एवं असिस्टेंट प्रोफेसर',
+      categoryOrSubjectHi: 'राष्ट्रीय पात्रता परीक्षा (83 विषय)',
+      postsCount: 'विभिन्न फेलोशिप व प्रोफेसर पद',
+      qualification: 'Master Degree in relevant subject (Min 55%)',
+      qualificationHi: 'संबंधित विषय में स्नातकोत्तर डिग्री (न्यूनतम 55% अंक)',
+      payLevel: 'UGC Pay Scale & Fellowship'
+    }
+  ],
+  salaryTable: [
+    {
+      postName: 'Junior Research Fellowship (JRF)',
+      postNameHi: 'जेआरएफ फैलोशिप (प्रथम 2 वर्ष)',
+      payLevel: 'UGC Fellowship',
+      payLevelHi: 'यूजीसी फेलोशिप योजना',
+      salaryRange: '₹37,000 + HRA per month',
+      salaryRangeHi: '₹37,000/- प्रतिमाह + एचआरए'
+    },
+    {
+      postName: 'Senior Research Fellowship (SRF)',
+      postNameHi: 'एसआरएफ फैलोशिप (शेष अवधि)',
+      payLevel: 'UGC Fellowship',
+      payLevelHi: 'यूजीसी फेलोशिप योजना',
+      salaryRange: '₹42,000 + HRA per month',
+      salaryRangeHi: '₹42,000/- प्रतिमाह + एचआरए'
+    }
+  ],
+  examPattern: {
+    examMode: 'Computer Based Test (CBT) Online',
+    examModeHi: 'ऑनलाइन कंप्यूटर आधारित परीक्षा (CBT)',
+    totalMarks: 300,
+    duration: '3 Hours (180 Minutes) without break',
+    durationHi: '3 घंटे (180 मिनट) बिना किसी अंतराल के',
+    negativeMarking: 'No Negative Marking',
+    negativeMarkingHi: 'कोई नकारात्मक अंकन (Negative Marking) नहीं है',
+    qualifyingMarksHi: 'सामान्य वर्ग: 40% अंक, आरक्षित वर्ग: 35% अंक न्यूनतम',
+    subjects: [
+      { subject: 'Paper I: General Teaching & Research Aptitude (50 Questions)', subjectHi: 'पेपर I: सामान्य शिक्षण एवं शोध अभिवृत्ति (50 प्रश्न)', questions: 50, marks: 100 },
+      { subject: 'Paper II: Subject Specific Test (100 Questions)', subjectHi: 'पेपर II: संबंधित विषय परीक्षा (100 प्रश्न)', questions: 100, marks: 200 }
+    ],
+    notesHi: [
+      'पेपर I और पेपर II दोनों मिलाकर कुल 150 बहुविकल्पीय प्रश्न पूछे जाएंगे (कुल 300 अंक)।',
+      'प्रत्येक प्रश्न 2 अंक का होगा।',
+      'परीक्षा में कोई नेगेटिव मार्किंग नहीं है, अतः सभी प्रश्नों के उत्तर दें।'
+    ]
+  },
+  requiredDocumentsHi: [
+    'स्नातकोत्तर (Post Graduation) अंकतालिका एवं डिग्री प्रमाण पत्र',
+    'स्नातक (Graduation) अंकतालिका',
+    'पासपोर्ट साइज फोटो एवं हस्ताक्षर (स्कैन किए हुए)',
+    'श्रेणी प्रमाण पत्र (SC/ST/OBC-NCL/EWS यदि लागू हो)',
+    'दिव्यांगता प्रमाण पत्र (PWD अभ्यर्थियों हेतु)',
+    'वैध पहचान पत्र (आधार कार्ड / वोटर आईडी / पैन कार्ड)'
+  ],
+  howToApplyHi: [
+    'सबसे पहले यूजीसी नेट की आधिकारिक वेबसाइट ugcnet.nta.ac.in पर जाएं।',
+    'होमपेज पर उपलब्ध "UGC NET June 2026 Registration / Apply Online" लिंक पर क्लिक करें।',
+    'नया पंजीकरण (New Registration) कर अपनी लॉगिन आईडी व पासवर्ड बनाएं।',
+    'आवेदन फॉर्म में अपनी व्यक्तिगत, शैक्षणिक व परीक्षा केंद्र की प्राथमिकताएं भरें।',
+    'स्कैन किए गए दस्तावेज, फोटो और हस्ताक्षर अपलोड करें।',
+    'श्रेणी के अनुसार निर्धारित ऑनलाइन परीक्षा शुल्क का भुगतान क्रेडिट/डेबिट कार्ड या नेट बैंकिंग से करें।',
+    'कन्फर्मेशन पेज का प्रिंटआउट निकालकर भविष्य के लिए सुरक्षित रखें।'
+  ],
+  faqs: [
+    {
+      q: 'What is the qualification needed for UGC NET June 2026?',
+      qHi: 'यूजीसी नेट जून 2026 के लिए क्या योग्यता चाहिए?',
+      a: 'Candidates must have completed Post Graduation (Master Degree) with at least 55% marks in the relevant subject.',
+      aHi: 'अभ्यर्थी के पास संबंधित विषय में न्यूनतम 55% अंकों के साथ स्नातकोत्तर (Master Degree) होना अनिवार्य है।'
+    },
+    {
+      q: 'Is there any negative marking in UGC NET?',
+      qHi: 'क्या यूजीसी नेट परीक्षा में नेगेटिव मार्किंग होती है?',
+      a: 'No, there is no negative marking for incorrect answers in the UGC NET exam.',
+      aHi: 'नहीं, यूजीसी नेट परीक्षा में गलत उत्तर के लिए कोई नेगेटिव मार्किंग नहीं है।'
+    }
+  ],
+  tags: ['ugc net', 'assistant professor', 'jrf', 'nta', 'govt job 2026'],
+  status: 'active',
+  updatedAt: '19 अक्टूबर 2026',
+  createdAt: '2026-06-10'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,
+  UGC_NET_JOB_VACANCY,
   AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
   PM_AWAS_YOJANA_URBAN_VACANCY
 ];

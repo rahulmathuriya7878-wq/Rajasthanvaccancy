@@ -7,6 +7,7 @@ export type BoardType =
   | 'Discom / RVUNL'
   | 'Health RUHS / NHM'
   | 'Central Govt'
+  | 'UGC NET'
   | 'Sarkari Yojana';
 
 export type CategoryType =
@@ -16,7 +17,8 @@ export type CategoryType =
   | 'answer_key'
   | 'syllabus'
   | 'scheme'
-  | 'upcoming';
+  | 'upcoming'
+  | 'ugc_net';
 
 export type QualificationType =
   | '10th'

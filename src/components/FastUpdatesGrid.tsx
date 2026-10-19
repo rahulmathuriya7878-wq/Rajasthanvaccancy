@@ -56,6 +56,10 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     if (v.organization === 'Sarkari Yojana' || v.category === 'scheme') return false;
     return (
       v.category === 'latest_job' ||
+      v.category === 'ugc_net' ||
+      v.organization === 'UGC NET' ||
+      v.title?.toLowerCase().includes('ugc net') ||
+      v.titleHi?.includes('यूजीसी नेट') ||
       (v.status === 'active' &&
         v.category !== 'admit_card' &&
         v.category !== 'result' &&
@@ -121,7 +125,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 items-start">
         {sections.map((sec) => {
           const isExpanded = expandedSections[sec.key];
-          const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 7);
+          const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 50);
 
           return (
             <div
@@ -190,7 +194,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                   )}
                 </ul>
 
-                {sec.items.length > 7 && (
+                {sec.items.length > 50 && (
                   <div className="pt-2 mt-2 border-t border-slate-100 text-center">
                     <button
                       onClick={() => toggleExpand(sec.key)}
