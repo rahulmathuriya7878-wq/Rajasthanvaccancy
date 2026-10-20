@@ -74,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
   const displayItems = tickerItems.length > 0 ? [...tickerItems, ...tickerItems] : [];
 
   return (
-    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40 text-[16pt]">
+    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40 text-base">
       {/* Top Scrolling Ticker Bar for Latest Added Posts */}
       <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white text-xs font-medium py-1.5 px-3 shadow-inner">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
@@ -175,6 +175,15 @@ export const Header: React.FC<HeaderProps> = ({
               className="px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-700 transition cursor-pointer"
             >
               {isHi ? 'नौकरियां (Latest Jobs)' : 'Latest Jobs'}
+            </button>
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('latest_job');
+              }}
+              className="px-3 py-2 rounded-lg bg-rose-50 text-rose-800 hover:bg-rose-100 transition cursor-pointer font-extrabold border border-rose-200"
+            >
+              {isHi ? '📰 लेटेस्ट न्यूज़ (Latest News)' : '📰 Latest News'}
             </button>
             <button
               onClick={() => {
@@ -368,6 +377,18 @@ export const Header: React.FC<HeaderProps> = ({
               className="text-left px-3.5 py-2.5 rounded-lg hover:bg-amber-100/70 hover:text-amber-900 transition"
             >
               {isHi ? '🔥 नवीनतम भर्तियां (Latest Jobs)' : '🔥 Latest Jobs'}
+            </button>
+
+            <button
+              onClick={() => {
+                if (onGoHome) onGoHome();
+                if (onSelectCategory) onSelectCategory('latest_job');
+                setMobileMenuOpen(false);
+              }}
+              className="text-left px-3.5 py-2.5 rounded-lg bg-rose-100/80 text-rose-900 font-extrabold shadow-xs hover:bg-rose-200 transition flex items-center justify-between"
+            >
+              <span>{isHi ? '📰 लेटेस्ट न्यूज़ (Latest News)' : '📰 Latest News'}</span>
+              <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded font-bold uppercase">HOT</span>
             </button>
 
             <button

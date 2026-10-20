@@ -2,78 +2,64 @@
 
 @layer base {
   html {
-    font-size: 22pt;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
-    font-family: 'Mangal', 'Nirmala UI', 'Poppins', 'Hind', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Yantramanav', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
-    font-size: 22pt;
+    font-size: 16px;
     line-height: 1.6;
+    color: #0f172a;
+    background-color: #ffffff;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #020617 !important;
-    font-weight: 800 !important;
-    line-height: 1.3;
+    color: #0f172a;
+    font-weight: 700;
+    line-height: 1.35;
   }
 }
 
-/* Dark headings styling across all components */
-h1, h2, h3, h4, h5, h6, .heading-dark {
-  color: #020617 !important;
-  font-weight: 800 !important;
+/* Post Typography Standardized (Uniform across all posts and devices) */
+.post-content {
+  font-family: 'Plus Jakarta Sans', 'Yantramanav', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #1e293b;
 }
 
-/* Post Detail Page Normal Format (Desktop 18px, Mobile 16px) */
-@media (min-width: 640px) {
-  article, .post-content, .post-content p, .post-content td, .post-content th, .post-content li {
-    font-size: 18px !important;
-    line-height: 1.65 !important;
-  }
-
-  header, header button, header nav, header input, header a, header span {
-    font-size: 16pt !important;
-  }
+.post-content p, 
+.post-content li {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #1e293b;
 }
 
-/* Mobile Screen Responsive Sizing (<640px) - Ensures clean rendering without horizontal scroll or text clipping */
+.post-content th {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.post-content td {
+  font-size: 15px;
+  color: #1e293b;
+}
+
 @media (max-width: 639px) {
-  html, body {
-    font-size: 15px !important;
-    line-height: 1.5;
+  .post-content p, 
+  .post-content li {
+    font-size: 15px;
+    line-height: 1.65;
   }
-
-  header, header button, header nav, header input, header a, header span {
-    font-size: 14px !important;
-  }
-
-  h1 {
-    font-size: 20px !important;
-    line-height: 1.35 !important;
-  }
-
-  h2, h3, h4 {
-    font-size: 18px !important;
-    line-height: 1.35 !important;
-  }
-
-  p, article, li {
-    font-size: 15px !important;
-    line-height: 1.55 !important;
-  }
-
-  td, th {
-    font-size: 13.5px !important;
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-    padding-top: 0.6rem !important;
-    padding-bottom: 0.6rem !important;
-  }
-
-  [class*="text-\\["] {
-    font-size: 16px !important;
+  .post-content th,
+  .post-content td {
+    font-size: 14px;
+    padding-left: 0.625rem !important;
+    padding-right: 0.625rem !important;
   }
 }
 
@@ -99,7 +85,7 @@ table {
 .animate-marquee {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee 300s linear infinite;
+  animation: marquee 25s linear infinite;
   will-change: transform;
 }
 
@@ -125,3 +111,63 @@ table {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Authentic Handwritten Font & Human Diary Note Styles */
+.font-handwriting {
+  font-family: 'Kalam', 'Caveat', cursive, sans-serif !important;
+}
+
+.handwritten-notebook {
+  background-color: #fefdf8;
+  background-image: radial-gradient(#fbbf24 0.75px, transparent 0.75px), radial-gradient(#fbbf24 0.75px, #fefdf8 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  border: 1.5px solid #fed7aa;
+  position: relative;
+  box-shadow: 0 4px 20px -2px rgba(217, 119, 6, 0.1), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+}
+
+.notebook-ruled-lines {
+  background-color: #fefefb;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 32px,
+    #f3e8d2 32px,
+    #f3e8d2 33px
+  );
+  line-height: 33px;
+}
+
+.handwritten-badge {
+  font-family: 'Kalam', 'Caveat', cursive, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.highlighter-pen {
+  background: linear-gradient(104deg, rgba(254, 240, 138, 0.75) 0.9%, rgba(253, 224, 71, 0.85) 2.4%, rgba(254, 240, 138, 0.7) 98%);
+  padding: 2px 8px;
+  border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.handwritten-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 2px dashed #b45309;
+  color: #78350f;
+  background-color: rgba(254, 243, 199, 0.6);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'Kalam', cursive, sans-serif;
+  font-weight: 700;
+  transform: rotate(-1.5deg);
+}
+
+.handwritten-sticky-tag {
+  background: #fef08a;
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.08);
+  border-left: 3px solid #eab308;
+}
+

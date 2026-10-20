@@ -141,12 +141,21 @@ export interface VacancyItem {
   isNew?: boolean;
   description: string;
   descriptionHi: string;
+  briefSummary?: string;
+  briefSummaryHi?: string;
   tspBreakdown?: {
     nonTsp: number;
     tsp: number;
     sahariya?: number;
   };
   postBreakdown?: PostBreakdownItem[];
+  handwrittenNotes?: {
+    headingHi?: string;
+    subheadingHi?: string;
+    pointsHi?: string[];
+    checklistHi?: string[];
+    teacherSignHi?: string;
+  };
   howToApply?: string[];
   howToApplyHi?: string[];
   requiredDocuments?: string[];

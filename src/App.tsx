@@ -12,9 +12,6 @@ import {
   FAQSection 
 } from './components/FAQSection';
 import { 
-  FloatingSocialButtons 
-} from './components/FloatingSocialButtons';
-import { 
   Footer 
 } from './components/Footer';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -109,18 +106,41 @@ export default function App() {
       console.error('Failed to load stored vacancies', e);
     }
 
-    // Ensure UGC NET Dec is always present and filter out obsolete June vacancy
+    // Ensure UGC NET Dec and DSSSB District Court are always present and filter out obsolete vacancies
     let filteredLoaded = loaded.filter(v => v.id !== 'ugc-net-2026-june');
+    const hasDsssb = filteredLoaded.some(v => v.id === 'dsssb-district-court-recruitment-2026');
+    if (!hasDsssb) {
+      const item = INITIAL_VACANCIES.find(v => v.id === 'dsssb-district-court-recruitment-2026');
+      if (item) filteredLoaded = [item, ...filteredLoaded];
+    }
     const hasDec = filteredLoaded.some(v => v.id === 'ugc-net-2026-dec');
     if (!hasDec) {
       const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-dec');
       if (item) filteredLoaded = [item, ...filteredLoaded];
     }
-    return filteredLoaded;
+
+    // Merge handwritten notes and updated human guidance for base items
+    return filteredLoaded.map(item => {
+      const initMatch = INITIAL_VACANCIES.find(init => init.id === item.id);
+      if (initMatch) {
+        return {
+          ...initMatch,
+          ...item,
+          handwrittenNotes: item.handwrittenNotes || initMatch.handwrittenNotes,
+          briefSummaryHi: (item.briefSummaryHi && item.briefSummaryHi.length > 30) ? item.briefSummaryHi : initMatch.briefSummaryHi,
+          descriptionHi: (item.descriptionHi && item.descriptionHi.length > 60) ? item.descriptionHi : initMatch.descriptionHi,
+        };
+      }
+      return item;
+    });
   });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_VACANCIES, JSON.stringify(vacancies));
+    try {
+      window.dispatchEvent(new Event('raj_vacancies_updated'));
+      (window as any).updateDynamicFaqSchema?.();
+    } catch (e) {}
   }, [vacancies]);
 
   // Saved / Bookmarked IDs
@@ -196,6 +216,7 @@ export default function App() {
         window.history.replaceState({}, '', url.toString());
         document.title = 'Sainik School Chittorgarh Recruitment 2026 - Govt Job Portal';
       }
+      (window as any).updateDynamicFaqSchema?.();
     } catch (e) {
       console.error('Error updating URL params', e);
     }
@@ -511,9 +532,6 @@ export default function App() {
         onClose={() => setIsAdminLoginOpen(false)}
         lang={lang}
       />
-
-      {/* Floating Sticky Telegram & WhatsApp Buttons */}
-      <FloatingSocialButtons />
     </div>
   );
 }

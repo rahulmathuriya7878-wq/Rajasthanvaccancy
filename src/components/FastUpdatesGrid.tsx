@@ -153,55 +153,29 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                   {displayedItems.length > 0 ? (
                     displayedItems.map((item) => (
                       <li key={item.id}>
-                        <div className="flex items-center gap-1 w-full text-left p-2.5 rounded-xl hover:bg-amber-50/60 transition group border border-transparent hover:border-amber-200">
-                          <button
-                            onClick={() => onSelectVacancy(item)}
-                            className="flex-1 flex items-start gap-2 cursor-pointer text-left min-w-0"
-                          >
-                            <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 mt-1 shrink-0 transition-transform group-hover:translate-x-0.5" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-slate-800 group-hover:text-amber-800 line-clamp-2 leading-snug">
-                                {isHi ? item.titleHi : item.title}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                                {item.category !== 'scheme' && item.organization !== 'Sarkari Yojana' && item.importantDates?.applyLastDate && (
-                                  <span className="text-[10px] font-bold text-rose-800 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded flex items-center gap-1">
-                                    <Calendar className="w-3 h-3 text-rose-600 shrink-0" />
-                                    <span>{isHi ? `अंतिम तिथि: ${item.importantDates.applyLastDate}` : `Last Date: ${item.importantDates.applyLastDate}`}</span>
+                        <button
+                          onClick={() => onSelectVacancy(item)}
+                          className="w-full flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer text-left border border-transparent hover:border-slate-200"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 mt-1 shrink-0 transition-transform group-hover:translate-x-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-amber-800 line-clamp-2 leading-snug">
+                              {isHi ? item.titleHi : item.title}
+                            </p>
+                            {(item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate) && (
+                              <div className="mt-1.5">
+                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
+                                  <Calendar className="w-3 h-3 text-rose-600 shrink-0" />
+                                  <span>
+                                    {isHi 
+                                      ? `अंतिम तिथि: ${item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate}` 
+                                      : `Last Date: ${item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate}`}
                                   </span>
-                                )}
-                                {item.isHot && (
-                                  <span className="text-[9px] font-black px-1.5 py-0.5 bg-rose-100 text-rose-700 rounded">
-                                    HOT
-                                  </span>
-                                )}
-                                {item.totalPosts && typeof item.totalPosts === 'number' && (
-                                  <span className="text-[10px] text-emerald-700 font-bold">
-                                    {item.totalPosts.toLocaleString()} {isHi ? 'पद' : 'posts'}
-                                  </span>
-                                )}
-                                {typeof item.totalPosts === 'string' && (
-                                  <span className="text-[10px] text-purple-700 font-bold">
-                                    {item.totalPosts}
-                                  </span>
-                                )}
+                                </span>
                               </div>
-                            </div>
-                          </button>
-
-                          {isAdmin && onEditVacancy && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditVacancy(item);
-                              }}
-                              className="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] shrink-0 cursor-pointer shadow-xs transition"
-                              title="Edit & Update Post"
-                            >
-                              ✏️ {isHi ? 'अपडेट' : 'Edit'}
-                            </button>
-                          )}
-                        </div>
+                            )}
+                          </div>
+                        </button>
                       </li>
                     ))
                   ) : (
