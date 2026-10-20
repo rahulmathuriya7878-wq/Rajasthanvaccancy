@@ -43,6 +43,9 @@ import {
 import { 
   SubscribeAlertsModal 
 } from './components/SubscribeAlertsModal';
+import { 
+  OfflineIndicator 
+} from './components/OfflineIndicator';
 import { useAuth } from './context/AuthContext';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
@@ -199,7 +202,15 @@ export default function App() {
       const categoryParam = params.get('category');
 
       if (vacancyParam) {
-        const found = vacancies.find((v) => v.id === vacancyParam);
+        let found = vacancies.find((v) => v.id === vacancyParam);
+        if (!found) {
+          try {
+            const cached = localStorage.getItem(`raj_offline_job_${vacancyParam}`);
+            if (cached) {
+              found = JSON.parse(cached);
+            }
+          } catch (e) {}
+        }
         if (found) {
           setSelectedVacancy(found);
         }
@@ -231,6 +242,15 @@ export default function App() {
       console.error('Error updating URL params', e);
     }
   }, [selectedVacancy, lang]);
+
+  // Cache currently viewed job post in localStorage for offline reading
+  useEffect(() => {
+    if (selectedVacancy) {
+      try {
+        localStorage.setItem(`raj_offline_job_${selectedVacancy.id}`, JSON.stringify(selectedVacancy));
+      } catch (e) {}
+    }
+  }, [selectedVacancy]);
 
   // Toast message
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -549,6 +569,8 @@ export default function App() {
         onClose={() => setIsSubscribeModalOpen(false)}
         lang={lang}
       />
+
+      <OfflineIndicator lang={lang} />
     </div>
   );
 }
