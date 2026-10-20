@@ -72,6 +72,7 @@ import {
 const STORAGE_KEY_VACANCIES = 'raj_vacancies_v14';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
+const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clear legacy cached vacancies
 try {
@@ -165,6 +166,89 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_SAVED, JSON.stringify(savedIds));
   }, [savedIds]);
+
+  // Tracked Alert Job IDs
+  const [alertJobIds, setAlertJobIds] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_ALERT_JOBS);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {}
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_ALERT_JOBS, JSON.stringify(alertJobIds));
+  }, [alertJobIds]);
+
+  // Toggle 'Alert Me' for specific post (Requests browser Notification & saves to favorites)
+  const handleToggleAlertMe = (id: string) => {
+    const targetJob = vacancies.find(v => v.id === id);
+    const isCurrentlySet = alertJobIds.includes(id);
+
+    if (isCurrentlySet) {
+      setAlertJobIds(prev => prev.filter(i => i !== id));
+      showToast(lang === 'hi' ? 'जॉब अलर्ट हटा दिया गया' : 'Job alert removed');
+    } else {
+      setAlertJobIds(prev => [...prev, id]);
+
+      // Automatically save to favorites list
+      if (!savedIds.includes(id)) {
+        setSavedIds(prev => [...prev, id]);
+      }
+
+      // Request browser notification permission if available
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted' && targetJob) {
+              new Notification('🔔 जॉब अलर्ट सक्रिय!', {
+                body: `${targetJob.titleHi || targetJob.title} - जैसे ही फॉर्म शुरू होंगे, आपको ब्राउज़र नोटिफिकेशन मिल जाएगा।`,
+              });
+            }
+          });
+        } else if (Notification.permission === 'granted' && targetJob) {
+          new Notification('🔔 जॉब अलर्ट सक्रिय!', {
+            body: `${targetJob.titleHi || targetJob.title} - जैसे ही फॉर्म शुरू होंगे, आपको ब्राउज़र नोटिफिकेशन मिल जाएगा।`,
+          });
+        }
+      }
+
+      showToast(
+        lang === 'hi' 
+          ? '🔔 अलर्ट सक्रिय! पसंदीदा सूची में सहेजी गई तथा फॉर्म शुरू होते ही नोटिफिकेशन मिलेगा।' 
+          : '🔔 Alert active! Saved to favorites & you will be notified when applications open.'
+      );
+    }
+  };
+
+  // Monitor job status updates from 'upcoming' to 'active' for alertJobIds
+  const prevStatusesRef = React.useRef<Record<string, JobStatusType>>({});
+
+  useEffect(() => {
+    vacancies.forEach(job => {
+      const prevStatus = prevStatusesRef.current[job.id];
+      const newStatus = job.status;
+
+      // If status changed to 'active' (especially from 'upcoming') and user requested alert for this job
+      if (prevStatus && prevStatus !== 'active' && newStatus === 'active' && alertJobIds.includes(job.id)) {
+        const jobTitle = lang === 'hi' ? (job.titleHi || job.title) : job.title;
+        const msg = `🔥 ऑनलाइन आवेदन शुरू! ${jobTitle}`;
+
+        showToast(msg);
+
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          new Notification('🔥 ऑनलाइन आवेदन शुरू हो गए हैं!', {
+            body: `${jobTitle}\nकुल पद: ${job.totalPosts || 'विभिन्न'}. अंतिम तिथि: ${job.importantDates?.applyLastDate || 'TBA'}`,
+          });
+        }
+      }
+
+      // Record current status in ref
+      prevStatusesRef.current[job.id] = job.status;
+    });
+  }, [vacancies, alertJobIds, lang]);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -271,16 +355,44 @@ export default function App() {
   };
 
   const handleShareVacancy = (item: VacancyItem) => {
-    const text = `${item.title}\nTotal Vacancies: ${item.totalPosts}\nLast Date: ${item.importantDates.applyLastDate}\nCheck details on RAJASTHAN VACCANCY/JOBS`;
+    const titleHi = item.titleHi || item.title;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?vacancy=${item.id}`;
+    const category = item.category;
+    const status = item.status;
+
+    let text = '';
+    const isScheme = category === 'scheme' || item.organization === 'Sarkari Yojana';
+
+    if (isScheme) {
+      const benefit = item.yojanaOverview?.monthlyAssistance || item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary || 'सरकारी सहायता एवं अनुदान';
+      const lastDate = item.yojanaOverview?.applyLastDate || item.importantDates?.applyLastDate || 'TBA';
+      text = `*${titleHi}*\nयोजना का लाभ: ${benefit}\nआवेदन की अंतिम तिथि: ${lastDate}\nयोजना में आवेदन हेतु यहाँ क्लिक करें:\n${shareUrl}`;
+    } else if (category === 'admit_card' || status === 'admit_card_out') {
+      const admitCardDate = item.importantDates?.admitCardDate || 'जारी कर दिया गया है';
+      const examDate = item.importantDates?.examDate || 'नोटिफिकेशन देखें';
+      text = `*${titleHi}*\nप्रवेश पत्र जारी तिथि: ${admitCardDate}\nपरीक्षा तिथि: ${examDate}\nप्रवेश पत्र डाउनलोड करने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
+    } else if (category === 'answer_key' || status === 'answer_key_out') {
+      const keyDate = item.importantDates?.notificationDate || 'जारी कर दी गई है';
+      const feeDate = item.importantDates?.feeLastDate || item.importantDates?.applyLastDate || 'आधिकारिक वेबसाइट देखें';
+      text = `*${titleHi}*\nउत्तर कुंजी (Answer Key) जारी तिथि: ${keyDate}\nआपत्ति दर्ज करने की अंतिम तिथि: ${feeDate}\nआंसर-की डाउनलोड करने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
+    } else if (category === 'result' || status === 'result_declared') {
+      const resultDate = item.importantDates?.resultDate || 'घोषित कर दिया गया है';
+      text = `*${titleHi}*\nपरीक्षा परिणाम घोषित तिथि: ${resultDate}\nपरिणाम एवं मेरिट लिस्ट देखने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
+    } else {
+      const lastDate = item.importantDates?.applyLastDate || 'TBA';
+      const postsCount = typeof item.totalPosts === 'number' ? item.totalPosts.toLocaleString() : (item.totalPosts || 'विभिन्न पद');
+      text = `*${titleHi}*\nकुल पद: ${postsCount}\nआवेदन की अंतिम तिथि: ${lastDate}\nऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
+    }
+
     if (navigator.share) {
       navigator.share({
-        title: item.title,
-        text,
-        url: window.location.href,
+        title: titleHi,
+        text: text,
+        url: shareUrl,
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${text}\n${window.location.href}`);
-      showToast(lang === 'hi' ? 'भर्ती का लिंक कॉपी हो गया!' : 'Alert link copied to clipboard!');
+      navigator.clipboard.writeText(text);
+      showToast(lang === 'hi' ? 'जानकारी का लिंक कॉपी हो गया!' : 'Details copied to clipboard!');
     }
   };
 
@@ -465,6 +577,8 @@ export default function App() {
               setIsAddJobOpen(true);
             }}
             onDeleteVacancy={handleDeleteVacancy}
+            isAlertSet={alertJobIds.includes(selectedVacancy.id)}
+            onToggleAlertMe={handleToggleAlertMe}
           />
         ) : (
           /* Home View: 5-Box Fast Access Updates & FAQ */
@@ -482,6 +596,8 @@ export default function App() {
                 setEditingVacancy(item);
                 setIsAddJobOpen(true);
               }}
+              alertJobIds={alertJobIds}
+              onToggleAlertMe={handleToggleAlertMe}
             />
           </div>
         )}

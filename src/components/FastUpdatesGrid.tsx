@@ -11,7 +11,8 @@ import {
   Calendar,
   ExternalLink,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  Bell
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 
@@ -22,6 +23,8 @@ interface FastUpdatesGridProps {
   onFilterCategory?: (category: CategoryType) => void;
   isAdmin?: boolean;
   onEditVacancy?: (item: VacancyItem) => void;
+  alertJobIds?: string[];
+  onToggleAlertMe?: (id: string) => void;
 }
 
 export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
@@ -30,6 +33,8 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onSelectVacancy,
   isAdmin = false,
   onEditVacancy,
+  alertJobIds = [],
+  onToggleAlertMe,
 }) => {
   const isHi = lang === 'hi';
 
@@ -152,10 +157,10 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                 <ul className="space-y-1">
                   {displayedItems.length > 0 ? (
                     displayedItems.map((item) => (
-                      <li key={item.id}>
+                      <li key={item.id} className="flex items-center gap-1">
                         <button
                           onClick={() => onSelectVacancy(item)}
-                          className="w-full flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer text-left border border-transparent hover:border-slate-200"
+                          className="flex-1 flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer text-left border border-transparent hover:border-slate-200 min-w-0"
                         >
                           <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 mt-1 shrink-0 transition-transform group-hover:translate-x-0.5" />
                           <div className="flex-1 min-w-0">
@@ -175,6 +180,21 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                               </div>
                             )}
                           </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onToggleAlertMe) onToggleAlertMe(item.id);
+                          }}
+                          className={`p-2 rounded-xl transition shrink-0 border ${
+                            alertJobIds?.includes(item.id)
+                              ? 'text-rose-600 bg-rose-50 border-rose-200 hover:bg-rose-100'
+                              : 'text-slate-300 hover:text-slate-600 hover:bg-slate-100 border-transparent'
+                          }`}
+                          title={alertJobIds?.includes(item.id) ? (isHi ? 'अलर्ट सक्रिय (Alert Active)' : 'Alert Active') : (isHi ? 'आवेदन शुरू होने पर नोटिफिकेशन पाएं (Alert Me)' : 'Alert Me')}
+                        >
+                          <Bell className={`w-4 h-4 ${alertJobIds?.includes(item.id) ? 'fill-rose-600 text-rose-600 animate-bounce' : ''}`} />
                         </button>
                       </li>
                     ))

@@ -30,7 +30,8 @@ import {
   PenTool,
   CheckSquare,
   Sparkles,
-  Briefcase
+  Briefcase,
+  Bell
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 
@@ -46,6 +47,8 @@ interface VacancyDetailPageProps {
   onDeleteVacancy?: (id: string) => void;
   isAdmin?: boolean;
   onOpenAdminLogin?: () => void;
+  isAlertSet?: boolean;
+  onToggleAlertMe?: (id: string) => void;
 }
 
 export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
@@ -60,6 +63,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   onDeleteVacancy,
   isAdmin = false,
   onOpenAdminLogin,
+  isAlertSet = false,
+  onToggleAlertMe,
 }) => {
   const isHi = lang === 'hi';
   const isScheme = vacancy.category === 'scheme' || vacancy.organization === 'Sarkari Yojana';
@@ -200,29 +205,62 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     };
   }, [vacancy.id, isHi]);
 
+  const getCategoryShareText = (v: VacancyItem, url: string) => {
+    const titleHi = v.titleHi || v.title;
+    const category = v.category;
+    const status = v.status;
+    const isScheme = category === 'scheme' || v.organization === 'Sarkari Yojana';
+
+    if (isScheme) {
+      const benefit = v.yojanaOverview?.monthlyAssistance || v.yojanaOverview?.maxAnnualAssistance || v.salaryHi || v.salary || 'सरकारी सहायता एवं अनुदान';
+      const lastDate = v.yojanaOverview?.applyLastDate || v.importantDates?.applyLastDate || 'TBA';
+      return `*${titleHi}*\nयोजना का लाभ: ${benefit}\nआवेदन की अंतिम तिथि: ${lastDate}\nयोजना में आवेदन हेतु यहाँ क्लिक करें:\n${url}`;
+    }
+
+    if (category === 'admit_card' || status === 'admit_card_out') {
+      const admitCardDate = v.importantDates?.admitCardDate || 'जारी कर दिया गया है';
+      const examDate = v.importantDates?.examDate || 'नोटिफिकेशन देखें';
+      return `*${titleHi}*\nप्रवेश पत्र जारी तिथि: ${admitCardDate}\nपरीक्षा तिथि: ${examDate}\nप्रवेश पत्र डाउनलोड करने हेतु यहाँ क्लिक करें:\n${url}`;
+    }
+
+    if (category === 'answer_key' || status === 'answer_key_out') {
+      const keyDate = v.importantDates?.notificationDate || 'जारी कर दी गई है';
+      const feeDate = v.importantDates?.feeLastDate || v.importantDates?.applyLastDate || 'आधिकारिक वेबसाइट देखें';
+      return `*${titleHi}*\nउत्तर कुंजी (Answer Key) जारी तिथि: ${keyDate}\nआपत्ति दर्ज करने की अंतिम तिथि: ${feeDate}\nआंसर-की डाउनलोड करने हेतु यहाँ क्लिक करें:\n${url}`;
+    }
+
+    if (category === 'result' || status === 'result_declared') {
+      const resultDate = v.importantDates?.resultDate || 'घोषित कर दिया गया है';
+      return `*${titleHi}*\nपरीक्षा परिणाम घोषित तिथि: ${resultDate}\nपरिणाम एवं मेरिट लिस्ट देखने हेतु यहाँ क्लिक करें:\n${url}`;
+    }
+
+    const lastDate = v.importantDates?.applyLastDate || 'TBA';
+    const postsCount = typeof v.totalPosts === 'number' ? v.totalPosts.toLocaleString() : (v.totalPosts || 'विभिन्न पद');
+    return `*${titleHi}*\nकुल पद: ${postsCount}\nआवेदन की अंतिम तिथि: ${lastDate}\nऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:\n${url}`;
+  };
+
   const handleShare = () => {
-    const shareText = `${vacancy.title}\nकुल पद: ${vacancy.totalPosts}\nआवेदन अंतिम तिथि: ${vacancy.importantDates.applyLastDate}\nRAJASTHAN VACCANCY/JOBS पोर्टल पर पूरी जानकारी देखें:`;
+    const titleHi = vacancy.titleHi || vacancy.title;
+    const currentUrl = window.location.href;
+    const shareText = getCategoryShareText(vacancy, currentUrl);
+
     if (navigator.share) {
       navigator.share({
-        title: vacancy.title,
+        title: titleHi,
         text: shareText,
-        url: window.location.href,
+        url: currentUrl,
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
+      navigator.clipboard.writeText(shareText);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     }
   };
 
   const handleWhatsAppShare = () => {
-    const titleText = isHi ? vacancy.titleHi : vacancy.title;
-    const lastDate = vacancy.importantDates?.applyLastDate || vacancy.yojanaOverview?.applyLastDate || 'TBA';
-    const message = encodeURIComponent(
-      isHi 
-        ? `🔥 *${titleText}*\n\n📌 कुल पद / विवरण: ${vacancy.totalPosts || 'विभिन्न पद'}\n📅 आवेदन अंतिम तिथि: ${lastDate}\n\n👉 पूरी जानकारी व ऑनलाइन आवेदन हेतु नीचे दिए गए लिंक पर क्लिक करें:\n${window.location.href}`
-        : `🔥 *${titleText}*\n\n📌 Total Posts: ${vacancy.totalPosts || 'Various'}\n📅 Last Date: ${lastDate}\n\n👉 View complete details and apply online here:\n${window.location.href}`
-    );
+    const currentUrl = window.location.href;
+    const shareText = getCategoryShareText(vacancy, currentUrl);
+    const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
 
@@ -392,19 +430,56 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </h1>
 
         {/* Post Meta */}
-        <div className="text-slate-600 flex items-center gap-3 flex-wrap pb-3 border-b border-slate-200 text-sm">
-          <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-            <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>{isHi && vacancy.departmentHi ? vacancy.departmentHi : vacancy.department}</span>
+        <div className="text-slate-600 flex items-center justify-between gap-3 flex-wrap pb-3 border-b border-slate-200 text-sm">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+              <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{isHi && vacancy.departmentHi ? vacancy.departmentHi : vacancy.department}</span>
+            </div>
+            <span>•</span>
+            <span>{vacancy.jobLocation}</span>
+            <span>•</span>
+            <span className="text-slate-500">{isHi ? 'अपडेट' : 'Updated'}: {vacancy.updatedAt || vacancy.importantDates.notificationDate || vacancy.createdAt}</span>
           </div>
-          <span>•</span>
-          <span>{vacancy.jobLocation}</span>
-          <span>•</span>
-          <span className="text-slate-500">{isHi ? 'अपडेट' : 'Updated'}: {vacancy.updatedAt || vacancy.importantDates.notificationDate || vacancy.createdAt}</span>
-          <span>•</span>
-          <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-200">
-            <span>✍️ राजस्थान वैकेंसी टीम</span>
-          </span>
+
+          {/* Quick Action Buttons: Alert Me, Bookmark, Share */}
+          <div className="flex items-center gap-2 pt-1 sm:pt-0">
+            <button
+              type="button"
+              onClick={() => onToggleAlertMe && onToggleAlertMe(vacancy.id)}
+              className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition cursor-pointer border shadow-2xs ${
+                isAlertSet 
+                  ? 'bg-rose-600 text-white border-rose-600 hover:bg-rose-700' 
+                  : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200'
+              }`}
+              title={isAlertSet ? 'अलर्ट ऑन (Alert Active)' : 'आवेदन शुरू होने का नोटिफिकेशन पाएं'}
+            >
+              <Bell className={`w-3.5 h-3.5 ${isAlertSet ? 'fill-white text-white animate-bounce' : 'text-rose-600'}`} />
+              <span>{isAlertSet ? (isHi ? 'अलर्ट ऑन ★' : 'Alert On ★') : (isHi ? '🔔 अलर्ट सेट करें (Alert Me)' : '🔔 Alert Me')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onToggleSave(vacancy.id)}
+              className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition cursor-pointer border shadow-2xs ${
+                isSaved 
+                  ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700' 
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-300'
+              }`}
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-white' : ''}`} />
+              <span>{isSaved ? (isHi ? 'सेव्ड ★' : 'Saved ★') : (isHi ? 'सेव करें' : 'Save')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleShare}
+              className="px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition cursor-pointer shadow-2xs"
+            >
+              <Share2 className="w-3.5 h-3.5 text-slate-600" />
+              <span>{isHi ? 'शेयर' : 'Share'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Overview Introduction Box */}

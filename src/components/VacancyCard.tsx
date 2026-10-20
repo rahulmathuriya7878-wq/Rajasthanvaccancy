@@ -11,7 +11,8 @@ import {
   AlertCircle,
   Building2,
   DollarSign,
-  CheckCircle2
+  CheckCircle2,
+  Bell
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 
@@ -22,6 +23,8 @@ interface VacancyCardProps {
   onToggleSave: (id: string) => void;
   onSelect: (item: VacancyItem) => void;
   onShare: (item: VacancyItem) => void;
+  isAlertSet?: boolean;
+  onToggleAlertMe?: (id: string) => void;
 }
 
 export const VacancyCard: React.FC<VacancyCardProps> = ({
@@ -31,6 +34,8 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
   onToggleSave,
   onSelect,
   onShare,
+  isAlertSet = false,
+  onToggleAlertMe,
 }) => {
   const isHi = lang === 'hi';
 
@@ -120,6 +125,20 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1 text-slate-400">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onToggleAlertMe) onToggleAlertMe(vacancy.id);
+              }}
+              className={`p-1.5 rounded-md transition ${
+                isAlertSet 
+                  ? 'text-rose-600 bg-rose-50 hover:bg-rose-100' 
+                  : 'hover:bg-slate-100 hover:text-slate-700'
+              }`}
+              title={isAlertSet ? (isHi ? 'अलर्ट ऑन (Alert Active)' : 'Alert Active') : (isHi ? 'आवेदन शुरू होने का अलर्ट सेट करें (Alert Me)' : 'Alert Me when Active')}
+            >
+              <Bell className={`w-4 h-4 ${isAlertSet ? 'fill-rose-600 text-rose-600 animate-bounce' : ''}`} />
+            </button>
             <button
               onClick={() => onShare(vacancy)}
               className="p-1.5 rounded-md hover:bg-slate-100 hover:text-slate-700 transition"
