@@ -112,6 +112,11 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
                 HOT
               </span>
             )}
+            {vacancy.isNew && (
+              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">
+                NEW
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-1 text-slate-400">

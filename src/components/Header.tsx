@@ -36,6 +36,7 @@ interface HeaderProps {
   onSelectCategory?: (category: string) => void;
   onSyncRSS?: () => void;
   isSyncing?: boolean;
+  onOpenSubscribe?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -57,6 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectCategory,
   onSyncRSS,
   isSyncing = false,
+  onOpenSubscribe,
 }) => {
   const { user, isAdmin, logout, toggleAdminMode } = useAuth();
   const isHi = lang === 'hi';
@@ -258,6 +260,16 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            {/* Subscribe to Alerts Button */}
+            <button
+              onClick={onOpenSubscribe}
+              className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-amber-200 shadow-xs"
+              title="Subscribe to Job Alerts"
+            >
+              <Bell className="w-3.5 h-3.5 text-amber-700 animate-pulse" />
+              <span className="hidden sm:inline">{isHi ? '🔔 अलर्ट सब्स्क्राइब' : 'Subscribe'}</span>
             </button>
 
             {/* Admin Controls / Post Creation - Shown ONLY when Admin is active */}

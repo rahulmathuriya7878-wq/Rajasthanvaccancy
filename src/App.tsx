@@ -40,6 +40,9 @@ import {
 import { 
   AdminLoginModal 
 } from './components/AdminLoginModal';
+import { 
+  SubscribeAlertsModal 
+} from './components/SubscribeAlertsModal';
 import { useAuth } from './context/AuthContext';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
@@ -180,6 +183,13 @@ export default function App() {
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | null>(null);
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(() => {
+    try {
+      return !localStorage.getItem('raj_alert_subscribed_v1');
+    } catch (e) {
+      return false;
+    }
+  });
 
   // Deep linking sync for SEO (reads ?vacancy=... and ?category=... from URL/sitemap)
   useEffect(() => {
@@ -392,6 +402,7 @@ export default function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSelectCategory={(cat) => setSelectedCategory(cat as any)}
+        onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
       />
 
       {/* Main Body Container */}
@@ -530,6 +541,12 @@ export default function App() {
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}
+        lang={lang}
+      />
+
+      <SubscribeAlertsModal
+        isOpen={isSubscribeModalOpen}
+        onClose={() => setIsSubscribeModalOpen(false)}
         lang={lang}
       />
     </div>

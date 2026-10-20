@@ -215,6 +215,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     }
   };
 
+  const handleWhatsAppShare = () => {
+    const titleText = isHi ? vacancy.titleHi : vacancy.title;
+    const lastDate = vacancy.importantDates?.applyLastDate || vacancy.yojanaOverview?.applyLastDate || 'TBA';
+    const message = encodeURIComponent(
+      isHi 
+        ? `🔥 *${titleText}*\n\n📌 कुल पद / विवरण: ${vacancy.totalPosts || 'विभिन्न पद'}\n📅 आवेदन अंतिम तिथि: ${lastDate}\n\n👉 पूरी जानकारी व ऑनलाइन आवेदन हेतु नीचे दिए गए लिंक पर क्लिक करें:\n${window.location.href}`
+        : `🔥 *${titleText}*\n\n📌 Total Posts: ${vacancy.totalPosts || 'Various'}\n📅 Last Date: ${lastDate}\n\n👉 View complete details and apply online here:\n${window.location.href}`
+    );
+    window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+  };
+
   // Required Documents list matching exact screenshot format
   const documentsList = isHi ? (vacancy.requiredDocumentsHi || [
     'जन्म प्रमाणपत्र और 10वीं की अंकतालिका।',
@@ -1826,6 +1837,22 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* Floating WhatsApp Share Button */}
+      <div className="fixed right-4 bottom-6 z-50 flex flex-col items-end gap-2 animate-bounce">
+        <button
+          onClick={handleWhatsAppShare}
+          className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white px-4 py-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer font-bold text-sm border-2 border-white"
+          title="Share this post on WhatsApp"
+        >
+          <svg className="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.587 1.93.9 3.013.9 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.503-4.466 9.969-9.969 9.969-1.758 0-3.411-.462-4.862-1.272l-5.169 1.355 1.38-5.044c-.902-1.503-1.418-3.262-1.418-5.008 0-5.503 4.466-9.969 9.969-9.969 5.503 0 9.969 4.466 9.969 9.969zm-5.719 3.82c-.22-.11-1.303-.643-1.505-.716-.202-.073-.349-.11-.496.11s-.57.716-.699.863c-.128.147-.257.165-.477.055-.22-.11-.93-.343-1.772-1.094-.655-.584-1.098-1.306-1.226-1.526-.128-.22-.014-.339.096-.448.099-.098.22-.257.33-.385.11-.128.147-.22.22-.367.073-.147.037-.275-.018-.385s-.496-1.193-.68-1.634c-.179-.43-.36-.372-.496-.379-.128-.007-.275-.008-.422-.008s-.385.055-.587.275c-.202.22-.771.753-.771 1.836s.789 2.129.899 2.276c.11.147 1.552 2.37 3.759 3.322.525.227.935.362 1.255.464.528.168 1.009.144 1.389.088.424-.063 1.303-.533 1.487-1.047.184-.514.184-.955.129-1.047-.056-.092-.203-.147-.423-.257z"/>
+          </svg>
+          <span className="inline sm:inline">
+            {isHi ? 'WhatsApp चैनल ज्वाइन करें' : 'WhatsApp Channel'}
+          </span>
+        </button>
+      </div>
     </article>
   );
 };
