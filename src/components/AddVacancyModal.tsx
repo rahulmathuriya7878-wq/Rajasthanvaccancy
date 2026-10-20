@@ -75,6 +75,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [notificationPdfUrl, setNotificationPdfUrl] = useState('');
   const [officialWebsiteUrl, setOfficialWebsiteUrl] = useState('https://rajasthan.gov.in');
   const [description, setDescription] = useState('Recruitment notice for eligible candidates in Rajasthan.');
+  const [feeGen, setFeeGen] = useState<number>(600);
+  const [feeScSt, setFeeScSt] = useState<number>(325);
+  const [feeEws, setFeeEws] = useState<number>(600);
 
   // Pre-fill fields when editItem is provided
   useEffect(() => {
@@ -100,6 +103,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       setNotificationPdfUrl(editItem.officialLinks?.notificationPdfUrl || '');
       setOfficialWebsiteUrl(editItem.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in');
       setDescription(editItem.descriptionHi || editItem.description || '');
+      setFeeGen(editItem.applicationFee?.genObc ?? 600);
+      setFeeScSt(editItem.applicationFee?.scSt ?? 325);
+      setFeeEws(editItem.applicationFee?.ews ?? 600);
 
       if (editItem.category === 'scheme' || editItem.organization === 'Sarkari Yojana') {
         setPostSection('gov_yojana');
@@ -218,6 +224,12 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         status: finalStatus,
         salary: salary.trim(),
         salaryHi: salary.trim(),
+        applicationFee: {
+          ...(editItem.applicationFee || {}),
+          genObc: Number(feeGen),
+          scSt: Number(feeScSt),
+          ews: Number(feeEws),
+        },
         officialLinks: {
           ...(editItem.officialLinks || {}),
           applyOnlineUrl: applyOnlineUrl.trim() || undefined,
@@ -259,9 +271,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
           relaxationNotes: 'Standard age relaxation for reserved categories in Rajasthan.'
         },
         applicationFee: {
-          genObc: postSection === 'gov_yojana' ? 0 : 600,
-          scSt: postSection === 'gov_yojana' ? 0 : 400,
-          ews: postSection === 'gov_yojana' ? 0 : 400,
+          genObc: Number(feeGen),
+          scSt: Number(feeScSt),
+          ews: Number(feeEws),
           otrNote: 'Covered under Rajasthan SSO One Time Registration.'
         },
         importantDates: {
@@ -603,6 +615,48 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
 
+          {/* Application Fees */}
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+            <label className="font-bold text-slate-800 text-xs block">
+              {isHi ? 'आवेदन शुल्क (Application Fees - ₹):' : 'Application Fees (₹):'}
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-0.5">
+                  {isHi ? 'सामान्य / ओबीसी (Gen/OBC):' : 'Gen/OBC:'}
+                </label>
+                <input
+                  type="number"
+                  value={feeGen}
+                  onChange={(e) => setFeeGen(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-0.5">
+                  {isHi ? 'ईडब्ल्यूएस (EWS):' : 'EWS:'}
+                </label>
+                <input
+                  type="number"
+                  value={feeEws}
+                  onChange={(e) => setFeeEws(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-0.5">
+                  {isHi ? 'एससी / एसटी (SC/ST):' : 'SC/ST:'}
+                </label>
+                <input
+                  type="number"
+                  value={feeScSt}
+                  onChange={(e) => setFeeScSt(Number(e.target.value))}
+                  className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Official URLs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -632,17 +686,46 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
 
-          {/* Detailed Summary */}
-          <div>
-            <label className="font-bold text-slate-700 block mb-1">
-              {isHi ? 'विस्तृत विवरण एवं मुख्य बिंदु:' : 'Brief Description & Highlights:'}
-            </label>
+          {/* Blog / Article Detailed Summary */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <label className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                <span>📝</span>
+                <span>{isHi ? 'विस्तृत ब्लॉग आर्टिकल विवरण (Comprehensive Blog Content):' : 'Comprehensive Blog Content & Highlights:'}</span>
+              </label>
+              
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDescription(isHi 
+                      ? `🎯 भर्ती / योजना का विस्तृत परिचय:\nइस भर्ती के अंतर्गत योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं। सभी इच्छुक उम्मीदवार निर्धारित अंतिम तिथि से पहले अपना आवेदन प्रस्तुत करें।\n\n📢 मुख्य बिंदु एवं हाइलाइट्स:\n• कुल रिक्त पद: ${totalPosts}\n• आवेदन की अंतिम तिथि: ${applyLastDate}\n• चयन प्रक्रिया: लिखित परीक्षा एवं दस्तावेज सत्यापन\n\n📌 शैक्षणिक योग्यता एवं पात्रता:\n• मान्यता प्राप्त संस्थान से संबंधित क्षेत्र में डिग्री / डिप्लोमा।\n• आरक्षित वर्गों को नियमानुसार पात्रता अंकों में छूट देय है।\n\n💡 आवेदन हेतु आवश्यक निर्देश:\n1. सबसे पहले आधिकारिक वेबसाइट या SSO पोर्टल पर विजिट करें।\n2. आवश्यक दस्तावेज और फोटो स्कैन करके अपलोड करें।\n3. निर्धारित शुल्क का भुगतान कर फाइनल प्रिंटआउट सुरक्षित रखें।`
+                      : `🎯 Comprehensive Overview:\nOnline applications are invited from eligible candidates for this recruitment.\n\n📢 Key Highlights:\n• Total Vacancies: ${totalPosts}\n• Last Date to Apply: ${applyLastDate}\n• Selection Process: Written Exam & Document Verification\n\n📌 Eligibility & Qualification:\n• Degree / Diploma in relevant discipline from recognized university.`
+                    );
+                  }}
+                  className="px-2.5 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold border border-amber-200 transition cursor-pointer"
+                >
+                  📝 {isHi ? 'प्रोफेशनल ब्लॉग टेम्पलेट' : 'Pro Blog Template'}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDescription(prev => prev + (isHi ? '\n\n🔍 अतिरिक्त विवरण एवं निर्देश:\n• परीक्षा तिथि जल्द ही घोषित की जाएगी।\n• प्रवेश पत्र परीक्षा से 10 दिन पूर्व डाउनलोड किए जा सकेंगे।' : '\n\n🔍 Additional Details & Instructions:\n• Exam date will be announced soon.\n• Admit cards can be downloaded 10 days prior.'));
+                  }}
+                  className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-200 transition cursor-pointer"
+                >
+                  ➕ {isHi ? 'अतिरिक्त निर्देश जोड़ें' : 'Add Instructions'}
+                </button>
+              </div>
+            </div>
+
             <textarea
-              rows={3}
+              rows={8}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="इस भर्ती या योजना के बारे में संक्षिप्त विवरण लिखें..."
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none"
+              placeholder="यहाँ विस्तृत ब्लॉग आर्टिकल, पैराग्राफ, बुलेट पॉइंट्स एवं निर्देश दर्ज करें..."
+              className="w-full px-3.5 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-amber-500 focus:outline-none leading-relaxed shadow-inner"
             />
           </div>
 

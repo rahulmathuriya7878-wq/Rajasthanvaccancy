@@ -353,7 +353,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
         {/* Detailed Information Box */}
         <div className="bg-white border border-slate-200 p-5 rounded-xl text-slate-800 shadow-xs space-y-3 relative">
-          <p className="text-slate-800 text-[20px] leading-relaxed font-normal">
+          <p className="text-slate-800 text-[20px] leading-relaxed font-normal whitespace-pre-line">
             {isScheme
               ? isHi
                 ? `${vacancy.titleHi}: राजस्थान सरकार के ${vacancy.departmentHi || vacancy.department} द्वारा संचालित एक प्रमुख कल्याणकारी योजना है। इसके तहत राजकीय महाविद्यालयों एवं विश्वविद्यालयों में अध्ययनरत आरक्षित वर्गों (SC, ST, OBC, MBC एवं EWS) के नियमित छात्रों को किराए के कमरों/PG में रहने एवं भोजन हेतु ₹2,000/- प्रतिमाह (वर्ष में अधिकतम ₹20,000/-) की वित्तीय सहायता DBT के माध्यम से सीधे बैंक खाते में प्रदान की जाती है।`

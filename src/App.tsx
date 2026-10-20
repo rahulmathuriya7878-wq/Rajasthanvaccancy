@@ -109,18 +109,14 @@ export default function App() {
       console.error('Failed to load stored vacancies', e);
     }
 
-    // Ensure UGC NET June & Dec are always present
-    const hasJune = loaded.some(v => v.id === 'ugc-net-2026-june');
-    if (!hasJune) {
-      const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-june');
-      if (item) loaded = [item, ...loaded];
-    }
-    const hasDec = loaded.some(v => v.id === 'ugc-net-2026-dec');
+    // Ensure UGC NET Dec is always present and filter out obsolete June vacancy
+    let filteredLoaded = loaded.filter(v => v.id !== 'ugc-net-2026-june');
+    const hasDec = filteredLoaded.some(v => v.id === 'ugc-net-2026-dec');
     if (!hasDec) {
       const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-dec');
-      if (item) loaded = [item, ...loaded];
+      if (item) filteredLoaded = [item, ...filteredLoaded];
     }
-    return loaded;
+    return filteredLoaded;
   });
 
   useEffect(() => {
@@ -428,6 +424,11 @@ export default function App() {
               onSelectVacancy={(item) => {
                 setSelectedVacancy(item);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              isAdmin={isAdmin}
+              onEditVacancy={(item) => {
+                setEditingVacancy(item);
+                setIsAddJobOpen(true);
               }}
             />
           </div>
