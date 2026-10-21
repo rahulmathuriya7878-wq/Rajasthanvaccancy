@@ -911,6 +911,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                         <option value="Discom / RVUNL">Discom / RVUNL (बिजली विभाग)</option>
                         <option value="Health RUHS / NHM">Health RUHS / NHM (स्वास्थ्य विभाग)</option>
                         <option value="Central Govt">Central Govt (केन्द्रीय भर्ती)</option>
+                        <option value="Railway Board">Railway Board (रेलवे भर्ती बोर्ड)</option>
                         <option value="UGC NET">UGC NET (एनटीए परीक्षा)</option>
                       </>
                     )}

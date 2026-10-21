@@ -97,6 +97,8 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
         return 'bg-purple-50 text-purple-900 border-purple-300';
       case 'Sarkari Yojana':
         return 'bg-teal-50 text-teal-900 border-teal-300';
+      case 'Railway Board':
+        return 'bg-orange-50 text-orange-900 border-orange-300';
       default:
         return 'bg-slate-50 text-slate-800 border-slate-300';
     }
@@ -116,11 +118,6 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
               <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white flex items-center gap-1 shadow-2xs tracking-wide animate-pulse" title="High user clicks and save actions">
                 <span>⚡</span>
                 <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
-              </span>
-            ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs tracking-wide" title="Trending among candidates">
-                <span>🔥</span>
-                <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
               </span>
             ) : null}
             {vacancy.isHot && (

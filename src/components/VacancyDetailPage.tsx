@@ -456,11 +456,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <span>⚡</span>
                 <span>{isHi ? 'हाई डिमांड भर्ती' : 'High Demand Notification'}</span>
               </span>
-            ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
-              <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs">
-                <span>🔥</span>
-                <span>{isHi ? 'ट्रेंडिंग सूचना' : 'Trending Notification'}</span>
-              </span>
             ) : null}
           </div>
           <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-0.5">
@@ -527,58 +522,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         )}
 
-        {/* Overview Introduction Box */}
-        <div className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-3">
-          <div className="flex items-center justify-between text-slate-800 border-b border-slate-200 pb-2.5">
-            <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 text-slate-800">
-              <span>📝</span>
-              <span>{isHi ? 'भर्ती का संक्षिप्त विवरण (Recruitment Summary)' : 'Recruitment Summary'}</span>
-            </h2>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {vacancy.isHighDemand || (vacancy.clicksCount && vacancy.clicksCount >= 3000) || (vacancy.savesCount && vacancy.savesCount >= 600) ? (
-                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white flex items-center gap-1 shadow-2xs animate-pulse">
-                  <span>⚡</span>
-                  <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
-                </span>
-              ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
-                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs">
-                  <span>🔥</span>
-                  <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
-                </span>
-              ) : null}
-              <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-2.5 py-1 rounded">
-                {vacancy.category === 'scheme' ? 'सरकारी योजना' : 'सरकारी भर्ती'}
-              </span>
-            </div>
-          </div>
 
-          <p className="text-[17px] text-slate-700 leading-[1.8] font-normal whitespace-pre-line">
-            {renderFormattedText(
-              isScheme
-                ? isHi
-                  ? `${vacancy.titleHi}: राजस्थान सरकार के ${vacancy.departmentHi || vacancy.department} द्वारा संचालित एक प्रमुख कल्याणकारी योजना है। इसके तहत राजकीय महाविद्यालयों एवं विश्वविद्यालयों में अध्ययनरत आरक्षित वर्गों (SC, ST, OBC, MBC एवं EWS) के नियमित छात्रों को किराए के कमरों/PG में रहने एवं भोजन हेतु ₹2,000/- प्रतिमाह (वर्ष में अधिकतम ₹20,000/-) की वित्तीय सहायता DBT के माध्यम से सीधे बैंक खाते में प्रदान की जाती है।`
-                  : `${vacancy.title}: A welfare scheme by ${vacancy.department} providing ₹2,000/month (up to ₹20,000/year) via DBT to eligible SC, ST, OBC, MBC, and EWS college students staying in rented rooms or PG for higher education.`
-                : isHi 
-                ? (vacancy.briefSummaryHi || vacancy.briefSummary || `नमस्ते साथियों! ${vacancy.titleHi || vacancy.title} के अंतर्गत ${vacancy.organization} (${vacancy.departmentHi || vacancy.department}) द्वारा कुल ${vacancy.totalPosts || 'अनेक'} रिक्त पदों पर ऑनलाइन आवेदन आमंत्रित किए गए हैं। हमने इस भर्ती के सभी नियमों, पात्रता, परीक्षा पैटर्न और आवेदन प्रक्रिया को सरल भाषा में तैयार किया है ताकि फॉर्म भरते समय आपसे कोई गलती न हो। अंतिम तिथि ${vacancy.importantDates.applyLastDate} का इंतजार किए बिना समय पर अपना फॉर्म जरूर भर लें।`)
-                : (vacancy.briefSummary || `Hello Candidates! ${vacancy.title} has been officially announced by ${vacancy.organization} (${vacancy.department}) for a total of ${vacancy.totalPosts || 'various'} vacancies. Our mentor team has compiled all critical details, eligibility rules, and application steps in simple terms so you can apply without confusion before the last date ${vacancy.importantDates.applyLastDate}.`)
-            )}
-          </p>
-
-
-
-          {onOpenAdminLogin && !isAdmin && (
-            <div className="pt-2 border-t border-slate-200 flex justify-end">
-              <button
-                type="button"
-                onClick={onOpenAdminLogin}
-                className="text-slate-500 hover:text-slate-700 transition cursor-pointer text-xs opacity-60 hover:opacity-100 flex items-center gap-1 font-mono"
-                title="Admin Portal Access"
-              >
-                <span>🔐 Admin Portal</span>
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Comprehensive Human-Written Post Article (विस्तृत विवरण) */}
@@ -1802,22 +1746,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </td>
             </tr>
 
-            {/* Row 6: Share Post Button */}
-            <tr className="bg-white">
-              <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
-                {isHi ? 'दोस्तों के साथ शेयर करें (Share Post)' : 'Share Post With Friends'}
-              </td>
-              <td className="py-3.5 px-4">
-                <button
-                  type="button"
-                  onClick={handleShare}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm transition cursor-pointer shadow-xs"
-                >
-                  <Share2 className="w-4 h-4 text-white" />
-                  <span>{copiedLink ? (isHi ? 'लिंक कॉपी हो गया!' : 'Link Copied!') : (isHi ? 'शेयर करें (Share Now)' : 'Share Now')}</span>
-                </button>
-              </td>
-            </tr>
+
           </tbody>
         </table>
 

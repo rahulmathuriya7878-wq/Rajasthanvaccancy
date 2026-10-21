@@ -7,6 +7,7 @@ export type BoardType =
   | 'Discom / RVUNL'
   | 'Health RUHS / NHM'
   | 'Central Govt'
+  | 'Railway Board'
   | 'UGC NET'
   | 'Sarkari Yojana';
 

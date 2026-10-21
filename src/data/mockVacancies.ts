@@ -801,20 +801,6 @@ export const DSSSB_DISTRICT_COURT_2026_VACANCY: VacancyItem = {
 
 दिल्ली अधीनस्थ सेवा चयन बोर्ड (DSSSB) ने दिल्ली जिला एवं सत्र न्यायालयों तथा पारिवारिक न्यायालयों में ग्रुप 'बी' एवं 'सी' के विभिन्न 641 पदों पर सीधी भर्ती हेतु विस्तृत विज्ञापन संख्या 04/2026 जारी कर दिया है। योग्य युवा इस भर्ती के लिए 06 अक्टूबर 2026 से 04 नवंबर 2026 तक ऑनलाइन आवेदन कर सकते हैं।
 
-📌 भर्ती की मुख्य बातें एवं पद विवरण:
-• भर्ती संस्था: दिल्ली अधीनस्थ सेवा चयन बोर्ड (DSSSB)
-• कुल रिक्त पद: 641 पद
-• आवेदन प्रारंभ तिथि: 06 अक्टूबर 2026
-• आवेदन की अंतिम तिथि: 04 नवंबर 2026 (रात 11:00 बजे)
-• वेतनमान: ₹25,500/- से ₹1,51,100/- (पे मैट्रिक्स लेवल 4 से 8)
-• कार्यक्षेत्र: दिल्ली जिला एवं सत्र न्यायालय परिसर
-
-🎯 पद अनुसार रिक्तियों का विवरण:
-1. जूनियर ज्यूडिशियल असिस्टेंट (JJA) - 546 पद (स्नातक + 35 wpm टाइपिंग)
-2. पर्सनल असिस्टेंट (PA) - 67 पद (स्नातक + 100 wpm स्टेनो + 40 wpm टाइपिंग)
-3. सीनियर पर्सनल असिस्टेंट (SPA) - 16 पद (स्नातक + 110 wpm स्टेनो + 40 wpm टाइपिंग)
-4. चपरासी / प्रोसेस सर्वर (Peon/Orderly) - 12 पद (10वीं पास)
-
 ⚠️ अभ्यर्थियों हेतु जरूरी निर्देश (शिक्षक नोट):
 1. DSSSB पोर्टल (dsssbonline.nic.in) पर One Time Registration (OTR) सावधानीपूर्वक करें, क्योंकि रजिस्ट्रेशन विवरण बाद में संशोधित नहीं हो सकता।
 2. JJA पद के लिए अंग्रेजी टाइपिंग स्पीड 35 wpm कंप्यूटर पर अनिवार्य है, इसलिए नियमित टाइपिंग अभ्यास अभी से शुरू कर दें।
@@ -1191,7 +1177,156 @@ export const SUPREME_COURT_COURT_MASTER_2026_VACANCY: VacancyItem = {
   createdAt: '2026-10-20'
 };
 
+export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
+  id: 'rrb-station-master-recruitment-2026',
+  title: 'RRB Station Master Recruitment 2026: Notification Released for 1250 Posts, Apply Online',
+  titleHi: 'RRB Station Master Bharti 2026: रेलवे स्टेशन मास्टर के 1250 पदों पर भर्ती का नोटिफिकेशन जारी, यहां से करें आवेदन',
+  shortTitle: 'RRB Station Master Bharti 2026',
+  shortTitleHi: 'RRB स्टेशन मास्टर भर्ती 2026',
+  organization: 'Railway Board',
+  department: 'Indian Railways',
+  departmentHi: 'भारतीय रेलवे (Indian Railways)',
+  advtNo: 'CEN 08/2026',
+  category: 'latest_job',
+  totalPosts: 1250,
+  isTrending: true,
+  isHighDemand: true,
+  clicksCount: 3450,
+  savesCount: 720,
+  postName: 'Station Master',
+  postNameHi: 'स्टेशन मास्टर (Station Master)',
+  qualification: ['Graduate'],
+  qualificationDetails: 'Bachelor Degree in any stream from a recognized University / Institute.',
+  qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से किसी भी विषय में स्नातक (Graduation) डिग्री उत्तीर्ण।',
+  briefSummary: 'Railway Recruitment Board (RRB) has announced 1250 vacancies for Station Master posts under CEN 08/2026. Online applications start on 27 October 2026.',
+  briefSummaryHi: 'रेलवे भर्ती बोर्ड (RRB) द्वारा स्टेशन मास्टर के 1250 रिक्त पदों पर भर्ती हेतु संक्षिप्त विज्ञापन (Short Notification) संख्या CEN 08/2026 जारी कर दिया गया है। इस बार स्टेशन मास्टर की भर्ती पृथक रूप से आयोजित की जाएगी। स्नातक उत्तीर्ण अभ्यर्थी इसके लिए **27 अक्टूबर 2026 से 25 नवंबर 2026** तक ऑनलाइन आवेदन कर सकेंगे। भर्ती से जुड़ी विस्तृत जानकारी नीचे दी गई है।',
+  description: 'Complete guide for RRB Station Master Recruitment 2026 including eligibility, selection process, syllabus, and important dates.',
+  descriptionHi: `✍️ नमस्ते साथियों,
+
+भारतीय रेलवे में स्टेशन मास्टर (Station Master) बनने का सपना देख रहे युवाओं के लिए एक बड़ी खुशखबरी है। रेलवे भर्ती बोर्ड (RRB) ने वर्ष 2026 के लिए स्टेशन मास्टर के कुल 1250 पदों पर भर्ती का शॉर्ट नोटिफिकेशन जारी किया है। 
+
+📌 भर्ती की मुख्य बातें (Highlights):
+• भर्ती संस्था: रेलवे भर्ती बोर्ड (RRB)
+• पद का नाम: स्टेशन मास्टर
+• कुल पद: 1250 पद
+• विज्ञापन संख्या: CEN 08/2026
+• आवेदन का माध्यम: केवल ऑनलाइन
+• ऑनलाइन आवेदन शुरू: 27 अक्टूबर 2026
+• आवेदन की अंतिम तिथि: 25 नवंबर 2026
+• वेतनमान: ₹35,400/- (पे लेवल-6) + अन्य भत्ते
+
+🎯 शैक्षणिक योग्यता (Eligibility):
+• उम्मीदवार किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) उत्तीर्ण होना चाहिए।
+• मेडिकल स्टैंडर्ड: A-2 श्रेणी का होना अनिवार्य है।
+
+⏳ आयु सीमा (Age Limit):
+• न्यूनतम आयु: 20 वर्ष
+• अधिकतम आयु: 33 वर्ष (संभावित)
+• आरक्षित वर्गों (SC/ST/OBC) को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
+
+📝 चयन प्रक्रिया (Selection Process):
+1. कंप्यूटर आधारित परीक्षा (CBT)
+2. कंप्यूटर आधारित एप्टीट्यूड टेस्ट (CBAT)
+3. दस्तावेज सत्यापन (Document Verification)
+4. चिकित्सा परीक्षण (Medical Examination)`,
+  jobLocation: 'सम्पूर्ण भारत (All India - 21 RRBs)',
+  salary: '₹35,400 per month (Level 6) + Allowances',
+  salaryHi: '₹35,400/- प्रति माह (पे लेवल-6) + भत्ते',
+  salaryTable: [
+    {
+      postName: 'Station Master',
+      postNameHi: 'स्टेशन मास्टर',
+      payLevel: 'Level 6',
+      payLevelHi: 'लेवल-6',
+      salaryRange: '₹35,400 - ₹1,12,400/-',
+      salaryRangeHi: '₹35,400/- (मूल वेतन) + डीए, एचआरए व अन्य भत्ते'
+    }
+  ],
+  ageLimit: {
+    min: 20,
+    max: 33,
+    asOnDate: '2026-01-01',
+    relaxationNotes: 'Age relaxation as per Railway Board rules: SC/ST 5 years, OBC 3 years.',
+    relaxationNotesHi: 'SC/ST अभ्यर्थियों को 5 वर्ष और OBC अभ्यर्थियों को 3 वर्ष की अधिकतम आयु सीमा में छूट देय होगी।'
+  },
+  applicationFee: {
+    genObc: 500,
+    scSt: 250,
+    ews: 500,
+    otrNote: 'Rs. 500 for Gen/OBC and Rs. 250 for SC/ST/Ex-SM/Female/Minorities. Refundable as per rules after CBT-1.',
+    otrNoteHi: 'सामान्य/ओबीसी हेतु ₹500/- तथा एससी/एसटी/महिला/दिव्यांग हेतु ₹250/- शुल्क। प्रथम चरण की परीक्षा के बाद नियमानुसार शुल्क रिफंड किया जाएगा।'
+  },
+  importantDates: {
+    notificationDate: '21 अक्टूबर 2026',
+    applyStartDate: '2026-10-27',
+    applyLastDate: '2026-11-25',
+    feeLastDate: '2026-11-25',
+    examDate: '2027 में (शीघ्र घोषित होगी)',
+    admitCardDate: 'परीक्षा से 10 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Computer Based Test (CBT)',
+    'Computer Based Aptitude Test (CBAT)',
+    'Document Verification',
+    'Medical Examination (A-2 Category)'
+  ],
+  selectionProcessHi: [
+    'ऑनलाइन कंप्यूटर आधारित परीक्षा (CBT)',
+    'कंप्यूटर आधारित एप्टीट्यूड टेस्ट (CBAT - साइको टेस्ट)',
+    'दस्तावेज सत्यापन (Document Verification)',
+    'चिकित्सा परीक्षण (Medical Examination - A2 Standard)'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://www.rrbindianrailways.gov.in',
+    notificationPdfUrl: 'https://www.rrbindianrailways.gov.in',
+    officialWebsiteUrl: 'https://www.rrbindianrailways.gov.in'
+  },
+  howToApplyHi: [
+    'सबसे पहले अपने संबंधित रेलवे भर्ती बोर्ड (RRB) की आधिकारिक वेबसाइट पर जाएं।',
+    'होमपेज पर उपलब्ध "CEN 08/2026 Station Master Apply Online" लिंक पर क्लिक करें।',
+    'न्यू रजिस्ट्रेशन बटन पर क्लिक करके अपना मोबाइल नंबर व ईमेल सत्यापित करें।',
+    'लॉगिन करने के बाद अपनी शैक्षणिक योग्यता एवं व्यक्तिगत जानकारी ध्यानपूर्वक भरें।',
+    'निर्धारित आकार में फोटो, हस्ताक्षर एवं मांगे गए दस्तावेज अपलोड करें।',
+    'अपनी श्रेणी अनुसार आवेदन शुल्क का भुगतान करें और आवेदन का प्रिंटआउट भविष्य के लिए सुरक्षित रखें।'
+  ],
+  requiredDocumentsHi: [
+    'स्नातक (Graduation) की डिग्री एवं अंकतालिका।',
+    '10वीं की अंकतालिका (जन्मतिथि सत्यापन हेतु)।',
+    'जाति प्रमाणपत्र (SC/ST/OBC यदि लागू हो)।',
+    'ईडब्ल्यूएस प्रमाणपत्र (यदि लागू हो)।',
+    'पासपोर्ट साइज रंगीन फोटो एवं हस्ताक्षर की स्कैन कॉपी।',
+    'पहचान पत्र (आधार कार्ड अनिवार्य)।'
+  ],
+  faqs: [
+    {
+      q: 'When will RRB Station Master 2026 online applications start?',
+      qHi: 'रेलवे स्टेशन मास्टर भर्ती 2026 के आवेदन कब शुरू होंगे?',
+      a: 'Online applications will start on 27 October 2026.',
+      aHi: 'ऑनलाइन आवेदन प्रक्रिया 27 अक्टूबर 2026 से शुरू होगी।'
+    },
+    {
+      q: 'What is the educational qualification for RRB Station Master?',
+      qHi: 'स्टेशन मास्टर पद के लिए शैक्षणिक योग्यता क्या है?',
+      a: 'A Graduate Degree in any stream from a recognized university.',
+      aHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से किसी भी विषय में स्नातक (Graduation) की डिग्री।'
+    },
+    {
+      q: 'How many posts are available in RRB Station Master Recruitment 2026?',
+      qHi: 'स्टेशन मास्टर भर्ती 2026 में कुल कितने पद हैं?',
+      a: 'Total 1250 vacancies are announced.',
+      aHi: 'कुल 1250 पदों पर भर्ती हेतु नोटिफिकेशन जारी किया गया है।'
+    }
+  ],
+  tags: ['rrb station master', 'railway bharti 2026', 'rrb recruitment', 'station master jobs', 'govt job 2026'],
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  updatedAt: '21 अक्टूबर 2026',
+  createdAt: '2026-10-21'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  RRB_STATION_MASTER_2026_VACANCY,
   SUPREME_COURT_COURT_MASTER_2026_VACANCY,
   DSSSB_DISTRICT_COURT_2026_VACANCY,
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,

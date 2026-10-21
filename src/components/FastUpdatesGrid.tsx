@@ -138,7 +138,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 items-start">
         {sections.map((sec, index) => {
           const isExpanded = expandedSections[sec.key];
-          const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 50);
+          const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 100);
 
           return (
             <React.Fragment key={sec.key}>
@@ -157,8 +157,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
               </div>
 
               {/* List of items */}
-              <div className="p-2.5 divide-y divide-slate-100 flex-1 flex flex-col justify-between">
-                <ul className="space-y-1">
+              <div className="p-2.5 flex-1 flex flex-col justify-between">
+                <div className="max-h-[650px] overflow-y-auto pr-0.5 scrollbar-thin">
+                  <ul className="space-y-1">
                   {displayedItems.length > 0 ? (
                     displayedItems.map((item) => (
                       <li key={item.id} className="flex items-center gap-1">
@@ -173,13 +174,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                                 <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-2xs uppercase tracking-wide">
                                   <span>⚡</span>
                                   <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
-                                </span>
-                              </div>
-                            ) : (item.isTrending || (item.clicksCount && item.clicksCount >= 1400) || (item.savesCount && item.savesCount >= 250)) ? (
-                              <div className="mb-1">
-                                <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs uppercase tracking-wide">
-                                  <span>🔥</span>
-                                  <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
                                 </span>
                               </div>
                             ) : null}
@@ -225,8 +219,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                     </li>
                   )}
                 </ul>
+                </div>
 
-                {sec.items.length > 50 && (
+                {sec.items.length > 100 && (
                   <div className="pt-2 mt-2 border-t border-slate-100 text-center">
                     <button
                       onClick={() => toggleExpand(sec.key)}
