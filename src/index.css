@@ -23,43 +23,82 @@
   }
 }
 
-/* Post Typography Standardized (Uniform across all posts and devices) */
+/* Post Typography - Clean Modern Light Theme */
 .post-content {
   font-family: 'Plus Jakarta Sans', 'Yantramanav', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
+  font-size: 16.5px;
   line-height: 1.75;
-  color: #1e293b;
+  color: #334155; /* Slate 700 - bright, clean light theme */
+}
+
+.post-content h1 {
+  font-size: 1.75rem; /* 28px */
+  line-height: 1.35;
+  font-weight: 800;
+  color: #0f172a; /* Slate 900 */
+  letter-spacing: -0.01em;
+}
+
+.post-content h2 {
+  font-size: 1.3125rem; /* 21px */
+  line-height: 1.4;
+  font-weight: 700;
+  color: #1e293b; /* Slate 800 */
+}
+
+.post-content h3 {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.45;
+  font-weight: 700;
+  color: #334155; /* Slate 700 */
 }
 
 .post-content p, 
 .post-content li {
-  font-size: 16px;
+  font-size: 1.025rem;
   line-height: 1.75;
-  color: #1e293b;
+  color: #334155; /* Slate 700 */
+}
+
+.post-content strong,
+.post-content b {
+  color: #0f172a; /* Slate 900 */
+  font-weight: 700;
 }
 
 .post-content th {
-  font-size: 15px;
+  font-size: 0.9375rem; /* 15px */
   font-weight: 700;
-  color: #0f172a;
+  color: #1e293b;
+  background-color: #f8fafc;
 }
 
 .post-content td {
-  font-size: 15px;
-  color: #1e293b;
+  font-size: 0.9375rem; /* 15px */
+  color: #334155;
 }
 
 @media (max-width: 639px) {
+  .post-content h1 {
+    font-size: 1.375rem; /* 22px */
+    line-height: 1.35;
+  }
+  .post-content h2 {
+    font-size: 1.1875rem; /* 19px */
+  }
+  .post-content h3 {
+    font-size: 1.0625rem; /* 17px */
+  }
   .post-content p, 
   .post-content li {
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 0.9375rem; /* 15px */
+    line-height: 1.68;
   }
   .post-content th,
   .post-content td {
-    font-size: 14px;
-    padding-left: 0.625rem !important;
-    padding-right: 0.625rem !important;
+    font-size: 0.875rem; /* 14px */
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 }
 

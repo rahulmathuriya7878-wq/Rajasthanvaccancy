@@ -11,16 +11,16 @@ export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
 }) => {
   return (
     <div className="fixed right-2 sm:right-4 bottom-16 sm:bottom-20 z-50 flex flex-col items-end gap-2.5 select-none pointer-events-auto animate-fadeIn">
-      {/* WhatsApp Floating Button with 'WhatsApp Channel' Badge */}
+      {/* WhatsApp Floating Button with 'Join Group' Badge */}
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Join WhatsApp Channel for Rajasthan Vacancy Alerts"
+        aria-label="Join WhatsApp Group for Rajasthan Vacancy Alerts"
         className="group flex items-center gap-1.5 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer filter drop-shadow-lg"
       >
-        <span className="bg-[#00a859] hover:bg-[#008f4c] text-white text-[11px] sm:text-xs font-black tracking-wide px-2.5 py-1 rounded-md shadow-md transition-colors flex items-center justify-center">
-          WhatsApp Channel
+        <span className="bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] sm:text-xs font-bold tracking-wide px-2.5 py-1 rounded-md shadow-md transition-colors flex items-center justify-center">
+          Join Group
         </span>
 
         <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6 ring-2 ring-white">
@@ -38,7 +38,7 @@ export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
         aria-label="Join Telegram Channel for Rajasthan Vacancy Alerts"
         className="group flex items-center gap-1.5 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer filter drop-shadow-lg"
       >
-        <span className="bg-[#0088cc] hover:bg-[#0077b5] text-white text-[11px] sm:text-xs font-black tracking-wide px-2.5 py-1 rounded-md shadow-md transition-colors flex items-center justify-center">
+        <span className="bg-[#0088cc] hover:bg-[#0077b5] text-white text-[11px] sm:text-xs font-bold tracking-wide px-2.5 py-1 rounded-md shadow-md transition-colors flex items-center justify-center">
           Telegram
         </span>
 

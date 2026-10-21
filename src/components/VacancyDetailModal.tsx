@@ -118,6 +118,17 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
               <span className="bg-black/20 text-amber-200 text-xs font-mono px-2 py-0.5 rounded">
                 {vacancy.advtNo}
               </span>
+              {vacancy.isHighDemand || (vacancy.clicksCount && vacancy.clicksCount >= 3000) || (vacancy.savesCount && vacancy.savesCount >= 600) ? (
+                <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded flex items-center gap-1 shadow-2xs animate-pulse">
+                  <span>⚡</span>
+                  <span>{isHi ? 'हाई डिमांड भर्ती' : 'HIGH DEMAND'}</span>
+                </span>
+              ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
+                <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+                  <span>🔥</span>
+                  <span>{isHi ? 'ट्रेंडिंग भर्ती' : 'TRENDING'}</span>
+                </span>
+              ) : null}
               {vacancy.isHot && (
                 <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded">
                   HOT NOTIFICATION

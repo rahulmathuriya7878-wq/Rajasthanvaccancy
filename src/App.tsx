@@ -46,7 +46,9 @@ import {
 import { 
   OfflineIndicator 
 } from './components/OfflineIndicator';
+import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
+import { generateHindiShareText } from './utils/shareUtils';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { 
@@ -312,18 +314,27 @@ export default function App() {
   useEffect(() => {
     try {
       const url = new URL(window.location.href);
+      const metaDescEl = document.querySelector('meta[name="description"]');
+
       if (selectedVacancy) {
         url.searchParams.set('vacancy', selectedVacancy.id);
         window.history.replaceState({}, '', url.toString());
-        document.title = `${lang === 'hi' ? selectedVacancy.titleHi : selectedVacancy.title} - Rajasthan Vacancy`;
+        const titleText = `${lang === 'hi' ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
+        document.title = titleText;
+        if (metaDescEl) {
+          metaDescEl.setAttribute('content', selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title);
+        }
       } else {
         url.searchParams.delete('vacancy');
         window.history.replaceState({}, '', url.toString());
-        document.title = 'Sainik School Chittorgarh Recruitment 2026 - Govt Job Portal';
+        document.title = 'RAJASTHAN VACANCY - Rajasthan Govt Job Alerts & Recruitment Portal';
+        if (metaDescEl) {
+          metaDescEl.setAttribute('content', 'Latest Rajasthan Government Job Alerts, RSMSSB, RPSC, Police, REET, Admit Cards, Answer Keys, Results, and Sarkari Yojana.');
+        }
       }
       (window as any).updateDynamicFaqSchema?.();
     } catch (e) {
-      console.error('Error updating URL params', e);
+      console.error('Error updating URL params and SEO titles', e);
     }
   }, [selectedVacancy, lang]);
 
@@ -345,44 +356,42 @@ export default function App() {
   };
 
   const handleToggleSave = (id: string) => {
-    if (savedIds.includes(id)) {
+    const isAlreadySaved = savedIds.includes(id);
+    if (isAlreadySaved) {
       setSavedIds(savedIds.filter(i => i !== id));
       showToast(lang === 'hi' ? 'भर्ती को सुरक्षित सूची से हटाया गया' : 'Removed from saved jobs');
     } else {
       setSavedIds([...savedIds, id]);
       showToast(lang === 'hi' ? 'भर्ती को सुरक्षित सूची में जोड़ा गया ★' : 'Notification saved successfully ★');
     }
+
+    setVacancies(prev =>
+      prev.map(v => {
+        if (v.id === id) {
+          const currentSaves = v.savesCount || 0;
+          return {
+            ...v,
+            savesCount: isAlreadySaved ? Math.max(0, currentSaves - 1) : currentSaves + 1
+          };
+        }
+        return v;
+      })
+    );
+  };
+
+  const handleSelectVacancy = (item: VacancyItem) => {
+    // Increment clicks count dynamically
+    setVacancies(prev =>
+      prev.map(v => v.id === item.id ? { ...v, clicksCount: (v.clicksCount || 0) + 1 } : v)
+    );
+    setSelectedVacancy(item);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleShareVacancy = (item: VacancyItem) => {
     const titleHi = item.titleHi || item.title;
     const shareUrl = `${window.location.origin}${window.location.pathname}?vacancy=${item.id}`;
-    const category = item.category;
-    const status = item.status;
-
-    let text = '';
-    const isScheme = category === 'scheme' || item.organization === 'Sarkari Yojana';
-
-    if (isScheme) {
-      const benefit = item.yojanaOverview?.monthlyAssistance || item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary || 'सरकारी सहायता एवं अनुदान';
-      const lastDate = item.yojanaOverview?.applyLastDate || item.importantDates?.applyLastDate || 'TBA';
-      text = `*${titleHi}*\nयोजना का लाभ: ${benefit}\nआवेदन की अंतिम तिथि: ${lastDate}\nयोजना में आवेदन हेतु यहाँ क्लिक करें:\n${shareUrl}`;
-    } else if (category === 'admit_card' || status === 'admit_card_out') {
-      const admitCardDate = item.importantDates?.admitCardDate || 'जारी कर दिया गया है';
-      const examDate = item.importantDates?.examDate || 'नोटिफिकेशन देखें';
-      text = `*${titleHi}*\nप्रवेश पत्र जारी तिथि: ${admitCardDate}\nपरीक्षा तिथि: ${examDate}\nप्रवेश पत्र डाउनलोड करने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
-    } else if (category === 'answer_key' || status === 'answer_key_out') {
-      const keyDate = item.importantDates?.notificationDate || 'जारी कर दी गई है';
-      const feeDate = item.importantDates?.feeLastDate || item.importantDates?.applyLastDate || 'आधिकारिक वेबसाइट देखें';
-      text = `*${titleHi}*\nउत्तर कुंजी (Answer Key) जारी तिथि: ${keyDate}\nआपत्ति दर्ज करने की अंतिम तिथि: ${feeDate}\nआंसर-की डाउनलोड करने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
-    } else if (category === 'result' || status === 'result_declared') {
-      const resultDate = item.importantDates?.resultDate || 'घोषित कर दिया गया है';
-      text = `*${titleHi}*\nपरीक्षा परिणाम घोषित तिथि: ${resultDate}\nपरिणाम एवं मेरिट लिस्ट देखने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
-    } else {
-      const lastDate = item.importantDates?.applyLastDate || 'TBA';
-      const postsCount = typeof item.totalPosts === 'number' ? item.totalPosts.toLocaleString() : (item.totalPosts || 'विभिन्न पद');
-      text = `*${titleHi}*\nकुल पद: ${postsCount}\nआवेदन की अंतिम तिथि: ${lastDate}\nऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:\n${shareUrl}`;
-    }
+    const text = generateHindiShareText(item, shareUrl);
 
     if (navigator.share) {
       navigator.share({
@@ -392,7 +401,7 @@ export default function App() {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      showToast(lang === 'hi' ? 'जानकारी का लिंक कॉपी हो गया!' : 'Details copied to clipboard!');
+      showToast(lang === 'hi' ? 'महत्वपूर्ण जानकारी एवं लिंक कॉपी हो गया!' : 'Details copied to clipboard!');
     }
   };
 
@@ -527,10 +536,7 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         latestVacancies={vacancies}
-        onSelectVacancy={(item) => {
-          setSelectedVacancy(item);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onSelectVacancy={handleSelectVacancy}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSelectCategory={(cat) => setSelectedCategory(cat as any)}
@@ -566,10 +572,7 @@ export default function App() {
             isSaved={savedIds.includes(selectedVacancy.id)}
             onToggleSave={handleToggleSave}
             allVacancies={vacancies}
-            onSelectOtherVacancy={(item) => {
-              setSelectedVacancy(item);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onSelectOtherVacancy={handleSelectVacancy}
             isAdmin={isAdmin}
             onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
             onEditVacancy={(item) => {
@@ -587,10 +590,7 @@ export default function App() {
             <FastUpdatesGrid
               vacancies={vacancies}
               lang={lang}
-              onSelectVacancy={(item) => {
-                setSelectedVacancy(item);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onSelectVacancy={handleSelectVacancy}
               isAdmin={isAdmin}
               onEditVacancy={(item) => {
                 setEditingVacancy(item);
@@ -686,6 +686,7 @@ export default function App() {
         lang={lang}
       />
 
+      <FloatingSocialButtons />
       <OfflineIndicator lang={lang} />
     </div>
   );

@@ -15,6 +15,7 @@ import {
   Bell
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
+import { AdSection } from './AdSection';
 
 interface FastUpdatesGridProps {
   vacancies: VacancyItem[];
@@ -25,6 +26,8 @@ interface FastUpdatesGridProps {
   onEditVacancy?: (item: VacancyItem) => void;
   alertJobIds?: string[];
   onToggleAlertMe?: (id: string) => void;
+  /** Toggle whether to display responsive AdSection between grid blocks */
+  showAds?: boolean;
 }
 
 export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
@@ -35,6 +38,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onEditVacancy,
   alertJobIds = [],
   onToggleAlertMe,
+  showAds = true,
 }) => {
   const isHi = lang === 'hi';
 
@@ -132,15 +136,15 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     <div className="w-full space-y-8">
       {/* 5-Box Grid with dedicated Government Yojana Box */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 items-start">
-        {sections.map((sec) => {
+        {sections.map((sec, index) => {
           const isExpanded = expandedSections[sec.key];
           const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 50);
 
           return (
-            <div
-              key={sec.key}
-              className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition"
-            >
+            <React.Fragment key={sec.key}>
+              <div
+                className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition"
+              >
               {/* Box Header */}
               <div className="bg-white text-slate-950 px-4 py-3 flex items-center justify-between border-b border-slate-200">
                 <div className="flex items-center gap-2 font-black text-sm tracking-wide text-slate-900">
@@ -164,6 +168,21 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                         >
                           <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 mt-1 shrink-0 transition-transform group-hover:translate-x-0.5" />
                           <div className="flex-1 min-w-0">
+                            {(item.isHighDemand || (item.clicksCount && item.clicksCount >= 3000) || (item.savesCount && item.savesCount >= 600)) ? (
+                              <div className="mb-1">
+                                <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-2xs uppercase tracking-wide">
+                                  <span>⚡</span>
+                                  <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
+                                </span>
+                              </div>
+                            ) : (item.isTrending || (item.clicksCount && item.clicksCount >= 1400) || (item.savesCount && item.savesCount >= 250)) ? (
+                              <div className="mb-1">
+                                <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-2xs uppercase tracking-wide">
+                                  <span>🔥</span>
+                                  <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
+                                </span>
+                              </div>
+                            ) : null}
                             <p className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-amber-800 line-clamp-2 leading-snug">
                               {isHi ? item.titleHi : item.title}
                             </p>
@@ -231,7 +250,15 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                   </div>
                 )}
               </div>
-            </div>
+              </div>
+
+              {/* Injected AdSection between grid sections (e.g. between Admit Card & Results / Answer Key & Schemes) */}
+              {showAds && (index === 1 || index === 3) && (
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-5 my-1">
+                  <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
+                </div>
+              )}
+            </React.Fragment>
           );
         })}
       </div>

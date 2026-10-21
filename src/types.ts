@@ -110,6 +110,8 @@ export interface VacancyItem {
     ews: number;
     otrNote?: string;
     otrNoteHi?: string;
+    paymentMode?: string;
+    paymentModeHi?: string;
   };
   importantDates: {
     notificationDate: string;
@@ -139,6 +141,10 @@ export interface VacancyItem {
   };
   isHot?: boolean;
   isNew?: boolean;
+  isTrending?: boolean;
+  isHighDemand?: boolean;
+  clicksCount?: number;
+  savesCount?: number;
   description: string;
   descriptionHi: string;
   briefSummary?: string;
@@ -189,8 +195,26 @@ export interface VacancyItem {
     criteriaHi?: string[];
     incomeLimitHi?: string[];
   };
+  officialNotificationExcerpt?: {
+    authority?: string;
+    refNo?: string;
+    date?: string;
+    titleRed?: string;
+    titleSubtitle?: string;
+    body?: string;
+  };
+  seoSettings?: SeoSettings;
   updatedAt?: string;
   createdAt: string;
+}
+
+export interface SeoSettings {
+  focusKeywords?: string[];
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  robotsMeta?: string;
+  ogImageUrl?: string;
 }
 
 export type LanguageMode = 'en' | 'hi';

@@ -203,6 +203,9 @@ export const AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY: VacancyItem = {
   departmentHi: 'सामाजिक न्याय एवं अधिकारिता विभाग, राजस्थान',
   advtNo: 'SJED/DBT/2026/01',
   category: 'scheme',
+  isHighDemand: true,
+  clicksCount: 3120,
+  savesCount: 640,
   totalPosts: '5000+ लाभार्थी छात्र',
   postName: 'Ambedkar DBT Voucher Scheme 2026',
   postNameHi: 'राजस्थान अंबेडकर डीबीटी वाउचर योजना 2026',
@@ -615,6 +618,10 @@ export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
   departmentHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) एवं विश्वविद्यालय अनुदान आयोग',
   advtNo: 'UGC-NET/2026/DEC/01',
   category: 'ugc_net',
+  isTrending: true,
+  isHighDemand: true,
+  clicksCount: 4120,
+  savesCount: 890,
   totalPosts: 'विभिन्न विषय (83+ Subjects)',
   postName: 'Assistant Professor & Junior Research Fellowship (JRF)',
   postNameHi: 'असिस्टेंट प्रोफेसर एवं जूनियर रिसर्च फेलोशिप (JRF)',
@@ -778,6 +785,9 @@ export const DSSSB_DISTRICT_COURT_2026_VACANCY: VacancyItem = {
   departmentHi: 'दिल्ली जिला एवं सत्र न्यायालय तथा पारिवारिक न्यायालय (DSSSB)',
   advtNo: '04/2026',
   category: 'latest_job',
+  isTrending: true,
+  clicksCount: 2680,
+  savesCount: 580,
   totalPosts: 641,
   postName: 'Junior Judicial Assistant (JJA), Personal Assistant (PA), Senior Personal Assistant (SPA), Peon/Orderly & Process Server',
   postNameHi: 'जूनियर ज्यूडिशियल असिस्टेंट (JJA), पर्सनल असिस्टेंट (PA), सीनियर पर्सनल असिस्टेंट (SPA), चपरासी एवं प्रोसेस सर्वर',
@@ -990,7 +1000,199 @@ export const DSSSB_DISTRICT_COURT_2026_VACANCY: VacancyItem = {
   createdAt: '2026-10-19'
 };
 
+export const SUPREME_COURT_COURT_MASTER_2026_VACANCY: VacancyItem = {
+  id: 'supreme-court-court-master-recruitment-2026',
+  title: 'Supreme Court Court Master Recruitment 2026: Notification Released for 20 Posts, Apply Online',
+  titleHi: 'Supreme Court Court Master Recruitment 2026: सुप्रीम कोर्ट कोर्ट मास्टर के पदों पर भर्ती का नोटिफिकेशन जारी, यहां से करें आवेदन',
+  shortTitle: 'Supreme Court Court Master Bharti 2026',
+  shortTitleHi: 'सुप्रीम कोर्ट कोर्ट मास्टर भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'Supreme Court of India (SCI)',
+  departmentHi: 'भारत का सर्वोच्च न्यायालय (Supreme Court of India)',
+  advtNo: 'F.6/2026-SC (RC)',
+  category: 'latest_job',
+  totalPosts: 20,
+  isTrending: true,
+  isHighDemand: true,
+  clicksCount: 1840,
+  savesCount: 395,
+  postName: 'Court Master (Shorthand)',
+  postNameHi: 'कोर्ट मास्टर (आशुलिपिक / Shorthand)',
+  qualification: ['Graduate'],
+  qualificationDetails: 'Bachelor Degree in any stream with 120 wpm English Shorthand & 40 wpm Computer Typing speed + 5 years regular service as Stenographer/PA.',
+  qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) डिग्री + 120 शब्द प्रति मिनट अंग्रेजी आशुलिपि (Shorthand) तथा 40 शब्द प्रति मिनट कंप्यूटर टाइपिंग स्पीड + 5 वर्ष का नियमित स्टेनोग्राफर/निजी सहायक (PA) का कार्यानुभव।',
+  briefSummary: 'Supreme Court of India (SCI) has released the notification for Court Master (Shorthand) recruitment 2026 for 20 posts. Online applications begin on 25 October 2026.',
+  briefSummaryHi: '**Supreme Court Court Master Recruitment 2026:** सुप्रीम कोर्ट ऑफ इंडिया ने कोर्ट मास्टर (शॉर्टहैंड) के 20 संभावित पदों पर सीधी भर्ती का आधिकारिक नोटिफिकेशन जारी किया है। निर्धारित योग्यता और अनुभव रखने वाले भारतीय नागरिक इस भर्ती में ऑनलाइन आवेदन कर सकेंगे। आवेदन प्रक्रिया **25 अक्टूबर 2026 से शुरू होगी और 15 नवंबर 2026 को रात 11:55 बजे तक चलेगी।**',
+  officialNotificationExcerpt: {
+    authority: 'SUPREME COURT OF INDIA',
+    refNo: 'No.F.6/11/CM(S)/2026-SC (RC)',
+    date: 'Date: October 15, 2026.',
+    titleRed: 'Supreme Court',
+    titleSubtitle: 'Court Master Recruitment 2026',
+    body: 'Online applications are invited from Indian citizens, who fulfill the prescribed qualifications and other eligibility conditions, as on 1st October, 2026, for selection of suitable candidates, by direct recruitment, for preparation of a panel for filling up 20 tentative vacancies of Court Master (Shorthand), a gazetted post in the Registry of the Supreme Court of India, placed in Level 11 of Pay Matrix i.e., Rs.67,700-Rs.2,08,700/-, with initial Basic Pay of Rs.67,700/- plus allowances, as admissible under the Rules.'
+  },
+  description: 'Supreme Court of India Court Master (Shorthand) Recruitment 2026 complete details, eligibility, syllabus, salary, and application form link.',
+  descriptionHi: `✍️ नमस्ते साथियों,
+
+सुप्रीम कोर्ट ऑफ इंडिया (Supreme Court of India) में कोर्ट मास्टर (आशुलिपिक) पद पर सेवा देने का सपना देख रहे उम्मीदवारों के लिए शानदार अवसर सामने आया है। सर्वोच्च न्यायालय भर्ती प्रकोष्ठ द्वारा कोर्ट मास्टर (शॉर्टहैंड) के कुल 20 रिक्त पदों के लिए विज्ञापन संख्या F.6/2026-SC (RC) के तहत ऑनलाइन आवेदन पत्र आमंत्रित किए गए हैं।
+
+📌 भर्ती की मुख्य बातें (Overview & Highlights):
+• भर्ती संस्था: भारत का सर्वोच्च न्यायालय (Supreme Court of India)
+• पद का नाम: Court Master (Shorthand)
+• कुल रिक्त पद: 20 पद
+• आवेदन मोड: केवल ऑनलाइन (Online)
+• ऑनलाइन आवेदन शुरू तिथि: 25 अक्टूबर 2026
+• आवेदन करने की अंतिम तिथि: 15 नवंबर 2026 (रात 11:55 बजे तक)
+• वेतनमान (Salary): पे लेवल 11 (₹67,700 - ₹2,08,700/- प्रति माह) + DA एवं अन्य केंद्रीय भत्ते
+• कार्यस्थल (Job Location): नई दिल्ली (Supreme Court)
+• आधिकारिक वेबसाइट: sci.gov.in
+
+🎯 पात्रता एवं शैक्षणिक योग्यता (Educational Qualification):
+• उम्मीदवार किसी भी मान्यता प्राप्त विश्वविद्यालय से किसी भी विषय में स्नातक (Bachelor's Degree) उत्तीर्ण होना चाहिए।
+• अंग्रेजी आशुलिपि (English Shorthand) में न्यूनतम 120 शब्द प्रति मिनट (wpm) की गति होनी चाहिए।
+• कंप्यूटर पर अंग्रेजी टाइपिंग स्पीड न्यूनतम 40 शब्द प्रति मिनट (wpm) होनी चाहिए।
+• केंद्र सरकार / राज्य सरकार / उच्च न्यायालय / जिला न्यायालय या सार्वजनिक क्षेत्र के उपक्रम में स्टेनोग्राफर / निजी सहायक (PA) संवर्ग में न्यूनतम 5 वर्ष की नियमित सेवा का अनुभव आवश्यक है।
+
+⏳ आयु सीमा (Age Limit):
+• न्यूनतम आयु: 30 वर्ष
+• अधिकतम आयु: 45 वर्ष (आयु गणना 1 अक्टूबर 2026 के अनुसार)
+• आरक्षित वर्गों (SC/ST/OBC/Ex-SM/PwD) को केंद्र सरकार के नियमों के अनुसार अधिकतम आयु सीमा में छूट देय होगी।
+
+💰 आवेदन शुल्क (Application Fee):
+• सामान्य (General), अन्य पिछड़ा वर्ग (OBC) एवं ईडब्ल्यूएस (EWS): ₹1,500/-
+• अनुसूचित जाति (SC), अनुसूचित जनजाति (ST), दिव्यांग (PwD) एवं भूतपूर्व सैनिक: ₹750/-
+• शुल्क भुगतान मोड: केवल ऑनलाइन (नेट बैंकिंग, डेबिट कार्ड, क्रेडिट कार्ड, यूपीआई)
+
+📝 चयन प्रक्रिया (Selection Process):
+1. वस्तुनिष्ठ लिखित परीक्षा (Objective Type Written Test - General Knowledge, English, Computer Knowledge)
+2. अंग्रेजी आशुलिपि गति परीक्षा (English Shorthand Test - 120 wpm) एवं टाइपिंग टेस्ट (40 wpm)
+3. व्यक्तिगत साक्षात्कार (Personal Interview / Viva-Voce)
+4. दस्तावेज सत्यापन एवं चिकित्सा परीक्षण (Document Verification & Medical Fitness Test)`,
+  jobLocation: 'नई दिल्ली (Supreme Court of India)',
+  salary: '₹67,700 to ₹2,08,700 per month (Pay Level 11) + Admissible Allowances',
+  salaryHi: '₹67,700 से ₹2,08,700/- प्रति माह (पे लेवल 11) + केंद्रीय भत्ते',
+  salaryTable: [
+    {
+      postName: 'Court Master (Shorthand)',
+      postNameHi: 'कोर्ट मास्टर (आशुलिपिक)',
+      payLevel: 'Pay Level 11',
+      payLevelHi: 'पे लेवल 11',
+      salaryRange: '₹67,700 - ₹2,08,700/-',
+      salaryRangeHi: '₹67,700 से ₹2,08,700/- (मूल वेतन + डीए व एचआरए)'
+    }
+  ],
+  ageLimit: {
+    min: 30,
+    max: 45,
+    asOnDate: '2026-10-01',
+    relaxationNotes: 'Age relaxation of 5 years for SC/ST, 3 years for OBC, and as per Central Govt rules for Ex-SM/PwD.',
+    relaxationNotesHi: 'आयु की गणना 1 अक्टूबर 2026 के आधार पर होगी। एससी/एसटी को 5 वर्ष, ओबीसी को 3 वर्ष तथा दिव्यांग/भूतपूर्व सैनिकों को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।'
+  },
+  applicationFee: {
+    genObc: 1500,
+    scSt: 750,
+    ews: 1500,
+    otrNote: '₹1500 for Gen/OBC/EWS and ₹750 for SC/ST/Ex-SM/PwD candidates + bank charges.',
+    otrNoteHi: 'सामान्य, ओबीसी और ईडब्ल्यूएस वर्ग के लिए ₹1500/-, तथा एससी, एसटी, दिव्यांग व भूतपूर्व सैनिकों के लिए ₹750/- आवेदन शुल्क देय होगा। भुगतान ऑनलाइन मोड से होगा।'
+  },
+  importantDates: {
+    notificationDate: '20 अक्टूबर 2026',
+    applyStartDate: '2026-10-25',
+    applyLastDate: '2026-11-15',
+    feeLastDate: '2026-11-15',
+    examDate: 'दिसंबर 2026 / जनवरी 2027 (शीघ्र सूचित होगी)',
+    admitCardDate: 'परीक्षा से 7 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Objective Type Written Examination (General Knowledge, English, Computer Knowledge)',
+    'English Shorthand Speed Test (120 wpm) & Transcription Test',
+    'Computer Typing Speed Test (40 wpm)',
+    'Personal Interview (Viva-Voce)',
+    'Document Verification & Medical Examination'
+  ],
+  selectionProcessHi: [
+    'वस्तुनिष्ठ लिखित परीक्षा (सामान्य ज्ञान, सामान्य अंग्रेजी एवं कंप्यूटर ज्ञान)',
+    'अंग्रेजी आशुलिपि गति परीक्षा (120 शब्द प्रति मिनट) एवं ट्रांसक्रिप्शन टेस्ट',
+    'कंप्यूटर टाइपिंग स्पीड टेस्ट (40 शब्द प्रति मिनट)',
+    'व्यक्तिगत साक्षात्कार (Personal Interview)',
+    'दस्तावेज सत्यापन एवं स्वास्थ्य परीक्षण (DV & Medical Test)'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://sci.gov.in/recruitment',
+    notificationPdfUrl: 'https://sci.gov.in',
+    officialWebsiteUrl: 'https://sci.gov.in'
+  },
+  howToApply: [
+    'Step 1: Visit the official Supreme Court website (sci.gov.in).',
+    'Step 2: Go to the "Recruitment" section from the homepage.',
+    'Step 3: Click on "Online Application for the post of Court Master (Shorthand) 2026".',
+    'Step 4: Complete your candidate registration with basic email and mobile verification.',
+    'Step 5: Fill in your educational qualifications and minimum 5 years stenography experience details.',
+    'Step 6: Upload scanned copy of photo, signature, experience certificate, and required documents.',
+    'Step 7: Pay the application fee online (₹1500 for Gen/OBC/EWS or ₹750 for SC/ST/PwD) and take a printout of the final application form.'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले सुप्रीम कोर्ट की आधिकारिक वेबसाइट sci.gov.in पर जाएं।',
+    'चरण 2: होमपेज पर दिए गए "Recruitment" (भर्ती) सेक्शन पर क्लिक करें।',
+    'चरण 3: "Online Application for Court Master (Shorthand) 2026" लिंक पर क्लिक करें।',
+    'चरण 4: अपना ईमेल व मोबाइल नंबर दर्ज कर नवीन रजिस्ट्रेशन (Sign Up) करें।',
+    'चरण 5: फॉर्म में अपनी व्यक्तिगत जानकारी, शैक्षणिक योग्यता एवं 5 वर्ष के स्टेनोग्राफी अनुभव का विवरण ध्यानपूर्वक भरें।',
+    'चरण 6: अपनी नवीनतम पासपोर्ट साइज फोटो, हस्ताक्षर व अनुभव प्रमाणपत्र निर्धारित प्रारूप में अपलोड करें।',
+    'चरण 7: अपनी श्रेणी अनुसार निर्धारित आवेदन शुल्क (₹1500 या ₹750) का ऑनलाइन भुगतान करें और सबमिट कर रसीद का प्रिंटआउट सुरक्षित रख लें।'
+  ],
+  requiredDocuments: [
+    'Graduation Degree & All Semester Marksheets.',
+    'Shorthand & Typing Certificates.',
+    'Minimum 5 years Experience Certificate in regular Stenographer/PA cadre.',
+    'Valid Government Photo ID Proof (Aadhaar / Voter ID / Passport).',
+    'Caste Certificate for SC/ST/OBC/EWS categories (if applicable).',
+    'Recent passport size color photograph.',
+    'Clean specimen signature.'
+  ],
+  requiredDocumentsHi: [
+    'स्नातक (Graduation) की डिग्री एवं सभी सेमेस्टर की अंकतालिकाएं।',
+    'अंग्रेजी आशुलिपि (Shorthand) एवं कंप्यूटर टाइपिंग दक्षता प्रमाणपत्र।',
+    'नियमित स्टेनोग्राफर/पीए संवर्ग में न्यूनतम 5 वर्ष का कार्यानुभव प्रमाणपत्र।',
+    'पहचान पत्र (आधार कार्ड / वोटर आईडी / पैन कार्ड)।',
+    'आरक्षित वर्गों (SC/ST/OBC/EWS) का वैध जाति प्रमाणपत्र।',
+    'पासपोर्ट साइज रंगीन फोटोग्राफ व हस्ताक्षर।'
+  ],
+  faqs: [
+    {
+      q: 'When will Supreme Court Court Master Recruitment 2026 online applications start?',
+      qHi: 'सुप्रीम कोर्ट कोर्ट मास्टर भर्ती 2026 के लिए ऑनलाइन आवेदन कब से शुरू होंगे?',
+      a: 'Online applications will start on 25 October 2026 on the official portal sci.gov.in.',
+      aHi: 'ऑनलाइन आवेदन 25 अक्टूबर 2026 से आधिकारिक वेबसाइट sci.gov.in पर शुरू होंगे।'
+    },
+    {
+      q: 'What is the last date to apply for Supreme Court Court Master posts?',
+      qHi: 'सुप्रीम कोर्ट कोर्ट मास्टर पदों के लिए आवेदन की अंतिम तिथि क्या है?',
+      a: 'The last date to apply online is 15 November 2026 up to 11:55 PM.',
+      aHi: 'ऑनलाइन आवेदन करने की अंतिम तिथि 15 नवंबर 2026 रात 11:55 बजे तक है।'
+    },
+    {
+      q: 'What is the shorthand speed required for Court Master in Supreme Court?',
+      qHi: 'सुप्रीम कोर्ट में कोर्ट मास्टर पद हेतु कितनी शॉर्टहैंड स्पीड आवश्यक है?',
+      a: 'English shorthand speed of 120 words per minute (wpm) and computer typing speed of 40 wpm is required.',
+      aHi: 'अंग्रेजी आशुलिपि (Shorthand) में 120 शब्द प्रति मिनट तथा कंप्यूटर टाइपिंग में 40 शब्द प्रति मिनट की गति अनिवार्य है।'
+    },
+    {
+      q: 'What is the salary of Court Master in Supreme Court?',
+      qHi: 'सुप्रीम कोर्ट में कोर्ट मास्टर का वेतन कितना होता है?',
+      a: 'Court Master is in Pay Level 11 with a basic pay scale of ₹67,700 to ₹2,08,700 plus central allowances.',
+      aHi: 'कोर्ट मास्टर पद पे-मैट्रिक्स लेवल 11 के तहत आता है, जिसमें ₹67,700 से ₹2,08,700/- प्रति माह मूल वेतन के साथ महंगाई भत्ता (DA) व अन्य केंद्रीय भत्ते मिलते हैं।'
+    }
+  ],
+  tags: ['supreme court', 'court master', 'sci', 'shorthand', 'court bharti 2026', 'sci recruitment'],
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  updatedAt: '20 अक्टूबर 2026',
+  createdAt: '2026-10-20'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  SUPREME_COURT_COURT_MASTER_2026_VACANCY,
   DSSSB_DISTRICT_COURT_2026_VACANCY,
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,
   UGC_NET_DECEMBER_2026_VACANCY,

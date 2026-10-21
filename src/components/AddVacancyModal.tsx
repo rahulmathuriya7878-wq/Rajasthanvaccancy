@@ -23,7 +23,8 @@ import {
   ShieldCheck,
   ListOrdered,
   Layers,
-  MapPin
+  MapPin,
+  Globe
 } from 'lucide-react';
 import { 
   VacancyItem, 
@@ -35,7 +36,8 @@ import {
   PostBreakdownItem,
   PayScaleItem,
   ExamPatternDetails,
-  ExamSubjectPattern
+  ExamSubjectPattern,
+  SeoSettings
 } from '../types';
 
 import { useAuth } from '../context/AuthContext.tsx';
@@ -65,7 +67,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const isEdit = !!editItem;
 
   // Active sub-tab in modal for easy navigation
-  const [activeTab, setActiveTab] = useState<'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links' | 'seo'>('basic');
 
   // Section Type (Gov job vs Gov yojana vs others)
   const [postSection, setPostSection] = useState<PostSectionType>('gov_job');
@@ -165,6 +167,14 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [handwrittenChecklistText, setHandwrittenChecklistText] = useState('');
   const [handwrittenSign, setHandwrittenSign] = useState('✍️ सफलता की हार्दिक शुभकामनाएं — राजस्थान वैकेंसी संपादकीय टीम');
 
+  // Section 11: SEO Settings
+  const [metaTitle, setMetaTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [focusKeywordsText, setFocusKeywordsText] = useState('');
+  const [canonicalUrl, setCanonicalUrl] = useState('');
+  const [robotsMeta, setRobotsMeta] = useState('index, follow, max-snippet:-1, max-image-preview:large');
+  const [ogImageUrl, setOgImageUrl] = useState('');
+
   // Pre-fill fields when editItem is provided
   useEffect(() => {
     if (editItem) {
@@ -196,6 +206,23 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         setNonTspPosts(0);
         setTspPosts(0);
         setSahariyaPosts(0);
+      }
+
+      // Pre-fill SEO Settings
+      if (editItem.seoSettings) {
+        setMetaTitle(editItem.seoSettings.metaTitle || '');
+        setMetaDescription(editItem.seoSettings.metaDescription || '');
+        setFocusKeywordsText(editItem.seoSettings.focusKeywords ? editItem.seoSettings.focusKeywords.join(', ') : '');
+        setCanonicalUrl(editItem.seoSettings.canonicalUrl || '');
+        setRobotsMeta(editItem.seoSettings.robotsMeta || 'index, follow, max-snippet:-1, max-image-preview:large');
+        setOgImageUrl(editItem.seoSettings.ogImageUrl || '');
+      } else {
+        setMetaTitle('');
+        setMetaDescription('');
+        setFocusKeywordsText('');
+        setCanonicalUrl('');
+        setRobotsMeta('index, follow, max-snippet:-1, max-image-preview:large');
+        setOgImageUrl('');
       }
 
       // Post Breakdown Table
@@ -478,6 +505,19 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       notesHi: parsedExamNotes
     } : undefined;
 
+    const parsedKeywords = focusKeywordsText
+      ? focusKeywordsText.split(',').map((k) => k.trim()).filter(Boolean)
+      : [];
+
+    const constructedSeoSettings: SeoSettings = {
+      metaTitle: metaTitle.trim() || undefined,
+      metaDescription: metaDescription.trim() || undefined,
+      focusKeywords: parsedKeywords.length > 0 ? parsedKeywords : undefined,
+      canonicalUrl: canonicalUrl.trim() || undefined,
+      robotsMeta: robotsMeta.trim() || undefined,
+      ogImageUrl: ogImageUrl.trim() || undefined,
+    };
+
     if (isEdit && editItem) {
       const updatedVacancy: VacancyItem = {
         ...editItem,
@@ -546,6 +586,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         description: description.trim(),
         descriptionHi: description.trim(),
         handwrittenNotes: constructedHandwrittenNotes,
+        seoSettings: constructedSeoSettings,
         updatedAt: formattedDate
       };
 
@@ -625,6 +666,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         description: description.trim(),
         descriptionHi: description.trim(),
         handwrittenNotes: constructedHandwrittenNotes,
+        seoSettings: constructedSeoSettings,
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: formattedDate
       };
@@ -643,6 +685,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     { id: 'dates', label: isHi ? '📅 तिथियां, शुल्क व आयु' : 'Dates & Fees', icon: Calendar },
     { id: 'steps', label: isHi ? '📋 दस्तावेज व प्रक्रिया' : 'Docs & Steps', icon: ListOrdered },
     { id: 'links', label: isHi ? '🔗 आधिकारिक लिंक्स' : 'Official Links', icon: ExternalLink },
+    { id: 'seo', label: isHi ? '🔍 SEO सेटिंग्स' : 'SEO Settings', icon: Globe },
   ] as const;
 
   return (

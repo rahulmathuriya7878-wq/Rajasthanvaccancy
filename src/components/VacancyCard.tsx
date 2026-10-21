@@ -107,11 +107,22 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
       {/* Top Tag Bar */}
       <div className="p-4 sm:p-5 pb-3">
         <div className="flex items-center justify-between gap-2 mb-2.5">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded border uppercase tracking-wider ${getBoardBadgeClass()}`}>
               {vacancy.organization}
             </span>
             {getStatusBadge()}
+            {vacancy.isHighDemand || (vacancy.clicksCount && vacancy.clicksCount >= 3000) || (vacancy.savesCount && vacancy.savesCount >= 600) ? (
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white flex items-center gap-1 shadow-2xs tracking-wide animate-pulse" title="High user clicks and save actions">
+                <span>⚡</span>
+                <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
+              </span>
+            ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs tracking-wide" title="Trending among candidates">
+                <span>🔥</span>
+                <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
+              </span>
+            ) : null}
             {vacancy.isHot && (
               <span className="text-[10px] font-black px-2 py-0.5 rounded bg-rose-600 text-white animate-pulse">
                 HOT

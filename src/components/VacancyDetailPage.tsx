@@ -31,9 +31,15 @@ import {
   CheckSquare,
   Sparkles,
   Briefcase,
-  Bell
+  Bell,
+  ChevronRight,
+  ChevronLeft,
+  Folder,
+  Flame
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
+import { generateHindiShareText } from '../utils/shareUtils';
+import { AdSection } from './AdSection';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -68,6 +74,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 }) => {
   const isHi = lang === 'hi';
   const isScheme = vacancy.category === 'scheme' || vacancy.organization === 'Sarkari Yojana';
+  const jobTitleName = vacancy.shortTitleHi || vacancy.titleHi || vacancy.title;
+  const shortJobName = vacancy.shortTitleHi || vacancy.shortTitle || (isHi && vacancy.titleHi ? vacancy.titleHi.split(':')[0] : vacancy.title.split(':')[0]);
   const [copiedLink, setCopiedLink] = useState(false);
   const [isHandwritingView, setIsHandwritingView] = useState(false);
 
@@ -205,44 +213,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     };
   }, [vacancy.id, isHi]);
 
-  const getCategoryShareText = (v: VacancyItem, url: string) => {
-    const titleHi = v.titleHi || v.title;
-    const category = v.category;
-    const status = v.status;
-    const isScheme = category === 'scheme' || v.organization === 'Sarkari Yojana';
-
-    if (isScheme) {
-      const benefit = v.yojanaOverview?.monthlyAssistance || v.yojanaOverview?.maxAnnualAssistance || v.salaryHi || v.salary || 'सरकारी सहायता एवं अनुदान';
-      const lastDate = v.yojanaOverview?.applyLastDate || v.importantDates?.applyLastDate || 'TBA';
-      return `*${titleHi}*\nयोजना का लाभ: ${benefit}\nआवेदन की अंतिम तिथि: ${lastDate}\nयोजना में आवेदन हेतु यहाँ क्लिक करें:\n${url}`;
-    }
-
-    if (category === 'admit_card' || status === 'admit_card_out') {
-      const admitCardDate = v.importantDates?.admitCardDate || 'जारी कर दिया गया है';
-      const examDate = v.importantDates?.examDate || 'नोटिफिकेशन देखें';
-      return `*${titleHi}*\nप्रवेश पत्र जारी तिथि: ${admitCardDate}\nपरीक्षा तिथि: ${examDate}\nप्रवेश पत्र डाउनलोड करने हेतु यहाँ क्लिक करें:\n${url}`;
-    }
-
-    if (category === 'answer_key' || status === 'answer_key_out') {
-      const keyDate = v.importantDates?.notificationDate || 'जारी कर दी गई है';
-      const feeDate = v.importantDates?.feeLastDate || v.importantDates?.applyLastDate || 'आधिकारिक वेबसाइट देखें';
-      return `*${titleHi}*\nउत्तर कुंजी (Answer Key) जारी तिथि: ${keyDate}\nआपत्ति दर्ज करने की अंतिम तिथि: ${feeDate}\nआंसर-की डाउनलोड करने हेतु यहाँ क्लिक करें:\n${url}`;
-    }
-
-    if (category === 'result' || status === 'result_declared') {
-      const resultDate = v.importantDates?.resultDate || 'घोषित कर दिया गया है';
-      return `*${titleHi}*\nपरीक्षा परिणाम घोषित तिथि: ${resultDate}\nपरिणाम एवं मेरिट लिस्ट देखने हेतु यहाँ क्लिक करें:\n${url}`;
-    }
-
-    const lastDate = v.importantDates?.applyLastDate || 'TBA';
-    const postsCount = typeof v.totalPosts === 'number' ? v.totalPosts.toLocaleString() : (v.totalPosts || 'विभिन्न पद');
-    return `*${titleHi}*\nकुल पद: ${postsCount}\nआवेदन की अंतिम तिथि: ${lastDate}\nऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:\n${url}`;
-  };
-
   const handleShare = () => {
     const titleHi = vacancy.titleHi || vacancy.title;
-    const currentUrl = window.location.href;
-    const shareText = getCategoryShareText(vacancy, currentUrl);
+    const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
+    const shareText = generateHindiShareText(vacancy, currentUrl);
 
     if (navigator.share) {
       navigator.share({
@@ -258,8 +232,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   };
 
   const handleWhatsAppShare = () => {
-    const currentUrl = window.location.href;
-    const shareText = getCategoryShareText(vacancy, currentUrl);
+    const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
+    const shareText = generateHindiShareText(vacancy, currentUrl);
     const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
@@ -387,16 +361,56 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return scored.slice(0, 3).map(s => s.item);
   }, [allVacancies, vacancy]);
 
+  // Previous and Next Post Navigation (for block directly below Important Dates)
+  const { prevPost, nextPost } = React.useMemo(() => {
+    if (!allVacancies || allVacancies.length === 0) return { prevPost: null, nextPost: null };
+    const currentIndex = allVacancies.findIndex(v => v.id === vacancy.id);
+    const listLen = allVacancies.length;
+    
+    if (currentIndex === -1 || listLen <= 1) {
+      return { prevPost: null, nextPost: null };
+    }
+
+    const prevIdx = (currentIndex - 1 + listLen) % listLen;
+    const nextIdx = (currentIndex + 1) % listLen;
+
+    return {
+      prevPost: allVacancies[prevIdx],
+      nextPost: allVacancies[nextIdx] !== allVacancies[prevIdx] ? allVacancies[nextIdx] : null
+    };
+  }, [allVacancies, vacancy]);
+
+  // Recent Posts list for rajasthanvacancy.com screenshot style
+  const recentPostsList = React.useMemo(() => {
+    if (!allVacancies || allVacancies.length === 0) return [];
+    return allVacancies.filter(v => v.id !== vacancy.id).slice(0, 8);
+  }, [allVacancies, vacancy]);
+
+  const renderFormattedText = (text: string) => {
+    if (!text) return null;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={index} className="font-bold text-slate-900 bg-amber-100/70 px-1 py-0.5 rounded border border-amber-200/50">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
-    <article className="w-full max-w-4xl mx-auto space-y-6 text-slate-800 text-base post-content leading-relaxed">
+    <article className="w-full max-w-4xl mx-auto space-y-6 text-slate-700 text-base post-content leading-relaxed">
       {/* Main Post Title Card */}
-      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-3">
+      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
         {/* Admin Bar (Only visible when Admin Mode is active) */}
         {isAdmin && (
           <div className="flex items-center justify-between gap-2 flex-wrap pb-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+              <span className="px-2 py-0.5 rounded bg-slate-900 text-white font-bold text-xs flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-white" />
                 <span>{isHi ? 'एडमिन मोड' : 'Admin Mode'}</span>
               </span>
             </div>
@@ -406,16 +420,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               <button
                 type="button"
                 onClick={() => onEditVacancy && onEditVacancy(vacancy)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm shadow-amber-600/30"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                 title="Edit & Update Post Details"
               >
-                <Edit3 className="w-4 h-4 text-amber-100" />
+                <Edit3 className="w-4 h-4 text-white" />
                 <span>{isHi ? '✏️ पोस्ट संशोधित / अपडेट' : '✏️ Edit & Update'}</span>
               </button>
               <button
                 type="button"
                 onClick={() => onDeleteVacancy && onDeleteVacancy(vacancy.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm shadow-rose-600/30"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                 title="Delete Post"
               >
                 <span>{isHi ? '🗑️ डिलीट पोस्ट' : '🗑️ Delete Post'}</span>
@@ -424,92 +438,139 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         )}
 
-        {/* Post Heading - Clean, Uniform Standard Size */}
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug tracking-tight">
+        {/* Post Heading - Clean, Uniform Standard Size matching rajasthanvacancy.com */}
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 leading-snug tracking-tight">
           {isHi ? vacancy.titleHi : vacancy.title}
         </h1>
 
-        {/* Post Meta */}
-        <div className="text-slate-600 flex items-center justify-between gap-3 flex-wrap pb-3 border-b border-slate-200 text-sm">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-              <Building2 className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>{isHi && vacancy.departmentHi ? vacancy.departmentHi : vacancy.department}</span>
+        {/* Post Meta - Clean WordPress Blog Format matching screenshot */}
+        <div className="text-slate-500 flex flex-col gap-1 pb-3 border-b border-slate-200 text-sm font-normal">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span>{vacancy.updatedAt || vacancy.importantDates?.notificationDate || 'October 20, 2026'} by</span>
+              <span className="text-blue-600 font-medium hover:underline cursor-pointer">RajasthanVacancy</span>
             </div>
-            <span>•</span>
-            <span>{vacancy.jobLocation}</span>
-            <span>•</span>
-            <span className="text-slate-500">{isHi ? 'अपडेट' : 'Updated'}: {vacancy.updatedAt || vacancy.importantDates.notificationDate || vacancy.createdAt}</span>
+            {vacancy.isHighDemand || (vacancy.clicksCount && vacancy.clicksCount >= 3000) || (vacancy.savesCount && vacancy.savesCount >= 600) ? (
+              <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white flex items-center gap-1 shadow-2xs animate-pulse">
+                <span>⚡</span>
+                <span>{isHi ? 'हाई डिमांड भर्ती' : 'High Demand Notification'}</span>
+              </span>
+            ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
+              <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs">
+                <span>🔥</span>
+                <span>{isHi ? 'ट्रेंडिंग सूचना' : 'Trending Notification'}</span>
+              </span>
+            ) : null}
           </div>
-
-          {/* Quick Action Buttons: Alert Me, Bookmark, Share */}
-          <div className="flex items-center gap-2 pt-1 sm:pt-0">
-            <button
-              type="button"
-              onClick={() => onToggleAlertMe && onToggleAlertMe(vacancy.id)}
-              className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition cursor-pointer border shadow-2xs ${
-                isAlertSet 
-                  ? 'bg-rose-600 text-white border-rose-600 hover:bg-rose-700' 
-                  : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200'
-              }`}
-              title={isAlertSet ? 'अलर्ट ऑन (Alert Active)' : 'आवेदन शुरू होने का नोटिफिकेशन पाएं'}
-            >
-              <Bell className={`w-3.5 h-3.5 ${isAlertSet ? 'fill-white text-white animate-bounce' : 'text-rose-600'}`} />
-              <span>{isAlertSet ? (isHi ? 'अलर्ट ऑन ★' : 'Alert On ★') : (isHi ? '🔔 अलर्ट सेट करें (Alert Me)' : '🔔 Alert Me')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onToggleSave(vacancy.id)}
-              className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition cursor-pointer border shadow-2xs ${
-                isSaved 
-                  ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700' 
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-300'
-              }`}
-            >
-              <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-white' : ''}`} />
-              <span>{isSaved ? (isHi ? 'सेव्ड ★' : 'Saved ★') : (isHi ? 'सेव करें' : 'Save')}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleShare}
-              className="px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition cursor-pointer shadow-2xs"
-            >
-              <Share2 className="w-3.5 h-3.5 text-slate-600" />
-              <span>{isHi ? 'शेयर' : 'Share'}</span>
-            </button>
+          <div className="text-xs text-slate-400 flex items-center gap-1.5 pt-0.5">
+            <span>📍 {vacancy.jobLocation}</span>
+            <span>•</span>
+            <span>🏢 {isHi && vacancy.departmentHi ? vacancy.departmentHi : vacancy.department}</span>
           </div>
         </div>
 
+        {/* Quick Overview Strip - Clean Grid */}
+        <div className="bg-gradient-to-r from-blue-50/80 via-slate-50 to-blue-50/50 border border-blue-200/70 rounded-xl p-3 sm:p-3.5 shadow-2xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 text-xs sm:text-sm">
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[11px] text-slate-500 block font-medium">{isHi ? 'पद का नाम' : 'Post Name'}</span>
+              <span className="font-bold text-slate-900 block truncate" title={vacancy.postName || vacancy.title}>
+                {vacancy.postNameHi || vacancy.postName || vacancy.shortTitle || vacancy.title}
+              </span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[11px] text-slate-500 block font-medium">{isHi ? 'कुल पद' : 'Total Posts'}</span>
+              <span className="font-black text-blue-700 text-sm sm:text-base block">
+                {vacancy.totalPosts ? `${vacancy.totalPosts} ${isHi ? 'पद' : 'Posts'}` : 'विभिन्न पद'}
+              </span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[11px] text-slate-500 block font-medium">{isHi ? 'आवेदन शुरू' : 'Apply Start'}</span>
+              <span className="font-bold text-slate-900 block">
+                {vacancy.importantDates?.applyStartDate || vacancy.importantDates?.notificationDate || '25 अक्टूबर 2026'}
+              </span>
+            </div>
+
+            <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs">
+              <span className="text-[11px] text-slate-500 block font-medium">{isHi ? 'अंतिम तिथि' : 'Last Date'}</span>
+              <span className="font-bold text-red-600 block">
+                {vacancy.importantDates?.applyLastDate || '15 नवंबर 2026'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Official Notification Image Excerpt Card - Urgency with Vivid Red Title & English Snippet */}
+        {vacancy.officialNotificationExcerpt && (
+          <div className="my-2 p-5 sm:p-6 bg-white border border-slate-200 rounded-xl shadow-xs text-center max-w-xl mx-auto space-y-2.5 font-sans">
+            <div className="font-black text-sm sm:text-base tracking-widest text-slate-900 uppercase">
+              {vacancy.officialNotificationExcerpt.authority || 'SUPREME COURT OF INDIA'}
+            </div>
+            <div className="flex items-center justify-between text-xs text-slate-500 border-b border-slate-200 pb-2">
+              <span className="font-mono">{vacancy.officialNotificationExcerpt.refNo || 'No.F.6/11/CM(S)/2026-SC (RC)'}</span>
+              <span>{vacancy.officialNotificationExcerpt.date || 'Date: October 15, 2026.'}</span>
+            </div>
+            <div className="py-1">
+              <div className="text-red-600 font-black text-xl sm:text-2xl tracking-tight">
+                {vacancy.officialNotificationExcerpt.titleRed || 'Supreme Court'}
+              </div>
+              <div className="text-red-600 font-extrabold text-lg sm:text-xl">
+                {vacancy.officialNotificationExcerpt.titleSubtitle || 'Court Master Recruitment 2026'}
+              </div>
+            </div>
+            <p className="text-xs sm:text-[13px] leading-relaxed text-slate-700 text-justify bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
+              {vacancy.officialNotificationExcerpt.body}
+            </p>
+          </div>
+        )}
+
         {/* Overview Introduction Box */}
-        <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center justify-between text-slate-900 border-b border-slate-100 pb-2.5">
-            <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 text-slate-900">
-              <span className="text-amber-600">📝</span>
+        <div className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between text-slate-800 border-b border-slate-200 pb-2.5">
+            <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 text-slate-800">
+              <span>📝</span>
               <span>{isHi ? 'भर्ती का संक्षिप्त विवरण (Recruitment Summary)' : 'Recruitment Summary'}</span>
             </h2>
-            <span className="text-xs bg-amber-50 text-amber-900 font-semibold px-2.5 py-1 rounded border border-amber-200">
-              {vacancy.category === 'scheme' ? 'सरकारी योजना' : 'सरकारी भर्ती'}
-            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {vacancy.isHighDemand || (vacancy.clicksCount && vacancy.clicksCount >= 3000) || (vacancy.savesCount && vacancy.savesCount >= 600) ? (
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 text-white flex items-center gap-1 shadow-2xs animate-pulse">
+                  <span>⚡</span>
+                  <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
+                </span>
+              ) : vacancy.isTrending || (vacancy.clicksCount && vacancy.clicksCount >= 1400) || (vacancy.savesCount && vacancy.savesCount >= 250) || isSaved ? (
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center gap-1 shadow-2xs">
+                  <span>🔥</span>
+                  <span>{isHi ? 'ट्रेंडिंग' : 'Trending'}</span>
+                </span>
+              ) : null}
+              <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-2.5 py-1 rounded">
+                {vacancy.category === 'scheme' ? 'सरकारी योजना' : 'सरकारी भर्ती'}
+              </span>
+            </div>
           </div>
 
-          <p className="text-base text-slate-800 leading-relaxed font-normal whitespace-pre-line">
-            {isScheme
-              ? isHi
-                ? `${vacancy.titleHi}: राजस्थान सरकार के ${vacancy.departmentHi || vacancy.department} द्वारा संचालित एक प्रमुख कल्याणकारी योजना है। इसके तहत राजकीय महाविद्यालयों एवं विश्वविद्यालयों में अध्ययनरत आरक्षित वर्गों (SC, ST, OBC, MBC एवं EWS) के नियमित छात्रों को किराए के कमरों/PG में रहने एवं भोजन हेतु ₹2,000/- प्रतिमाह (वर्ष में अधिकतम ₹20,000/-) की वित्तीय सहायता DBT के माध्यम से सीधे बैंक खाते में प्रदान की जाती है।`
-                : `${vacancy.title}: A welfare scheme by ${vacancy.department} providing ₹2,000/month (up to ₹20,000/year) via DBT to eligible SC, ST, OBC, MBC, and EWS college students staying in rented rooms or PG for higher education.`
-              : isHi 
-              ? (vacancy.briefSummaryHi || vacancy.briefSummary || `नमस्ते साथियों! ${vacancy.titleHi || vacancy.title} के अंतर्गत ${vacancy.organization} (${vacancy.departmentHi || vacancy.department}) द्वारा कुल ${vacancy.totalPosts || 'अनेक'} रिक्त पदों पर ऑनलाइन आवेदन आमंत्रित किए गए हैं। हमने इस भर्ती के सभी नियमों, पात्रता, परीक्षा पैटर्न और आवेदन प्रक्रिया को सरल भाषा में तैयार किया है ताकि फॉर्म भरते समय आपसे कोई गलती न हो। अंतिम तिथि ${vacancy.importantDates.applyLastDate} का इंतजार किए बिना समय पर अपना फॉर्म जरूर भर लें।`)
-              : (vacancy.briefSummary || `Hello Candidates! ${vacancy.title} has been officially announced by ${vacancy.organization} (${vacancy.department}) for a total of ${vacancy.totalPosts || 'various'} vacancies. Our mentor team has compiled all critical details, eligibility rules, and application steps in simple terms so you can apply without confusion before the last date ${vacancy.importantDates.applyLastDate}.`)}
+          <p className="text-[17px] text-slate-700 leading-[1.8] font-normal whitespace-pre-line">
+            {renderFormattedText(
+              isScheme
+                ? isHi
+                  ? `${vacancy.titleHi}: राजस्थान सरकार के ${vacancy.departmentHi || vacancy.department} द्वारा संचालित एक प्रमुख कल्याणकारी योजना है। इसके तहत राजकीय महाविद्यालयों एवं विश्वविद्यालयों में अध्ययनरत आरक्षित वर्गों (SC, ST, OBC, MBC एवं EWS) के नियमित छात्रों को किराए के कमरों/PG में रहने एवं भोजन हेतु ₹2,000/- प्रतिमाह (वर्ष में अधिकतम ₹20,000/-) की वित्तीय सहायता DBT के माध्यम से सीधे बैंक खाते में प्रदान की जाती है।`
+                  : `${vacancy.title}: A welfare scheme by ${vacancy.department} providing ₹2,000/month (up to ₹20,000/year) via DBT to eligible SC, ST, OBC, MBC, and EWS college students staying in rented rooms or PG for higher education.`
+                : isHi 
+                ? (vacancy.briefSummaryHi || vacancy.briefSummary || `नमस्ते साथियों! ${vacancy.titleHi || vacancy.title} के अंतर्गत ${vacancy.organization} (${vacancy.departmentHi || vacancy.department}) द्वारा कुल ${vacancy.totalPosts || 'अनेक'} रिक्त पदों पर ऑनलाइन आवेदन आमंत्रित किए गए हैं। हमने इस भर्ती के सभी नियमों, पात्रता, परीक्षा पैटर्न और आवेदन प्रक्रिया को सरल भाषा में तैयार किया है ताकि फॉर्म भरते समय आपसे कोई गलती न हो। अंतिम तिथि ${vacancy.importantDates.applyLastDate} का इंतजार किए बिना समय पर अपना फॉर्म जरूर भर लें।`)
+                : (vacancy.briefSummary || `Hello Candidates! ${vacancy.title} has been officially announced by ${vacancy.organization} (${vacancy.department}) for a total of ${vacancy.totalPosts || 'various'} vacancies. Our mentor team has compiled all critical details, eligibility rules, and application steps in simple terms so you can apply without confusion before the last date ${vacancy.importantDates.applyLastDate}.`)
+            )}
           </p>
 
+
+
           {onOpenAdminLogin && !isAdmin && (
-            <div className="pt-2 border-t border-slate-100 flex justify-end">
+            <div className="pt-2 border-t border-slate-200 flex justify-end">
               <button
                 type="button"
                 onClick={onOpenAdminLogin}
-                className="text-slate-400 hover:text-slate-700 transition cursor-pointer text-xs opacity-50 hover:opacity-100 flex items-center gap-1 font-mono"
+                className="text-slate-500 hover:text-slate-700 transition cursor-pointer text-xs opacity-60 hover:opacity-100 flex items-center gap-1 font-mono"
                 title="Admin Portal Access"
               >
                 <span>🔐 Admin Portal</span>
@@ -524,13 +585,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-200">
             <div className="flex items-center gap-2">
-              <PenTool className="w-5 h-5 text-amber-600 shrink-0" />
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+              <PenTool className="w-5 h-5 text-slate-800 shrink-0" />
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
                 {isHi ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} का विस्तृत विवरण` : `${vacancy.title} Detailed Information`}
               </h2>
             </div>
           </div>
-          <div className="text-base text-slate-800 leading-relaxed whitespace-pre-line font-normal space-y-3">
+          <div className="text-base text-slate-700 leading-relaxed whitespace-pre-line font-normal space-y-3">
             {isHi ? (vacancy.descriptionHi || vacancy.description) : vacancy.description}
           </div>
         </div>
@@ -540,159 +601,159 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           <div className="border-b border-slate-200 pb-3 flex items-center gap-2">
-            <Info className="w-5 h-5 text-amber-600 shrink-0" />
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+            <Info className="w-5 h-5 text-slate-800 shrink-0" />
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
               {vacancy.yojanaGeneralInfo?.headingHi || `${vacancy.shortTitleHi || vacancy.postNameHi || 'योजना'} क्या है? (सामान्य जानकारी)`}
             </h2>
           </div>
 
-          <div className="space-y-4 text-base text-slate-800 leading-relaxed">
-            <p className="bg-slate-50/60 p-4 rounded-lg border border-slate-200 text-slate-900">
+          <div className="space-y-4 text-base text-slate-700 leading-relaxed">
+            <p className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-slate-800 font-medium">
               {vacancy.yojanaGeneralInfo?.descriptionHi || vacancy.descriptionHi}
             </p>
 
             {vacancy.yojanaGeneralInfo?.objectiveHi && (
-              <div className="bg-slate-50/60 p-4 rounded-lg border border-slate-200 space-y-1">
-                <span className="font-bold text-slate-950 block text-base">🎯 योजना का मुख्य उद्देश्य:</span>
-                <p className="text-slate-800">{vacancy.yojanaGeneralInfo.objectiveHi}</p>
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-1">
+                <span className="font-bold text-slate-800 block text-base">🎯 योजना का मुख्य उद्देश्य:</span>
+                <p className="text-slate-700">{vacancy.yojanaGeneralInfo.objectiveHi}</p>
               </div>
             )}
 
             {/* Overview Table for Yojana inserted directly after 'योजना का मुख्य उद्देश्य' */}
             <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden my-3">
-              <div className="bg-white border-b border-slate-200 text-slate-900 px-5 py-3.5 flex items-center justify-between">
-                <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-600 shrink-0" />
+              <div className="bg-white border-b-2 border-slate-300 text-slate-800 px-5 py-3.5 flex items-center justify-between">
+                <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-slate-800">
+                  <Award className="w-5 h-5 text-slate-800 shrink-0" />
                   <span>
                     {`${vacancy.shortTitleHi || vacancy.postNameHi || 'योजना का नाम'} Overview`}
                   </span>
                 </h2>
-                <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded font-mono font-bold">
+                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded font-mono font-bold">
                   SARKARI YOJANA
                 </span>
               </div>
 
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-900 border-b border-slate-200 text-sm sm:text-base">
-                    <th className="py-3 px-4 font-bold w-2/5 border-r border-slate-200 text-slate-900">
+                  <tr className="bg-slate-100 text-slate-800 border-b border-slate-200 text-sm sm:text-base">
+                    <th className="py-3 px-4 font-bold w-2/5 border-r border-slate-200 text-slate-800">
                       विवरण
                     </th>
-                    <th className="py-3 px-4 font-bold text-slate-900">
+                    <th className="py-3 px-4 font-bold text-slate-800">
                       जानकारी
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm sm:text-base">
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       योजना का नाम
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-bold text-amber-900">
+                    <td className="py-3 px-4 text-slate-800 font-bold">
                       {vacancy.yojanaOverview?.yojanaName || vacancy.postNameHi || vacancy.titleHi}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       राज्य
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.state || 'राजस्थान'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       संबंधित विभाग
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.department || vacancy.departmentHi || vacancy.department}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       शैक्षणिक सत्र
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.academicSession || '2025-26 / 2026-27'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       लाभार्थी
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.beneficiaries || vacancy.qualificationDetailsHi}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       मासिक सहायता
                     </td>
-                    <td className="py-3 px-4 font-bold text-emerald-700">
+                    <td className="py-3 px-4 font-bold text-slate-800">
                       {vacancy.yojanaOverview?.monthlyAssistance || vacancy.salaryHi || vacancy.salary}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       एक वर्ष में सहायता अवधि
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.durationPerYear || 'अधिकतम 10 माह'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       वार्षिक अधिकतम सहायता
                     </td>
-                    <td className="py-3 px-4 font-bold text-emerald-800">
+                    <td className="py-3 px-4 font-bold text-slate-800">
                       {vacancy.yojanaOverview?.maxAnnualAssistance || '₹20,000/- प्रति वर्ष'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       निर्धारित लाभार्थी संख्या
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-bold">
+                    <td className="py-3 px-4 text-slate-800 font-bold">
                       {vacancy.yojanaOverview?.totalBeneficiariesCount || vacancy.totalPosts}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       आवेदन शुरू
                     </td>
-                    <td className="py-3 px-4 text-slate-900 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.applyStartDate || vacancy.importantDates.notificationDate}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       आवेदन की अंतिम तिथि
                     </td>
-                    <td className="py-3 px-4 font-bold text-rose-700">
+                    <td className="py-3 px-4 font-bold text-slate-800">
                       {vacancy.yojanaOverview?.applyLastDate || vacancy.importantDates.applyLastDate}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       आवेदन माध्यम
                     </td>
-                    <td className="py-3 px-4 text-blue-700 font-semibold">
+                    <td className="py-3 px-4 text-slate-700 font-semibold">
                       {vacancy.yojanaOverview?.applyMode || 'ऑनलाइन (SSO Portal SJMS App)'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       भुगतान का माध्यम
                     </td>
-                    <td className="py-3 px-4 text-emerald-800 font-medium">
+                    <td className="py-3 px-4 text-slate-700 font-medium">
                       {vacancy.yojanaOverview?.paymentMode || 'डायरेक्ट बेनिफिट ट्रांसफर (DBT)'}
                     </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                    <td className="py-3 px-4 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">
                       आधिकारिक वेबसाइट
                     </td>
-                    <td className="py-3 px-4 text-amber-700 font-medium">
+                    <td className="py-3 px-4 text-slate-800 font-medium">
                       <a 
                         href={vacancy.officialLinks.officialWebsiteUrl} 
                         target="_blank" 
@@ -709,16 +770,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             </div>
 
             {vacancy.yojanaGeneralInfo?.benefitsSummaryHi && (
-              <div className="bg-slate-50/60 p-4 rounded-lg border border-emerald-300 space-y-1">
-                <span className="font-bold text-emerald-900 block text-base">💰 वित्तीय सहायता राशि:</span>
-                <p className="text-emerald-950 font-medium">{vacancy.yojanaGeneralInfo.benefitsSummaryHi}</p>
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-1">
+                <span className="font-bold text-slate-800 block text-base">💰 वित्तीय सहायता राशि:</span>
+                <p className="text-slate-700 font-medium">{vacancy.yojanaGeneralInfo.benefitsSummaryHi}</p>
               </div>
             )}
 
             {vacancy.yojanaGeneralInfo?.keyPointsHi && vacancy.yojanaGeneralInfo.keyPointsHi.length > 0 && (
               <div className="space-y-2 pt-2">
-                <h3 className="font-bold text-slate-900 text-base sm:text-lg">📌 योजना की मुख्य बातें एवं बिंदु:</h3>
-                <ul className="list-disc list-inside space-y-1.5 text-slate-800 pl-2 text-base">
+                <h3 className="font-bold text-slate-800 text-base sm:text-lg">📌 योजना की मुख्य बातें एवं बिंदु:</h3>
+                <ul className="list-disc list-inside space-y-1.5 text-slate-700 pl-2 text-base">
                   {vacancy.yojanaGeneralInfo.keyPointsHi.map((pt, index) => (
                     <li key={index} className="leading-relaxed">
                       <span>{pt}</span>
@@ -735,35 +796,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           <div className="border-b border-slate-200 pb-3 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+            <CheckCircle2 className="w-5 h-5 text-slate-800 shrink-0" />
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
               {vacancy.yojanaEligibility?.headingHi || `${vacancy.shortTitleHi || vacancy.postNameHi || 'योजना'} 2026 के लिए पात्रता (Eligibility Criteria)`}
             </h2>
           </div>
 
-          <div className="space-y-4 text-base text-slate-800 leading-relaxed">
+          <div className="space-y-4 text-base text-slate-700 leading-relaxed">
             {/* Criteria List */}
             {vacancy.yojanaEligibility?.criteriaHi && vacancy.yojanaEligibility.criteriaHi.length > 0 ? (
               <div className="space-y-2.5">
-                <h3 className="font-bold text-slate-900 text-base">📋 अनिवार्य पात्रता मानदंड:</h3>
+                <h3 className="font-bold text-slate-800 text-base">📋 अनिवार्य पात्रता मानदंड:</h3>
                 <ul className="space-y-2">
                   {vacancy.yojanaEligibility.criteriaHi.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 bg-slate-50/50 p-3 rounded-lg border border-slate-200">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-1" />
-                      <span className="text-slate-800 font-medium">{item}</span>
+                    <li key={idx} className="flex items-start gap-2.5 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                      <CheckCircle2 className="w-4 h-4 text-slate-800 shrink-0 mt-1" />
+                      <span className="text-slate-700 font-medium">{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             ) : (
-              <p className="text-slate-800">{vacancy.qualificationDetailsHi}</p>
+              <p className="text-slate-700">{vacancy.qualificationDetailsHi}</p>
             )}
 
             {/* Family Income Limits */}
             {vacancy.yojanaEligibility?.incomeLimitHi && vacancy.yojanaEligibility.incomeLimitHi.length > 0 && (
-              <div className="bg-slate-50/50 p-4 rounded-lg border border-amber-300 space-y-2 mt-3">
-                <h3 className="font-bold text-slate-950 text-base">👨‍👩‍👧‍👦 पारिवारिक वार्षिक आय सीमा (Annual Family Income Limit):</h3>
-                <ul className="space-y-1.5 list-disc list-inside text-slate-900 pl-1 font-medium">
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2 mt-3">
+                <h3 className="font-bold text-slate-800 text-base">👨‍👩‍👧‍👦 पारिवारिक वार्षिक आय सीमा (Annual Family Income Limit):</h3>
+                <ul className="space-y-1.5 list-disc list-inside text-slate-700 pl-1 font-medium">
                   {vacancy.yojanaEligibility.incomeLimitHi.map((inc, i) => (
                     <li key={i}>
                       <span>{inc}</span>
@@ -779,88 +840,88 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Section 1: Recruitment Overview Table (For Jobs) */}
       {!isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-          <div className="bg-white border-b border-slate-200 text-slate-900 px-5 py-3.5 flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <Award className="w-5 h-5 text-amber-600 shrink-0" />
+          <div className="bg-white border-b-2 border-slate-300 text-slate-800 px-5 py-3.5 flex items-center justify-between">
+            <h2 className="text-xl sm:text-[22px] font-bold flex items-center gap-2">
+              <Award className="w-5 h-5 text-slate-700 shrink-0" />
               <span>
                 {isHi
                   ? 'भर्ती का संक्षिप्त विवरण (Recruitment Overview)'
                   : 'Recruitment Overview'}
               </span>
             </h2>
-            <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded font-mono font-bold">
-              RAJASTHAN VACANCY/JOBS
+            <span className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded font-mono font-bold tracking-wide">
+              RAJASTHAN VACANCY
             </span>
           </div>
 
           <table className="w-full text-left border-collapse">
             <tbody className="divide-y divide-slate-200 text-sm sm:text-base">
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 w-2/5 sm:w-1/3 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 w-2/5 sm:w-1/3 border-r border-slate-200">
                   {isHi ? 'भर्ती बोर्ड / विभाग का नाम' : 'Recruitment Organization'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-medium">
+                <td className="py-3 px-4 text-slate-700 font-medium">
                   {isHi && vacancy.departmentHi ? vacancy.departmentHi : vacancy.department} ({vacancy.organization})
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'पद का नाम (Post Name)' : 'Post Name'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-semibold">
+                <td className="py-3 px-4 text-slate-800 font-bold">
                   {isHi ? vacancy.postNameHi : vacancy.postName}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'विज्ञापन संख्या (Advt No.)' : 'Advertisement Number'}
                 </td>
-                <td className="py-3 px-4 font-mono font-medium text-slate-900">
+                <td className="py-3 px-4 font-mono font-semibold text-slate-700">
                   {vacancy.advtNo}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'कुल रिक्त पद (Total Vacancies)' : 'Total Vacancies'}
                 </td>
-                <td className="py-3 px-4 font-bold text-emerald-700">
+                <td className="py-3 px-4 font-extrabold text-slate-800">
                   {typeof vacancy.totalPosts === 'number' ? `${vacancy.totalPosts.toLocaleString()} पद` : vacancy.totalPosts}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'वेतनमान (Salary / Pay Scale)' : 'Salary / Pay Level'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-medium">
+                <td className="py-3 px-4 text-slate-700 font-medium">
                   {isHi && vacancy.salaryHi ? vacancy.salaryHi : vacancy.salary}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'नौकरी का स्थान (Job Location)' : 'Job Location'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-medium">
+                <td className="py-3 px-4 text-slate-700 font-medium">
                   {vacancy.jobLocation}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'आवेदन का प्रकार (Mode of Apply)' : 'Application Mode'}
                 </td>
-                <td className="py-3 px-4 text-blue-700 font-semibold">
+                <td className="py-3 px-4 text-slate-800 font-bold">
                   {isHi ? 'ऑनलाइन (Online Application)' : 'Online Application'}
                 </td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'आधिकारिक वेबसाइट (Official Website)' : 'Official Website'}
                 </td>
-                <td className="py-3 px-4 text-amber-700 font-medium">
+                <td className="py-3 px-4 text-slate-800 font-bold">
                   <a 
                     href={vacancy.officialLinks.officialWebsiteUrl} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="hover:underline inline-flex items-center gap-1.5"
+                    className="hover:underline inline-flex items-center gap-1.5 text-slate-800 font-bold"
                   >
                     <span>{vacancy.officialLinks.officialWebsiteUrl}</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -875,53 +936,53 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Section 2: Important Dates - Render ONLY for Jobs (NOT for Scheme/Yojana) */}
       {!isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-          <div className="bg-white border-b border-slate-200 px-5 py-3">
-            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-slate-900">
-              <Calendar className="w-5 h-5 text-amber-600" />
-              <span>{isHi ? 'महत्वपूर्ण तिथियां (Important Dates)' : 'Important Dates'}</span>
+          <div className="bg-white border-b-2 border-slate-300 px-5 py-3">
+            <h2 className="text-xl sm:text-[22px] font-bold flex items-center gap-2 text-slate-800">
+              <Calendar className="w-5 h-5 text-slate-700" />
+              <span>{isHi ? `${jobTitleName} महत्वपूर्ण तिथियां (Important Dates)` : `${vacancy.title} Important Dates`}</span>
             </h2>
           </div>
 
           <table className="w-full text-left border-collapse">
             <tbody className="divide-y divide-slate-200 text-sm sm:text-base">
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 w-2/5 sm:w-1/3 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 w-2/5 sm:w-1/3 border-r border-slate-200">
                   {isHi ? 'विज्ञप्ति जारी तिथि:' : 'Notification Date:'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-medium">{vacancy.importantDates.notificationDate}</td>
+                <td className="py-3 px-4 text-slate-700 font-medium">{vacancy.importantDates.notificationDate}</td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'ऑनलाइन आवेदन प्रारंभ तिथि:' : 'Online Apply Start:'}
                 </td>
-                <td className="py-3 px-4 font-bold text-emerald-700">{vacancy.importantDates.applyStartDate}</td>
+                <td className="py-3 px-4 font-extrabold text-slate-800">{vacancy.importantDates.applyStartDate}</td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-bold text-rose-900 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'आवेदन करने की अंतिम तिथि:' : 'Apply Last Date:'}
                 </td>
-                <td className="py-3 px-4 font-bold text-rose-700">{vacancy.importantDates.applyLastDate}</td>
+                <td className="py-3 px-4 font-extrabold text-slate-800">{vacancy.importantDates.applyLastDate}</td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'शुल्क भुगतान अंतिम तिथि:' : 'Fee Last Date:'}
                 </td>
-                <td className="py-3 px-4 text-slate-900 font-medium">{vacancy.importantDates.feeLastDate || vacancy.importantDates.applyLastDate}</td>
+                <td className="py-3 px-4 text-slate-700 font-medium">{vacancy.importantDates.feeLastDate || vacancy.importantDates.applyLastDate}</td>
               </tr>
               {vacancy.importantDates.examDate && (
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                  <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                     {isHi ? 'परीक्षा तिथि:' : 'Exam Date:'}
                   </td>
-                  <td className="py-3 px-4 font-bold text-amber-800">{vacancy.importantDates.examDate}</td>
+                  <td className="py-3 px-4 font-bold text-slate-800">{vacancy.importantDates.examDate}</td>
                 </tr>
               )}
               {vacancy.importantDates.admitCardDate && (
                 <tr>
-                  <td className="py-3 px-4 font-semibold text-slate-700 bg-slate-50/50 border-r border-slate-200">
+                  <td className="py-3 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                     {isHi ? 'प्रवेश पत्र जारी तिथि:' : 'Admit Card Date:'}
                   </td>
-                  <td className="py-3 px-4 font-semibold text-blue-700">{vacancy.importantDates.admitCardDate}</td>
+                  <td className="py-3 px-4 font-semibold text-slate-800">{vacancy.importantDates.admitCardDate}</td>
                 </tr>
               )}
             </tbody>
@@ -932,41 +993,41 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* TSP / Non-TSP Breakdown Box */}
       {!isScheme && vacancy.tspBreakdown && ((vacancy.tspBreakdown.nonTsp ?? 0) > 0 || (vacancy.tspBreakdown.tsp ?? 0) > 0) && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-3">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
-            {isHi ? 'टीएसपी एवं गैर-टीएसपी पद विवरण (TSP & Non-TSP Breakdown)' : 'TSP & Non-TSP Post Breakdown'}
+          <h2 className="text-xl sm:text-[22px] font-bold text-slate-800 leading-tight">
+            {isHi ? `${jobTitleName} टीएसपी एवं गैर-टीएसपी पद विवरण` : `${vacancy.title} TSP & Non-TSP Breakdown`}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-              <span className="text-xs font-semibold text-slate-500 uppercase block">
+              <span className="text-xs font-semibold text-slate-600 uppercase block">
                 {isHi ? 'गैर-टीएसपी (Non-TSP)' : 'Non-TSP Area'}
               </span>
-              <span className="text-base sm:text-lg font-bold text-emerald-700 mt-1 block">
+              <span className="text-base sm:text-lg font-bold text-slate-800 mt-1 block">
                 {vacancy.tspBreakdown.nonTsp} {isHi ? 'पद' : 'Posts'}
               </span>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-              <span className="text-xs font-semibold text-slate-500 uppercase block">
+              <span className="text-xs font-semibold text-slate-600 uppercase block">
                 {isHi ? 'टीएसपी क्षेत्र (TSP)' : 'TSP Area'}
               </span>
-              <span className="text-base sm:text-lg font-bold text-blue-700 mt-1 block">
+              <span className="text-base sm:text-lg font-bold text-slate-800 mt-1 block">
                 {vacancy.tspBreakdown.tsp} {isHi ? 'पद' : 'Posts'}
               </span>
             </div>
             {vacancy.tspBreakdown.sahariya !== undefined && (
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-                <span className="text-xs font-semibold text-slate-500 uppercase block">
+                <span className="text-xs font-semibold text-slate-600 uppercase block">
                   {isHi ? 'सहरिया (Sahariya)' : 'Sahariya Area'}
                 </span>
-                <span className="text-base sm:text-lg font-bold text-amber-700 mt-1 block">
+                <span className="text-base sm:text-lg font-bold text-slate-800 mt-1 block">
                   {vacancy.tspBreakdown.sahariya} {isHi ? 'पद' : 'Posts'}
                 </span>
               </div>
             )}
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-              <span className="text-xs font-semibold text-slate-500 uppercase block">
+              <span className="text-xs font-semibold text-slate-600 uppercase block">
                 {isHi ? 'कुल पद' : 'Total Posts'}
               </span>
-              <span className="text-base sm:text-lg font-bold text-slate-900 mt-1 block">
+              <span className="text-base sm:text-lg font-extrabold text-slate-800 mt-1 block">
                 {(Number(vacancy.tspBreakdown.nonTsp) || 0) + (Number(vacancy.tspBreakdown.tsp) || 0) + (Number(vacancy.tspBreakdown.sahariya) || 0)} {isHi ? 'पद' : 'Posts'}
               </span>
             </div>
@@ -974,13 +1035,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
       )}
 
+      {/* Responsive AdSection inside Post */}
+      <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
+
       {/* Section 4: Post Breakdown Box - Render only if postBreakdown data exists */}
       {!isScheme && vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           {/* Title */}
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
             {isHi 
-              ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} में पदों का विवरण` 
+              ? `${jobTitleName} पदवार विवरण (Post Breakdown)` 
               : `Post-Wise Vacancy Details for ${vacancy.title}`}
           </h2>
 
@@ -988,7 +1052,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left border border-slate-200 border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-900 font-bold border-b border-slate-200 text-sm sm:text-base">
+                <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
                   <th className="py-3 px-4 border-r border-slate-200 font-bold w-1/2">
                     {isHi ? 'पद का नाम' : 'Post Name'}
                   </th>
@@ -1000,16 +1064,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-800">
+              <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700">
                 {vacancy.postBreakdown.map((item, idx) => (
                   <tr key={idx} className="bg-white">
-                    <td className="py-3 px-4 border-r border-slate-200 font-medium text-slate-900">
+                    <td className="py-3 px-4 border-r border-slate-200 font-medium text-slate-800">
                       {isHi ? (item.postNameHi || item.postName) : item.postName}
                     </td>
                     <td className="py-3 px-4 border-r border-slate-200 text-center font-medium">
                       {isHi ? (item.categoryOrSubjectHi || item.categoryOrSubject || '-') : (item.categoryOrSubject || '-')}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-slate-900">
+                    <td className="py-3 px-4 text-right font-bold text-slate-800">
                       {item.postsCount}
                     </td>
                   </tr>
@@ -1023,13 +1087,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Section 5: Educational Qualification & Eligibility */}
       {!isScheme && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 border-b border-slate-200 pb-3">
-            {isHi ? 'आवेदन के लिए शैक्षणिक योग्यता (Educational Qualification)' : 'Educational Qualification for Application'}
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-3">
+            {isHi ? `${jobTitleName} शैक्षणिक योग्यता (Educational Qualification)` : `${vacancy.title} Educational Qualification`}
           </h2>
 
           {/* General Qualification Overview */}
-          <div className="text-base text-slate-800 leading-relaxed">
-            <p className="font-medium text-slate-900 bg-slate-50/60 p-4 rounded-xl border border-slate-200">
+          <div className="text-base text-slate-700 leading-relaxed">
+            <p className="font-medium text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200">
               {isHi ? (vacancy.qualificationDetailsHi || vacancy.qualificationDetails) : vacancy.qualificationDetails}
             </p>
           </div>
@@ -1044,11 +1108,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             if (hasPostWiseData) {
               return (
                 <div className="space-y-3 pt-1">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <span className="text-amber-600">🎓</span>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <span className="text-slate-700">🎓</span>
                     <span>
                       {isHi 
-                        ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} पद अनुसार शैक्षणिक योग्यता` 
+                        ? `${jobTitleName} पद अनुसार शैक्षणिक योग्यता` 
                         : 'Post-Wise Educational Qualification:'}
                     </span>
                   </h3>
@@ -1056,7 +1120,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border border-slate-200 border-collapse">
                       <thead>
-                        <tr className="bg-slate-50 text-slate-900 font-bold border-b border-slate-200 text-sm sm:text-base">
+                        <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
                           <th className="py-3 px-4 border-r border-slate-200 font-bold w-1/3">
                             {isHi ? 'पद का नाम (Post Name)' : 'Post Name'}
                           </th>
@@ -1068,16 +1132,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-800">
+                      <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700">
                         {postWiseQualifications.map((item, idx) => (
-                          <tr key={idx} className="bg-white hover:bg-slate-50/40 transition-colors">
-                            <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-900 align-top">
+                          <tr key={idx} className="bg-white hover:bg-slate-50/50 transition-colors">
+                            <td className="py-3 px-4 border-r border-slate-200 font-bold text-slate-800 align-top">
                               {isHi ? (item.postNameHi || item.postName) : item.postName}
                             </td>
                             <td className="py-3 px-4 border-r border-slate-200 text-slate-800 leading-relaxed align-top">
                               {isHi ? (item.qualificationHi || item.qualification) : (item.qualification || item.qualificationHi)}
                             </td>
-                            <td className="py-3 px-4 text-right font-bold text-slate-900 align-top whitespace-nowrap">
+                            <td className="py-3 px-4 text-right font-extrabold text-slate-800 align-top whitespace-nowrap">
                               {item.postsCount || '-'}
                             </td>
                           </tr>
@@ -1090,16 +1154,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             }
 
             return (
-              <div className="bg-slate-50/80 rounded-xl p-4 sm:p-5 border border-slate-200 space-y-2">
+              <div className="bg-slate-50 rounded-xl p-4 sm:p-5 border border-slate-200 space-y-2">
                 <div className="flex items-start gap-3">
-                  <FileText className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <FileText className="w-5 h-5 text-slate-700 shrink-0 mt-0.5" />
                   <div className="space-y-1 flex-1">
-                    <p className="font-bold text-slate-900 text-sm sm:text-base">
+                    <p className="font-bold text-slate-800 text-sm sm:text-base">
                       {isHi 
                         ? 'विस्तृत जानकारी के लिए आधिकारिक नोटिफिकेशन देखें' 
                         : 'For detailed qualification details, please refer to the official notification.'}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
                       {isHi 
                         ? 'विभिन्न पदों के अनुसार शैक्षणिक योग्यता, अनुभव, आयु छूट व अन्य विशेष पात्रता नियमों की विस्तृत जानकारी के लिए विभाग द्वारा जारी आधिकारिक भर्ती विज्ञापन (Notification PDF) अवश्य पढ़ें।' 
                         : 'Please refer to the official notification PDF released by the department for detailed post-specific educational qualifications, experience, and eligibility relaxation rules.'}
@@ -1110,7 +1174,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           href={vacancy.officialLinks.notificationPdfUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer shadow-xs"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>{isHi ? 'ऑफिशियल नोटिफिकेशन (PDF) देखें / डाउनलोड करें' : 'View Official Notification (PDF)'}</span>
@@ -1125,7 +1189,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
           {vacancy.qualification && vacancy.qualification.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-slate-200 text-sm">
-              <span className="font-bold text-slate-700">{isHi ? 'पात्र स्तर / योग्यता:' : 'Eligible Levels:'}</span>
+              <span className="font-bold text-slate-800">{isHi ? 'पात्र स्तर / योग्यता:' : 'Eligible Levels:'}</span>
               {vacancy.qualification.map((q) => (
                 <span key={q} className="bg-slate-100 text-slate-800 font-semibold px-2.5 py-1 rounded border border-slate-200 text-xs">
                   {q}
@@ -1139,22 +1203,22 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Section 6: Age Limit & Relaxation Rules */}
       {!isScheme && vacancy.ageLimit && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 border-b border-slate-200 pb-3">
-            {isHi ? 'आयु सीमा (Age Limit Details)' : 'Age Limit Details'}
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-3">
+            {isHi ? `${jobTitleName} आयु सीमा (Age Limit)` : `${vacancy.title} Age Limit Details`}
           </h2>
 
-          <p className="text-base text-slate-800 leading-relaxed font-medium bg-slate-50/60 p-4 rounded-xl border border-slate-200">
+          <p className="text-base text-slate-700 leading-relaxed font-medium bg-slate-50 p-4 rounded-xl border border-slate-200">
             {isHi 
               ? `न्यूनतम आयु: ${vacancy.ageLimit.min} वर्ष | अधिकतम आयु: ${vacancy.ageLimit.max} वर्ष (आयु की गणना ${vacancy.ageLimit.asOnDate || vacancy.importantDates.applyLastDate} को आधार मानकर की जाएगी)।`
               : `Minimum Age: ${vacancy.ageLimit.min} years | Maximum Age: ${vacancy.ageLimit.max} years (Calculated as on ${vacancy.ageLimit.asOnDate || vacancy.importantDates.applyLastDate}).`}
           </p>
 
           {(vacancy.ageLimit.relaxationNotesHi || vacancy.ageLimit.relaxationNotes) && (
-            <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 space-y-1.5 text-slate-900 text-base">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5 text-slate-800 text-base">
               <p className="font-bold">
                 {isHi ? 'आरक्षित श्रेणियों हेतु आयु सीमा में ऊपरी छूट (Age Relaxation Rules):' : 'Upper Age Relaxation Rules:'}
               </p>
-              <p className="text-slate-800 leading-relaxed">
+              <p className="text-slate-700 leading-relaxed">
                 {isHi ? vacancy.ageLimit.relaxationNotesHi : vacancy.ageLimit.relaxationNotes}
               </p>
             </div>
@@ -1162,16 +1226,102 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
       )}
 
+      {/* Section 6.5: Application Fee Details (आवेदन शुल्क) */}
+      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-3 flex items-center justify-between flex-wrap gap-2">
+          <span>{isHi ? `${jobTitleName} आवेदन शुल्क (Application Fee)` : `${vacancy.title} Application Fee Details`}</span>
+          <span className="text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            {isHi ? 'शुल्क व भुगतान विवरण' : 'Fee & Payment Mode'}
+          </span>
+        </h2>
+
+        {isScheme ? (
+          <div className="bg-emerald-50 text-emerald-800 p-4 rounded-xl border border-emerald-200 text-base font-semibold flex items-center gap-2">
+            <span>✨</span>
+            <span>{isHi ? 'इस सरकारी योजना के लिए कोई आवेदन शुल्क नहीं है। आवेदन पूर्णतः निःशुल्क (Free) है।' : 'No application fee required for this government scheme. Application is 100% Free.'}</span>
+          </div>
+        ) : (
+          <>
+            {/* Fee Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border border-slate-200 border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
+                    <th className="py-3 px-4 border-r border-slate-200 w-1/2">
+                      {isHi ? 'श्रेणी (Category)' : 'Category'}
+                    </th>
+                    <th className="py-3 px-4 text-center w-1/2">
+                      {isHi ? 'आवेदन शुल्क (Fee Amount)' : 'Fee Amount'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700 font-medium">
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-800">
+                      {isHi ? 'सामान्य / ओबीसी (Gen / OBC / Other States)' : 'General / OBC / Other States'}
+                    </td>
+                    <td className="py-3 px-4 text-center font-bold text-slate-900">
+                      {vacancy.applicationFee?.genObc !== undefined 
+                        ? (vacancy.applicationFee.genObc === 0 ? (isHi ? 'निःशुल्क (Nil)' : 'Free (Nil)') : `₹${vacancy.applicationFee.genObc}/-`) 
+                        : '₹600/-'}
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-800">
+                      {isHi ? 'ओबीसी (NCL) / ईडब्ल्यूएस (OBC-NCL / EWS)' : 'OBC (NCL) / EWS'}
+                    </td>
+                    <td className="py-3 px-4 text-center font-bold text-slate-900">
+                      {vacancy.applicationFee?.ews !== undefined 
+                        ? (vacancy.applicationFee.ews === 0 ? (isHi ? 'निःशुल्क (Nil)' : 'Free (Nil)') : `₹${vacancy.applicationFee.ews}/-`) 
+                        : '₹400/-'}
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-800">
+                      {isHi ? 'एससी / एसटी / दिव्यांगजन (SC / ST / PwD)' : 'SC / ST / PwD'}
+                    </td>
+                    <td className="py-3 px-4 text-center font-bold text-slate-900">
+                      {vacancy.applicationFee?.scSt !== undefined 
+                        ? (vacancy.applicationFee.scSt === 0 ? (isHi ? 'निःशुल्क (Nil)' : 'Free (Nil)') : `₹${vacancy.applicationFee.scSt}/-`) 
+                        : '₹400/-'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Payment Mode & Notes */}
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-slate-800 text-sm sm:text-base leading-relaxed">
+              <p className="font-bold text-slate-800">
+                {isHi ? '💳 भुगतान का प्रकार (Payment Mode):' : '💳 Mode of Payment:'}
+              </p>
+              <p className="text-slate-700">
+                {isHi 
+                  ? (vacancy.applicationFee?.paymentModeHi || 'आवेदन शुल्क का भुगतान ऑनलाइन माध्यम (डेबिट कार्ड, क्रेडिट कार्ड, नेट बैंकिंग, UPI) अथवा अधिकृत ई-मित्र (E-Mitra) कियोस्क के माध्यम से किया जा सकता है।') 
+                  : (vacancy.applicationFee?.paymentMode || 'Application fee can be paid online via Debit Card, Credit Card, Net Banking, UPI or authorized E-Mitra kiosk.')}
+              </p>
+
+              {(vacancy.applicationFee?.otrNoteHi || vacancy.applicationFee?.otrNote) && (
+                <div className="pt-2 border-t border-slate-200 text-slate-700">
+                  <span className="font-bold text-slate-800">{isHi ? '📌 नोट: ' : '📌 Note: '}</span>
+                  <span>{isHi ? vacancy.applicationFee.otrNoteHi : vacancy.applicationFee.otrNote}</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* Benefit / Salary Section */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
           {isHi 
             ? (isScheme 
-                ? `${vacancy.shortTitleHi || 'प्रधानमंत्री आवास योजना शहरी 2.0'}. योजना के लाभ एवं सहायता राशि` 
-                : `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} में वेतन`) 
+                ? `${jobTitleName} योजना के लाभ एवं सहायता राशि` 
+                : `${jobTitleName} वेतन व पे-स्केल (Salary Details)`) 
             : (isScheme 
-                ? `${vacancy.shortTitle || 'PM Awas Yojana Urban 2.0'}. Scheme Benefits & Assistance` 
+                ? `${vacancy.shortTitle || 'PM Awas Yojana Urban 2.0'} Scheme Benefits` 
                 : `Salary / Pay Scale Details for ${vacancy.title}`)}
         </h2>
 
@@ -1179,7 +1329,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border border-slate-200 border-collapse">
             <thead>
-              <tr className="bg-slate-50 text-slate-900 font-bold border-b border-slate-200 text-sm sm:text-base">
+              <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
                 <th className="py-3 px-4 border-r border-slate-200 font-bold w-1/3">
                   {isHi ? (isScheme ? 'योजना का नाम' : 'पद') : 'Post / Scheme'}
                 </th>
@@ -1191,7 +1341,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-800">
+            <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700">
               {(vacancy.salaryTable && vacancy.salaryTable.length > 0 
                 ? vacancy.salaryTable 
                 : isScheme 
@@ -1205,13 +1355,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   ]
               ).map((item, idx) => (
                 <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-3 px-4 border-r border-slate-200 font-medium text-slate-900">
+                  <td className="py-3 px-4 border-r border-slate-200 font-medium text-slate-800">
                     {isHi ? item.postNameHi : item.postName}
                   </td>
-                  <td className="py-3 px-4 border-r border-slate-200 text-center font-medium text-slate-900">
+                  <td className="py-3 px-4 border-r border-slate-200 text-center font-medium text-slate-800">
                     {isHi ? (item.payLevelHi || item.payLevel) : item.payLevel}
                   </td>
-                  <td className="py-3 px-4 text-center font-semibold text-slate-900">
+                  <td className="py-3 px-4 text-center font-semibold text-slate-800">
                     {isHi ? (item.salaryRangeHi || item.salaryRange) : item.salaryRange}
                   </td>
                 </tr>
@@ -1221,7 +1371,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
 
         {/* Salary explanatory notes */}
-        <div className="space-y-3 text-slate-800 text-base leading-relaxed pt-2">
+        <div className="space-y-3 text-slate-700 text-base leading-relaxed pt-2">
           {isScheme ? (
             <p>
               {isHi 
@@ -1240,25 +1390,25 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
       </div>
 
-      {/* Section 7: Selection Process (चयन / सत्यापन प्रक्रिया) */}
+      {/* Section 7: Selection Process (चयन प्रक्रिया) */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
-          {isHi ? (isScheme ? 'चयन एवं सत्यापन प्रक्रिया' : 'चयन प्रक्रिया (Selection Process)') : 'Selection Process'}
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-3">
+          {isHi ? (isScheme ? `${jobTitleName} चयन एवं सत्यापन प्रक्रिया` : `${jobTitleName} चयन प्रक्रिया (Selection Process)`) : `${vacancy.title} Selection Process`}
         </h2>
 
-        <p className="text-slate-800 text-base leading-relaxed">
+        <p className="text-slate-700 text-base leading-relaxed font-normal">
           {isHi 
             ? (isScheme ? 'आवेदन जमा करने के बाद संबंधित विभाग द्वारा ऑनलाइन सत्यापन किया जाएगा। प्रक्रिया निम्न चरणों में संपन्न होगी:' : 'आवेदन और आवश्यक योग्यता की जांच के बाद चयन परीक्षण में पद के अनुसार निम्न चरण शामिल होंगे:') 
             : 'Selection and verification process includes the following steps:'}
         </p>
 
         {/* Numbered List */}
-        <ol className="list-decimal pl-6 space-y-2 text-slate-900 text-base font-medium">
+        <ol className="list-decimal pl-6 space-y-2 text-slate-800 text-base font-medium">
           {(isHi ? (vacancy.selectionProcessHi && vacancy.selectionProcessHi.length > 0 ? vacancy.selectionProcessHi : [
-            'लिखित परीक्षा।',
-            'स्किल टेस्ट / टाइपिंग टेस्ट, जहां लागू हो।',
-            'दस्तावेज सत्यापन।',
-            'चिकित्सा परीक्षण।'
+            'लिखित परीक्षा (Written Exam)।',
+            'स्किल टेस्ट / टाइपिंग टेस्ट (जहां लागू हो)।',
+            'दस्तावेज सत्यापन (Document Verification)।',
+            'चिकित्सा परीक्षण (Medical Test)।'
           ]) : (vacancy.selectionProcess && vacancy.selectionProcess.length > 0 ? vacancy.selectionProcess : [
             'Written Examination',
             'Skill Test (where applicable)',
@@ -1270,140 +1420,138 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             </li>
           ))}
         </ol>
+      </div>
 
-        {/* Sub-section: written exam pattern - Render ONLY for Jobs (NOT for Scheme/Yojana) */}
-        {!isScheme && (
-          <div className="pt-5 border-t border-slate-200 space-y-4">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-600" />
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? `${vacancy.titleHi || vacancy.title} - लिखित परीक्षा का पैटर्न` : `${vacancy.title} - Written Exam Pattern`}
-              </h3>
+      {/* Section 7.5: Exam Pattern (परीक्षा पैटर्न) - Standalone Section Right Below Selection Process */}
+      {!isScheme && (
+        <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>{isHi ? `${jobTitleName} परीक्षा पैटर्न (Exam Pattern)` : `${vacancy.title} Exam Pattern`}</span>
+          </h2>
+
+          <p className="text-slate-800 text-[15px] sm:text-base leading-relaxed">
+            {isHi 
+              ? `${jobTitleName} की लिखित परीक्षा में वस्तुनिष्ठ (Objective) एवं विश्लेषणात्मक प्रश्न पूछे जाएंगे। विस्तृत परीक्षा पैटर्न व अंक विभाजन नीचे दिया गया है:` 
+              : `The written examination for ${vacancy.title} will consist of objective and analytical questions. Detailed exam pattern and mark distribution are given below:`}
+          </p>
+
+          {/* Quick Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider block">
+                {isHi ? 'प्रश्न का प्रकार' : 'Question Type'}
+              </span>
+              <span className="text-sm sm:text-base font-bold text-slate-800 mt-1 block">
+                {isHi ? (vacancy.examPattern?.examModeHi || 'वस्तुनिष्ठ (Objective)') : (vacancy.examPattern?.examMode || 'Objective')}
+              </span>
             </div>
 
-            <p className="text-slate-800 text-[15px] sm:text-base leading-relaxed">
-              {isHi 
-                ? `${vacancy.titleHi || vacancy.title} की लिखित परीक्षा में वस्तुनिष्ठ (Objective) एवं विश्लेषणात्मक प्रश्न पूछे जाएंगे। विस्तृत परीक्षा पैटर्न व अंक विभाजन नीचे दिया गया है:` 
-                : `The written examination for ${vacancy.title} will consist of objective and analytical questions. Detailed exam pattern and mark distribution are given below:`}
-            </p>
-
-            {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-              <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-                  {isHi ? 'प्रश्न का प्रकार' : 'Question Type'}
-                </span>
-                <span className="text-sm sm:text-base font-bold text-slate-900 mt-1 block">
-                  {isHi ? (vacancy.examPattern?.examModeHi || 'वस्तुनिष्ठ (Objective)') : (vacancy.examPattern?.examMode || 'Objective')}
-                </span>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-                  {isHi ? 'कुल अंक' : 'Total Marks'}
-                </span>
-                <span className="text-sm sm:text-base font-bold text-indigo-700 mt-1 block">
-                  {vacancy.examPattern?.totalMarks || '100'} {isHi ? 'अंक' : 'Marks'}
-                </span>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-                  {isHi ? 'समय अवधि' : 'Exam Duration'}
-                </span>
-                <span className="text-sm sm:text-base font-bold text-slate-900 mt-1 block">
-                  {isHi ? (vacancy.examPattern?.durationHi || '2 घंटे (120 मिनट)') : (vacancy.examPattern?.duration || '2 Hours (120 Mins)')}
-                </span>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
-                  {isHi ? 'न्यूनतम उत्तीर्णांक' : 'Min Qualifying'}
-                </span>
-                <span className="text-sm sm:text-base font-bold text-emerald-700 mt-1 block">
-                  {isHi ? (vacancy.examPattern?.qualifyingMarksHi || '33% अंक') : (vacancy.examPattern?.qualifyingMarks || '33% Marks')}
-                </span>
-              </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider block">
+                {isHi ? 'कुल अंक' : 'Total Marks'}
+              </span>
+              <span className="text-sm sm:text-base font-extrabold text-slate-800 mt-1 block">
+                {vacancy.examPattern?.totalMarks || '100'} {isHi ? 'अंक' : 'Marks'}
+              </span>
             </div>
 
-            {/* Subject-wise Marks Distribution Table */}
-            <div className="overflow-x-auto rounded-lg border border-slate-200">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr className="bg-white border-b border-slate-200 text-slate-800 font-semibold">
-                    <th className="py-2.5 px-3 sm:px-4 border-r border-slate-200">
-                      {isHi ? 'विषय / प्रश्न पत्र का भाग' : 'Subject / Section'}
-                    </th>
-                    <th className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200">
-                      {isHi ? 'प्रश्न संख्या' : 'No. of Questions'}
-                    </th>
-                    <th className="py-2.5 px-3 sm:px-4 text-center">
-                      {isHi ? 'कुल अंक' : 'Total Marks'}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 text-slate-800">
-                  {(vacancy.examPattern?.subjects && vacancy.examPattern.subjects.length > 0 ? vacancy.examPattern.subjects : [
-                    { subject: 'General Knowledge & Current Affairs', subjectHi: 'सामान्य ज्ञान एवं समसामयिकी', questions: 20, marks: 20 },
-                    { subject: 'General English', subjectHi: 'सामान्य अंग्रेजी', questions: 20, marks: 20 },
-                    { subject: 'Child Pedagogy & Education', subjectHi: 'बाल विकास व शिक्षणशास्त्र', questions: 20, marks: 20 },
-                    { subject: 'Subject Domain Knowledge (TGT/Specific)', subjectHi: 'संबंधित विषय का ज्ञान (TGT / पद अनुसार)', questions: 40, marks: 40 }
-                  ]).map((sub, idx) => (
-                    <tr key={idx} className="bg-white">
-                      <td className="py-2.5 px-3 sm:px-4 font-medium border-r border-slate-200">
-                        {isHi ? sub.subjectHi : sub.subject}
-                      </td>
-                      <td className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200 font-medium">
-                        {sub.questions || '-'}
-                      </td>
-                      <td className="py-2.5 px-3 sm:px-4 text-center font-bold text-slate-900">
-                        {sub.marks} {isHi ? 'अंक' : 'Marks'}
-                      </td>
-                    </tr>
-                  ))}
-                  {/* Total Row */}
-                  <tr className="bg-white border-t-2 border-slate-300 font-bold text-slate-900">
-                    <td className="py-2.5 px-3 sm:px-4 border-r border-slate-200 text-slate-950">
-                      {isHi ? 'कुल योग (Total)' : 'Total Sum'}
-                    </td>
-                    <td className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200 text-slate-950">
-                      100
-                    </td>
-                    <td className="py-2.5 px-3 sm:px-4 text-center text-slate-900 font-extrabold">
-                      100 {isHi ? 'अंक' : 'Marks'}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider block">
+                {isHi ? 'समय अवधि' : 'Exam Duration'}
+              </span>
+              <span className="text-sm sm:text-base font-bold text-slate-800 mt-1 block">
+                {isHi ? (vacancy.examPattern?.durationHi || '2 घंटे (120 मिनट)') : (vacancy.examPattern?.duration || '2 Hours (120 Mins)')}
+              </span>
             </div>
 
-            {/* Guidelines notes bullet points */}
-            <div className="bg-white border border-amber-200 rounded-lg p-4 sm:p-5 space-y-2.5 text-slate-950 text-[15px] sm:text-base">
-              <p className="font-bold text-amber-900 text-base sm:text-lg flex items-center gap-2">
-                <span>📌</span> {isHi ? 'लिखित परीक्षा के मुख्य निर्देश:' : 'Key Exam Guidelines:'}
-              </p>
-              <ul className="list-disc pl-5 space-y-2 text-slate-800 leading-relaxed">
-                {(vacancy.examPattern?.notes && vacancy.examPattern.notes.length > 0 ? (isHi ? vacancy.examPattern.notesHi || vacancy.examPattern.notes : vacancy.examPattern.notes) : [
-                  isHi ? 'प्रश्न पत्र द्विभाषी (हिंदी और अंग्रेजी) माध्यम में उपलब्ध रहेगा।' : 'Question paper will be available in bilingual format (Hindi & English).',
-                  isHi ? 'परीक्षा ओएमआर (OMR Sheet) या ऑनलाइन माध्यम से आयोजित की जाएगी।' : 'Exam will be conducted via OMR sheet or computer based online mode.',
-                  isHi ? 'लिखित परीक्षा में न्यूनतम 33% अंक प्राप्त करने वाले अभ्यर्थियों को ही अगले चरण के लिए विचारित किया जाएगा।' : 'Candidates must score at least 33% minimum qualifying marks to be considered for next stages.',
-                  isHi ? 'प्रत्येक सही उत्तर के लिए अंक प्रदान किए जाएंगे।' : 'Marks will be awarded for each correct answer as per scheme.'
-                ]).map((note, nIdx) => (
-                  <li key={nIdx}>{note}</li>
-                ))}
-              </ul>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider block">
+                {isHi ? 'न्यूनतम उत्तीर्णांक' : 'Min Qualifying'}
+              </span>
+              <span className="text-sm sm:text-base font-bold text-slate-800 mt-1 block">
+                {isHi ? (vacancy.examPattern?.qualifyingMarksHi || '33% अंक') : (vacancy.examPattern?.qualifyingMarks || '33% Marks')}
+              </span>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Subject-wise Marks Distribution Table */}
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
+            <table className="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr className="bg-slate-100 border-b border-slate-200 text-slate-800 font-bold">
+                  <th className="py-2.5 px-3 sm:px-4 border-r border-slate-200">
+                    {isHi ? 'विषय / प्रश्न पत्र का भाग' : 'Subject / Section'}
+                  </th>
+                  <th className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200">
+                    {isHi ? 'प्रश्न संख्या' : 'No. of Questions'}
+                  </th>
+                  <th className="py-2.5 px-3 sm:px-4 text-center">
+                    {isHi ? 'कुल अंक' : 'Total Marks'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-slate-700">
+                {(vacancy.examPattern?.subjects && vacancy.examPattern.subjects.length > 0 ? vacancy.examPattern.subjects : [
+                  { subject: 'General Knowledge & Current Affairs', subjectHi: 'सामान्य ज्ञान एवं समसामयिकी', questions: 20, marks: 20 },
+                  { subject: 'General English', subjectHi: 'सामान्य अंग्रेजी', questions: 20, marks: 20 },
+                  { subject: 'Child Pedagogy & Education', subjectHi: 'बाल विकास व शिक्षणशास्त्र', questions: 20, marks: 20 },
+                  { subject: 'Subject Domain Knowledge (TGT/Specific)', subjectHi: 'संबंधित विषय का ज्ञान (TGT / पद अनुसार)', questions: 40, marks: 40 }
+                ]).map((sub, idx) => (
+                  <tr key={idx} className="bg-white">
+                    <td className="py-2.5 px-3 sm:px-4 font-bold border-r border-slate-200 text-slate-800">
+                      {isHi ? sub.subjectHi : sub.subject}
+                    </td>
+                    <td className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200 font-semibold text-slate-700">
+                      {sub.questions || '-'}
+                    </td>
+                    <td className="py-2.5 px-3 sm:px-4 text-center font-bold text-slate-800">
+                      {sub.marks} {isHi ? 'अंक' : 'Marks'}
+                    </td>
+                  </tr>
+                ))}
+                {/* Total Row */}
+                <tr className="bg-slate-50 border-t-2 border-slate-300 font-bold text-slate-800">
+                  <td className="py-2.5 px-3 sm:px-4 border-r border-slate-200 text-slate-800">
+                    {isHi ? 'कुल योग (Total)' : 'Total Sum'}
+                  </td>
+                  <td className="py-2.5 px-3 sm:px-4 text-center border-r border-slate-200 text-slate-800">
+                    100
+                  </td>
+                  <td className="py-2.5 px-3 sm:px-4 text-center text-slate-800 font-extrabold">
+                    100 {isHi ? 'अंक' : 'Marks'}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Guidelines notes bullet points */}
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 sm:p-5 space-y-2.5 text-slate-800 text-[15px] sm:text-base">
+            <p className="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+              <span>📌</span> {isHi ? 'लिखित परीक्षा के मुख्य निर्देश:' : 'Key Exam Guidelines:'}
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-slate-800 leading-relaxed">
+              {(vacancy.examPattern?.notes && vacancy.examPattern.notes.length > 0 ? (isHi ? vacancy.examPattern.notesHi || vacancy.examPattern.notes : vacancy.examPattern.notes) : [
+                isHi ? 'प्रश्न पत्र द्विभाषी (हिंदी और अंग्रेजी) माध्यम में उपलब्ध रहेगा।' : 'Question paper will be available in bilingual format (Hindi & English).',
+                isHi ? 'परीक्षा ओएमआर (OMR Sheet) या ऑनलाइन माध्यम से आयोजित की जाएगी।' : 'Exam will be conducted via OMR sheet or computer based online mode.',
+                isHi ? 'लिखित परीक्षा में न्यूनतम 33% अंक प्राप्त करने वाले अभ्यर्थियों को ही अगले चरण के लिए विचारित किया जाएगा।' : 'Candidates must score at least 33% minimum qualifying marks to be considered for next stages.',
+                isHi ? 'प्रत्येक सही उत्तर के लिए अंक प्रदान किए जाएंगे।' : 'Marks will be awarded for each correct answer as per scheme.'
+              ]).map((note, nIdx) => (
+                <li key={nIdx}>{note}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Section 8: Required Documents List (आवेदन के साथ आवश्यक दस्तावेज) */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 border-b border-slate-200 pb-2.5">
-          {isHi ? 'आवेदन के साथ आवश्यक दस्तावेज (Required Documents)' : 'Required Documents for Application'}
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 border-b border-slate-200 pb-2.5">
+          {isHi ? `${jobTitleName} आवश्यक दस्तावेज (Required Documents)` : `${vacancy.title} Required Documents`}
         </h2>
 
-        <p className="text-slate-800 text-base leading-relaxed font-normal">
+        <p className="text-slate-700 text-base leading-relaxed font-normal">
           {isHi 
             ? 'आवेदन में दी गई जानकारी के समर्थन में स्पष्ट और स्वप्रमाणित प्रतियां तैयार रखें:' 
             : 'Keep clear and self-attested copies ready in support of the application:'}
@@ -1411,8 +1559,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
         <ul className="space-y-2.5 pl-1 pt-1">
           {documentsList.map((doc, idx) => (
-            <li key={idx} className="flex items-start gap-3 text-slate-800 text-base leading-relaxed">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-700 shrink-0 mt-2.5"></span>
+            <li key={idx} className="flex items-start gap-3 text-slate-700 text-base leading-relaxed">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-2.5"></span>
               <span>{doc}</span>
             </li>
           ))}
@@ -1423,8 +1571,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {(() => {
         const notes = vacancy.handwrittenNotes;
         const noteHeading = isHi 
-          ? 'अभ्यर्थियों हेतु जरूरी निर्देश (शिक्षक नोट):' 
-          : 'Important Instructions for Candidates (Teacher Note):';
+          ? `${jobTitleName} अभ्यर्थियों हेतु जरूरी निर्देश (शिक्षक नोट):` 
+          : `Important Instructions for ${vacancy.title} Candidates (Teacher Note):`;
         const noteSubheading = notes?.subheadingHi || (isHi ? 'फॉर्म भरने व दस्तावेज तैयार करते समय इन महत्वपूर्ण बातों का विशेष ध्यान रखें' : 'Important guidance for form submission and document verification');
         
         const defaultPoints = [
@@ -1444,7 +1592,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               <div className="flex items-center gap-2.5">
                 <span className="text-xl">✍️</span>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
                     {noteHeading}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-600 font-medium mt-0.5">
@@ -1452,20 +1600,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </p>
                 </div>
               </div>
-              <span className="text-xs bg-slate-50 text-slate-700 border border-slate-200 px-3 py-1 rounded-full font-semibold flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-xs bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 rounded-full font-bold flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-slate-700" />
                 <span>{isHi ? 'अनुभवी शिक्षकों द्वारा संकलित' : 'Mentor Verified'}</span>
               </span>
             </div>
 
             <div className="text-base text-slate-800 leading-relaxed space-y-3">
-              <p className="font-bold text-slate-900 text-base sm:text-lg">
+              <p className="font-bold text-slate-800 text-base sm:text-lg">
                 {isHi ? '📌 प्रिय अभ्यर्थियों, फॉर्म भरने से पहले ये मुख्य बातें ध्यान रखें:' : '📌 Dear Candidates, please note these essential points before applying:'}
               </p>
               <div className="space-y-2.5 pl-1">
                 {points.map((pt, idx) => (
                   <div key={idx} className="flex items-start gap-2.5">
-                    <span className="text-amber-600 font-bold shrink-0">{idx + 1}.</span>
+                    <span className="text-slate-800 font-bold shrink-0">{idx + 1}.</span>
                     <p className="leading-relaxed text-slate-800">{pt}</p>
                   </div>
                 ))}
@@ -1473,9 +1621,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             </div>
 
             {/* Note Footer Signature */}
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-slate-500 text-xs sm:text-sm">
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 text-slate-600 text-xs sm:text-sm">
               <span>{isHi ? 'मार्गदर्शन नोट्स — राजस्थान वैकेंसी संपादकीय टीम' : 'Guidance Notes — Rajasthan Vacancy'}</span>
-              <span className="font-semibold text-slate-800">{teacherSign}</span>
+              <span className="font-bold text-slate-800">{teacherSign}</span>
             </div>
           </div>
         );
@@ -1483,29 +1631,29 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
       {/* Section 9: Step-by-Step How to Apply */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-3">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2 pb-2 border-b border-slate-200">
-          <ShieldCheck className="w-5 h-5 text-indigo-600" />
-          <span>{isHi ? 'ऑनलाइन आवेदन कैसे करें - स्टेप बाय स्टेप गाइड (How to Apply Online)' : 'Step-by-Step Online Application Guide'}</span>
+        <h2 className="text-xl sm:text-[22px] font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-200">
+          <ShieldCheck className="w-5 h-5 text-slate-700" />
+          <span>{isHi ? `${jobTitleName} ऑनलाइन आवेदन कैसे करें (How to Apply Online)` : `How to Apply Online for ${vacancy.title}`}</span>
         </h2>
 
         <div className="space-y-2.5">
           {howToApplySteps.map((step, idx) => (
-            <div key={idx} className="flex items-start gap-3 p-3.5 rounded-lg bg-slate-50/50 border border-slate-200">
-              <span className="w-7 h-7 rounded bg-amber-600 text-white font-bold flex items-center justify-center shrink-0 text-sm">
+            <div key={idx} className="flex items-start gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+              <span className="w-7 h-7 rounded bg-blue-600 text-white font-bold flex items-center justify-center shrink-0 text-sm">
                 {idx + 1}
               </span>
-              <p className="font-medium pt-0.5 text-slate-900 text-base leading-relaxed">{step}</p>
+              <p className="font-medium pt-0.5 text-slate-800 text-base leading-relaxed">{step}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Section 10: Useful Important Links Table - Matching Screenshot */}
-      <div className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+      <div id="important-links" className="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden scroll-mt-24">
         <div className="bg-white border-b border-slate-200 px-5 py-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
             {isHi 
-              ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} Important Links` 
+              ? `${jobTitleName} महत्वपूर्ण लिंक व ऑनलाइन आवेदन` 
               : `${vacancy.title} Important Links`}
           </h2>
         </div>
@@ -1516,19 +1664,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {!isScheme && (
               <>
                 <tr>
-                  <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 w-1/2 border-r border-slate-200">
+                  <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/50 w-1/2 border-r border-slate-200">
                     {`Start ${vacancy.shortTitle || vacancy.title} form`}
                   </td>
-                  <td className="py-3.5 px-4 font-bold text-slate-900">
+                  <td className="py-3.5 px-4 font-bold text-slate-800">
                     {vacancy.importantDates.applyStartDate || '17 October 2026'}
                   </td>
                 </tr>
 
                 <tr>
-                  <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+                  <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/50 border-r border-slate-200">
                     {`Last Date ${vacancy.officialLinks.applyOnlineUrl ? 'Online' : 'Offline'} Application form`}
                   </td>
-                  <td className="py-3.5 px-4 font-bold text-slate-900">
+                  <td className="py-3.5 px-4 font-bold text-slate-800">
                     {vacancy.importantDates.applyLastDate || '7 November 2026'}
                   </td>
                 </tr>
@@ -1537,7 +1685,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
             {/* Row 3: Application Form / Apply Link */}
             <tr>
-              <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+              <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                 {vacancy.officialLinks.applyOnlineUrl
                   ? 'Apply Online Application Form'
                   : 'Offline Application Form'}
@@ -1547,7 +1695,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   href={vacancy.officialLinks.applyOnlineUrl || vacancy.officialLinks.notificationPdfUrl || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                 >
                   <span>Click Here</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -1558,7 +1706,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {/* Row 4: Official Notification PDF */}
             {vacancy.officialLinks.notificationPdfUrl && (
               <tr>
-                <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   Official Notification
                 </td>
                 <td className="py-3.5 px-4">
@@ -1566,9 +1714,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     href={vacancy.officialLinks.notificationPdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                   >
-                    <Download className="w-3.5 h-3.5 text-amber-400" />
+                    <Download className="w-3.5 h-3.5 text-white" />
                     <span>Click Here</span>
                   </a>
                 </td>
@@ -1578,7 +1726,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {/* Syllabus PDF */}
             {vacancy.officialLinks.syllabusPdfUrl && (
               <tr>
-                <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'पाठ्यक्रम (Syllabus PDF)' : 'Official Syllabus PDF'}
                 </td>
                 <td className="py-3.5 px-4">
@@ -1586,9 +1734,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     href={vacancy.officialLinks.syllabusPdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                   >
-                    <Download className="w-3.5 h-3.5 text-indigo-200" />
+                    <Download className="w-3.5 h-3.5 text-white" />
                     <span>Click Here</span>
                   </a>
                 </td>
@@ -1598,7 +1746,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {/* Admit Card Link */}
             {vacancy.officialLinks.admitCardUrl && (
               <tr>
-                <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'प्रवेश पत्र डाउनलोड (Download Admit Card)' : 'Download Admit Card'}
                 </td>
                 <td className="py-3.5 px-4">
@@ -1606,9 +1754,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     href={vacancy.officialLinks.admitCardUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                   >
-                    <Ticket className="w-3.5 h-3.5 text-rose-200" />
+                    <Ticket className="w-3.5 h-3.5 text-white" />
                     <span>Click Here</span>
                   </a>
                 </td>
@@ -1618,7 +1766,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {/* Result PDF Link */}
             {vacancy.officialLinks.resultPdfUrl && (
               <tr>
-                <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+                <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                   {isHi ? 'परीक्षा परिणाम (Download Result)' : 'Download Exam Result'}
                 </td>
                 <td className="py-3.5 px-4">
@@ -1626,9 +1774,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     href={vacancy.officialLinks.resultPdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                   >
-                    <Award className="w-3.5 h-3.5 text-amber-300" />
+                    <Award className="w-3.5 h-3.5 text-white" />
                     <span>Click Here</span>
                   </a>
                 </td>
@@ -1637,7 +1785,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
             {/* Row 5: Official Website Portal */}
             <tr>
-              <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+              <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                 Official Website
               </td>
               <td className="py-3.5 px-4">
@@ -1645,9 +1793,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   href={vacancy.officialLinks.officialWebsiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                 >
-                  <Building2 className="w-3.5 h-3.5" />
+                  <Building2 className="w-3.5 h-3.5 text-white" />
                   <span>Click Here</span>
                 </a>
               </td>
@@ -1655,16 +1803,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
             {/* Row 6: Share Post Button */}
             <tr className="bg-white">
-              <td className="py-3.5 px-4 font-bold text-slate-900 bg-slate-50/50 border-r border-slate-200">
+              <td className="py-3.5 px-4 font-bold text-slate-800 bg-slate-50/80 border-r border-slate-200">
                 {isHi ? 'दोस्तों के साथ शेयर करें (Share Post)' : 'Share Post With Friends'}
               </td>
               <td className="py-3.5 px-4">
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm transition cursor-pointer shadow-xs"
                 >
-                  <Share2 className="w-4 h-4 text-amber-200" />
+                  <Share2 className="w-4 h-4 text-white" />
                   <span>{copiedLink ? (isHi ? 'लिंक कॉपी हो गया!' : 'Link Copied!') : (isHi ? 'शेयर करें (Share Now)' : 'Share Now')}</span>
                 </button>
               </td>
@@ -1675,34 +1823,128 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         {/* Quick Share Bar */}
         <div className="bg-white border-t border-slate-200 p-4 flex items-center justify-between flex-wrap gap-3">
           <span className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-            <Share2 className="w-4 h-4 text-amber-600" />
+            <Share2 className="w-4 h-4 text-slate-700" />
             <span>{isHi ? 'सूचना अपने मित्रों व ग्रुप्स में शेयर करें:' : 'Share this post with friends:'}</span>
           </span>
           <div>
             <button
               onClick={handleShare}
-              className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer shadow-xs"
             >
-              <Share2 className="w-4 h-4 text-amber-200" />
+              <Share2 className="w-4 h-4 text-white" />
               <span>{copiedLink ? (isHi ? 'कॉपी हो गया!' : 'Copied!') : (isHi ? 'शेयर बटन (Share)' : 'Share Button')}</span>
             </button>
           </div>
         </div>
       </div>
 
+      {/* Category Tags & Prev/Next Post Navigation - Placed directly below Important Links Section */}
+      <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-4 sm:p-5 space-y-2.5 my-3">
+        {/* Row 1: Folder Icon + Category Links */}
+        <div className="flex items-center gap-2 text-sm sm:text-base font-medium text-slate-700 flex-wrap">
+          <Folder className="w-4.5 h-4.5 text-slate-500 shrink-0" />
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-blue-600 hover:underline cursor-pointer font-medium"
+          >
+            Latest News
+          </button>
+          <span className="text-slate-400">,</span>
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-blue-600 hover:underline cursor-pointer font-medium"
+          >
+            Latest Job
+          </button>
+        </div>
+
+        {/* Row 2: Previous Post Link */}
+        <div className="flex items-start gap-2 text-sm sm:text-base leading-relaxed">
+          <ChevronLeft className="w-4 h-4 text-slate-500 shrink-0 mt-1" />
+          <button
+            type="button"
+            onClick={() => {
+              if (prevPost && onSelectOtherVacancy) {
+                onSelectOtherVacancy(prevPost);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="text-blue-600 font-normal hover:underline text-left transition-colors cursor-pointer"
+          >
+            {prevPost 
+              ? (isHi ? (prevPost.titleHi || prevPost.title) : prevPost.title)
+              : (isHi 
+                  ? 'प्रधानमंत्री आवास योजना शहरी 2.0 (PM Awas Yojana Urban 2026): ऑनलाइन आवेदन, पात्रता, दस्तावेज एवं सब्सिडी विवरण'
+                  : 'PM Awas Yojana Urban 2.0: Online Application, Eligibility & Subsidy Details')}
+          </button>
+        </div>
+
+        {/* Row 3: Next Post Link */}
+        <div className="flex items-start gap-2 text-sm sm:text-base leading-relaxed">
+          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0 mt-1" />
+          <button
+            type="button"
+            onClick={() => {
+              if (nextPost && onSelectOtherVacancy) {
+                onSelectOtherVacancy(nextPost);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="text-blue-600 font-normal hover:underline text-left transition-colors cursor-pointer"
+          >
+            {nextPost 
+              ? (isHi ? (nextPost.titleHi || nextPost.title) : nextPost.title)
+              : (isHi 
+                  ? 'सैनिक स्कूल चित्तौड़गढ़ भर्ती 2026: TGT शिक्षक एवं विभिन्न पदों के लिए नोटिफिकेशन जारी, यहां से करें आवेदन'
+                  : 'Sainik School Chittorgarh Recruitment 2026: TGT Teacher & Various Posts Notification Released')}
+          </button>
+        </div>
+      </div>
+
+      {/* Responsive AdSection inside Post */}
+      <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
+
+      {/* Recent Posts Section - Matching rajasthanvacancy.com screenshot style */}
+      {recentPostsList.length > 0 && (
+        <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-200 pb-3">
+            Recent Posts
+          </h2>
+
+          <div className="space-y-3.5 pt-1">
+            {recentPostsList.map((post) => (
+              <div key={post.id} className="leading-relaxed">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectOtherVacancy(post);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="text-blue-600 hover:text-blue-800 text-base sm:text-[17px] font-normal underline hover:no-underline text-left leading-snug transition-colors cursor-pointer"
+                >
+                  {isHi ? (post.titleHi || post.title) : post.title}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Section 11: Frequently Asked Questions (FAQ) */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight border-b border-slate-200 pb-3">
-          {isHi ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} FAQs` : `${vacancy.title} FAQs`}
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight border-b border-slate-200 pb-3">
+          {isHi ? `${jobTitleName} अक्सर पूछे जाने वाले सवाल (FAQ)` : `${vacancy.title} FAQs`}
         </h2>
 
         <div className="space-y-4 pt-1">
           {faqItems.map((faq, idx) => (
             <div key={idx} className="space-y-1.5 pb-3.5 border-b border-slate-200 last:border-0 last:pb-0">
-              <h3 className="font-bold text-slate-900 text-base sm:text-lg leading-snug">
+              <h3 className="font-bold text-slate-800 text-base sm:text-lg leading-snug">
                 {isHi ? faq.qHi : faq.q}
               </h3>
-              <p className="text-slate-800 text-base leading-relaxed font-normal">
+              <p className="text-slate-700 text-base leading-relaxed font-normal">
                 {isHi ? faq.aHi : faq.a}
               </p>
             </div>
@@ -1713,44 +1955,44 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Section 13: Any Doubt / Q&A Section */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-5">
         <div className="border-b border-slate-200 pb-3 flex items-center justify-between flex-wrap gap-2">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-amber-600 shrink-0" />
+          <h2 className="text-xl sm:text-[22px] font-bold text-slate-800 leading-tight flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-slate-700 shrink-0" />
             <span>
               {isHi
-                ? `${vacancy.shortTitleHi || vacancy.titleHi || vacancy.title} Any Doubt? (सवाल पूछें)`
+                ? `${jobTitleName} सवाल व शंका समाधान (Any Doubt?)`
                 : `${vacancy.title} Any Doubt?`}
             </span>
           </h2>
-          <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-semibold shrink-0">
+          <span className="text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200 font-bold shrink-0">
             {isHi ? 'सहायता केंद्र' : 'Support & Queries'}
           </span>
         </div>
 
         {/* Informational Callout */}
-        <div className="bg-white border border-amber-200 rounded-lg p-4 text-sm text-slate-800 leading-relaxed flex items-start gap-3">
-          <MessageSquare className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-800 leading-relaxed flex items-start gap-3">
+          <MessageSquare className="w-5 h-5 text-slate-700 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-amber-900 mb-1">
+            <p className="font-bold text-slate-800 mb-1">
               {isHi ? 'क्या आपका कोई सवाल या संशय है?' : 'Have any question or doubt regarding this recruitment?'}
             </p>
-            <p>
+            <p className="text-slate-800">
               {isHi
-                ? `यदि आपके पास ${vacancy.titleHi || vacancy.title} भर्ती से संबंधित योग्यता, आयु सीमा, फीस या आवेदन प्रक्रिया से जुड़ा कोई भी सवाल है, तो नीचे कमेंट बॉक्स में अपना प्रश्न लिखें। हमारी टीम आपको तुरंत उत्तर प्रदान करेगी।`
-                : `If you have any doubt regarding ${vacancy.title} eligibility, age limit, application fee or process, submit your query below. Our support team will answer your question promptly.`}
+                ? `यदि आपके पास ${shortJobName} से संबंधित योग्यता, आयु सीमा, फीस या आवेदन प्रक्रिया से जुड़ा कोई भी सवाल है, तो नीचे कमेंट बॉक्स में अपना प्रश्न लिखें। हमारी टीम आपको तुरंत उत्तर प्रदान करेगी।`
+                : `If you have any doubt regarding ${shortJobName} eligibility, age limit, application fee or process, submit your query below. Our support team will answer your question promptly.`}
             </p>
           </div>
         </div>
 
         {/* Submission Form */}
         <form onSubmit={handleDoubtSubmit} className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-2">
-            <Send className="w-4 h-4 text-amber-600" />
+          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <Send className="w-4 h-4 text-slate-700" />
             {isHi ? 'अपना प्रश्न या शंका दर्ज करें (Ask Your Doubt)' : 'Post Your Doubt'}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-800 mb-1">
                 {isHi ? 'आपका नाम (Your Name)' : 'Your Name'}
               </label>
               <input
@@ -1758,23 +2000,23 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 value={doubtName}
                 onChange={(e) => setDoubtName(e.target.value)}
                 placeholder={isHi ? 'उदा. राहुल शर्मा' : 'e.g. Rahul Sharma'}
-                className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-slate-300"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-800 mb-1">
                 {isHi ? 'जिला / शहर (City/District)' : 'District / City'}
               </label>
               <input
                 type="text"
                 placeholder={isHi ? 'उदा. चित्तौड़गढ़, जयपुर' : 'e.g. Chittorgarh, Jaipur'}
-                className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-slate-300"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-800 mb-1">
               {isHi ? 'आपका सवाल या डाउट (Your Question/Doubt) *' : 'Your Doubt / Question *'}
             </label>
             <textarea
@@ -1783,151 +2025,29 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               value={doubtQuery}
               onChange={(e) => setDoubtQuery(e.target.value)}
               placeholder={isHi ? 'यहाँ अपना सवाल लिखें...' : 'Type your doubt or query here...'}
-              className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              className="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-slate-300"
             />
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-3 pt-1">
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition flex items-center gap-2 cursor-pointer shadow-xs"
+              className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-sm transition flex items-center gap-2 cursor-pointer shadow-xs"
             >
               <Send className="w-4 h-4" />
               <span>{isHi ? 'सवाल पोस्ट करें (Submit Doubt)' : 'Submit Doubt'}</span>
             </button>
 
             {doubtSubmitted && (
-              <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-md font-semibold flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs text-slate-800 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-md font-bold flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-slate-800" />
                 {isHi ? 'आपका सवाल दर्ज हो गया है!' : 'Your doubt submitted successfully!'}
               </span>
             )}
           </div>
         </form>
-
-        {/* Existing Doubts & Admin Answers List */}
-        <div className="space-y-4 pt-2">
-          <h3 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-slate-600" />
-            <span>
-              {isHi
-                ? `पूछे गए सवाल एवं समाधान (${userDoubts.length})`
-                : `Asked Doubts & Answers (${userDoubts.length})`}
-            </span>
-          </h3>
-
-          <div className="space-y-3.5">
-            {userDoubts.map((item) => (
-              <div key={item.id} className="p-4 rounded-xl border border-slate-200 bg-white space-y-2.5 shadow-2xs">
-                <div className="flex items-center justify-between text-xs text-slate-500 pb-1 border-b border-slate-100">
-                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-amber-600" />
-                    {item.name}
-                  </span>
-                  <span>{item.date}</span>
-                </div>
-
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">
-                    {isHi ? 'सवाल (Doubt):' : 'Question:'}
-                  </p>
-                  <p className="text-sm text-slate-900 font-semibold leading-relaxed">
-                    {item.question}
-                  </p>
-                </div>
-
-                {item.answer && (
-                  <div className="mt-2.5 p-3 rounded-lg bg-white border border-emerald-200 text-xs text-slate-800 space-y-1">
-                    <p className="font-bold text-emerald-900 flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      {isHi ? 'टीम उत्तर (Admin Response):' : 'Admin Response:'}
-                    </p>
-                    <p className="leading-relaxed text-slate-700">
-                      {item.answer}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
-      {/* Related Jobs Section - Suggested based on current job's category or organization tags */}
-      {relatedVacancies.length > 0 && (
-        <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-          <div className="border-b border-slate-200 pb-3 flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-amber-600 shrink-0" />
-              <span>
-                {isHi ? 'संबंधित सरकारी नौकरियां (Related Jobs)' : 'Related Jobs & Openings'}
-              </span>
-            </h2>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-semibold border border-slate-200">
-              {isHi ? 'आपके लिए 3 अनुशंसित भर्तियां' : '3 Recommended Openings'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {relatedVacancies.map((rel) => {
-              const relLastDate = rel.importantDates?.applyLastDate || rel.yojanaOverview?.applyLastDate;
-              return (
-                <div
-                  key={rel.id}
-                  onClick={() => onSelectOtherVacancy(rel)}
-                  className="p-4 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-slate-50/60 transition cursor-pointer flex flex-col justify-between group shadow-2xs bg-white"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-bold text-amber-800 uppercase tracking-wider text-[11px]">
-                        {rel.organization}
-                      </span>
-                      {rel.totalPosts && (
-                        <span className="font-semibold text-slate-700 text-xs">
-                          {typeof rel.totalPosts === 'number' ? `${rel.totalPosts.toLocaleString()} पद` : rel.totalPosts}
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="font-bold text-slate-900 group-hover:text-amber-800 line-clamp-2 text-sm sm:text-base leading-snug">
-                      {isHi ? rel.titleHi : rel.title}
-                    </h3>
-                  </div>
-
-                  {relLastDate && (
-                    <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-rose-600 shrink-0" />
-                        <span>{isHi ? `अंतिम तिथि: ${relLastDate}` : `Last Date: ${relLastDate}`}</span>
-                      </span>
-                      <span className="text-amber-700 font-bold text-xs flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-                        <span>{isHi ? 'देखें' : 'View'}</span>
-                        <span>→</span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Floating WhatsApp Share Button */}
-      <div className="fixed right-4 bottom-6 z-50 flex flex-col items-end gap-2 animate-bounce">
-        <button
-          onClick={handleWhatsAppShare}
-          className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white px-4 py-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer font-bold text-sm border-2 border-white"
-          title="Share this post on WhatsApp"
-        >
-          <svg className="w-6 h-6 fill-current shrink-0" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.587 1.93.9 3.013.9 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.503-4.466 9.969-9.969 9.969-1.758 0-3.411-.462-4.862-1.272l-5.169 1.355 1.38-5.044c-.902-1.503-1.418-3.262-1.418-5.008 0-5.503 4.466-9.969 9.969-9.969 5.503 0 9.969 4.466 9.969 9.969zm-5.719 3.82c-.22-.11-1.303-.643-1.505-.716-.202-.073-.349-.11-.496.11s-.57.716-.699.863c-.128.147-.257.165-.477.055-.22-.11-.93-.343-1.772-1.094-.655-.584-1.098-1.306-1.226-1.526-.128-.22-.014-.339.096-.448.099-.098.22-.257.33-.385.11-.128.147-.22.22-.367.073-.147.037-.275-.018-.385s-.496-1.193-.68-1.634c-.179-.43-.36-.372-.496-.379-.128-.007-.275-.008-.422-.008s-.385.055-.587.275c-.202.22-.771.753-.771 1.836s.789 2.129.899 2.276c.11.147 1.552 2.37 3.759 3.322.525.227.935.362 1.255.464.528.168 1.009.144 1.389.088.424-.063 1.303-.533 1.487-1.047.184-.514.184-.955.129-1.047-.056-.092-.203-.147-.423-.257z"/>
-          </svg>
-          <span className="inline sm:inline">
-            {isHi ? 'WhatsApp चैनल ज्वाइन करें' : 'WhatsApp Channel'}
-          </span>
-        </button>
-      </div>
     </article>
   );
 };
