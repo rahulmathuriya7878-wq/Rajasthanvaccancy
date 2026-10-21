@@ -778,31 +778,39 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
           </button>
         </div>
 
-        {/* Section Jump Tabs Navigation */}
-        <div className="bg-slate-100 border-b border-slate-200 px-3 py-2 flex items-center gap-1.5 overflow-x-auto shrink-0 scrollbar-thin">
-          {navTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition cursor-pointer shrink-0 ${
-                  isActive
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-200'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Vertical Navigation & Form Body Container */}
+        <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-[500px]">
+          
+          {/* Vertical Navigation Sidebar Box for Admin Sections */}
+          <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-3 flex md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto shrink-0 scrollbar-thin">
+            <div className="hidden md:block px-2.5 py-1 mb-1 border-b border-slate-200">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                {isHi ? 'एडमिन सेक्शन (Vertical Boxes)' : 'Admin Sections (Vertical)'}
+              </span>
+            </div>
+            {navTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2.5 transition cursor-pointer shrink-0 ${
+                    isActive
+                      ? 'bg-amber-600 text-white shadow-md shadow-amber-600/20'
+                      : 'bg-white hover:bg-amber-50/50 text-slate-700 border border-slate-200 hover:border-amber-300'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-amber-600'}`} />
+                  <span className="truncate">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 text-xs sm:text-sm">
+          {/* Form Body Area */}
+          <form onSubmit={handleSubmit} className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6 text-xs sm:text-sm bg-white">
 
           {/* TAB 0: AI BLOG WRITER */}
           {activeTab === 'ai_writer' && (
@@ -2316,6 +2324,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

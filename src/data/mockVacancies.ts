@@ -1195,6 +1195,17 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
   savesCount: 720,
   postName: 'Station Master',
   postNameHi: 'स्टेशन मास्टर (Station Master)',
+  postBreakdown: [
+    {
+      postName: 'Station Master',
+      postNameHi: 'स्टेशन मास्टर (Station Master)',
+      categoryOrSubject: 'Indian Railways (RRB)',
+      categoryOrSubjectHi: 'भारतीय रेलवे (CEN 08/2026)',
+      postsCount: 1250,
+      qualification: 'Graduate',
+      qualificationHi: 'स्नातक (Graduation)'
+    }
+  ],
   qualification: ['Graduate'],
   qualificationDetails: 'Bachelor Degree in any stream from a recognized University / Institute.',
   qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से किसी भी विषय में स्नातक (Graduation) डिग्री उत्तीर्ण।',
@@ -1203,32 +1214,7 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
   description: 'Complete guide for RRB Station Master Recruitment 2026 including eligibility, selection process, syllabus, and important dates.',
   descriptionHi: `✍️ नमस्ते साथियों,
 
-भारतीय रेलवे में स्टेशन मास्टर (Station Master) बनने का सपना देख रहे युवाओं के लिए एक बड़ी खुशखबरी है। रेलवे भर्ती बोर्ड (RRB) ने वर्ष 2026 के लिए स्टेशन मास्टर के कुल 1250 पदों पर भर्ती का शॉर्ट नोटिफिकेशन जारी किया है। 
-
-📌 भर्ती की मुख्य बातें (Highlights):
-• भर्ती संस्था: रेलवे भर्ती बोर्ड (RRB)
-• पद का नाम: स्टेशन मास्टर
-• कुल पद: 1250 पद
-• विज्ञापन संख्या: CEN 08/2026
-• आवेदन का माध्यम: केवल ऑनलाइन
-• ऑनलाइन आवेदन शुरू: 27 अक्टूबर 2026
-• आवेदन की अंतिम तिथि: 25 नवंबर 2026
-• वेतनमान: ₹35,400/- (पे लेवल-6) + अन्य भत्ते
-
-🎯 शैक्षणिक योग्यता (Eligibility):
-• उम्मीदवार किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) उत्तीर्ण होना चाहिए।
-• मेडिकल स्टैंडर्ड: A-2 श्रेणी का होना अनिवार्य है।
-
-⏳ आयु सीमा (Age Limit):
-• न्यूनतम आयु: 20 वर्ष
-• अधिकतम आयु: 33 वर्ष (संभावित)
-• आरक्षित वर्गों (SC/ST/OBC) को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
-
-📝 चयन प्रक्रिया (Selection Process):
-1. कंप्यूटर आधारित परीक्षा (CBT)
-2. कंप्यूटर आधारित एप्टीट्यूड टेस्ट (CBAT)
-3. दस्तावेज सत्यापन (Document Verification)
-4. चिकित्सा परीक्षण (Medical Examination)`,
+भारतीय रेलवे में स्टेशन मास्टर (Station Master) बनने का सपना देख रहे युवाओं के लिए एक बड़ी खुशखबरी है। रेलवे भर्ती बोर्ड (RRB) ने वर्ष 2026 के लिए स्टेशन मास्टर के कुल 1250 पदों पर भर्ती का विज्ञापन CEN 08/2026 जारी किया है। इसके लिए योग्य एवं इच्छुक उम्मीदवार 27 अक्टूबर 2026 से ऑनलाइन आवेदन कर सकते हैं। भर्ती से जुड़ी सभी महत्वपूर्ण तिथियां, पद विवरण, वेतनमान एवं आधिकारिक लिंक नीचे दिए गए हैं।`,
   jobLocation: 'सम्पूर्ण भारत (All India - 21 RRBs)',
   salary: '₹35,400 per month (Level 6) + Allowances',
   salaryHi: '₹35,400/- प्रति माह (पे लेवल-6) + भत्ते',
@@ -1277,9 +1263,9 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
     'चिकित्सा परीक्षण (Medical Examination - A2 Standard)'
   ],
   officialLinks: {
-    applyOnlineUrl: 'https://www.rrbindianrailways.gov.in',
-    notificationPdfUrl: 'https://www.rrbindianrailways.gov.in',
-    officialWebsiteUrl: 'https://www.rrbindianrailways.gov.in'
+    applyOnlineUrl: 'https://www.rrbapply.gov.in/#/auth/landing',
+    notificationPdfUrl: 'https://www.rrbapply.gov.in/#/auth/landing',
+    officialWebsiteUrl: 'https://www.rrbapply.gov.in/#/auth/landing'
   },
   howToApplyHi: [
     'सबसे पहले अपने संबंधित रेलवे भर्ती बोर्ड (RRB) की आधिकारिक वेबसाइट पर जाएं।',

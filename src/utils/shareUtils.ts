@@ -4,133 +4,30 @@ import { VacancyItem } from '../types';
  * Generate comprehensive Hindi share text for any vacancy / yojana / result / admit card
  * formatted with WhatsApp friendly bolding and emojis.
  */
-export function generateHindiShareText(item: VacancyItem, customUrl?: string, includeLink: boolean = false): string {
-  const shareUrl = customUrl || (typeof window !== 'undefined' 
-    ? `${window.location.origin}${window.location.pathname}?vacancy=${item.id}` 
-    : `https://rajasthanvacancy.in/?vacancy=${item.id}`);
-
-  const titleHi = item.titleHi || item.title;
-  const category = item.category;
-  const status = item.status;
-  const isScheme = category === 'scheme' || item.organization === 'Sarkari Yojana';
-
-  const dept = item.departmentHi || item.department || item.organization;
-  const postName = item.postNameHi || item.postName || titleHi;
-  const postsCount = typeof item.totalPosts === 'number' 
-    ? `${item.totalPosts.toLocaleString('hi-IN')} पद` 
-    : (item.totalPosts || 'विभिन्न पद');
-
-  // 1. Sarkari Yojana (सरकारी योजना)
-  if (isScheme) {
-    const benefit = item.yojanaOverview?.monthlyAssistance || 
-      item.yojanaOverview?.maxAnnualAssistance || 
-      item.salaryHi || 
-      item.salary || 
-      'सरकारी वित्तीय सहायता एवं अनुदान';
-    const beneficiaries = item.yojanaOverview?.beneficiaries || 
-      item.qualificationDetailsHi || 
-      'राजस्थान के मूल निवासी छात्र एवं नागरिक';
-    const startDate = item.importantDates?.applyStartDate || 'आवेदन प्रक्रिया जारी';
-    const lastDate = item.yojanaOverview?.applyLastDate || item.importantDates?.applyLastDate || 'TBA';
-
-    return [
-      `📢 *${titleHi}*`,
-      `🎁 *योजना का लाभ:* ${benefit}`,
-      `👥 *पात्रता / लाभार्थी:* ${beneficiaries}`,
-      `📅 *आवेदन शुरू तिथि:* ${startDate}`,
-      `⏰ *आवेदन की अंतिम तिथि:* ${lastDate}`,
-      ``,
-      `👉 *इस महत्वपूर्ण जनकल्याणकारी योजना की जानकारी जरूरतमंद साथियों व परिवारों तक अवश्य शेयर करें!*`
-    ].join('\n');
+export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
+  let shareUrl = customUrl;
+  if (!shareUrl) {
+    if (item.id === 'rrb-station-master-recruitment-2026') {
+      shareUrl = 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/';
+    } else if (typeof window !== 'undefined') {
+      shareUrl = `${window.location.origin}${window.location.pathname}?vacancy=${item.id}`;
+    } else {
+      shareUrl = `https://rajasthanvacancy.com/${item.id}/`;
+    }
   }
 
-  // 2. Admit Card (प्रवेश पत्र)
-  if (category === 'admit_card' || status === 'admit_card_out') {
-    const admitCardDate = item.importantDates?.admitCardDate || 'जारी कर दिया गया है';
-    const examDate = item.importantDates?.examDate || 'नोटिफिकेशन में देखें';
-
-    return [
-      `📢 *${titleHi} - एडमिट कार्ड जारी*`,
-      `📌 *पद का नाम:* ${postName}`,
-      `👥 *कुल पद:* ${postsCount}`,
-      `🎟️ *एडमिट कार्ड जारी तिथि:* ${admitCardDate}`,
-      `📅 *परीक्षा तिथि:* ${examDate}`,
-      ``,
-      `👉 *अपने परीक्षा देने वाले सभी साथियों के साथ तुरंत शेयर करें!*`
-    ].join('\n');
+  // Exact requested format for RRB Station Master Recruitment 2026
+  if (item.id === 'rrb-station-master-recruitment-2026') {
+    return `🔥 *रेलवे स्टेशन मास्टर भर्ती का 1,250 पदों पर नोटिफिकेशन जारी, आवेदन 27 अक्टूबर से 25 नवंबर 2026 तक*\n👇👇\nhttps://rajasthanvacancy.com/rrb-station-master-recruitment-2026/`;
   }
 
-  // 3. Answer Key (उत्तर कुंजी)
-  if (category === 'answer_key' || status === 'answer_key_out') {
-    const keyDate = item.importantDates?.notificationDate || 'जारी कर दी गई है';
-    const feeDate = item.importantDates?.feeLastDate || item.importantDates?.applyLastDate || 'आधिकारिक वेबसाइट देखें';
+  // Generic dynamic headline for all vacancies & yojanas
+  const postTitle = item.shortTitleHi || item.postNameHi || item.titleHi || item.title;
+  const postsCountText = typeof item.totalPosts === 'number' ? `${item.totalPosts.toLocaleString('hi-IN')} पदों` : (item.totalPosts ? `${item.totalPosts}` : 'विभिन्न पदों');
+  const startDate = item.importantDates?.applyStartDate || 'अक्टूबर 2026';
+  const lastDate = item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate || 'नवंबर 2026';
 
-    return [
-      `📢 *${titleHi} - उत्तर कुंजी (Answer Key) जारी*`,
-      `📌 *पद का नाम:* ${postName}`,
-      `🔑 *आंसर-की जारी तिथि:* ${keyDate}`,
-      `⏰ *आपत्ति दर्ज कराने की अंतिम तिथि:* ${feeDate}`,
-      ``,
-      `👉 *अपने सभी साथियों के साथ शेयर करें ताकि वे समय पर आपत्ति दर्ज कर सकें!*`
-    ].join('\n');
-  }
+  const headline = `${postTitle} का ${postsCountText} पर नोटिफिकेशन जारी, आवेदन ${startDate} से ${lastDate} तक`;
 
-  // 4. Result (परीक्षा परिणाम)
-  if (category === 'result' || status === 'result_declared') {
-    const resultDate = item.importantDates?.resultDate || 'घोषित कर दिया गया है';
-
-    return [
-      `📢 *${titleHi} - परीक्षा परिणाम घोषित*`,
-      `📌 *पद का नाम:* ${postName}`,
-      `👥 *कुल पद:* ${postsCount}`,
-      `🏆 *रिजल्ट जारी तिथि:* ${resultDate}`,
-      ``,
-      `👉 *अपने सभी परीक्षार्थी साथियों के साथ तुरंत शेयर करें!*`
-    ].join('\n');
-  }
-
-  // 5. Standard Recruitment / Job (सरकारी भर्ती)
-  const qualification = item.qualificationDetailsHi || 
-    item.qualificationDetails || 
-    (item.qualification && item.qualification.length > 0 ? item.qualification.join(' / ') : '10वीं / 12वीं / स्नातक पास');
-  
-  const ageLimitText = item.ageLimit 
-    ? `${item.ageLimit.min} से ${item.ageLimit.max} वर्ष (आयु गणना: ${item.ageLimit.asOnDate || '01.01.2026'})` 
-    : 'नियमों के अनुसार';
-
-  let feeText = 'सामान्य/OBC: ₹600, SC/ST/EWS: ₹400';
-  if (item.applicationFee) {
-    const gen = item.applicationFee.genObc !== undefined ? `सामान्य/OBC: ₹${item.applicationFee.genObc}` : '';
-    const reserved = item.applicationFee.scSt !== undefined ? `SC/ST: ₹${item.applicationFee.scSt}` : '';
-    const otr = item.applicationFee.otrNoteHi ? ` (${item.applicationFee.otrNoteHi})` : '';
-    feeText = [gen, reserved].filter(Boolean).join(', ') + otr;
-    if (!feeText) feeText = 'निःशुल्क / OTR लागू';
-  }
-
-  const startDate = item.importantDates?.applyStartDate || 'आवेदन शुरू';
-  const lastDate = item.importantDates?.applyLastDate || 'TBA';
-  const examDate = item.importantDates?.examDate;
-
-  const lines = [
-    `📢 *${titleHi}*`,
-    `📌 *पद का नाम:* ${postName}`,
-    ``,
-    `📅 *आवेदन शुरू तिथि:* ${startDate}`,
-    `⏰ *आवेदन की अंतिम तिथि:* ${lastDate}`
-  ];
-
-  if (includeLink) {
-    lines.push(
-      ``,
-      `🔗 *ऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:*`,
-      `${shareUrl}`
-    );
-  }
-
-  lines.push(
-    ``,
-    `👉 *अपने सभी  साथियों एवं WhatsApp ग्रुप्स में जरूर शेयर करें ताकि किसी की अंतिम तिथि न छूटे!*`
-  );
-
-  return lines.join('\n');
+  return `🔥 *${headline}*\n👇👇\n${shareUrl}`;
 }

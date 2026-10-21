@@ -71,7 +71,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v14';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v17';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
@@ -91,6 +91,7 @@ try {
   localStorage.removeItem('raj_vacancies_v11');
   localStorage.removeItem('raj_vacancies_v12');
   localStorage.removeItem('raj_vacancies_v13');
+  localStorage.removeItem('raj_vacancies_v14');
   localStorage.removeItem('raj_saved_ids_v1');
   localStorage.removeItem('raj_saved_ids_v2');
 } catch (e) {}
@@ -115,18 +116,15 @@ export default function App() {
       console.error('Failed to load stored vacancies', e);
     }
 
-    // Ensure UGC NET Dec and DSSSB District Court are always present and filter out obsolete vacancies
+    // Ensure all INITIAL_VACANCIES (including RRB Station Master, DSSSB, UGC NET Dec, etc.) exist
     let filteredLoaded = loaded.filter(v => v.id !== 'ugc-net-2026-june');
-    const hasDsssb = filteredLoaded.some(v => v.id === 'dsssb-district-court-recruitment-2026');
-    if (!hasDsssb) {
-      const item = INITIAL_VACANCIES.find(v => v.id === 'dsssb-district-court-recruitment-2026');
-      if (item) filteredLoaded = [item, ...filteredLoaded];
-    }
-    const hasDec = filteredLoaded.some(v => v.id === 'ugc-net-2026-dec');
-    if (!hasDec) {
-      const item = INITIAL_VACANCIES.find(v => v.id === 'ugc-net-2026-dec');
-      if (item) filteredLoaded = [item, ...filteredLoaded];
-    }
+    
+    INITIAL_VACANCIES.forEach(initItem => {
+      const exists = filteredLoaded.some(v => v.id === initItem.id);
+      if (!exists) {
+        filteredLoaded = [initItem, ...filteredLoaded];
+      }
+    });
 
     // Merge handwritten notes and updated human guidance for base items
     return filteredLoaded.map(item => {
@@ -135,9 +133,10 @@ export default function App() {
         return {
           ...initMatch,
           ...item,
+          officialLinks: initMatch.officialLinks || item.officialLinks,
           handwrittenNotes: item.handwrittenNotes || initMatch.handwrittenNotes,
           briefSummaryHi: (item.briefSummaryHi && item.briefSummaryHi.length > 30) ? item.briefSummaryHi : initMatch.briefSummaryHi,
-          descriptionHi: (item.descriptionHi && item.descriptionHi.length > 60) ? item.descriptionHi : initMatch.descriptionHi,
+          descriptionHi: initMatch.descriptionHi || item.descriptionHi,
         };
       }
       return item;

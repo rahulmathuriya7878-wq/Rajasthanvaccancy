@@ -156,9 +156,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                 </span>
               </div>
 
-              {/* List of items */}
+              {/* List of items with expanded box capacity */}
               <div className="p-2.5 flex-1 flex flex-col justify-between">
-                <div className="max-h-[650px] overflow-y-auto pr-0.5 scrollbar-thin">
+                <div className="max-h-[950px] overflow-y-auto pr-0.5 scrollbar-thin">
                   <ul className="space-y-1">
                   {displayedItems.length > 0 ? (
                     displayedItems.map((item) => (

@@ -215,14 +215,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const handleShare = () => {
     const titleHi = vacancy.titleHi || vacancy.title;
-    const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    const shareText = generateHindiShareText(vacancy, currentUrl, true);
+    const customUrl = vacancy.id === 'rrb-station-master-recruitment-2026' 
+      ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/'
+      : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
+    const shareText = generateHindiShareText(vacancy, customUrl);
 
     if (navigator.share) {
       navigator.share({
         title: titleHi,
         text: shareText,
-        url: currentUrl,
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(shareText);
@@ -232,9 +233,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   };
 
   const handleWhatsAppShare = () => {
-    const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    // As per user request: "Without link"
-    const shareText = generateHindiShareText(vacancy, currentUrl, false);
+    const customUrl = vacancy.id === 'rrb-station-master-recruitment-2026' 
+      ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/'
+      : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
+    const shareText = generateHindiShareText(vacancy, customUrl);
     const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
@@ -495,6 +497,53 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 {vacancy.importantDates?.applyLastDate || '15 नवंबर 2026'}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* WhatsApp Share Card Banner */}
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 sm:p-4 space-y-2.5 shadow-xs my-2">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+              <span>🔥</span>
+              <span>{isHi ? 'व्हाट्सएप पर तुरंत शेयर करें' : 'Share on WhatsApp'}</span>
+            </span>
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+              One-Click Share
+            </span>
+          </div>
+
+          <div className="bg-white border border-emerald-200/80 rounded-lg p-3 text-xs sm:text-sm font-medium text-slate-800 space-y-1 font-sans">
+            <p className="font-extrabold text-slate-900 leading-snug">
+              {generateHindiShareText(vacancy, vacancy.id === 'rrb-station-master-recruitment-2026' ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/' : undefined).split('\n')[0]}
+            </p>
+            <p className="text-emerald-700 font-bold">
+              👇👇
+            </p>
+            <p className="text-blue-600 font-semibold underline break-all">
+              {vacancy.id === 'rrb-station-master-recruitment-2026' 
+                ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/' 
+                : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 pt-0.5">
+            <button
+              type="button"
+              onClick={handleWhatsAppShare}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm flex items-center justify-center gap-2"
+            >
+              <span className="text-base">📲</span>
+              <span>{isHi ? 'व्हाट्सएप ग्रुप्स में शेयर करें' : 'Share in WhatsApp Groups'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="py-2.5 px-3.5 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shrink-0"
+              title="Copy message"
+            >
+              {copiedLink ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-emerald-700" />}
+              <span>{copiedLink ? (isHi ? 'कॉपी हुआ' : 'Copied') : (isHi ? 'कॉपी मैसेज' : 'Copy Message')}</span>
+            </button>
           </div>
         </div>
 
@@ -935,6 +984,64 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         </div>
       )}
 
+      {/* Section 3: Post Breakdown Box - Placed JUST BELOW Important Dates */}
+      {!isScheme && (
+        <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
+            {isHi 
+              ? `${jobTitleName} पदवार विवरण (Post & Vacancy Details)` 
+              : `Post-Wise Vacancy Details for ${vacancy.title}`}
+          </h2>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border border-slate-200 border-collapse">
+              <thead>
+                <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
+                  <th className="py-3 px-4 border-r border-slate-200 font-bold w-1/2">
+                    {isHi ? 'पद का नाम (Post Name)' : 'Post Name'}
+                  </th>
+                  <th className="py-3 px-4 border-r border-slate-200 font-bold text-center w-1/4">
+                    {isHi ? 'विभाग / श्रेणी' : 'Department / Category'}
+                  </th>
+                  <th className="py-3 px-4 font-bold text-right w-1/4">
+                    {isHi ? 'पदों की संख्या (Pad)' : 'No. of Posts'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700">
+                {vacancy.postBreakdown && vacancy.postBreakdown.length > 0 ? (
+                  vacancy.postBreakdown.map((item, idx) => (
+                    <tr key={idx} className="bg-white hover:bg-slate-50/50">
+                      <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-800">
+                        {isHi ? (item.postNameHi || item.postName) : item.postName}
+                      </td>
+                      <td className="py-3 px-4 border-r border-slate-200 text-center font-medium">
+                        {isHi ? (item.categoryOrSubjectHi || item.categoryOrSubject || vacancy.departmentHi || vacancy.department || '-') : (item.categoryOrSubject || vacancy.department || '-')}
+                      </td>
+                      <td className="py-3 px-4 text-right font-bold text-slate-800">
+                        {item.postsCount} {isHi ? 'पद' : 'Posts'}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="bg-white hover:bg-slate-50/50">
+                    <td className="py-3 px-4 border-r border-slate-200 font-semibold text-slate-800">
+                      {isHi ? (vacancy.postNameHi || vacancy.postName || vacancy.shortTitleHi || vacancy.shortTitle) : (vacancy.postName || vacancy.shortTitle)}
+                    </td>
+                    <td className="py-3 px-4 border-r border-slate-200 text-center font-medium">
+                      {isHi ? (vacancy.departmentHi || vacancy.department || 'भारतीय रेलवे') : (vacancy.department || 'Indian Railways')}
+                    </td>
+                    <td className="py-3 px-4 text-right font-bold text-slate-800">
+                      {vacancy.totalPosts ? `${vacancy.totalPosts} ${isHi ? 'पद' : 'Posts'}` : (isHi ? 'विभिन्न पद' : 'Various Posts')}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* TSP / Non-TSP Breakdown Box */}
       {!isScheme && vacancy.tspBreakdown && ((vacancy.tspBreakdown.nonTsp ?? 0) > 0 || (vacancy.tspBreakdown.tsp ?? 0) > 0) && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-3">
@@ -982,52 +1089,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
       {/* Responsive AdSection inside Post */}
       <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
-
-      {/* Section 4: Post Breakdown Box - Render only if postBreakdown data exists */}
-      {!isScheme && vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
-        <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
-          {/* Title */}
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">
-            {isHi 
-              ? `${jobTitleName} पदवार विवरण (Post Breakdown)` 
-              : `Post-Wise Vacancy Details for ${vacancy.title}`}
-          </h2>
-
-          {/* Clean 3-Column Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border border-slate-200 border-collapse">
-              <thead>
-                <tr className="bg-slate-100 text-slate-800 font-bold border-b border-slate-200 text-sm sm:text-base">
-                  <th className="py-3 px-4 border-r border-slate-200 font-bold w-1/2">
-                    {isHi ? 'पद का नाम' : 'Post Name'}
-                  </th>
-                  <th className="py-3 px-4 border-r border-slate-200 font-bold text-center w-1/4">
-                    {isHi ? 'श्रेणी / विभाग' : 'Category / Department'}
-                  </th>
-                  <th className="py-3 px-4 font-bold text-right w-1/4">
-                    {isHi ? 'पदों की संख्या' : 'No. of Posts'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 text-sm sm:text-base text-slate-700">
-                {vacancy.postBreakdown.map((item, idx) => (
-                  <tr key={idx} className="bg-white">
-                    <td className="py-3 px-4 border-r border-slate-200 font-medium text-slate-800">
-                      {isHi ? (item.postNameHi || item.postName) : item.postName}
-                    </td>
-                    <td className="py-3 px-4 border-r border-slate-200 text-center font-medium">
-                      {isHi ? (item.categoryOrSubjectHi || item.categoryOrSubject || '-') : (item.categoryOrSubject || '-')}
-                    </td>
-                    <td className="py-3 px-4 text-right font-bold text-slate-800">
-                      {item.postsCount}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* Section 5: Educational Qualification & Eligibility */}
       {!isScheme && (
