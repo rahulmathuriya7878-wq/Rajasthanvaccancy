@@ -1,16 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Share2, Check } from 'lucide-react';
+import { VacancyItem, LanguageMode } from '../types';
+import { generateHindiShareText } from '../utils/shareUtils';
 
 interface FloatingSocialButtonsProps {
   whatsappUrl?: string;
   telegramUrl?: string;
+  selectedVacancy?: VacancyItem | null;
+  lang?: LanguageMode;
 }
 
 export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
   whatsappUrl = 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e',
   telegramUrl = 'https://telegram.org',
+  selectedVacancy = null,
+  lang = 'hi',
 }) => {
+  const isHi = lang === 'hi';
+  const [copied, setCopied] = useState(false);
+
+  const handleShareClick = () => {
+    let shareText = '';
+    if (selectedVacancy) {
+      const cleanId = selectedVacancy.id.replace(/^\//, '').replace(/\/$/, '');
+      const websiteUrl = `${window.location.origin}/${cleanId}/`;
+      shareText = generateHindiShareText(selectedVacancy, websiteUrl);
+    } else {
+      shareText = `🔥 *राजस्थान वैकेंसी अपडेट - सभी सरकारी भर्ती व योजना अलर्ट*\n👇👇\n${window.location.origin}/`;
+    }
+
+    const message = encodeURIComponent(shareText);
+    window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="fixed right-2 sm:right-4 bottom-16 sm:bottom-20 z-50 flex flex-col items-end gap-2.5 select-none pointer-events-auto animate-fadeIn">
+      {/* Green Floating WhatsApp Share Button */}
+      <button
+        type="button"
+        onClick={handleShareClick}
+        aria-label="Share Post on WhatsApp"
+        className="group flex items-center gap-1.5 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer filter drop-shadow-xl"
+      >
+        <span className="bg-[#25D366] hover:bg-[#20ba59] text-white text-[11px] sm:text-xs font-black tracking-wide px-2.5 py-1 rounded-md shadow-md transition-colors flex items-center justify-center gap-1 border border-white/30">
+          <span>🔥</span>
+          <span>{copied ? (isHi ? 'शेयर किया!' : 'Shared!') : (isHi ? 'शेयर करें' : 'Share')}</span>
+        </span>
+
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center shadow-2xl transition-transform group-hover:rotate-12 ring-2 ring-white">
+          {copied ? <Check className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[3]" /> : <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.5]" />}
+        </div>
+      </button>
+
       {/* WhatsApp Floating Button with 'Join Group' Badge */}
       <a
         href={whatsappUrl}

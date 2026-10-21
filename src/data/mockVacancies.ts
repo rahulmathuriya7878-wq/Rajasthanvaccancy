@@ -254,7 +254,7 @@ export const AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY: VacancyItem = {
   ],
   officialLinks: {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in',
-    notificationPdfUrl: 'https://rajasthanvacancy.com/ambedkar-dbt-voucher-yojana-2026/',
+    notificationPdfUrl: 'https://sjms.rajasthan.gov.in',
     officialWebsiteUrl: 'https://sjms.rajasthan.gov.in'
   },
   postBreakdown: [

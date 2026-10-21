@@ -711,7 +711,7 @@ export default function App() {
         lang={lang}
       />
 
-      <FloatingSocialButtons />
+      <FloatingSocialButtons selectedVacancy={selectedVacancy} lang={lang} />
       <OfflineIndicator lang={lang} />
     </div>
   );

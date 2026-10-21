@@ -215,10 +215,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const handleShare = () => {
     const titleHi = vacancy.titleHi || vacancy.title;
-    const customUrl = vacancy.id === 'rrb-station-master-recruitment-2026' 
-      ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/'
-      : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    const shareText = generateHindiShareText(vacancy, customUrl);
+    const cleanId = vacancy.id.replace(/^\//, '').replace(/\/$/, '');
+    const websiteUrl = `${window.location.origin}/${cleanId}/`;
+    const shareText = generateHindiShareText(vacancy, websiteUrl);
 
     if (navigator.share) {
       navigator.share({
@@ -233,10 +232,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   };
 
   const handleWhatsAppShare = () => {
-    const customUrl = vacancy.id === 'rrb-station-master-recruitment-2026' 
-      ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/'
-      : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    const shareText = generateHindiShareText(vacancy, customUrl);
+    const cleanId = vacancy.id.replace(/^\//, '').replace(/\/$/, '');
+    const websiteUrl = `${window.location.origin}/${cleanId}/`;
+    const shareText = generateHindiShareText(vacancy, websiteUrl);
     const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
@@ -383,7 +381,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     };
   }, [allVacancies, vacancy]);
 
-  // Recent Posts list for rajasthanvacancy.com screenshot style
+  // Recent Posts list
   const recentPostsList = React.useMemo(() => {
     if (!allVacancies || allVacancies.length === 0) return [];
     return allVacancies.filter(v => v.id !== vacancy.id).slice(0, 8);
@@ -441,7 +439,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         )}
 
-        {/* Post Heading - Clean, Uniform Standard Size matching rajasthanvacancy.com */}
+        {/* Post Heading - Clean, Uniform Standard Size */}
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 leading-snug tracking-tight">
           {isHi ? vacancy.titleHi : vacancy.title}
         </h1>
@@ -500,52 +498,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         </div>
 
-        {/* WhatsApp Share Card Banner */}
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 sm:p-4 space-y-2.5 shadow-xs my-2">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-              <span>🔥</span>
-              <span>{isHi ? 'व्हाट्सएप पर तुरंत शेयर करें' : 'Share on WhatsApp'}</span>
-            </span>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-              One-Click Share
-            </span>
-          </div>
 
-          <div className="bg-white border border-emerald-200/80 rounded-lg p-3 text-xs sm:text-sm font-medium text-slate-800 space-y-1 font-sans">
-            <p className="font-extrabold text-slate-900 leading-snug">
-              {generateHindiShareText(vacancy, vacancy.id === 'rrb-station-master-recruitment-2026' ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/' : undefined).split('\n')[0]}
-            </p>
-            <p className="text-emerald-700 font-bold">
-              👇👇
-            </p>
-            <p className="text-blue-600 font-semibold underline break-all">
-              {vacancy.id === 'rrb-station-master-recruitment-2026' 
-                ? 'https://rajasthanvacancy.com/rrb-station-master-recruitment-2026/' 
-                : `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 pt-0.5">
-            <button
-              type="button"
-              onClick={handleWhatsAppShare}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition cursor-pointer shadow-sm flex items-center justify-center gap-2"
-            >
-              <span className="text-base">📲</span>
-              <span>{isHi ? 'व्हाट्सएप ग्रुप्स में शेयर करें' : 'Share in WhatsApp Groups'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleShare}
-              className="py-2.5 px-3.5 rounded-xl bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shrink-0"
-              title="Copy message"
-            >
-              {copiedLink ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-emerald-700" />}
-              <span>{copiedLink ? (isHi ? 'कॉपी हुआ' : 'Copied') : (isHi ? 'कॉपी मैसेज' : 'Copy Message')}</span>
-            </button>
-          </div>
-        </div>
 
         {/* Official Notification Image Excerpt Card - Urgency with Vivid Red Title & English Snippet */}
         {vacancy.officialNotificationExcerpt && (
@@ -1698,7 +1651,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </td>
               <td className="py-3.5 px-4">
                 <a
-                  href={vacancy.officialLinks.applyOnlineUrl || vacancy.officialLinks.notificationPdfUrl || '#'}
+                  href={
+                    (vacancy.organization === 'Railway Board' || vacancy.department === 'Indian Railways' || vacancy.id.toLowerCase().includes('rrb') || vacancy.title.toLowerCase().includes('railway') || vacancy.title.toLowerCase().includes('rrb') || vacancy.titleHi?.includes('रेलवे'))
+                      ? 'https://www.rrbapply.gov.in/#/auth/landing'
+                      : (vacancy.officialLinks.applyOnlineUrl || vacancy.officialLinks.notificationPdfUrl || '#')
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm transition cursor-pointer shadow-xs"
@@ -1882,7 +1839,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       {/* Responsive AdSection inside Post */}
       <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
 
-      {/* Recent Posts Section - Matching rajasthanvacancy.com screenshot style */}
+      {/* Recent Posts Section */}
       {recentPostsList.length > 0 && (
         <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 sm:p-6 space-y-4">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 border-b border-slate-200 pb-3">
