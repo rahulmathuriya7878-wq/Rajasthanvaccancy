@@ -105,6 +105,90 @@ async function startServer() {
     }
   });
 
+  // AI Blog Writer Endpoint (Gemini 3.8 Flash SDK)
+  app.post('/api/ai/generate-blog', async (req, res) => {
+    try {
+      const { prompt, postSection, organization } = req.body;
+      if (!prompt || typeof prompt !== 'string') {
+        return res.status(400).json({ success: false, error: 'Prompt topic is required' });
+      }
+
+      const { GoogleGenAI, Type } = await import('@google/genai');
+      const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          },
+        },
+      });
+
+      const systemInstruction = `You are a professional Hindi recruitment blog writer and SEO specialist for RajasthanVacancy.com.
+Given a topic, official notification outline, or vacancy title, generate a complete, well-structured, engaging, SEO-optimized recruitment blog article in JSON format.
+Include clear section titles, emojis, structured bullet points, and accurate information.`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: `Write an SEO recruitment blog post and extract metadata for: "${prompt}". Category/Section: ${postSection || 'gov_job'}, Board/Organization: ${organization || 'RSMSSB'}.`,
+        config: {
+          systemInstruction,
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              titleHi: { type: Type.STRING, description: 'Catchy full Hindi headline for post' },
+              titleEn: { type: Type.STRING, description: 'English title for post' },
+              shortTitleHi: { type: Type.STRING, description: 'Short Hindi title (under 8 words)' },
+              shortTitleEn: { type: Type.STRING, description: 'Short English title' },
+              briefSummaryHi: { type: Type.STRING, description: 'Single paragraph engaging Hindi brief summary' },
+              briefSummaryEn: { type: Type.STRING, description: 'Single paragraph English brief summary' },
+              descriptionHi: { type: Type.STRING, description: 'Comprehensive full blog article in Hindi with emoji bullet points and advice' },
+              postNameHi: { type: Type.STRING, description: 'Post name in Hindi' },
+              totalPosts: { type: Type.STRING, description: 'Total posts e.g. 1200 or Various' },
+              departmentHi: { type: Type.STRING, description: 'Department in Hindi' },
+              qualDetailsHi: { type: Type.STRING, description: 'Educational qualification details in Hindi' },
+              ageLimitMin: { type: Type.NUMBER, description: 'Minimum age integer e.g. 18' },
+              ageLimitMax: { type: Type.NUMBER, description: 'Maximum age integer e.g. 40' },
+              salaryHi: { type: Type.STRING, description: 'Salary/Pay level details in Hindi' },
+              selectionProcessHi: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: 'List of selection process stages in Hindi'
+              },
+              faqs: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    qHi: { type: Type.STRING },
+                    aHi: { type: Type.STRING },
+                    qEn: { type: Type.STRING },
+                    aEn: { type: Type.STRING }
+                  }
+                }
+              },
+              metaTitle: { type: Type.STRING },
+              metaDescription: { type: Type.STRING },
+              focusKeywords: { type: Type.STRING }
+            },
+            required: ['titleHi', 'titleEn', 'shortTitleHi', 'briefSummaryHi', 'descriptionHi']
+          }
+        }
+      });
+
+      const jsonText = response.text;
+      if (!jsonText) {
+        throw new Error('No content returned from AI model');
+      }
+
+      const parsedData = JSON.parse(jsonText);
+      res.json({ success: true, data: parsedData });
+    } catch (error: any) {
+      console.error('Failed to generate AI blog article:', error);
+      res.status(500).json({ success: false, error: error.message || 'Failed to generate AI blog article' });
+    }
+  });
+
   // Vite dev middleware or production static files
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static('dist'));

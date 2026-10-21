@@ -67,7 +67,63 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const isEdit = !!editItem;
 
   // Active sub-tab in modal for easy navigation
-  const [activeTab, setActiveTab] = useState<'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links' | 'seo'>('basic');
+  const [activeTab, setActiveTab] = useState<'ai_writer' | 'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links' | 'seo'>('ai_writer');
+
+  // State for AI Blog Writer
+  const [aiTopicPrompt, setAiTopicPrompt] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiResult, setAiResult] = useState<any>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [copiedAiBlog, setCopiedAiBlog] = useState(false);
+
+  const handleGenerateAiBlog = async () => {
+    if (!aiTopicPrompt.trim()) return;
+    setAiGenerating(true);
+    setAiError(null);
+    try {
+      const response = await fetch('/api/ai/generate-blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: aiTopicPrompt.trim(),
+          postSection,
+          organization,
+        }),
+      });
+      const resData = await response.json();
+      if (resData.success && resData.data) {
+        setAiResult(resData.data);
+      } else {
+        setAiError(resData.error || 'Failed to generate AI blog article');
+      }
+    } catch (err: any) {
+      setAiError(err.message || 'Error connecting to AI blog writer service');
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  const handleApplyAiDataToForm = () => {
+    if (!aiResult) return;
+    if (aiResult.titleHi) setTitleHi(aiResult.titleHi);
+    if (aiResult.titleEn) setTitle(aiResult.titleEn);
+    if (aiResult.shortTitleHi) setShortTitleHi(aiResult.shortTitleHi);
+    if (aiResult.shortTitleEn) setShortTitle(aiResult.shortTitleEn);
+    if (aiResult.briefSummaryHi) setBriefSummary(aiResult.briefSummaryHi);
+    if (aiResult.descriptionHi) setDescription(aiResult.descriptionHi);
+    if (aiResult.totalPosts) setTotalPosts(aiResult.totalPosts.toString());
+    if (aiResult.departmentHi) setDepartment(aiResult.departmentHi);
+    if (aiResult.qualDetailsHi) setQualDetails(aiResult.qualDetailsHi);
+    if (aiResult.ageLimitMin) setMinAge(aiResult.ageLimitMin);
+    if (aiResult.ageLimitMax) setMaxAge(aiResult.ageLimitMax);
+    if (aiResult.salaryHi) setSalary(aiResult.salaryHi);
+    if (aiResult.metaTitle) setMetaTitle(aiResult.metaTitle);
+    if (aiResult.metaDescription) setMetaDescription(aiResult.metaDescription);
+    if (aiResult.focusKeywords) setFocusKeywordsText(aiResult.focusKeywords);
+
+    // Switch to basic tab so admin can review and finalize
+    setActiveTab('basic');
+  };
 
   // Section Type (Gov job vs Gov yojana vs others)
   const [postSection, setPostSection] = useState<PostSectionType>('gov_job');
@@ -677,6 +733,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   };
 
   const navTabs = [
+    { id: 'ai_writer', label: isHi ? '✨ AI ब्लॉग राइटर' : '✨ AI Blog Writer', icon: Sparkles },
     { id: 'basic', label: isHi ? '🏢 मूलभूत जानकारी' : 'Basic Info', icon: Building2 },
     { id: 'summary', label: isHi ? '📝 संक्षिप्त व ब्लॉग' : 'Summary & Blog', icon: FileText },
     { id: 'breakdown', label: isHi ? '📊 पदवार & TSP' : 'Posts & TSP', icon: Layers },
@@ -746,6 +803,198 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-6 text-xs sm:text-sm">
+
+          {/* TAB 0: AI BLOG WRITER */}
+          {activeTab === 'ai_writer' && (
+            <div className="space-y-5">
+              {/* AI Writer Banner */}
+              <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-5 rounded-2xl border border-purple-500/30 shadow-lg relative overflow-hidden">
+                <div className="absolute right-3 top-3 opacity-10 pointer-events-none">
+                  <Sparkles className="w-32 h-32 text-amber-300" />
+                </div>
+                <div className="relative z-10 space-y-2">
+                  <div className="inline-flex items-center gap-1.5 bg-purple-500/30 border border-purple-300/40 text-purple-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                    <span>{isHi ? 'Gemini 3.8 Flash - ऑटो ब्लॉग जनरेटर' : 'Gemini 3.8 Flash - Auto Blog Writer'}</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black text-white">
+                    {isHi ? '✨ AI से संपूर्ण भर्ती आर्टिकल & डेटा ऑटो-जनरेट करें' : '✨ AI Powered Recruitment Blog Generator'}
+                  </h3>
+                  <p className="text-xs text-purple-200 leading-relaxed max-w-2xl">
+                    {isHi 
+                      ? 'केवल भर्ती का नाम, विभाग या शॉर्ट विवरण दर्ज करें। हमारा AI आपके लिए पूरा हिंदी ब्लॉग आर्टिकल, पात्रता, आयु सीमा, चयन प्रक्रिया और SEO मेटा डेटा 5 सेकंड में तैयार कर देगा!' 
+                      : 'Type the vacancy title, department, or brief notes. AI will craft a complete, well-structured Hindi recruitment blog post and form details in seconds!'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Input Form Box */}
+              <div className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 space-y-4">
+                <div>
+                  <label className="font-bold text-slate-800 block mb-1 text-xs sm:text-sm">
+                    {isHi ? 'भर्ती या योजना का नाम / शॉर्ट नोट (Topic Prompt): *' : 'Vacancy Title or Topic Prompt: *'}
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={aiTopicPrompt}
+                    onChange={(e) => setAiTopicPrompt(e.target.value)}
+                    placeholder={isHi 
+                      ? 'उदा. RPSC Sub Inspector Recruitment 2026 Notification for 850 Posts, Apply Online Date, Eligibility & Age Limit...' 
+                      : 'e.g., RSMSSB Patwari Bharti 2026 for 3000 posts in Rajasthan, eligibility, syllabus...'}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Quick Suggestion Chips */}
+                <div>
+                  <span className="text-[11px] font-bold text-slate-500 block mb-1.5 uppercase tracking-wider">
+                    {isHi ? 'त्वरित सुझाव प्रॉमप्ट्स (Click to fill prompt):' : 'Sample Prompts:'}
+                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[
+                      'RPSC Sub Inspector (SI) Bharti 2026 - 850 Posts, Syllabus & Age Limit',
+                      'RSMSSB Patwari Bharti 2026 - 3000 Posts Notification & Qualification',
+                      'Rajasthan Anuprati Coaching Yojana 2026 - Online Application & Benefit',
+                      'Railway RRB ALP & Technician Recruitment 2026 Notification',
+                      'REET Level 1 & 2 Teacher Recruitment 2026 Complete Details'
+                    ].map((sample, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setAiTopicPrompt(sample)}
+                        className="text-[11px] bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50 text-slate-700 font-medium px-2.5 py-1 rounded-lg transition text-left cursor-pointer"
+                      >
+                        ⚡ {sample}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Submit Action Button */}
+                <div className="flex items-center justify-between flex-wrap gap-3 pt-2">
+                  <div className="text-xs text-slate-500 font-medium">
+                    {isHi ? 'चयनित बोर्ड:' : 'Target Board:'} <span className="font-bold text-purple-700">{organization}</span> ({postSection})
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleGenerateAiBlog}
+                    disabled={aiGenerating || !aiTopicPrompt.trim()}
+                    className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-900 hover:from-purple-800 hover:to-slate-950 text-white shadow-md transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <Sparkles className={`w-4 h-4 text-amber-300 ${aiGenerating ? 'animate-spin' : ''}`} />
+                    <span>
+                      {aiGenerating
+                        ? (isHi ? 'AI आर्टिकल जनरेट हो रहा है...' : 'AI Generating Article...')
+                        : (isHi ? '✨ AI आर्टिकल जनरेट करें' : '✨ Generate AI Article')}
+                    </span>
+                  </button>
+                </div>
+
+                {aiError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-semibold">
+                    ⚠️ {aiError}
+                  </div>
+                )}
+              </div>
+
+              {/* AI Generated Result Display */}
+              {aiResult && (
+                <div className="bg-white border-2 border-purple-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 animate-fadeIn">
+                  <div className="flex items-center justify-between border-b border-purple-100 pb-3 flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
+                      <h4 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                        {isHi ? 'AI द्वारा जनरेट किया गया ब्लॉग आर्टिकल' : 'AI Generated Blog Article'}
+                      </h4>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${aiResult.titleHi}\n\n${aiResult.briefSummaryHi}\n\n${aiResult.descriptionHi}`);
+                          setCopiedAiBlog(true);
+                          setTimeout(() => setCopiedAiBlog(false), 2000);
+                        }}
+                        className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
+                      >
+                        {copiedAiBlog ? '✓ कॉपी हो गया' : '📋 टेक्स्ट कॉपी करें'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleApplyAiDataToForm}
+                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{isHi ? '🚀 एक क्लिक में फॉर्म में भरें' : '🚀 Pre-fill All Form Fields'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Headline Preview */}
+                  <div className="bg-purple-50/60 p-3.5 rounded-xl border border-purple-100">
+                    <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider block mb-1">
+                      {isHi ? 'जनरेट किया गया शीर्षक (Title):' : 'Generated Headline:'}
+                    </span>
+                    <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                      {aiResult.titleHi}
+                    </h3>
+                  </div>
+
+                  {/* Summary Preview */}
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                      {isHi ? 'संक्षिप्त विवरण (Brief Summary):' : 'Brief Summary:'}
+                    </span>
+                    <p className="leading-relaxed">{aiResult.briefSummaryHi}</p>
+                  </div>
+
+                  {/* Detailed Description Preview */}
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 space-y-2 max-h-80 overflow-y-auto font-sans">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                      {isHi ? 'विस्तृत आर्टिकल लेख (Full Description):' : 'Detailed Article Body:'}
+                    </span>
+                    <div className="whitespace-pre-line leading-relaxed font-normal">
+                      {aiResult.descriptionHi}
+                    </div>
+                  </div>
+
+                  {/* Extracted Fields Summary Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-semibold">कुल पद:</span>
+                      <span className="font-bold text-slate-900">{aiResult.totalPosts || 'N/A'}</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-semibold">आयु सीमा:</span>
+                      <span className="font-bold text-slate-900">{aiResult.ageLimitMin || 18} - {aiResult.ageLimitMax || 40} वर्ष</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-semibold">विभाग:</span>
+                      <span className="font-bold text-slate-900 truncate block">{aiResult.departmentHi || 'राजस्थान सरकार'}</span>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-lg border border-slate-200">
+                      <span className="text-[10px] text-slate-500 block font-semibold">वेतनमान:</span>
+                      <span className="font-bold text-slate-900 truncate block">{aiResult.salaryHi || 'नियम अनुसार'}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 text-center">
+                    <button
+                      type="button"
+                      onClick={handleApplyAiDataToForm}
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-5 h-5" />
+                      <span>{isHi ? '🚀 इन विवरणों को संपूर्ण फॉर्म में ऑटो-फिल करें' : '🚀 Apply AI Data to Form & Edit'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* TAB 1: BASIC INFO */}
           {activeTab === 'basic' && (
