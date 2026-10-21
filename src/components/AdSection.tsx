@@ -30,7 +30,7 @@ export interface AdSectionProps {
  */
 export const AdSection: React.FC<AdSectionProps> = ({
   slot = '1234567890',
-  client = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-0000000000000000',
+  client = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-3176571184961509',
   format = 'auto',
   className = '',
   label = 'Advertisement',
