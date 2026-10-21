@@ -315,18 +315,23 @@ export default function App() {
     try {
       const url = new URL(window.location.href);
       const metaDescEl = document.querySelector('meta[name="description"]');
+      const currentVacancyId = url.searchParams.get('vacancy');
 
       if (selectedVacancy) {
-        url.searchParams.set('vacancy', selectedVacancy.id);
-        window.history.replaceState({}, '', url.toString());
+        if (currentVacancyId !== selectedVacancy.id) {
+          url.searchParams.set('vacancy', selectedVacancy.id);
+          window.history.pushState({ vacancyId: selectedVacancy.id }, '', url.toString());
+        }
         const titleText = `${lang === 'hi' ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
         document.title = titleText;
         if (metaDescEl) {
           metaDescEl.setAttribute('content', selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title);
         }
       } else {
-        url.searchParams.delete('vacancy');
-        window.history.replaceState({}, '', url.toString());
+        if (currentVacancyId) {
+          url.searchParams.delete('vacancy');
+          window.history.pushState({ vacancyId: null }, '', url.toString());
+        }
         document.title = 'RAJASTHAN VACANCY - Rajasthan Govt Job Alerts & Recruitment Portal';
         if (metaDescEl) {
           metaDescEl.setAttribute('content', 'Latest Rajasthan Government Job Alerts, RSMSSB, RPSC, Police, REET, Admit Cards, Answer Keys, Results, and Sarkari Yojana.');
@@ -337,6 +342,27 @@ export default function App() {
       console.error('Error updating URL params and SEO titles', e);
     }
   }, [selectedVacancy, lang]);
+
+  // Handle browser Back/Forward button
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const vacancyId = params.get('vacancy');
+      if (vacancyId) {
+        const found = vacancies.find(v => v.id === vacancyId);
+        if (found) {
+          setSelectedVacancy(found);
+        } else {
+          setSelectedVacancy(null);
+        }
+      } else {
+        setSelectedVacancy(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [vacancies]);
 
   // Cache currently viewed job post in localStorage for offline reading
   useEffect(() => {

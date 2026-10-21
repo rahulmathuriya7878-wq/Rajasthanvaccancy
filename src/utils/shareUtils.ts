@@ -4,7 +4,7 @@ import { VacancyItem } from '../types';
  * Generate comprehensive Hindi share text for any vacancy / yojana / result / admit card
  * formatted with WhatsApp friendly bolding and emojis.
  */
-export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
+export function generateHindiShareText(item: VacancyItem, customUrl?: string, includeLink: boolean = false): string {
   const shareUrl = customUrl || (typeof window !== 'undefined' 
     ? `${window.location.origin}${window.location.pathname}?vacancy=${item.id}` 
     : `https://rajasthanvacancy.in/?vacancy=${item.id}`);
@@ -35,14 +35,10 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
     return [
       `📢 *${titleHi}*`,
-      `🏛️ *विभाग:* ${dept}`,
       `🎁 *योजना का लाभ:* ${benefit}`,
       `👥 *पात्रता / लाभार्थी:* ${beneficiaries}`,
       `📅 *आवेदन शुरू तिथि:* ${startDate}`,
       `⏰ *आवेदन की अंतिम तिथि:* ${lastDate}`,
-      ``,
-      `🔗 *ऑनलाइन आवेदन फॉर्म व योजना की पूरी जानकारी यहाँ देखें:*`,
-      `${shareUrl}`,
       ``,
       `👉 *इस महत्वपूर्ण जनकल्याणकारी योजना की जानकारी जरूरतमंद साथियों व परिवारों तक अवश्य शेयर करें!*`
     ].join('\n');
@@ -55,14 +51,10 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
     return [
       `📢 *${titleHi} - एडमिट कार्ड जारी*`,
-      `🏢 *भर्ती बोर्ड / विभाग:* ${dept}`,
       `📌 *पद का नाम:* ${postName}`,
       `👥 *कुल पद:* ${postsCount}`,
       `🎟️ *एडमिट कार्ड जारी तिथि:* ${admitCardDate}`,
       `📅 *परीक्षा तिथि:* ${examDate}`,
-      ``,
-      `🔗 *प्रवेश पत्र (Admit Card) डाउनलोड करने हेतु यहाँ क्लिक करें:*`,
-      `${shareUrl}`,
       ``,
       `👉 *अपने परीक्षा देने वाले सभी साथियों के साथ तुरंत शेयर करें!*`
     ].join('\n');
@@ -75,13 +67,9 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
     return [
       `📢 *${titleHi} - उत्तर कुंजी (Answer Key) जारी*`,
-      `🏢 *भर्ती बोर्ड / विभाग:* ${dept}`,
       `📌 *पद का नाम:* ${postName}`,
       `🔑 *आंसर-की जारी तिथि:* ${keyDate}`,
       `⏰ *आपत्ति दर्ज कराने की अंतिम तिथि:* ${feeDate}`,
-      ``,
-      `🔗 *आंसर-की डाउनलोड करने व आपत्ति दर्ज करने हेतु यहाँ क्लिक करें:*`,
-      `${shareUrl}`,
       ``,
       `👉 *अपने सभी साथियों के साथ शेयर करें ताकि वे समय पर आपत्ति दर्ज कर सकें!*`
     ].join('\n');
@@ -93,13 +81,9 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
     return [
       `📢 *${titleHi} - परीक्षा परिणाम घोषित*`,
-      `🏢 *भर्ती बोर्ड / विभाग:* ${dept}`,
       `📌 *पद का नाम:* ${postName}`,
       `👥 *कुल पद:* ${postsCount}`,
       `🏆 *रिजल्ट जारी तिथि:* ${resultDate}`,
-      ``,
-      `🔗 *रिजल्ट व मेरिट लिस्ट देखने हेतु यहाँ क्लिक करें:*`,
-      `${shareUrl}`,
       ``,
       `👉 *अपने सभी परीक्षार्थी साथियों के साथ तुरंत शेयर करें!*`
     ].join('\n');
@@ -129,26 +113,23 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
   const lines = [
     `📢 *${titleHi}*`,
-    `🏢 *विभाग / भर्ती बोर्ड:* ${dept}`,
     `📌 *पद का नाम:* ${postName}`,
-    `👥 *कुल पद:* ${postsCount}`,
-    `🎓 *शैक्षणिक योग्यता:* ${qualification}`,
-    `⏳ *आयु सीमा:* ${ageLimitText}`,
-    `💰 *आवेदन शुल्क:* ${feeText}`,
+    ``,
     `📅 *आवेदन शुरू तिथि:* ${startDate}`,
     `⏰ *आवेदन की अंतिम तिथि:* ${lastDate}`
   ];
 
-  if (examDate) {
-    lines.push(`📝 *संभावित परीक्षा तिथि:* ${examDate}`);
+  if (includeLink) {
+    lines.push(
+      ``,
+      `🔗 *ऑनलाइन फॉर्म भरने हेतु यहाँ क्लिक करें:*`,
+      `${shareUrl}`
+    );
   }
 
   lines.push(
     ``,
-    `🔗 *ऑनलाइन फॉर्म भरने व संपूर्ण विवरण हेतु यहाँ क्लिक करें:*`,
-    `${shareUrl}`,
-    ``,
-    `👉 *अपने सभी बेरोजगार साथियों एवं WhatsApp ग्रुप्स में जरूर शेयर करें ताकि किसी की अंतिम तिथि न छूटे!*`
+    `👉 *अपने सभी  साथियों एवं WhatsApp ग्रुप्स में जरूर शेयर करें ताकि किसी की अंतिम तिथि न छूटे!*`
   );
 
   return lines.join('\n');

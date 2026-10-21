@@ -216,7 +216,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const handleShare = () => {
     const titleHi = vacancy.titleHi || vacancy.title;
     const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    const shareText = generateHindiShareText(vacancy, currentUrl);
+    const shareText = generateHindiShareText(vacancy, currentUrl, true);
 
     if (navigator.share) {
       navigator.share({
@@ -233,7 +233,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const handleWhatsAppShare = () => {
     const currentUrl = `${window.location.origin}${window.location.pathname}?vacancy=${vacancy.id}`;
-    const shareText = generateHindiShareText(vacancy, currentUrl);
+    // As per user request: "Without link"
+    const shareText = generateHindiShareText(vacancy, currentUrl, false);
     const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
@@ -1820,22 +1821,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </tbody>
         </table>
 
-        {/* Quick Share Bar */}
-        <div className="bg-white border-t border-slate-200 p-4 flex items-center justify-between flex-wrap gap-3">
-          <span className="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-            <Share2 className="w-4 h-4 text-slate-700" />
-            <span>{isHi ? 'सूचना अपने मित्रों व ग्रुप्स में शेयर करें:' : 'Share this post with friends:'}</span>
-          </span>
-          <div>
-            <button
-              onClick={handleShare}
-              className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-            >
-              <Share2 className="w-4 h-4 text-white" />
-              <span>{copiedLink ? (isHi ? 'कॉपी हो गया!' : 'Copied!') : (isHi ? 'शेयर बटन (Share)' : 'Share Button')}</span>
-            </button>
-          </div>
-        </div>
+
       </div>
 
       {/* Category Tags & Prev/Next Post Navigation - Placed directly below Important Links Section */}
