@@ -49,6 +49,7 @@ import {
 import { 
   OfflineIndicator 
 } from './components/OfflineIndicator';
+import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 
@@ -103,6 +104,23 @@ export default function App() {
   // Default language set to Hindi
   const [lang, setLang] = useState<LanguageMode>('hi');
 
+  // Track deleted post IDs so deleted posts remain deleted permanently
+  const [deletedIds, setDeletedIds] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('raj_deleted_vacancies');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {}
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('raj_deleted_vacancies', JSON.stringify(deletedIds));
+    } catch (e) {}
+  }, [deletedIds]);
+
   // Vacancies state with localStorage sync
   const [vacancies, setVacancies] = useState<VacancyItem[]>(() => {
     let loaded = INITIAL_VACANCIES;
@@ -118,13 +136,21 @@ export default function App() {
       console.error('Failed to load stored vacancies', e);
     }
 
-    // Ensure all INITIAL_VACANCIES (including RRB Station Master, DSSSB, UGC NET Dec, etc.) exist
-    let filteredLoaded = loaded.filter(v => v.id !== 'ugc-net-2026-june');
+    // Filter out deleted posts
+    let initialDeleted: string[] = [];
+    try {
+      const storedDel = localStorage.getItem('raj_deleted_vacancies');
+      if (storedDel) initialDeleted = JSON.parse(storedDel);
+    } catch (e) {}
+
+    let filteredLoaded = loaded.filter(v => !initialDeleted.includes(v.id) && v.id !== 'ugc-net-2026-june');
     
     INITIAL_VACANCIES.forEach(initItem => {
-      const exists = filteredLoaded.some(v => v.id === initItem.id);
-      if (!exists) {
-        filteredLoaded = [initItem, ...filteredLoaded];
+      if (!initialDeleted.includes(initItem.id)) {
+        const exists = filteredLoaded.some(v => v.id === initItem.id);
+        if (!exists) {
+          filteredLoaded = [initItem, ...filteredLoaded];
+        }
       }
     });
 
@@ -450,11 +476,13 @@ export default function App() {
   };
 
   const handleDeleteVacancy = (id: string) => {
-    if (window.confirm(lang === 'hi' ? 'क्या आप वाकई इस पोस्ट को डिलीट करना चाहते हैं?' : 'Are you sure you want to delete this post?')) {
-      setVacancies(prev => prev.filter(v => v.id !== id));
-      setSelectedVacancy(null);
-      showToast(lang === 'hi' ? 'पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : 'Post deleted successfully!');
-    }
+    setDeletedIds(prev => {
+      if (!prev.includes(id)) return [...prev, id];
+      return prev;
+    });
+    setVacancies(prev => prev.filter(v => v.id !== id));
+    setSelectedVacancy(null);
+    showToast(lang === 'hi' ? '🗑️ पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : '🗑️ Post deleted successfully!');
   };
 
   const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
@@ -651,6 +679,11 @@ export default function App() {
             onDeleteVacancy={handleDeleteVacancy}
             isAlertSet={alertJobIds.includes(selectedVacancy.id)}
             onToggleAlertMe={handleToggleAlertMe}
+            onSelectCategory={(cat) => {
+              setSelectedVacancy(null);
+              setSelectedCategory(cat as any);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         ) : selectedCategory !== 'ALL' ? (
           /* Category Archive View matching authentic rajasthanvacancy.com category layout */
@@ -672,6 +705,12 @@ export default function App() {
             }}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
+            isAdmin={isAdmin}
+            onEditVacancy={(item) => {
+              setEditingVacancy(item);
+              setIsAddJobOpen(true);
+            }}
+            onDeleteVacancy={handleDeleteVacancy}
           />
         ) : (
           /* Home View: 3x2 Grid Fast Access Updates & Authentic About Layout */
@@ -692,6 +731,7 @@ export default function App() {
                 setEditingVacancy(item);
                 setIsAddJobOpen(true);
               }}
+              onDeleteVacancy={handleDeleteVacancy}
               alertJobIds={alertJobIds}
               onToggleAlertMe={handleToggleAlertMe}
             />
@@ -767,6 +807,11 @@ export default function App() {
         lang={lang}
         onAddVacancy={handleAddVacancy}
         onUpdateVacancy={handleUpdateVacancy}
+        onDeleteVacancy={(id) => {
+          handleDeleteVacancy(id);
+          setIsAddJobOpen(false);
+          setEditingVacancy(null);
+        }}
         editItem={editingVacancy}
       />
 
@@ -783,6 +828,11 @@ export default function App() {
       />
 
       <OfflineIndicator lang={lang} />
+
+      <FloatingSocialButtons
+        selectedVacancy={selectedVacancy}
+        lang={lang}
+      />
     </div>
   );
 }

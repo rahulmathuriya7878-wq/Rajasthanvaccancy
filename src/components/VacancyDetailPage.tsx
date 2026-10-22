@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 import { generateHindiShareText } from '../utils/shareUtils';
+import { formatSingleDate } from '../utils/dateUtils';
 import { AdSection } from './AdSection';
 
 interface VacancyDetailPageProps {
@@ -42,6 +43,7 @@ interface VacancyDetailPageProps {
   onOpenAdminLogin?: () => void;
   isAlertSet?: boolean;
   onToggleAlertMe?: (id: string) => void;
+  onSelectCategory?: (category: string) => void;
 }
 
 export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
@@ -57,6 +59,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   isAdmin = false,
   isAlertSet = false,
   onToggleAlertMe,
+  onSelectCategory,
 }) => {
   const isHi = lang === 'hi';
   const postTitle = isHi ? (vacancy.titleHi || vacancy.title) : vacancy.title;
@@ -311,8 +314,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <h1 
                   className="entry-title headlight font-bold text-slate-900 tracking-tight leading-snug"
                   style={{
-                    fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                    fontSize: '12pt',
+                    fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+                    fontSize: '16pt',
                     lineHeight: 1.4
                   }}
                 >
@@ -329,7 +332,21 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </span>
                   <span>•</span>
                   <span className="byline">
-                    by <span className="font-bold text-slate-800">RajasthanVacancy</span>
+                    by{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onSelectCategory) {
+                          onSelectCategory('news');
+                        } else {
+                          onBack();
+                        }
+                      }}
+                      className="font-bold text-[#0056b3] hover:underline cursor-pointer transition"
+                      title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
+                    >
+                      RajasthanVacancy
+                    </button>
                   </span>
                   <span>•</span>
                   <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-xs">
@@ -347,7 +364,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </span>
                     <h2 
                       className="headlight text-lg sm:text-xl font-bold text-white tracking-wide"
-                      style={{ color: '#ffffff', fontSize: '12pt' }}
+                      style={{ fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif", color: '#ffffff', fontSize: '16pt' }}
                     >
                       {shortJobName}
                     </h2>
@@ -374,7 +391,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 className="entry-content space-y-6 text-[#334155]"
                 style={{
                   fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                  fontSize: '11.5pt',
+                  fontSize: '15pt',
                   lineHeight: 1.75
                 }}
               >
@@ -429,15 +446,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         </tr>
                         <tr>
                           <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन तिथि</td>
-                          <td className="p-3">{vacancy.importantDates?.notificationDate || 'अक्टूबर 2026'}</td>
+                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
                           <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन शुरू</td>
-                          <td className="p-3">{vacancy.importantDates?.applyStartDate || 'शुरू हो चुके हैं'}</td>
+                          <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन की अंतिम तिथि</td>
-                          <td className="p-3 font-bold text-rose-700">{vacancy.importantDates?.applyLastDate || 'शीघ्र देखें'}</td>
+                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
+                          <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
                           <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन का माध्यम</td>
@@ -504,15 +521,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       <tbody className="divide-y divide-slate-200">
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन जारी तिथि</td>
-                          <td className="p-3">{vacancy.importantDates?.notificationDate || '21 अक्टूबर 2026'}</td>
+                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन शुरू</td>
-                          <td className="p-3 font-semibold text-emerald-700">{vacancy.importantDates?.applyStartDate || '23 अक्टूबर 2026'}</td>
+                          <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
-                          <td className="p-3 font-bold text-rose-700">{vacancy.importantDates?.applyLastDate || '22 नवंबर 2026'}</td>
+                          <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन बंद होने का समय</td>
@@ -520,7 +537,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">परीक्षा / मेरिट सत्यापन तिथि</td>
-                          <td className="p-3">{vacancy.importantDates?.examDate || 'आधिकारिक वेबसाइट पर शीघ्र जारी होगी'}</td>
+                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.examDate, 'शीघ्र जारी होगी')}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -795,7 +812,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             Start Online Application Form
                           </td>
                           <td className="p-3 font-extrabold text-slate-800">
-                            {vacancy.importantDates?.applyStartDate || '23 October 2026'}
+                            {formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}
                           </td>
                         </tr>
                         <tr>
@@ -803,7 +820,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             Last Date Online Application Form
                           </td>
                           <td className="p-3 font-extrabold text-rose-700">
-                            {vacancy.importantDates?.applyLastDate || '22 November 2026'}
+                            {formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}
                           </td>
                         </tr>
                         <tr>

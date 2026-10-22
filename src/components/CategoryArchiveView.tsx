@@ -10,7 +10,10 @@ import {
   Tag,
   Clock,
   Sparkles,
-  Share2
+  Share2,
+  Edit3,
+  Trash2,
+  ShieldCheck
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
@@ -27,6 +30,9 @@ interface CategoryArchiveViewProps {
   onSelectCategory: (catKey: string) => void;
   searchQuery?: string;
   setSearchQuery?: (q: string) => void;
+  isAdmin?: boolean;
+  onEditVacancy?: (item: VacancyItem) => void;
+  onDeleteVacancy?: (id: string) => void;
 }
 
 export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
@@ -40,7 +46,10 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   onClearCategory,
   onSelectCategory,
   searchQuery = '',
-  setSearchQuery
+  setSearchQuery,
+  isAdmin = false,
+  onEditVacancy,
+  onDeleteVacancy,
 }) => {
   const isHi = lang === 'hi';
   const [sidebarSearch, setSidebarSearch] = useState('');
@@ -132,11 +141,42 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                     className="inside-article bg-white p-6 sm:p-8 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all"
                   >
                     <header className="entry-header mb-3">
+                      {isAdmin && (
+                        <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded flex items-center justify-between text-xs">
+                          <span className="font-bold text-amber-900 flex items-center gap-1">
+                            <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                            <span>एडमिन कंट्रोल्स</span>
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {onEditVacancy && (
+                              <button
+                                type="button"
+                                onClick={() => onEditVacancy(item)}
+                                className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded flex items-center gap-1 transition"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                                <span>संशोधित करें</span>
+                              </button>
+                            )}
+                            {onDeleteVacancy && (
+                              <button
+                                type="button"
+                                onClick={() => onDeleteVacancy(item.id)}
+                                className="px-2 py-0.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded flex items-center gap-1 transition"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                <span>डिलीट करें</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       <h2 
                         onClick={() => onSelectVacancy(item)}
-                        className="entry-title text-xl sm:text-2xl font-bold text-[#222222] hover:text-blue-600 transition cursor-pointer headlight leading-snug mb-2"
+                        className="entry-title text-xl sm:text-2xl font-bold text-[#0056b3] hover:text-[#003d80] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
+                        style={{ color: '#0056b3', textDecoration: 'underline' }}
                       >
-                        <span className="hover:underline underline-offset-2">{title}</span>
+                        <span>{title}</span>
                       </h2>
                       <div className="entry-meta text-xs text-[#575760] flex items-center gap-2 flex-wrap">
                         <span className="posted-on">
@@ -144,7 +184,18 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                         </span>
                         <span className="text-slate-300">•</span>
                         <span className="byline">
-                          by <span className="font-semibold text-slate-700">RajasthanVacancy</span>
+                          by{' '}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectCategory('news');
+                            }}
+                            className="font-bold text-[#0056b3] hover:underline cursor-pointer inline-flex items-center gap-0.5"
+                            title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
+                          >
+                            <span>RajasthanVacancy</span>
+                          </button>
                         </span>
                         {item.organization && (
                           <>

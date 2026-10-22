@@ -169,7 +169,8 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
         {/* Title */}
         <h3
           onClick={() => onSelect(vacancy)}
-          className="text-base sm:text-lg font-bold text-slate-900 hover:text-amber-700 cursor-pointer transition line-clamp-2 leading-snug mb-1"
+          className="text-base sm:text-lg font-bold text-[#0056b3] hover:text-[#003d80] underline underline-offset-2 cursor-pointer transition line-clamp-2 leading-snug mb-1"
+          style={{ color: '#0056b3', textDecoration: 'underline' }}
         >
           {isHi ? vacancy.titleHi : vacancy.title}
         </h3>

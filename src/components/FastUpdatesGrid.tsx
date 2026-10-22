@@ -4,7 +4,9 @@ import {
   ExternalLink,
   Bell,
   Sparkles,
-  Calendar
+  Calendar,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
@@ -16,6 +18,7 @@ interface FastUpdatesGridProps {
   onFilterCategory?: (category: CategoryType) => void;
   isAdmin?: boolean;
   onEditVacancy?: (item: VacancyItem) => void;
+  onDeleteVacancy?: (id: string) => void;
   alertJobIds?: string[];
   onToggleAlertMe?: (id: string) => void;
   showAds?: boolean;
@@ -28,6 +31,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onFilterCategory,
   isAdmin = false,
   onEditVacancy,
+  onDeleteVacancy,
   alertJobIds = [],
   onToggleAlertMe,
   showAds = true,
@@ -193,22 +197,56 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       className="text-left flex-1 min-w-0 cursor-pointer block"
                     >
                       <h3 
-                        className="post-item font-semibold text-slate-900 group-hover:text-[#1e953a] group-hover:underline line-clamp-2 leading-snug"
+                        className="post-item font-semibold text-[#0056b3] hover:text-[#003d80] underline underline-offset-2 line-clamp-2 leading-snug cursor-pointer transition-colors"
                         style={{
                           fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                           fontSize: '11.5pt',
-                          lineHeight: 1.45
+                          lineHeight: 1.45,
+                          color: '#0056b3',
+                          textDecoration: 'underline'
                         }}
                       >
                         {isHi ? (item.titleHi || item.title) : item.title}
                       </h3>
                       <p 
-                        className="text-[13px] text-[#575760] mt-1 select-none"
+                        className="text-[13px] text-[#575760] mt-1 select-none font-medium"
                         style={{ color: '#575760', fontSize: '13px' }}
                       >
                         {formatPostDate(item)}
                       </p>
                     </button>
+
+                    {/* Admin Actions (Edit / Delete) for logged-in Admin */}
+                    {isAdmin && (
+                      <div className="flex items-center gap-1 shrink-0 ml-1">
+                        {onEditVacancy && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditVacancy(item);
+                            }}
+                            className="p-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 transition"
+                            title={isHi ? 'पोस्ट एडिट करें' : 'Edit Post'}
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        {onDeleteVacancy && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteVacancy(item.id);
+                            }}
+                            className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 transition"
+                            title={isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    )}
 
                     {/* Quick Alert Bell toggle */}
                     <button

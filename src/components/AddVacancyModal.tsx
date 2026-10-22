@@ -49,6 +49,7 @@ interface AddVacancyModalProps {
   lang: LanguageMode;
   onAddVacancy: (newJob: VacancyItem) => void;
   onUpdateVacancy?: (updatedJob: VacancyItem) => void;
+  onDeleteVacancy?: (id: string) => void;
   editItem?: VacancyItem | null;
 }
 
@@ -60,11 +61,18 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   lang,
   onAddVacancy,
   onUpdateVacancy,
+  onDeleteVacancy,
   editItem,
 }) => {
   const { isAdmin } = useAuth();
   const isHi = lang === 'hi';
   const isEdit = !!editItem;
+
+  const handleDeleteThisPost = () => {
+    if (!editItem || !onDeleteVacancy) return;
+    onDeleteVacancy(editItem.id);
+    onClose();
+  };
 
   // Active sub-tab in modal for easy navigation
   const [activeTab, setActiveTab] = useState<'ai_writer' | 'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links' | 'seo'>('ai_writer');
@@ -739,7 +747,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     { id: 'breakdown', label: isHi ? '📊 पदवार & TSP' : 'Posts & TSP', icon: Layers },
     { id: 'salary', label: isHi ? '💰 वेतनमान सारणी' : 'Salary Scale', icon: DollarSign },
     { id: 'exam', label: isHi ? '📖 परीक्षा पैटर्न' : 'Exam Pattern', icon: BookOpen },
-    { id: 'dates', label: isHi ? '📅 तिथियां, शुल्क व आयु' : 'Dates & Fees', icon: Calendar },
+    { id: 'dates', label: isHi ? '📅 महत्वपूर्ण तिथियाँ व शुल्क' : 'Important Dates & Fees', icon: Calendar },
     { id: 'steps', label: isHi ? '📋 दस्तावेज व प्रक्रिया' : 'Docs & Steps', icon: ListOrdered },
     { id: 'links', label: isHi ? '🔗 आधिकारिक लिंक्स' : 'Official Links', icon: ExternalLink },
     { id: 'seo', label: isHi ? '🔍 SEO सेटिंग्स' : 'SEO Settings', icon: Globe },
@@ -769,23 +777,40 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition cursor-pointer"
-            title="Close Editor"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isEdit && editItem && onDeleteVacancy && (
+              <button
+                type="button"
+                onClick={handleDeleteThisPost}
+                className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                title="Delete this post"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-white" />
+                <span>{isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition cursor-pointer ml-1"
+              title="Close Editor"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Vertical Navigation & Form Body Container */}
-        <div className="flex flex-col md:flex-row flex-1 overflow-hidden min-h-[500px]">
+        <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-[500px]">
           
           {/* Vertical Navigation Sidebar Box for Admin Sections */}
-          <div className="w-full md:w-64 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-3 flex md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto shrink-0 scrollbar-thin">
-            <div className="hidden md:block px-2.5 py-1 mb-1 border-b border-slate-200">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                {isHi ? 'एडमिन सेक्शन (Vertical Boxes)' : 'Admin Sections (Vertical)'}
+          <div className="w-full sm:w-64 bg-slate-50 border-b sm:border-b-0 sm:border-r border-slate-200 p-3 flex flex-col gap-1.5 overflow-y-auto shrink-0 scrollbar-thin max-h-[220px] sm:max-h-none">
+            <div className="px-2.5 py-1 mb-1 border-b border-slate-200 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">
+                {isHi ? 'एडमिन सेक्शन (Vertical Panel)' : 'Admin Sections (Vertical)'}
+              </span>
+              <span className="text-[9px] bg-amber-100 text-amber-900 font-extrabold px-1.5 py-0.5 rounded uppercase">
+                Panel
               </span>
             </div>
             {navTabs.map((tab) => {
@@ -2298,6 +2323,17 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
+              {isEdit && editItem && onDeleteVacancy && (
+                <button
+                  type="button"
+                  onClick={handleDeleteThisPost}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>{isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={onClose}
