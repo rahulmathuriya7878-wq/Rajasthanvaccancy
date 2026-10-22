@@ -641,7 +641,7 @@ export default function App() {
       />
 
       {/* Main Body Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 flex-1 w-full">
+      <main className="w-full max-w-7xl mx-auto px-[3%] pt-0.5 sm:pt-1 pb-8 flex-1" style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2px' }}>
         {activePolicyView === 'privacy' ? (
           <PrivacyPolicy
             lang={lang}
@@ -677,6 +677,7 @@ export default function App() {
               setIsAddJobOpen(true);
             }}
             onDeleteVacancy={handleDeleteVacancy}
+            onUpdateVacancy={handleUpdateVacancy}
             isAlertSet={alertJobIds.includes(selectedVacancy.id)}
             onToggleAlertMe={handleToggleAlertMe}
             onSelectCategory={(cat) => {
@@ -715,11 +716,6 @@ export default function App() {
         ) : (
           /* Home View: 3x2 Grid Fast Access Updates & Authentic About Layout */
           <div className="space-y-6">
-            <div className="text-center mb-4 sm:mb-6">
-              <h1 className="headlight text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {isHi ? 'राजस्थान वेकेंसी 2026' : 'Rajasthan Vacancy 2026'}
-              </h1>
-            </div>
 
             <FastUpdatesGrid
               vacancies={vacancies}

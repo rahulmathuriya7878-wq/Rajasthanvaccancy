@@ -15,35 +15,35 @@
   body {
     font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
-    font-size: 15pt;
+    font-size: 11.5pt;
     line-height: 1.75;
     color: #0f172a;
     background-color: #ffffff;
     overflow-x: hidden;
   }
 
-  /* Headlight / Headline Typography - Mangal 16pt */
+  /* Headlight / Headline Typography - Mangal 12pt */
   h1, h2, h3, h4, h5, h6,
   .headlight, .headline, .section-headline, .box-header {
     font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-size: 16pt !important;
+    font-size: 12pt !important;
     color: #0f172a;
     font-weight: 700;
     line-height: 1.35;
   }
 }
 
-/* Headlight / Headline Classes - Mangal 16pt */
+/* Headlight / Headline Classes - Mangal 12pt */
 .headlight,
 .headline,
 .heading-title,
 .box-header {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 16pt !important;
+  font-size: 12pt !important;
   line-height: 1.35;
 }
 
-/* Post Typography - Mangal 15pt */
+/* Post Typography - Mangal 11.5pt */
 .post-content,
 .post-body,
 .post-item,
@@ -53,7 +53,7 @@
 .entry-content,
 article.post-content {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 15pt !important;
+  font-size: 11.5pt !important;
   line-height: 1.75;
   color: #334155;
 }
@@ -71,7 +71,7 @@ article.post-content {
 .entry-content span,
 .entry-content div {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 15pt;
+  font-size: 11.5pt;
 }
 
 .post-content h1,
@@ -89,7 +89,7 @@ article.post-content {
 .entry-content h5,
 .entry-content h6 {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 16pt !important;
+  font-size: 12pt !important;
   font-weight: 700;
   line-height: 1.35;
   color: #0f172a;
@@ -105,7 +105,7 @@ article.post-content {
 
 .post-content th,
 .entry-content th {
-  font-size: 15pt !important;
+  font-size: 11.5pt !important;
   font-weight: 700;
   color: #1e293b;
   background-color: #f8fafc;
@@ -113,7 +113,7 @@ article.post-content {
 
 .post-content td,
 .entry-content td {
-  font-size: 15pt !important;
+  font-size: 11.5pt !important;
   color: #334155;
 }
 
@@ -139,7 +139,8 @@ table {
 .animate-marquee {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee 150s linear infinite;
+  animation: marquee 200s linear infinite !important;
+  animation-duration: 200s !important;
   will-change: transform;
 }
 

@@ -138,7 +138,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 return (
                   <article 
                     key={item.id}
-                    className="inside-article bg-white p-6 sm:p-8 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all"
+                    className="inside-article bg-white p-3 sm:p-5 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all"
                   >
                     <header className="entry-header mb-3">
                       {isAdmin && (
@@ -173,8 +173,8 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                       )}
                       <h2 
                         onClick={() => onSelectVacancy(item)}
-                        className="entry-title text-xl sm:text-2xl font-bold text-[#0056b3] hover:text-[#003d80] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
-                        style={{ color: '#0056b3', textDecoration: 'underline' }}
+                        className="entry-title text-xl sm:text-2xl font-bold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
+                        style={{ color: '#0284c7', textDecoration: 'underline' }}
                       >
                         <span>{title}</span>
                       </h2>

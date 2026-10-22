@@ -22,9 +22,16 @@ import {
   HelpCircle,
   FileText,
   Copy,
-  Check
+  Check,
+  Plus,
+  PlusCircle,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Save,
+  X
 } from 'lucide-react';
-import { VacancyItem, LanguageMode } from '../types';
+import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { generateHindiShareText } from '../utils/shareUtils';
 import { formatSingleDate } from '../utils/dateUtils';
 import { AdSection } from './AdSection';
@@ -39,6 +46,7 @@ interface VacancyDetailPageProps {
   onSelectOtherVacancy: (item: VacancyItem) => void;
   onEditVacancy?: (vacancy: VacancyItem) => void;
   onDeleteVacancy?: (id: string) => void;
+  onUpdateVacancy?: (updatedJob: VacancyItem) => void;
   isAdmin?: boolean;
   onOpenAdminLogin?: () => void;
   isAlertSet?: boolean;
@@ -56,17 +64,141 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   onSelectOtherVacancy,
   onEditVacancy,
   onDeleteVacancy,
+  onUpdateVacancy,
   isAdmin = false,
   isAlertSet = false,
   onToggleAlertMe,
   onSelectCategory,
 }) => {
+  const [currentVacancy, setCurrentVacancy] = useState<VacancyItem>(vacancy);
+  useEffect(() => {
+    setCurrentVacancy(vacancy);
+  }, [vacancy]);
+
   const isHi = lang === 'hi';
-  const postTitle = isHi ? (vacancy.titleHi || vacancy.title) : vacancy.title;
-  const shortJobName = vacancy.shortTitleHi || vacancy.shortTitle || postTitle.split(':')[0] || 'भर्ती 2026';
+  const postTitle = isHi ? (currentVacancy.titleHi || currentVacancy.title) : currentVacancy.title;
+  const shortJobName = currentVacancy.shortTitleHi || currentVacancy.shortTitle || postTitle.split(':')[0] || 'भर्ती 2026';
 
   const [copiedLink, setCopiedLink] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState('');
+
+  // Section Management State for Admin
+  const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
+  const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [newSectionContent, setNewSectionContent] = useState('');
+  const [newSectionType, setNewSectionType] = useState<'paragraph' | 'bullets' | 'alert_box'>('paragraph');
+  const [editingCustomSection, setEditingCustomSection] = useState<CustomPostSection | null>(null);
+
+  const deletedKeys = currentVacancy.deletedSectionKeys || [];
+  const isSectionDeleted = (key: string) => deletedKeys.includes(key);
+
+  const sectionLabels: Record<string, string> = {
+    overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
+    latest_update: 'लेटेस्ट अपडेट (Latest Update)',
+    dates: 'महत्वपूर्ण तिथियाँ (Important Dates)',
+    post_breakdown: 'पदों का विवरण (Post Breakdown)',
+    qualification: 'शैक्षणिक योग्यता (Eligibility)',
+    age_limit: 'आयु सीमा (Age Limit)',
+    application_fee: 'आवेदन शुल्क (Application Fee)',
+    selection_process: 'चयन प्रक्रिया (Selection Process)',
+    salary: 'वेतनमान (Salary Scale)',
+    teacher_notes: 'स्पेशल नोट्स (Teacher Notes)',
+    how_to_apply: 'आवेदन कैसे करें (How to Apply)',
+    important_links: 'महत्वपूर्ण लिंक्स (Important Links)',
+    faqs: 'प्रश्नोत्तर (FAQs)'
+  };
+
+  const handleDeleteSection = (key: string) => {
+    if (key.startsWith('custom_')) {
+      const customId = key.replace('custom_', '');
+      const updated: VacancyItem = {
+        ...currentVacancy,
+        customSections: (currentVacancy.customSections || []).filter(s => s.id !== customId)
+      };
+      setCurrentVacancy(updated);
+      if (onUpdateVacancy) onUpdateVacancy(updated);
+    } else {
+      if (!deletedKeys.includes(key)) {
+        const updated: VacancyItem = {
+          ...currentVacancy,
+          deletedSectionKeys: [...deletedKeys, key]
+        };
+        setCurrentVacancy(updated);
+        if (onUpdateVacancy) onUpdateVacancy(updated);
+      }
+    }
+  };
+
+  const handleRestoreSection = (key: string) => {
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      deletedSectionKeys: deletedKeys.filter(k => k !== key)
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
+  const renderAdminSectionControls = (key: string, label: string) => {
+    if (!isAdmin) return null;
+    return (
+      <div className="flex items-center gap-1.5 shrink-0">
+        {onEditVacancy && (
+          <button
+            type="button"
+            onClick={() => onEditVacancy(currentVacancy)}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 transition cursor-pointer"
+            title={`डायरेक्ट पोस्ट एडिटर में ${label} अपडेट करें`}
+          >
+            <Edit3 className="w-3 h-3 text-sky-600" />
+            <span>एडिट करें</span>
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => handleDeleteSection(key)}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer"
+          title={`इस ${label} सेक्शन को हटाएं`}
+        >
+          <Trash2 className="w-3 h-3 text-rose-600" />
+          <span>सेक्शन हटाएं</span>
+        </button>
+      </div>
+    );
+  };
+
+  const handleAddNewSection = () => {
+    if (!newSectionTitle.trim()) return;
+    const newSec: CustomPostSection = {
+      id: Date.now().toString(),
+      title: newSectionTitle.trim(),
+      titleHi: newSectionTitle.trim(),
+      content: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है।',
+      contentHi: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है。',
+      sectionType: newSectionType
+    };
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      customSections: [...(currentVacancy.customSections || []), newSec]
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+    setNewSectionTitle('');
+    setNewSectionContent('');
+    setIsAddSectionOpen(false);
+  };
+
+  const handleSaveCustomSectionEdit = () => {
+    if (!editingCustomSection) return;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      customSections: (currentVacancy.customSections || []).map(s =>
+        s.id === editingCustomSection.id ? editingCustomSection : s
+      )
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+    setEditingCustomSection(null);
+  };
 
   // Interactive Comments State
   const [comments, setComments] = useState<Array<{ id: string; name: string; email: string; comment: string; date: string }>>([
@@ -264,48 +396,82 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   ];
 
   return (
-    <div className="w-full bg-[#f7f8f9] text-[#222222] py-4 sm:py-6">
+    <div className="w-full bg-[#f7f8f9] text-[#222222] pt-0 pb-2">
 
 
       {/* Main 2-Column WordPress GeneratePress Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+      <div className="w-full max-w-7xl mx-auto px-[3%]" style={{ paddingLeft: '3%', paddingRight: '3%' }}>
+        <div className="flex flex-col lg:flex-row gap-4 items-start">
           
           {/* Main Article Content Area (70% on Desktop) */}
           <main className="w-full lg:w-[70%] min-w-0">
             <article 
-              className="bg-white rounded-md p-5 sm:p-8 border border-slate-200 shadow-2xs"
+              className="bg-white rounded-none sm:rounded-md p-2 sm:p-5 border-x sm:border border-slate-200 shadow-2xs"
               style={{ border: '1px solid #cbd5e1' }}
             >
               {/* Admin Actions Bar (when admin is active) */}
               {isAdmin && (
-                <div className="mb-4 p-2.5 bg-slate-100 rounded border border-slate-300 flex items-center justify-between gap-2 flex-wrap text-xs">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>एडमिन कंट्रोल्स (Admin)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {onEditVacancy && (
+                <div className="mb-4 p-3 bg-slate-100 rounded-lg border border-slate-300 space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>एडमिन कंट्रोल्स (Admin Mode Active)</span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => onEditVacancy(vacancy)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-600 text-white rounded font-bold hover:bg-amber-700 transition"
+                        onClick={() => setIsAddSectionOpen(true)}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 text-white rounded-md font-bold hover:bg-emerald-700 transition cursor-pointer shadow-xs"
                       >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        <span>संशोधित करें</span>
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>+ नया सेक्शन जोड़ें</span>
                       </button>
-                    )}
-                    {onDeleteVacancy && (
-                      <button
-                        type="button"
-                        onClick={() => onDeleteVacancy(vacancy.id)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-600 text-white rounded font-bold hover:bg-rose-700 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>डिलीट</span>
-                      </button>
-                    )}
+                      {onEditVacancy && (
+                        <button
+                          type="button"
+                          onClick={() => onEditVacancy(currentVacancy)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-600 text-white rounded-md font-bold hover:bg-amber-700 transition cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>डायरेक्ट पोस्ट एडिटर</span>
+                        </button>
+                      )}
+                      {onDeleteVacancy && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteVacancy(currentVacancy.id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-600 text-white rounded-md font-bold hover:bg-rose-700 transition cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>डिलीट</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Restorable Deleted Sections Notice */}
+                  {deletedKeys.length > 0 && (
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between gap-2 flex-wrap text-amber-900">
+                      <div className="flex items-center gap-1.5">
+                        <EyeOff className="w-3.5 h-3.5 text-amber-600" />
+                        <span className="font-semibold">हटाए गए सेक्शंस ({deletedKeys.length}):</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {deletedKeys.map(key => (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => handleRestoreSection(key)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 text-[11px] font-bold transition cursor-pointer"
+                            title="इस सेक्शन को वापस लाएं"
+                          >
+                            <RefreshCw className="w-3 h-3 text-emerald-600" />
+                            <span>{sectionLabels[key] ? sectionLabels[key].split('(')[0].trim() : key} पुनः जोड़ें</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -315,7 +481,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   className="entry-title headlight font-bold text-slate-900 tracking-tight leading-snug"
                   style={{
                     fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                    fontSize: '16pt',
+                    fontSize: '12pt',
                     lineHeight: 1.4
                   }}
                 >
@@ -364,7 +530,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </span>
                     <h2 
                       className="headlight text-lg sm:text-xl font-bold text-white tracking-wide"
-                      style={{ fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif", color: '#ffffff', fontSize: '16pt' }}
+                      style={{ fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif", color: '#ffffff', fontSize: '12pt' }}
                     >
                       {shortJobName}
                     </h2>
@@ -391,7 +557,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 className="entry-content space-y-6 text-[#334155]"
                 style={{
                   fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                  fontSize: '15pt',
+                  fontSize: '11.5pt',
                   lineHeight: 1.75
                 }}
               >
@@ -408,108 +574,122 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
 
                 {/* Table 1: का संक्षिप्त विवरण (Quick Overview Table) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} का संक्षिप्त विवरण
-                  </h2>
-                  <div className="overflow-x-auto border border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300">
-                          <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/3">विवरण</th>
-                          <th className="p-3 font-bold text-slate-900">जानकारी</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती संस्था</td>
-                          <td className="p-3">{vacancy.department || vacancy.organization}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती का नाम</td>
-                          <td className="p-3">{shortJobName}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">विज्ञापन संख्या</td>
-                          <td className="p-3">{vacancy.advtNo || 'विज्ञप्ति अनुसार'}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">घोषित कुल पद / सीटें</td>
-                          <td className="p-3 font-bold text-emerald-800">{vacancy.totalPosts || 'विभिन्न पद'}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन तिथि</td>
-                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन शुरू</td>
-                          <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
-                          <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन का माध्यम</td>
-                          <td className="p-3">ऑनलाइन (Online Portal)</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">शैक्षणिक योग्यता</td>
-                          <td className="p-3">{vacancy.qualificationDetailsHi || vacancy.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास'}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">वेतनमान / पे-मैट्रिक्स</td>
-                          <td className="p-3">{vacancy.salaryHi || vacancy.salary || 'पे-मैट्रिक्स नियमानुसार देय'}</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आधिकारिक वेबसाइट</td>
-                          <td className="p-3 text-blue-700 font-semibold underline">
-                            <a href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'} target="_blank" rel="noopener noreferrer">
-                              {vacancy.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'rajasthan.gov.in'}
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                {!isSectionDeleted('overview') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} का संक्षिप्त विवरण
+                      </h2>
+                      {renderAdminSectionControls('overview', 'संक्षिप्त विवरण')}
+                    </div>
+                    <div className="overflow-x-auto border border-slate-300 rounded-md">
+                      <table className="w-full border-collapse text-left text-sm">
+                        <thead>
+                          <tr className="bg-slate-100 border-b border-slate-300">
+                            <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/3">विवरण</th>
+                            <th className="p-3 font-bold text-slate-900">जानकारी</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती संस्था</td>
+                            <td className="p-3">{vacancy.department || vacancy.organization}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती का नाम</td>
+                            <td className="p-3">{shortJobName}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">विज्ञापन संख्या</td>
+                            <td className="p-3">{vacancy.advtNo || 'विज्ञप्ति अनुसार'}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">घोषित कुल पद / सीटें</td>
+                            <td className="p-3 font-bold text-emerald-800">{vacancy.totalPosts || 'विभिन्न पद'}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन तिथि</td>
+                            <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन शुरू</td>
+                            <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
+                            <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन का माध्यम</td>
+                            <td className="p-3">ऑनलाइन (Online Portal)</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">शैक्षणिक योग्यता</td>
+                            <td className="p-3">{vacancy.qualificationDetailsHi || vacancy.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास'}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">वेतनमान / पे-मैट्रिक्स</td>
+                            <td className="p-3">{vacancy.salaryHi || vacancy.salary || 'पे-मैट्रिक्स नियमानुसार देय'}</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आधिकारिक वेबसाइट</td>
+                            <td className="p-3 text-blue-700 font-semibold underline">
+                              <a href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'} target="_blank" rel="noopener noreferrer">
+                                {vacancy.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'rajasthan.gov.in'}
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Section: Latest Update */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-2 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} Latest Update
-                  </h2>
-                  <p className="post-item">
-                    {vacancy.descriptionHi || vacancy.briefSummaryHi || `${vacancy.organization} द्वारा भर्ती का विस्तृत विज्ञापन जारी किया गया है। इच्छुक अभ्यर्थी आवेदन शुरू होने से पहले अपनी पात्रता जाँचकर सभी आवश्यक दस्तावेज तैयार कर लें।`}
-                  </p>
-                </div>
+                {!isSectionDeleted('latest_update') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} Latest Update
+                      </h2>
+                      {renderAdminSectionControls('latest_update', 'लेटेस्ट अपडेट')}
+                    </div>
+                    <p className="post-item">
+                      {vacancy.descriptionHi || vacancy.briefSummaryHi || `${vacancy.organization} द्वारा भर्ती का विस्तृत विज्ञापन जारी किया गया है। इच्छुक अभ्यर्थी आवेदन शुरू होने से पहले अपनी पात्रता जाँचकर सभी आवश्यक दस्तावेज तैयार कर लें।`}
+                    </p>
+                  </div>
+                )}
 
                 {/* Table 2: महत्वपूर्ण तिथियाँ (Important Dates Table) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    महत्वपूर्ण तिथियाँ (Important Dates)
-                  </h2>
+                {!isSectionDeleted('dates') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        महत्वपूर्ण तिथियाँ (Important Dates)
+                      </h2>
+                      {renderAdminSectionControls('dates', 'महत्वपूर्ण तिथियां')}
+                    </div>
                   <div className="overflow-x-auto border border-slate-300 rounded-md">
                     <table className="w-full border-collapse text-left text-sm">
                       <thead>
@@ -543,20 +723,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </table>
                   </div>
                 </div>
+                )}
 
                 {/* Table 3: पदों का विवरण (Post Breakdown) if available */}
-                {vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
+                {!isSectionDeleted('post_breakdown') && vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
                   <div>
-                    <h2 
-                      className="headlight font-bold text-slate-900 mb-3 pt-2"
-                      style={{ 
-                        fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                        fontSize: '12pt',
-                        color: '#0f172a'
-                      }}
-                    >
-                      {shortJobName} पदों / सीटों का विवरण
-                    </h2>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} पदों / सीटों का विवरण
+                      </h2>
+                      {renderAdminSectionControls('post_breakdown', 'पद विवरण')}
+                    </div>
                     <div className="overflow-x-auto border border-slate-300 rounded-md">
                       <table className="w-full border-collapse text-left text-sm">
                         <thead>
@@ -583,83 +767,97 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 )}
 
                 {/* Section 4: शैक्षणिक योग्यता (Educational Qualification) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} शैक्षणिक योग्यता
-                  </h2>
-                  <ul className="list-disc pl-5 space-y-1.5 text-slate-800">
-                    <li>मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।</li>
-                    <li>{vacancy.qualificationDetailsHi || vacancy.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}</li>
-                    <li>आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।</li>
-                    <li>विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।</li>
-                  </ul>
-                </div>
+                {!isSectionDeleted('qualification') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} शैक्षणिक योग्यता
+                      </h2>
+                      {renderAdminSectionControls('qualification', 'शैक्षणिक योग्यता')}
+                    </div>
+                    <ul className="list-disc pl-5 space-y-1.5 text-slate-800">
+                      <li>मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।</li>
+                      <li>{vacancy.qualificationDetailsHi || vacancy.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}</li>
+                      <li>आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।</li>
+                      <li>विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।</li>
+                    </ul>
+                  </div>
+                )}
 
                 {/* Section 5: आयु सीमा (Age Limit) & Table */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    आयु सीमा (Age Limit)
-                  </h2>
-                  <p className="post-item mb-3">
-                    अभ्यर्थी की न्यूनतम आयु <strong>{vacancy.ageLimit?.min || 18} वर्ष</strong> तथा अधिकतम आयु <strong>{vacancy.ageLimit?.max || 40} वर्ष</strong> निर्धारित की गई है। आयु की गणना {vacancy.ageLimit?.asOnDate || '2026'} को आधार मानकर की जाएगी। आरक्षित वर्गों को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
-                  </p>
+                {!isSectionDeleted('age_limit') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        आयु सीमा (Age Limit)
+                      </h2>
+                      {renderAdminSectionControls('age_limit', 'आयु सीमा')}
+                    </div>
+                    <p className="post-item mb-3">
+                      अभ्यर्थी की न्यूनतम आयु <strong>{vacancy.ageLimit?.min || 18} वर्ष</strong> तथा अधिकतम आयु <strong>{vacancy.ageLimit?.max || 40} वर्ष</strong> निर्धारित की गई है। आयु की गणना {vacancy.ageLimit?.asOnDate || '2026'} को आधार मानकर की जाएगी। आरक्षित वर्गों को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
+                    </p>
 
-                  <div className="overflow-x-auto border border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300">
-                          <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/2">श्रेणी</th>
-                          <th className="p-3 font-bold text-slate-900">अधिकतम आयु सीमा में छूट</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">अनुसूचित जाति / अनुसूचित जनजाति (SC/ST)</td>
-                          <td className="p-3 font-semibold text-emerald-800">5 वर्ष</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">अन्य पिछड़ा वर्ग (OBC / MBC)</td>
-                          <td className="p-3 font-semibold text-emerald-800">3 से 5 वर्ष</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">दिव्यांग अभ्यर्थी (PwD)</td>
-                          <td className="p-3 font-semibold text-emerald-800">10 वर्ष</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">भूतपूर्व सैनिक (Ex-Servicemen)</td>
-                          <td className="p-3 font-semibold text-emerald-800">नियमानुसार</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto border border-slate-300 rounded-md">
+                      <table className="w-full border-collapse text-left text-sm">
+                        <thead>
+                          <tr className="bg-slate-100 border-b border-slate-300">
+                            <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/2">श्रेणी</th>
+                            <th className="p-3 font-bold text-slate-900">अधिकतम आयु सीमा में छूट</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          <tr>
+                            <td className="p-3 bg-slate-50 border-r border-slate-200">अनुसूचित जाति / अनुसूचित जनजाति (SC/ST)</td>
+                            <td className="p-3 font-semibold text-emerald-800">5 वर्ष</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 bg-slate-50 border-r border-slate-200">अन्य पिछड़ा वर्ग (OBC / MBC)</td>
+                            <td className="p-3 font-semibold text-emerald-800">3 से 5 वर्ष</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 bg-slate-50 border-r border-slate-200">दिव्यांग अभ्यर्थी (PwD)</td>
+                            <td className="p-3 font-semibold text-emerald-800">10 वर्ष</td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 bg-slate-50 border-r border-slate-200">भूतपूर्व सैनिक (Ex-Servicemen)</td>
+                            <td className="p-3 font-semibold text-emerald-800">नियमानुसार</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Section 6: आवेदन शुल्क (Application Fee) Table */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    आवेदन शुल्क (Application Fee)
-                  </h2>
+                {!isSectionDeleted('application_fee') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        आवेदन शुल्क (Application Fee)
+                      </h2>
+                      {renderAdminSectionControls('application_fee', 'आवेदन शुल्क')}
+                    </div>
                   <div className="overflow-x-auto border border-slate-300 rounded-md">
                     <table className="w-full border-collapse text-left text-sm">
                       <thead>
@@ -693,29 +891,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </table>
                   </div>
                 </div>
+              )}
 
                 {/* Section 7: चयन प्रक्रिया (Selection Process) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    चयन प्रक्रिया और मेरिट की गणना
-                  </h2>
-                  <p className="post-item mb-2">
-                    इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:
-                  </p>
-                  <ol className="list-decimal pl-5 space-y-1.5 text-slate-800">
-                    <li>लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।</li>
-                    <li>मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।</li>
-                    <li>चिकित्सीय परीक्षण (Medical Fitness Examination)।</li>
-                    <li>अंतिम चयन सूची का प्रकाशन।</li>
-                  </ol>
-                </div>
+                {!isSectionDeleted('selection_process') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        चयन प्रक्रिया और मेरिट की गणना
+                      </h2>
+                      {renderAdminSectionControls('selection_process', 'चयन प्रक्रिया')}
+                    </div>
+                    <p className="post-item mb-2">
+                      इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:
+                    </p>
+                    <ol className="list-decimal pl-5 space-y-1.5 text-slate-800">
+                      <li>लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।</li>
+                      <li>मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।</li>
+                      <li>चिकित्सीय परीक्षण (Medical Fitness Examination)।</li>
+                      <li>अंतिम चयन सूची का प्रकाशन।</li>
+                    </ol>
+                  </div>
+                )}
 
                 {/* In-article Ad Section */}
                 <div className="my-4">
@@ -727,203 +931,250 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
 
                 {/* Section 8: आवेदन के लिए आवश्यक दस्तावेज (Required Documents) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    आवेदन के लिए आवश्यक दस्तावेज
-                  </h2>
-                  <p className="post-item mb-2">
-                    ऑनलाइन फॉर्म भरने से पूर्व निम्नलिखित दस्तावेज और जानकारी तैयार रखें:
-                  </p>
-                  <ul className="list-disc pl-5 space-y-1.5 text-slate-800 mb-4">
-                    {documentsList.map((doc, i) => (
-                      <li key={i}>{doc}</li>
-                    ))}
-                  </ul>
+                {!isSectionDeleted('documents') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        आवेदन के लिए आवश्यक दस्तावेज
+                      </h2>
+                      {renderAdminSectionControls('documents', 'आवश्यक दस्तावेज')}
+                    </div>
+                    <p className="post-item mb-2">
+                      ऑनलाइन फॉर्म भरने से पूर्व निम्नलिखित दस्तावेज और जानकारी तैयार रखें:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1.5 text-slate-800 mb-4">
+                      {documentsList.map((doc, i) => (
+                        <li key={i}>{doc}</li>
+                      ))}
+                    </ul>
 
-                  {/* Photo & Signature Specs Table */}
-                  <div className="overflow-x-auto border border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300">
-                          <th className="p-2.5 font-bold text-slate-900 border-r border-slate-300">दस्तावेज</th>
-                          <th className="p-2.5 font-bold text-slate-900 border-r border-slate-300">निर्धारित प्रारूप</th>
-                          <th className="p-2.5 font-bold text-slate-900">आकार (Size)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-2.5 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">पासपोर्ट साइज फोटो</td>
-                          <td className="p-2.5 border-r border-slate-200">JPG / JPEG, 20 से 70 KB</td>
-                          <td className="p-2.5">3.5 × 3.5 सेमी</td>
-                        </tr>
-                        <tr>
-                          <td className="p-2.5 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">हस्ताक्षर (Signature)</td>
-                          <td className="p-2.5 border-r border-slate-200">JPG / JPEG, 20 से 30 KB</td>
-                          <td className="p-2.5">3.5 × 2.5 सेमी</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    {/* Photo & Signature Specs Table */}
+                    <div className="overflow-x-auto border border-slate-300 rounded-md">
+                      <table className="w-full border-collapse text-left text-sm">
+                        <thead>
+                          <tr className="bg-slate-100 border-b border-slate-300">
+                            <th className="p-2.5 font-bold text-slate-900 border-r border-slate-300">दस्तावेज</th>
+                            <th className="p-2.5 font-bold text-slate-900 border-r border-slate-300">निर्धारित प्रारूप</th>
+                            <th className="p-2.5 font-bold text-slate-900">आकार (Size)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          <tr>
+                            <td className="p-2.5 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">पासपोर्ट साइज फोटो</td>
+                            <td className="p-2.5 border-r border-slate-200">JPG / JPEG, 20 से 70 KB</td>
+                            <td className="p-2.5">3.5 × 3.5 सेमी</td>
+                          </tr>
+                          <tr>
+                            <td className="p-2.5 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">हस्ताक्षर (Signature)</td>
+                            <td className="p-2.5 border-r border-slate-200">JPG / JPEG, 20 से 30 KB</td>
+                            <td className="p-2.5">3.5 × 2.5 सेमी</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Section 9: आवेदन कैसे करें (How to Apply Step-by-Step) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} के लिए आवेदन कैसे करें?
-                  </h2>
-                  <ol className="list-decimal pl-5 space-y-2 text-slate-800">
-                    {howToApplySteps.map((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    ))}
-                  </ol>
-                </div>
+                {!isSectionDeleted('how_to_apply') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} के लिए आवेदन कैसे करें?
+                      </h2>
+                      {renderAdminSectionControls('how_to_apply', 'आवेदन कैसे करें')}
+                    </div>
+                    <ol className="list-decimal pl-5 space-y-2 text-slate-800">
+                      {howToApplySteps.map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
 
                 {/* Table 10: Important Links Table */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} Important Links
-                  </h2>
-                  <div className="overflow-x-auto border-2 border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200 w-1/2">
-                            Start Online Application Form
-                          </td>
-                          <td className="p-3 font-extrabold text-slate-800">
-                            {formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                            Last Date Online Application Form
-                          </td>
-                          <td className="p-3 font-extrabold text-rose-700">
-                            {formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                            Apply Online
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href={vacancy.officialLinks?.applyOnlineUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://sso.rajasthan.gov.in'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-block px-4 py-1.5 rounded bg-[#1e953a] hover:bg-[#187a2f] text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              Apply Now
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                            Official Notification PDF
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href={vacancy.officialLinks?.notificationPdfUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-block px-4 py-1.5 rounded bg-[#cf2e2e] hover:bg-[#a82222] text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              Click Here
-                            </a>
-                          </td>
-                        </tr>
-                        {/* WhatsApp Channel Link */}
-                        <tr className="bg-emerald-50/40">
-                          <td className="p-3 font-bold text-emerald-950 bg-emerald-100/60 border-r border-emerald-200">
-                            <span className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                              <span>Join WhatsApp Channel</span>
-                            </span>
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              <MessageCircle className="w-3.5 h-3.5 fill-current" />
-                              <span>Click Here</span>
-                            </a>
-                          </td>
-                        </tr>
-                        {/* Website Home Link */}
-                        <tr className="bg-blue-50/40">
-                          <td className="p-3 font-bold text-blue-950 bg-blue-100/60 border-r border-blue-200">
-                            Rajasthan Vacancy (Home Page)
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href="https://rajasthanvaccancy.vercel.app/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-block px-4 py-1.5 rounded bg-[#0056b3] hover:bg-blue-800 text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              Click Here
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                            Join Telegram Channel
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href="https://telegram.me/rajasthanvacancy_in"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#0088cc] hover:bg-[#0077b5] text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              <Send className="w-3.5 h-3.5" />
-                              <span>Click Here</span>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                            Official Website
-                          </td>
-                          <td className="p-3">
-                            <a 
-                              href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-block px-4 py-1.5 rounded bg-[#1e73be] hover:bg-[#155a96] text-white font-extrabold text-xs transition shadow-2xs"
-                            >
-                              Click Here
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                {!isSectionDeleted('important_links') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
+                      >
+                        {shortJobName} Important Links
+                      </h2>
+                      {renderAdminSectionControls('important_links', 'महत्वपूर्ण लिंक्स')}
+                    </div>
+                    <div className="overflow-x-auto border-2 border-slate-300 rounded-md">
+                      <table className="w-full border-collapse text-left text-sm">
+                        <tbody className="divide-y divide-slate-200">
+                          <tr>
+                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200 w-1/2">
+                              Start Online Application Form
+                            </td>
+                            <td className="p-3 font-extrabold text-slate-800">
+                              {formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
+                              Last Date Online Application Form
+                            </td>
+                            <td className="p-3 font-extrabold text-rose-700">
+                              {formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
+                              Apply Online
+                            </td>
+                            <td className="p-3">
+                              <a 
+                                href={vacancy.officialLinks?.applyOnlineUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://sso.rajasthan.gov.in'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-1.5 rounded bg-[#1e953a] hover:bg-[#187a2f] text-white font-extrabold text-xs transition shadow-2xs"
+                              >
+                                Apply Now
+                              </a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
+                              Official Notification PDF
+                            </td>
+                            <td className="p-3">
+                              <a 
+                                href={vacancy.officialLinks?.notificationPdfUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-1.5 rounded bg-[#cf2e2e] hover:bg-[#a82222] text-white font-extrabold text-xs transition shadow-2xs"
+                              >
+                                Click Here
+                              </a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
+                              Official Website
+                            </td>
+                            <td className="p-3">
+                              <a 
+                                href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-1.5 rounded bg-[#1e73be] hover:bg-[#155a96] text-white font-extrabold text-xs transition shadow-2xs"
+                              >
+                                Click Here
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Custom Sections added by Admin */}
+                {currentVacancy.customSections && currentVacancy.customSections.length > 0 && (
+                  <div className="space-y-5 pt-2">
+                    {currentVacancy.customSections.map((sec) => (
+                      <div key={sec.id} className="p-4 rounded-lg bg-sky-50/60 border border-sky-200 transition shadow-2xs">
+                        <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-sky-200">
+                          <h2 
+                            className="headlight font-bold text-slate-900 flex items-center gap-1.5"
+                            style={{ 
+                              fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                              fontSize: '12pt',
+                              color: '#0f172a'
+                            }}
+                          >
+                            <span className="w-2.5 h-2.5 rounded-full bg-sky-600 inline-block"></span>
+                            <span>{sec.titleHi || sec.title}</span>
+                          </h2>
+                          {isAdmin && (
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setEditingCustomSection(sec)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition cursor-pointer"
+                                title="इस सेक्शन को संपादित करें"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                                <span>संपादित करें</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSection(`custom_${sec.id}`)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer"
+                                title="इस कस्टम सेक्शन को हटाएं"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                <span>हटाएं</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {sec.sectionType === 'alert_box' ? (
+                          <div className="p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-950 rounded text-sm post-item">
+                            {sec.contentHi || sec.content}
+                          </div>
+                        ) : sec.sectionType === 'bullets' ? (
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-800 post-item text-sm">
+                            {(sec.contentHi || sec.content).split('\n').filter(Boolean).map((line, lIdx) => (
+                              <li key={lIdx}>{line.replace(/^[-•*]\s*/, '')}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line post-item">
+                            {sec.contentHi || sec.content}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Admin Quick Add Section Banner */}
+                {isAdmin && (
+                  <div className="my-4 p-4 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/70 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+                        <PlusCircle className="w-4 h-4 text-sky-600" />
+                        <span>इस पोस्ट में नया सेक्शन जोड़ें (Add Custom Section)</span>
+                      </p>
+                      <p className="text-[11px] text-slate-600">
+                        परीक्षा सिलेबस, कट ऑफ, आंसर की, या अतिरिक्त दिशा-निर्देश तुरंत जोड़ें।
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddSectionOpen(true)}
+                      className="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer shrink-0"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      <span>+ नया सेक्शन जोड़ें</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* Normal In-Content Post Share Box (सामान्य शेयर सेक्शन) */}
                 <div className="my-6 p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-2xs">
@@ -984,37 +1235,42 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
 
                 {/* Section 11: FAQs Section (Rank Math FAQ format) */}
-                <div>
-                  <h2 
-                    className="headlight font-bold text-slate-900 mb-3 pt-2"
-                    style={{ 
-                      fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-                      fontSize: '12pt',
-                      color: '#0f172a'
-                    }}
-                  >
-                    {shortJobName} FAQs
-                  </h2>
-                  <div className="space-y-3">
-                    {faqList.map((faq, idx) => (
-                      <div 
-                        key={idx} 
-                        className="bg-slate-50 border border-slate-200 rounded-md p-4 transition"
+                {!isSectionDeleted('faqs') && (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                      <h2 
+                        className="headlight font-bold text-slate-900"
+                        style={{ 
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                          fontSize: '12pt',
+                          color: '#0f172a'
+                        }}
                       >
-                        <h3 
-                          className="headlight font-bold text-slate-900 text-sm mb-1.5 flex items-start gap-2"
-                          style={{ fontSize: '12pt' }}
+                        {shortJobName} FAQs
+                      </h2>
+                      {renderAdminSectionControls('faqs', 'FAQs')}
+                    </div>
+                    <div className="space-y-3">
+                      {faqList.map((faq, idx) => (
+                        <div 
+                          key={idx} 
+                          className="bg-slate-50 border border-slate-200 rounded-md p-4 transition"
                         >
-                          <span className="text-[#1e953a]">Q.</span>
-                          <span>{isHi ? (faq.qHi || faq.q) : faq.q}</span>
-                        </h3>
-                        <div className="text-slate-700 text-xs sm:text-sm pl-5 border-l-2 border-[#1e953a] mt-2">
-                          <p className="post-item">{isHi ? (faq.aHi || faq.a) : faq.a}</p>
+                          <h3 
+                            className="headlight font-bold text-slate-900 text-sm mb-1.5 flex items-start gap-2"
+                            style={{ fontSize: '12pt' }}
+                          >
+                            <span className="text-[#1e953a]">Q.</span>
+                            <span>{isHi ? (faq.qHi || faq.q) : faq.q}</span>
+                          </h3>
+                          <div className="text-slate-700 text-xs sm:text-sm pl-5 border-l-2 border-[#1e953a] mt-2">
+                            <p className="post-item">{isHi ? (faq.aHi || faq.a) : faq.a}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Entry Footer Meta: Categories & Post Navigation */}
@@ -1255,6 +1511,236 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </aside>
         </div>
       </div>
+
+      {/* Modal 1: Add New Section to Post */}
+      {isAddSectionOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 bg-sky-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PlusCircle className="w-5 h-5 text-white" />
+                <h3 className="font-bold text-base">नया सेक्शन जोड़ें (Add Custom Section)</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setIsAddSectionOpen(false)}
+                className="text-white/80 hover:text-white p-1 rounded transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Quick suggestions */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">सुझाए गए सेक्शन शीर्षक:</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'परीक्षा पैटर्न व सिलेबस',
+                    'कट ऑफ मार्क्स एवं न्यूनतम अंक',
+                    'दस्तावेज सत्यापन प्रक्रिया',
+                    'शारीरिक दक्षता परीक्षा (PET/PST)',
+                    'विशेष दिशा-निर्देश एवं नियम'
+                  ].map((sug) => (
+                    <button
+                      key={sug}
+                      type="button"
+                      onClick={() => setNewSectionTitle(sug)}
+                      className="text-[11px] px-2.5 py-1 rounded bg-slate-100 hover:bg-sky-50 hover:text-sky-700 border border-slate-200 font-medium transition cursor-pointer"
+                    >
+                      + {sug}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन का नाम (Section Title) *</label>
+                <input
+                  type="text"
+                  required
+                  value={newSectionTitle}
+                  onChange={(e) => setNewSectionTitle(e.target.value)}
+                  placeholder="उदा. परीक्षा पैटर्न एवं विस्तृत सिलेबस"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:border-sky-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">फॉर्मेट प्रकार (Display Style)</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('paragraph')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'paragraph' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    पैराग्राफ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('bullets')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'bullets' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    बिंदुवार सूची
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('alert_box')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'alert_box' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    हाईलाइट बॉक्स
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन सामग्री (Content) *</label>
+                <textarea
+                  rows={5}
+                  required
+                  value={newSectionContent}
+                  onChange={(e) => setNewSectionContent(e.target.value)}
+                  placeholder={
+                    newSectionType === 'bullets' 
+                      ? "प्रत्येक लाइन एक बिंदु के रूप में दिखेगी:\n- भाग 1: सामान्य ज्ञान (50 अंक)\n- भाग 2: राजस्थान का इतिहास एवं भूगोल (50 अंक)\n- भाग 3: गणित एवं रीजनिंग (50 अंक)" 
+                      : "सेक्शन का विस्तृत विवरण यहाँ लिखें..."
+                  }
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-sky-600 font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSectionOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+                <button
+                  type="button"
+                  disabled={!newSectionTitle.trim()}
+                  onClick={handleAddNewSection}
+                  className="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>सेक्शन जोड़ें व सेव करें</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 2: Edit Custom Section */}
+      {editingCustomSection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 bg-amber-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-white" />
+                <h3 className="font-bold text-base">कस्टम सेक्शन संपादित करें (Edit Section)</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setEditingCustomSection(null)}
+                className="text-white/80 hover:text-white p-1 rounded transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन का नाम (Section Title) *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingCustomSection.titleHi || editingCustomSection.title}
+                  onChange={(e) => setEditingCustomSection({
+                    ...editingCustomSection,
+                    title: e.target.value,
+                    titleHi: e.target.value
+                  })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:border-amber-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">फॉर्मेट प्रकार</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'paragraph' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'paragraph' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    पैराग्राफ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'bullets' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'bullets' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    बिंदुवार सूची
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'alert_box' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'alert_box' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    हाईलाइट बॉक्स
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सामग्री (Content) *</label>
+                <textarea
+                  rows={6}
+                  required
+                  value={editingCustomSection.contentHi || editingCustomSection.content}
+                  onChange={(e) => setEditingCustomSection({
+                    ...editingCustomSection,
+                    content: e.target.value,
+                    contentHi: e.target.value
+                  })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-amber-600 font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setEditingCustomSection(null)}
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCustomSectionEdit}
+                  className="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>परिवर्तन सेव करें (Update Post)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

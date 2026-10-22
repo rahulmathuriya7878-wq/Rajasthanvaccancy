@@ -197,12 +197,12 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       className="text-left flex-1 min-w-0 cursor-pointer block"
                     >
                       <h3 
-                        className="post-item font-semibold text-[#0056b3] hover:text-[#003d80] underline underline-offset-2 line-clamp-2 leading-snug cursor-pointer transition-colors"
+                        className="post-item font-semibold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 line-clamp-2 leading-snug cursor-pointer transition-colors"
                         style={{
                           fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                           fontSize: '11.5pt',
                           lineHeight: 1.45,
-                          color: '#0056b3',
+                          color: '#0284c7',
                           textDecoration: 'underline'
                         }}
                       >

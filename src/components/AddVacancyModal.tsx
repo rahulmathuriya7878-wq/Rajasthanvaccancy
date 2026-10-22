@@ -24,7 +24,11 @@ import {
   ListOrdered,
   Layers,
   MapPin,
-  Globe
+  Globe,
+  SlidersHorizontal,
+  Check,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { 
   VacancyItem, 
@@ -37,7 +41,8 @@ import {
   PayScaleItem,
   ExamPatternDetails,
   ExamSubjectPattern,
-  SeoSettings
+  SeoSettings,
+  CustomPostSection
 } from '../types';
 
 import { useAuth } from '../context/AuthContext.tsx';
@@ -75,7 +80,26 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   };
 
   // Active sub-tab in modal for easy navigation
-  const [activeTab, setActiveTab] = useState<'ai_writer' | 'basic' | 'summary' | 'breakdown' | 'salary' | 'exam' | 'dates' | 'steps' | 'links' | 'seo'>('ai_writer');
+  const [activeTab, setActiveTab] = useState<'ai_writer' | 'direct_update' | 'basic' | 'summary' | 'breakdown' | 'districts' | 'salary' | 'exam' | 'dates' | 'steps' | 'notes_special' | 'links' | 'seo'>('ai_writer');
+  const [districtBreakdownText, setDistrictBreakdownText] = useState(
+    'जयपुर: 150 पद\nजोधपुर: 120 पद\nकोटा: 90 पद\nउदयपुर: 80 पद\nअजमेर: 75 पद\nबीकानेर: 65 पद\nसीकर: 60 पद\nअलवर: 55 पद'
+  );
+
+  // Section Management State for Direct Update
+  const [deletedSectionKeys, setDeletedSectionKeys] = useState<string[]>([]);
+  const [customSections, setCustomSections] = useState<CustomPostSection[]>([]);
+  const [newCustomTitle, setNewCustomTitle] = useState('');
+  const [newCustomContent, setNewCustomContent] = useState('');
+  const [newCustomType, setNewCustomType] = useState<'paragraph' | 'bullets' | 'alert_box' | 'table'>('paragraph');
+
+  // Expanded section state for inline update in direct editor
+  const [expandedSectionKey, setExpandedSectionKey] = useState<string | null>(null);
+
+  // Custom section inline editing state
+  const [editingCustomId, setEditingCustomId] = useState<string | null>(null);
+  const [editCustomTitle, setEditCustomTitle] = useState('');
+  const [editCustomContent, setEditCustomContent] = useState('');
+  const [editCustomType, setEditCustomType] = useState<'paragraph' | 'bullets' | 'alert_box' | 'table'>('paragraph');
 
   // State for AI Blog Writer
   const [aiTopicPrompt, setAiTopicPrompt] = useState('');
@@ -242,6 +266,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   // Pre-fill fields when editItem is provided
   useEffect(() => {
     if (editItem) {
+      setActiveTab('direct_update');
       setTitle(editItem.title || '');
       setTitleHi(editItem.titleHi || editItem.title || '');
       setShortTitle(editItem.shortTitle || editItem.title || '');
@@ -373,6 +398,10 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         setHandwrittenSign('✍️ सफलता की हार्दिक शुभकामनाएं — राजस्थान वैकेंसी संपादकीय टीम');
       }
 
+      // Section Management sync
+      setDeletedSectionKeys(editItem.deletedSectionKeys ? [...editItem.deletedSectionKeys] : []);
+      setCustomSections(editItem.customSections ? [...editItem.customSections] : []);
+
       // Post Section category mapping
       if (editItem.category === 'scheme' || editItem.organization === 'Sarkari Yojana') {
         setPostSection('gov_yojana');
@@ -385,6 +414,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       } else {
         setPostSection('gov_job');
       }
+    } else {
+      setDeletedSectionKeys([]);
+      setCustomSections([]);
     }
   }, [editItem]);
 
@@ -651,6 +683,8 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         descriptionHi: description.trim(),
         handwrittenNotes: constructedHandwrittenNotes,
         seoSettings: constructedSeoSettings,
+        deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
+        customSections: customSections.length > 0 ? customSections : undefined,
         updatedAt: formattedDate
       };
 
@@ -731,6 +765,8 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         descriptionHi: description.trim(),
         handwrittenNotes: constructedHandwrittenNotes,
         seoSettings: constructedSeoSettings,
+        deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
+        customSections: customSections.length > 0 ? customSections : undefined,
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: formattedDate
       };
@@ -740,15 +776,80 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     onClose();
   };
 
+  const standardSectionList = [
+    { key: 'overview', title: 'संक्षिप्त विवरण तालिका (Overview Table)', desc: 'मुख्य पद, बोर्ड, अंतिम तिथि आदि की पहली टेबल' },
+    { key: 'latest_update', title: 'लेटेस्ट अपडेट बॉक्स (Latest Update)', desc: 'शीर्ष पर दिखने वाला मुख्य अपडेट पैराग्राफ' },
+    { key: 'dates', title: 'महत्वपूर्ण तिथियाँ (Important Dates Table)', desc: 'आवेदन प्रारंभ, अंतिम तिथि और परीक्षा तिथि' },
+    { key: 'post_breakdown', title: 'पदों का विवरण (Post Breakdown Table)', desc: 'पद नाम, विषयवार और श्रेणीवार पदों की संख्या' },
+    { key: 'qualification', title: 'शैक्षणिक योग्यता (Eligibility & Qualification)', desc: '10वीं/12वीं/स्नातक व अन्य योग्यता' },
+    { key: 'age_limit', title: 'आयु सीमा (Age Limits Table)', desc: 'न्यूनतम व अधिकतम आयु तथा नियमानुसार छूट' },
+    { key: 'application_fee', title: 'आवेदन शुल्क (Application Fee Table)', desc: 'सामान्य/ओबीसी/एससी/एसटी शुल्क व भुगतान माध्यम' },
+    { key: 'selection_process', title: 'चयन प्रक्रिया (Selection Process)', desc: 'लिखित परीक्षा, दस्तावेज सत्यापन, मेरिट लिस्ट चरण' },
+    { key: 'documents', title: 'आवश्यक दस्तावेज (Required Documents)', desc: 'फोटो, हस्ताक्षर, आधार कार्ड व प्रमाण पत्रों की सूची' },
+    { key: 'how_to_apply', title: 'आवेदन कैसे करें (How to Apply Steps)', desc: 'SSO पोर्टल पर आवेदन करने के चरणबद्ध निर्देश' },
+    { key: 'important_links', title: 'महत्वपूर्ण लिंक्स (Important Links Table)', desc: 'Apply Online, Notification PDF, Official Site लिंक्स' },
+    { key: 'faqs', title: 'प्रश्नोत्तर (FAQs Section)', desc: 'अभ्यर्थियों के सामान्य प्रश्न और उनके सटीक उत्तर' }
+  ];
+
+  const toggleSectionDeletion = (key: string) => {
+    if (deletedSectionKeys.includes(key)) {
+      setDeletedSectionKeys(deletedSectionKeys.filter(k => k !== key));
+    } else {
+      setDeletedSectionKeys([...deletedSectionKeys, key]);
+    }
+  };
+
+  const handleAddCustomSection = () => {
+    if (!newCustomTitle.trim()) return;
+    const newSec: CustomPostSection = {
+      id: Date.now().toString(),
+      title: newCustomTitle.trim(),
+      titleHi: newCustomTitle.trim(),
+      content: newCustomContent.trim() || 'विवरण यहाँ उपलब्ध है।',
+      contentHi: newCustomContent.trim() || 'विवरण यहाँ उपलब्ध है।',
+      sectionType: newCustomType
+    };
+    setCustomSections([...customSections, newSec]);
+    setNewCustomTitle('');
+    setNewCustomContent('');
+  };
+
+  const handleRemoveCustomSection = (id: string) => {
+    setCustomSections(customSections.filter(s => s.id !== id));
+  };
+
+  const handleStartEditCustom = (cs: CustomPostSection) => {
+    setEditingCustomId(cs.id);
+    setEditCustomTitle(cs.titleHi || cs.title);
+    setEditCustomContent(cs.contentHi || cs.content);
+    setEditCustomType(cs.sectionType || 'paragraph');
+  };
+
+  const handleSaveCustomEdit = () => {
+    if (!editingCustomId || !editCustomTitle.trim()) return;
+    setCustomSections(prev => prev.map(s => s.id === editingCustomId ? {
+      ...s,
+      title: editCustomTitle.trim(),
+      titleHi: editCustomTitle.trim(),
+      content: editCustomContent.trim(),
+      contentHi: editCustomContent.trim(),
+      sectionType: editCustomType
+    } : s));
+    setEditingCustomId(null);
+  };
+
   const navTabs = [
     { id: 'ai_writer', label: isHi ? '✨ AI ब्लॉग राइटर' : '✨ AI Blog Writer', icon: Sparkles },
+    { id: 'direct_update', label: isHi ? '⚡ डायरेक्ट सेक्शन व पोस्ट अपडेट' : '⚡ Direct Sections Update', icon: SlidersHorizontal },
     { id: 'basic', label: isHi ? '🏢 मूलभूत जानकारी' : 'Basic Info', icon: Building2 },
     { id: 'summary', label: isHi ? '📝 संक्षिप्त व ब्लॉग' : 'Summary & Blog', icon: FileText },
     { id: 'breakdown', label: isHi ? '📊 पदवार & TSP' : 'Posts & TSP', icon: Layers },
+    { id: 'districts', label: isHi ? '📍 जिला अनुसार पद' : 'District Seats', icon: MapPin },
     { id: 'salary', label: isHi ? '💰 वेतनमान सारणी' : 'Salary Scale', icon: DollarSign },
     { id: 'exam', label: isHi ? '📖 परीक्षा पैटर्न' : 'Exam Pattern', icon: BookOpen },
-    { id: 'dates', label: isHi ? '📅 महत्वपूर्ण तिथियाँ व शुल्क' : 'Important Dates & Fees', icon: Calendar },
+    { id: 'dates', label: isHi ? '📅 तिथियाँ व शुल्क' : 'Dates & Fees', icon: Calendar },
     { id: 'steps', label: isHi ? '📋 दस्तावेज व प्रक्रिया' : 'Docs & Steps', icon: ListOrdered },
+    { id: 'notes_special', label: isHi ? '✍️ स्पेशल नोट्स' : 'Teacher Notes', icon: Award },
     { id: 'links', label: isHi ? '🔗 आधिकारिक लिंक्स' : 'Official Links', icon: ExternalLink },
     { id: 'seo', label: isHi ? '🔍 SEO सेटिंग्स' : 'SEO Settings', icon: Globe },
   ] as const;
@@ -1026,6 +1127,799 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* TAB: DIRECT SECTION UPDATE & POST MANAGER */}
+          {activeTab === 'direct_update' && (
+            <div className="space-y-6">
+              {/* Header Info Banner */}
+              <div className="bg-gradient-to-r from-sky-900 via-blue-900 to-slate-900 text-white p-5 rounded-2xl border border-sky-500/30 shadow-lg relative overflow-hidden">
+                <div className="relative z-10 space-y-2">
+                  <div className="inline-flex items-center gap-1.5 bg-sky-500/30 border border-sky-300/40 text-sky-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-sky-300" />
+                    <span>{isHi ? 'डायरेक्ट सेक्शन नियंत्रण' : 'Direct Section Control'}</span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black text-white">
+                    {isHi ? '⚡ सेक्शन हटाएं, नया सेक्शन जोड़ें या डायरेक्ट पोस्ट अपडेट करें' : '⚡ Remove Sections, Add Custom Sections & Direct Post Update'}
+                  </h3>
+                  <p className="text-xs text-sky-200 leading-relaxed max-w-2xl">
+                    {isHi 
+                      ? 'आप पोस्ट का कोई भी डिफ़ॉल्ट सेक्शन (जैसे शुल्क तालिका, आयु सीमा, लिंक्स आदि) एक क्लिक में हटा सकते हैं या नए कस्टम सेक्शन जोड़कर तुरंत पोस्ट अपडेट कर सकते हैं।' 
+                      : 'Remove any default section, add custom sections, and save the updated post directly with a single click.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Direct Quick Post Fields */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-3">
+                <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                  <Edit3 className="w-4 h-4 text-sky-600" />
+                  <span>{isHi ? 'पोस्ट त्वरित विवरण (Quick Post Details):' : 'Quick Post Details:'}</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">पोस्ट शीर्षक (Title) *</label>
+                    <input
+                      type="text"
+                      required
+                      value={titleHi}
+                      onChange={(e) => {
+                        setTitleHi(e.target.value);
+                        if (!title) setTitle(e.target.value);
+                      }}
+                      placeholder="भर्ती का पूरा शीर्षक"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">विभाग / बोर्ड (Department/Board)</label>
+                    <input
+                      type="text"
+                      value={department}
+                      onChange={(e) => setDepartment(e.target.value)}
+                      placeholder="उदा. RSMSSB या राजस्थान पुलिस"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">कुल पद (Total Posts)</label>
+                    <input
+                      type="text"
+                      value={totalPosts}
+                      onChange={(e) => setTotalPosts(e.target.value)}
+                      placeholder="उदा. 4500"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">आवेदन की अंतिम तिथि (Last Date)</label>
+                    <input
+                      type="date"
+                      value={applyLastDate}
+                      onChange={(e) => setApplyLastDate(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">वेतनमान (Salary)</label>
+                    <input
+                      type="text"
+                      value={salary}
+                      onChange={(e) => setSalary(e.target.value)}
+                      placeholder="उदा. पे मैट्रिक्स लेवल L-10"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Standard Sections Deletion/Hiding Grid */}
+              <div className="border border-slate-200 rounded-xl p-4 sm:p-5 bg-white space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-sky-600" />
+                      <span>{isHi ? 'मानक सेक्शन चालू रखें या हटाएं (Standard Sections Toggle):' : 'Enable or Remove Standard Sections:'}</span>
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {isHi ? 'जिस सेक्शन को आप पोस्ट से हटाना चाहते हैं, उसके सामने "हटाएं" पर क्लिक करें।' : 'Click Remove for any section you want to hide from this post.'}
+                    </p>
+                  </div>
+                  <div className="text-xs font-bold text-slate-600">
+                    हटाए गए सेक्शन: <span className="text-rose-600 font-extrabold">{deletedSectionKeys.length}</span> / {standardSectionList.length}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {standardSectionList.map((sec) => {
+                    const isDeleted = deletedSectionKeys.includes(sec.key);
+                    const isExpanded = expandedSectionKey === sec.key;
+                    return (
+                      <div 
+                        key={sec.key}
+                        className={`rounded-xl border transition overflow-hidden ${
+                          isDeleted 
+                            ? 'bg-rose-50/50 border-rose-300' 
+                            : isExpanded
+                            ? 'bg-white border-sky-400 shadow-md ring-1 ring-sky-300'
+                            : 'bg-white border-slate-200 shadow-2xs hover:border-sky-300'
+                        }`}
+                      >
+                        {/* Section Card Header */}
+                        <div className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/70">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isDeleted ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
+                              <h5 className="font-bold text-xs sm:text-sm text-slate-900">{sec.title}</h5>
+                              <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase ${
+                                isDeleted ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'
+                              }`}>
+                                {isDeleted ? 'हटाया गया (Hidden)' : 'चालू (Active)'}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 mt-0.5 pl-4.5">{sec.desc}</p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            {/* Button 1: Edit Section Content */}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedSectionKey(isExpanded ? null : sec.key)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer ${
+                                isExpanded
+                                  ? 'bg-sky-600 text-white shadow-2xs'
+                                  : 'bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300'
+                              }`}
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span>{isExpanded ? 'एडिटर बंद करें' : 'सेक्शन विवरण अपडेट करें'}</span>
+                              {isExpanded ? <ChevronUp className="w-3.5 h-3.5 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 ml-0.5" />}
+                            </button>
+
+                            {/* Button 2: Toggle Hide / Show */}
+                            <button
+                              type="button"
+                              onClick={() => toggleSectionDeletion(sec.key)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer ${
+                                isDeleted
+                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs'
+                                  : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200'
+                              }`}
+                            >
+                              {isDeleted ? (
+                                <>
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>वापस चालू करें</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span>सेक्शन हटाएं</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Inline Section Editor Panel when expanded */}
+                        {isExpanded && (
+                          <div className="p-4 bg-sky-50/40 border-t border-sky-100 space-y-3 animate-in fade-in duration-150">
+                            <div className="flex items-center justify-between border-b border-sky-200/60 pb-2">
+                              <span className="text-xs font-extrabold text-sky-900 flex items-center gap-1.5">
+                                <Edit3 className="w-3.5 h-3.5 text-sky-600" />
+                                <span>{sec.title} — डेटा अपडेट करें:</span>
+                              </span>
+                              <span className="text-[11px] text-slate-500">
+                                बदलाव तुरंत इस पोस्ट के लिए सेट हो जाएंगे।
+                              </span>
+                            </div>
+
+                            {/* Section Specific Input Fields */}
+                            {sec.key === 'overview' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">पद का नाम (Post Name)</label>
+                                  <input
+                                    type="text"
+                                    value={postName}
+                                    onChange={(e) => setPostName(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">विभाग / संस्था (Department)</label>
+                                  <input
+                                    type="text"
+                                    value={department}
+                                    onChange={(e) => setDepartment(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">विज्ञापन संख्या (Advt No)</label>
+                                  <input
+                                    type="text"
+                                    value={advtNo}
+                                    onChange={(e) => setAdvtNo(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">नौकरी स्थान (Job Location)</label>
+                                  <input
+                                    type="text"
+                                    value={jobLocation}
+                                    onChange={(e) => setJobLocation(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'latest_update' && (
+                              <div className="text-xs space-y-2">
+                                <label className="font-bold text-slate-700 block">लेटेस्ट अपडेट / मुख्य पैराग्राफ (Latest Update Text)</label>
+                                <textarea
+                                  rows={4}
+                                  value={briefSummary}
+                                  onChange={(e) => setBriefSummary(e.target.value)}
+                                  placeholder="इस भर्ती या परिणाम के संबंध में नवीनतम समाचार और महत्वपूर्ण सूचना..."
+                                  className="w-full bg-white border border-slate-300 rounded-lg p-2.5 focus:outline-none focus:border-sky-600 font-sans"
+                                />
+                              </div>
+                            )}
+
+                            {sec.key === 'dates' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">नोटिफिकेशन तिथि</label>
+                                  <input
+                                    type="date"
+                                    value={notificationDate}
+                                    onChange={(e) => setNotificationDate(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">आवेदन प्रारंभ तिथि</label>
+                                  <input
+                                    type="date"
+                                    value={applyStartDate}
+                                    onChange={(e) => setApplyStartDate(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">आवेदन अंतिम तिथि</label>
+                                  <input
+                                    type="date"
+                                    value={applyLastDate}
+                                    onChange={(e) => setApplyLastDate(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">शुल्क भुगतान अंतिम तिथि</label>
+                                  <input
+                                    type="date"
+                                    value={feeLastDate}
+                                    onChange={(e) => setFeeLastDate(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">परीक्षा तिथि (Exam Date)</label>
+                                  <input
+                                    type="text"
+                                    value={examDate}
+                                    onChange={(e) => setExamDate(e.target.value)}
+                                    placeholder="उदा. 2026-05-15 या शीघ्र जारी होगी"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">एडमिट कार्ड तिथि</label>
+                                  <input
+                                    type="text"
+                                    value={admitCardDate}
+                                    onChange={(e) => setAdmitCardDate(e.target.value)}
+                                    placeholder="परीक्षा से 7 दिन पूर्व"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'post_breakdown' && (
+                              <div className="space-y-3 text-xs">
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    id="tsp-check-direct"
+                                    checked={hasTspBreakdown}
+                                    onChange={(e) => setHasTspBreakdown(e.target.checked)}
+                                    className="rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"
+                                  />
+                                  <label htmlFor="tsp-check-direct" className="font-bold text-slate-700 cursor-pointer">
+                                    TSP / Non-TSP विभाजन सक्रिय करें
+                                  </label>
+                                </div>
+                                {hasTspBreakdown && (
+                                  <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                      <label className="font-bold text-slate-700 mb-1 block">गैर-अनुसूचित (Non-TSP)</label>
+                                      <input
+                                        type="number"
+                                        value={nonTspPosts}
+                                        onChange={(e) => setNonTspPosts(Number(e.target.value) || 0)}
+                                        className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="font-bold text-slate-700 mb-1 block">अनुसूचित (TSP)</label>
+                                      <input
+                                        type="number"
+                                        value={tspPosts}
+                                        onChange={(e) => setTspPosts(Number(e.target.value) || 0)}
+                                        className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="font-bold text-slate-700 mb-1 block">सहरिया आदिम जाति</label>
+                                      <input
+                                        type="number"
+                                        value={sahariyaPosts}
+                                        onChange={(e) => setSahariyaPosts(Number(e.target.value) || 0)}
+                                        className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {sec.key === 'qualification' && (
+                              <div className="text-xs space-y-3">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1.5 block">योग्यता स्तर (Select Qualifications):</label>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {(['10th', '12th', 'Graduate', 'Post Graduate', 'ITI', 'Diploma', 'B.Ed / D.El.Ed', 'Other'] as QualificationType[]).map((q) => (
+                                      <button
+                                        key={q}
+                                        type="button"
+                                        onClick={() => toggleQual(q)}
+                                        className={`px-2.5 py-1 rounded text-xs font-bold border transition cursor-pointer ${
+                                          selectedQualifications.includes(q)
+                                            ? 'bg-sky-600 text-white border-sky-600'
+                                            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                                        }`}
+                                      >
+                                        {selectedQualifications.includes(q) ? '✓ ' : '+ '}{q}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">विस्तृत शैक्षणिक योग्यता विवरण (Detailed Eligibility)</label>
+                                  <textarea
+                                    rows={3}
+                                    value={qualDetails}
+                                    onChange={(e) => setQualDetails(e.target.value)}
+                                    placeholder="मान्यता प्राप्त बोर्ड से 10वीं/12वीं/स्नातक व आवश्यक कंप्यूटर प्रमाणपत्र..."
+                                    className="w-full bg-white border border-slate-300 rounded-lg p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'age_limit' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">न्यूनतम आयु (वर्ष)</label>
+                                  <input
+                                    type="number"
+                                    value={minAge}
+                                    onChange={(e) => setMinAge(Number(e.target.value) || 18)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">अधिकतम आयु (वर्ष)</label>
+                                  <input
+                                    type="number"
+                                    value={maxAge}
+                                    onChange={(e) => setMaxAge(Number(e.target.value) || 40)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">आयु गणना तिथि (As on)</label>
+                                  <input
+                                    type="date"
+                                    value={asOnDate}
+                                    onChange={(e) => setAsOnDate(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div className="sm:col-span-3">
+                                  <label className="font-bold text-slate-700 mb-1 block">आरक्षित वर्गों को आयु सीमा में छूट के नियम</label>
+                                  <textarea
+                                    rows={2}
+                                    value={relaxationNotes}
+                                    onChange={(e) => setRelaxationNotes(e.target.value)}
+                                    placeholder="राजस्थान के मूल निवासी SC, ST, OBC, MBC, EWS अभ्यर्थियों को नियमानुसार छूट..."
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'application_fee' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">सामान्य / ओबीसी (₹)</label>
+                                  <input
+                                    type="number"
+                                    value={feeGen}
+                                    onChange={(e) => setFeeGen(Number(e.target.value) || 0)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">एससी / एसटी (₹)</label>
+                                  <input
+                                    type="number"
+                                    value={feeScSt}
+                                    onChange={(e) => setFeeScSt(Number(e.target.value) || 0)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">ईडब्ल्यूएस (₹)</label>
+                                  <input
+                                    type="number"
+                                    value={feeEws}
+                                    onChange={(e) => setFeeEws(Number(e.target.value) || 0)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div className="sm:col-span-3">
+                                  <label className="font-bold text-slate-700 mb-1 block">OTR / भुगतान नोट</label>
+                                  <input
+                                    type="text"
+                                    value={otrNote}
+                                    onChange={(e) => setOtrNote(e.target.value)}
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'selection_process' && (
+                              <div className="text-xs space-y-2">
+                                <label className="font-bold text-slate-700 block">चयन प्रक्रिया के चरण (प्रत्येक पंक्ति एक नया चरण)</label>
+                                <textarea
+                                  rows={4}
+                                  value={selectionProcessText}
+                                  onChange={(e) => setSelectionProcessText(e.target.value)}
+                                  placeholder="लिखित परीक्षा (Written Exam)&#10;दस्तावेज सत्यापन (Document Verification)&#10;अंतिम चयन सूची (Merit List)"
+                                  className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600 font-mono"
+                                />
+                              </div>
+                            )}
+
+                            {sec.key === 'documents' && (
+                              <div className="text-xs space-y-2">
+                                <label className="font-bold text-slate-700 block">आवश्यक दस्तावेज सूची (प्रत्येक पंक्ति एक दस्तावेज)</label>
+                                <textarea
+                                  rows={4}
+                                  value={requiredDocumentsText}
+                                  onChange={(e) => setRequiredDocumentsText(e.target.value)}
+                                  placeholder="10वीं व 12वीं की अंकतालिका&#10;आधार कार्ड&#10;मूल निवास प्रमाण पत्र&#10;जाति प्रमाण पत्र"
+                                  className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600 font-mono"
+                                />
+                              </div>
+                            )}
+
+                            {sec.key === 'how_to_apply' && (
+                              <div className="text-xs space-y-2">
+                                <label className="font-bold text-slate-700 block">आवेदन कैसे करें चरणबद्ध विवरण (प्रत्येक पंक्ति एक चरण)</label>
+                                <textarea
+                                  rows={5}
+                                  value={howToApplyText}
+                                  onChange={(e) => setHowToApplyText(e.target.value)}
+                                  placeholder="चरण 1: आधिकारिक SSO पोर्टल sso.rajasthan.gov.in पर जाएं&#10;चरण 2: Recruitment Portal चुनें और Apply Now पर क्लिक करें"
+                                  className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600 font-mono"
+                                />
+                              </div>
+                            )}
+
+                            {sec.key === 'important_links' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">Apply Online URL</label>
+                                  <input
+                                    type="url"
+                                    value={applyOnlineUrl}
+                                    onChange={(e) => setApplyOnlineUrl(e.target.value)}
+                                    placeholder="https://sso.rajasthan.gov.in"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">Notification PDF URL</label>
+                                  <input
+                                    type="url"
+                                    value={notificationPdfUrl}
+                                    onChange={(e) => setNotificationPdfUrl(e.target.value)}
+                                    placeholder="https://.../notification.pdf"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">Syllabus PDF URL</label>
+                                  <input
+                                    type="url"
+                                    value={syllabusPdfUrl}
+                                    onChange={(e) => setSyllabusPdfUrl(e.target.value)}
+                                    placeholder="https://.../syllabus.pdf"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="font-bold text-slate-700 mb-1 block">Official Website URL</label>
+                                  <input
+                                    type="url"
+                                    value={officialWebsiteUrl}
+                                    onChange={(e) => setOfficialWebsiteUrl(e.target.value)}
+                                    placeholder="https://rajasthan.gov.in"
+                                    className="w-full bg-white border border-slate-300 rounded p-2 focus:outline-none focus:border-sky-600"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {sec.key === 'faqs' && (
+                              <div className="text-xs space-y-2">
+                                <p className="text-slate-600">
+                                  पोस्ट में महत्वपूर्ण FAQs स्वचालित रूप से इस भर्ती के नाम, पात्रता, और अंतिम तिथि के अनुसार प्रस्तुत किए जाते हैं। आप ऊपर दिए गए 'तिथियां' एवं 'योग्यता' सेक्शन को अपडेट करेंगे तो FAQs स्वतः अपडेट हो जाएंगे।
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="pt-2 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => setExpandedSectionKey(null)}
+                                className="px-4 py-1.5 rounded-lg bg-sky-600 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer hover:bg-sky-700 shadow-2xs"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                <span>सेक्शन विवरण सहेजा गया (Done)</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Sections Builder with Inline Edit & Delete */}
+              <div className="border border-slate-200 rounded-xl p-4 sm:p-5 bg-white space-y-4">
+                <div className="border-b border-slate-200 pb-3">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <PlusCircle className="w-4 h-4 text-sky-600" />
+                    <span>{isHi ? 'कस्टम सेक्शन जोड़ें या अपडेट करें (Custom Sections):' : 'Custom Sections:'}</span>
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {isHi ? 'सिलेबस, परीक्षा पैटर्न, कट ऑफ, या कोई भी नया सेक्शन यहाँ से जोड़ें व अपडेट करें।' : 'Add or update syllabus, cut-off, or custom sections.'}
+                  </p>
+                </div>
+
+                {/* Form to add custom section */}
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">नया सेक्शन नाम (Title)</label>
+                    <input
+                      type="text"
+                      value={newCustomTitle}
+                      onChange={(e) => setNewCustomTitle(e.target.value)}
+                      placeholder="उदा. विस्तृत परीक्षा पैटर्न एवं सिलेबस"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold focus:outline-none focus:border-sky-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">फॉर्मेट प्रकार</label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setNewCustomType('paragraph')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition cursor-pointer ${
+                          newCustomType === 'paragraph' ? 'bg-sky-600 text-white border-sky-600' : 'bg-white border-slate-300 text-slate-700'
+                        }`}
+                      >
+                        पैराग्राफ
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewCustomType('bullets')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition cursor-pointer ${
+                          newCustomType === 'bullets' ? 'bg-sky-600 text-white border-sky-600' : 'bg-white border-slate-300 text-slate-700'
+                        }`}
+                      >
+                        बिंदुवार सूची
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewCustomType('alert_box')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition cursor-pointer ${
+                          newCustomType === 'alert_box' ? 'bg-sky-600 text-white border-sky-600' : 'bg-white border-slate-300 text-slate-700'
+                        }`}
+                      >
+                        हाईलाइट बॉक्स
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन सामग्री (Content)</label>
+                    <textarea
+                      rows={4}
+                      value={newCustomContent}
+                      onChange={(e) => setNewCustomContent(e.target.value)}
+                      placeholder="सेक्शन की विस्तृत जानकारी यहाँ लिखें..."
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs focus:outline-none focus:border-sky-600 font-mono"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={!newCustomTitle.trim()}
+                    onClick={handleAddCustomSection}
+                    className="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>+ सेक्शन सूची में जोड़ें</span>
+                  </button>
+                </div>
+
+                {/* List of currently added custom sections with Edit & Delete */}
+                {customSections.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <span className="text-xs font-bold text-slate-700 block">
+                      जोड़े गए कस्टम सेक्शन ({customSections.length}):
+                    </span>
+                    {customSections.map((cs) => {
+                      const isEditingThis = editingCustomId === cs.id;
+                      return (
+                        <div key={cs.id} className="p-3.5 bg-sky-50/70 border border-sky-200 rounded-xl space-y-3">
+                          {isEditingThis ? (
+                            <div className="space-y-3 bg-white p-3 rounded-lg border border-sky-300 animate-in fade-in">
+                              <div className="flex items-center justify-between border-b pb-2">
+                                <span className="font-bold text-xs text-sky-900">कस्टम सेक्शन संपादित करें:</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCustomId(null)}
+                                  className="text-xs text-slate-500 hover:text-slate-800"
+                                >
+                                  रद्द करें
+                                </button>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">शीर्षक</label>
+                                <input
+                                  type="text"
+                                  value={editCustomTitle}
+                                  onChange={(e) => setEditCustomTitle(e.target.value)}
+                                  className="w-full bg-slate-50 border border-slate-300 rounded p-2 text-xs font-bold focus:bg-white"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">प्रकार</label>
+                                <div className="flex gap-2">
+                                  {(['paragraph', 'bullets', 'alert_box'] as const).map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() => setEditCustomType(t)}
+                                      className={`px-2.5 py-1 text-xs rounded border cursor-pointer ${
+                                        editCustomType === t ? 'bg-sky-600 text-white border-sky-600' : 'bg-white border-slate-300'
+                                      }`}
+                                    >
+                                      {t === 'paragraph' ? 'पैराग्राफ' : t === 'bullets' ? 'बिंदुवार' : 'हाईलाइट बॉक्स'}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">सामग्री</label>
+                                <textarea
+                                  rows={4}
+                                  value={editCustomContent}
+                                  onChange={(e) => setEditCustomContent(e.target.value)}
+                                  className="w-full bg-slate-50 border border-slate-300 rounded p-2 text-xs font-mono focus:bg-white"
+                                />
+                              </div>
+                              <div className="flex justify-end gap-2 pt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingCustomId(null)}
+                                  className="px-3 py-1 text-xs rounded border border-slate-300 text-slate-700 cursor-pointer"
+                                >
+                                  रद्द करें
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleSaveCustomEdit}
+                                  className="px-4 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>सेक्शन अपडेट करें</span>
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-slate-900">{cs.titleHi || cs.title}</span>
+                                  <span className="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold uppercase">
+                                    {cs.sectionType}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-slate-600 line-clamp-2 mt-1">{cs.contentHi || cs.content}</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleStartEditCustom(cs)}
+                                  className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold rounded flex items-center gap-1 transition cursor-pointer"
+                                  title="इस कस्टम सेक्शन को एडिट करें"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5 text-amber-600" />
+                                  <span>एडिट</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveCustomSection(cs.id)}
+                                  className="p-1.5 text-rose-600 hover:bg-rose-100 rounded transition cursor-pointer"
+                                  title="इस कस्टम सेक्शन को हटाएं"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Direct Post Update Action */}
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+                <div>
+                  <h4 className="font-extrabold text-emerald-950 text-sm flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>{isHi ? 'डायरेक्ट पोस्ट अपडेट के लिए तैयार?' : 'Ready to direct update post?'}</span>
+                  </h4>
+                  <p className="text-xs text-emerald-800">
+                    {isHi ? 'एक क्लिक में हटाए गए सेक्शन व जोड़े गए नए सेक्शन के साथ पोस्ट तुरंत अपडेट हो जाएगी।' : 'Save all section changes and update post immediately.'}
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 transition shadow-md cursor-pointer shrink-0"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{isHi ? '💾 डायरेक्ट पोस्ट अपडेट सेव करें' : '💾 Save & Update Post Now'}</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -2214,6 +3108,90 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                   placeholder="चरण 1: आधिकारिक पोर्टल पर जाएं...\nचरण 2: रजिस्ट्रेशन करें..."
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm leading-relaxed"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* TAB: DISTRICT WISE ALLOCATION */}
+          {activeTab === 'districts' && (
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <label className="font-bold text-slate-800 text-xs sm:text-sm block">
+                  {isHi ? '📍 राजस्थान जिला वार पद आवंटन (Rajasthan District Wise Vacancy Breakup):' : 'Rajasthan District Wise Seats Breakup:'}
+                </label>
+                <p className="text-xs text-slate-500">
+                  {isHi ? 'प्रत्येक जिले का नाम और पदों की संख्या प्रत्येक लाइन में दर्ज करें (उदा. जयपुर: 150 पद)' : 'Enter District Name and Post count per line (e.g. Jaipur: 150 posts)'}
+                </p>
+                <textarea
+                  rows={8}
+                  value={districtBreakdownText}
+                  onChange={(e) => setDistrictBreakdownText(e.target.value)}
+                  placeholder="जयपुर: 150 पद\nजोधपुर: 120 पद\nकोटा: 90 पद..."
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm font-mono leading-relaxed"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* TAB: TEACHER SPECIAL NOTES */}
+          {activeTab === 'notes_special' && (
+            <div className="space-y-4">
+              <div className="bg-amber-50/60 p-4 rounded-xl border border-amber-200 space-y-3">
+                <label className="font-bold text-amber-900 text-xs sm:text-sm block">
+                  {isHi ? '✍️ विषय विशेषज्ञ व संपादकीय नोट्स (Handwritten Teacher Notes & Tips):' : 'Special Teacher Notes & Exam Tips:'}
+                </label>
+                
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    {isHi ? 'नोट्स शीर्षक (Heading):' : 'Notes Heading:'}
+                  </label>
+                  <input
+                    type="text"
+                    value={handwrittenHeading}
+                    onChange={(e) => setHandwrittenHeading(e.target.value)}
+                    placeholder="उदा. 💡 परीक्षा में सफलता हेतु संपादकीय टीम के विशेष टिप्स"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    {isHi ? 'महत्वपूर्ण पॉइंट्स (प्रत्येक लाइन एक बिंदु):' : 'Key Study Points (One per line):'}
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={handwrittenPointsText}
+                    onChange={(e) => setHandwrittenPointsText(e.target.value)}
+                    placeholder="विगत वर्षों के प्रश्नपत्रों का बार-बार अभ्यास करें।\nनेगेटिव मार्किंग से बचने के लिए केवल सटीक प्रश्नों के उत्तर दें..."
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    {isHi ? 'परीक्षा हाल चेकलिस्ट (प्रत्येक लाइन एक आइटम):' : 'Exam Hall Checklist (One per line):'}
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={handwrittenChecklistText}
+                    onChange={(e) => setHandwrittenChecklistText(e.target.value)}
+                    placeholder="मूल एडमिट कार्ड की कलर कॉपी\n2 नवीनतम पासपोर्ट साइज फोटो\nमूल फोटो पहचान पत्र (आधार कार्ड)..."
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    {isHi ? 'शिक्षक / टीम का नाम (Signature):' : 'Teacher Signature:'}
+                  </label>
+                  <input
+                    type="text"
+                    value={handwrittenSign}
+                    onChange={(e) => setHandwrittenSign(e.target.value)}
+                    placeholder="✍️ सफलता की हार्दिक शुभकामनाएं — राजस्थान वैकेंसी संपादकीय टीम"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-medium"
+                  />
+                </div>
               </div>
             </div>
           )}

@@ -126,20 +126,13 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="w-full bg-white shadow-xs border-b border-slate-200 sticky top-0 z-40 text-base">
+    <header className="w-full bg-white shadow-xs border-b border-slate-200 text-base">
       {/* Top Scrolling Ticker Bar for Latest Added Posts - White Clean Design */}
       <div className="bg-white text-slate-700 text-xs font-medium py-1 px-3 border-b border-slate-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          {/* Badge */}
-          <div className="flex items-center gap-1.5 shrink-0 bg-red-600 text-white px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wide select-none shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-white animate-ping inline-block"></span>
-            <Bell className="w-3.5 h-3.5 text-white" />
-            <span>{isHi ? 'नवीनतम सूचनाएं' : 'Latest Posts'}</span>
-          </div>
-
           {/* Marquee Ticker with latest added posts */}
           <div className="overflow-hidden whitespace-nowrap flex-1 relative group">
-            <div className="animate-marquee inline-flex items-center gap-6">
+            <div className="animate-marquee inline-flex items-center gap-6" style={{ animationDuration: '200s', animation: 'marquee 200s linear infinite' }}>
               {displayItems.length > 0 ? (
                 displayItems.map((item, idx) => (
                   <button
@@ -181,18 +174,18 @@ export const Header: React.FC<HeaderProps> = ({
             className={`flex items-center gap-3 ${onGoHome ? 'cursor-pointer hover:opacity-90 transition' : ''}`}
             title="Go to Home"
           >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center text-white font-extrabold shadow-md shadow-blue-600/20 ring-2 ring-blue-400/40">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white font-extrabold shadow-sm ring-1 ring-slate-800">
               <div className="text-center leading-none">
-                <span className="text-[10px] block font-mono text-blue-200 font-bold">RAJ</span>
-                <span className="text-xs font-black tracking-tight">JOBS</span>
+                <span className="text-[10px] block font-mono text-slate-300 font-bold">RAJ</span>
+                <span className="text-xs font-black tracking-tight text-white">JOBS</span>
               </div>
             </div>
 
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base sm:text-lg font-black text-blue-600 tracking-tight flex items-center gap-1 headlight">
-                  <span className="text-blue-600">RAJASTHAN</span>
-                  <span className="text-blue-700 font-extrabold">JOBS/VACANCY</span>
+                <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-1 headlight">
+                  <span className="text-slate-900">RAJASTHAN</span>
+                  <span className="text-slate-900 font-extrabold">JOBS/VACANCY</span>
                 </span>
               </div>
             </div>
@@ -360,38 +353,50 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </div>
 
-      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar - Clean White Theme */}
+      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar - Light Blue Featured Theme */}
       <nav 
         aria-label="Important Website Sections"
         className="hidden md:block w-full bg-white border-t border-b border-slate-200 select-none shadow-xs"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-start gap-1.5 overflow-x-auto py-2 scrollbar-none">
+          <div className="flex items-center justify-start gap-2 overflow-x-auto py-2 scrollbar-none">
             {importantSections.map((sec) => {
               const isActive = selectedCategory === sec.key;
+              const isLightBlueCategory = sec.key === 'latest_job' || sec.key === 'news';
               const Icon = sec.icon;
+
+              let buttonClasses = 'px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
+
+              if (isActive) {
+                buttonClasses += 'bg-[#0284c7] text-white font-black shadow-xs ring-2 ring-[#38bdf8] ';
+              } else if (isLightBlueCategory) {
+                buttonClasses += 'bg-[#e0f2fe] text-[#0284c7] border border-[#38bdf8] hover:bg-[#bae6fd] font-extrabold ';
+              } else {
+                buttonClasses += 'text-slate-700 hover:text-[#0284c7] hover:bg-slate-100 active:scale-95 ';
+              }
 
               return (
                 <button
                   key={sec.key}
                   onClick={() => handleSectionClick(sec)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                    isActive
-                      ? 'bg-[#1e953a] text-white font-black shadow-xs ring-1 ring-[#1e953a]'
-                      : 'text-slate-700 hover:text-[#1e953a] hover:bg-slate-100 active:scale-95'
-                  }`}
+                  className={buttonClasses}
                   style={{
                     fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif"
                   }}
                   title={isHi ? sec.titleHi : sec.title}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#1e953a]'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : isLightBlueCategory ? 'text-[#0284c7]' : 'text-slate-600'}`} />
                   <span className="headlight whitespace-nowrap">
                     {sec.shortTitle}
                   </span>
                   {sec.key === 'news' && (
-                    <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase leading-none ${isActive ? 'bg-white text-rose-600' : 'bg-rose-500 text-white'}`}>
+                    <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase leading-none ${isActive ? 'bg-white text-[#0284c7]' : 'bg-[#0284c7] text-white'}`}>
                       HOT
+                    </span>
+                  )}
+                  {sec.key === 'latest_job' && (
+                    <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase leading-none ${isActive ? 'bg-white text-[#0284c7]' : 'bg-emerald-600 text-white'}`}>
+                      NEW
                     </span>
                   )}
                 </button>

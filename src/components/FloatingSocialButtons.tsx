@@ -66,29 +66,6 @@ export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
         </div>
       </a>
 
-      {/* Floating WhatsApp Share Button */}
-      <button
-        type="button"
-        onClick={handleShareClick}
-        aria-label="Share Post on WhatsApp"
-        className="group flex items-center gap-2 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer filter drop-shadow-xl"
-      >
-        <span 
-          className="bg-[#128C7E] hover:bg-[#0e6f64] text-white font-bold tracking-wide px-3 py-1 rounded-full shadow-md transition-colors flex items-center justify-center gap-1 border border-white/40 font-devnagari-14pt"
-          style={{
-            fontFamily: "'Noto Sans Devanagari', 'Mangal', 'Yantramanav', sans-serif",
-            fontSize: '14pt',
-            lineHeight: '1.3'
-          }}
-        >
-          <span>🔥</span>
-          <span>{copied ? (isHi ? 'शेयर किया!' : 'Shared!') : (isHi ? 'शेयर करें' : 'Share')}</span>
-        </span>
-
-        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#128C7E] hover:bg-[#0e6f64] text-white flex items-center justify-center shadow-xl transition-transform group-hover:rotate-12 ring-2 ring-white">
-          {copied ? <Check className="w-5 h-5 text-white stroke-[3]" /> : <Share2 className="w-5 h-5 text-white stroke-[2.5]" />}
-        </div>
-      </button>
     </div>
   );
 };

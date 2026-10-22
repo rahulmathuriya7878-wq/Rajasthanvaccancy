@@ -83,6 +83,15 @@ export interface ExamPatternDetails {
   notesHi?: string[];
 }
 
+export interface CustomPostSection {
+  id: string;
+  title: string;
+  titleHi?: string;
+  content: string;
+  contentHi?: string;
+  sectionType?: 'paragraph' | 'table' | 'bullets' | 'alert_box';
+}
+
 export interface VacancyItem {
   id: string;
   title: string;
@@ -169,6 +178,8 @@ export interface VacancyItem {
   howToApplyHi?: string[];
   requiredDocuments?: string[];
   requiredDocumentsHi?: string[];
+  customSections?: CustomPostSection[];
+  deletedSectionKeys?: string[];
   faqs?: { q: string; qHi: string; a: string; aHi: string }[];
   yojanaOverview?: {
     yojanaName?: string;
