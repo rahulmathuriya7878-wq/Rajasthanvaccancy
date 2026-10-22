@@ -198,8 +198,8 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-[11px] text-slate-600 leading-relaxed space-y-2">
               <p>
                 {isHi
-                  ? 'RAJASTHAN VACCANCY/JOBS एक गैर-सरकारी एवं निजी सूचनात्मक पोर्टल है। हम किसी भी सरकारी एजेंसी अथवा आयोग से संबद्ध नहीं हैं।'
-                  : 'RAJASTHAN VACCANCY/JOBS is an independent job aggregation and candidate informational portal. We are not affiliated with the Government of Rajasthan or any recruitment commission.'}
+                  ? 'RAJASTHAN JOBS/VACANCY एक गैर-सरकारी एवं निजी सूचनात्मक पोर्टल है। हम किसी भी सरकारी एजेंसी अथवा आयोग से संबद्ध नहीं हैं।'
+                  : 'RAJASTHAN JOBS/VACANCY is an independent job aggregation and candidate informational portal. We are not affiliated with the Government of Rajasthan or any recruitment commission.'}
               </p>
               <p>
                 {isHi
@@ -213,7 +213,7 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom copyright */}
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div>
-            © {new Date().getFullYear()} RAJASTHAN VACCANCY/JOBS — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
+            © {new Date().getFullYear()} RAJASTHAN JOBS/VACANCY — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>
           <div className="flex items-center gap-4 text-xs">
             <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-400 transition cursor-pointer">

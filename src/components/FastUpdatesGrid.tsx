@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  Briefcase, 
-  Ticket, 
-  Award, 
-  KeyRound, 
-  Landmark,
   ChevronRight, 
-  ChevronDown,
-  Sparkles, 
-  Calendar,
   ExternalLink,
-  ShieldCheck,
-  CheckCircle2,
-  Bell
+  Bell,
+  Sparkles,
+  Calendar
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
@@ -26,7 +18,6 @@ interface FastUpdatesGridProps {
   onEditVacancy?: (item: VacancyItem) => void;
   alertJobIds?: string[];
   onToggleAlertMe?: (id: string) => void;
-  /** Toggle whether to display responsive AdSection between grid blocks */
   showAds?: boolean;
 }
 
@@ -34,6 +25,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   vacancies,
   lang,
   onSelectVacancy,
+  onFilterCategory,
   isAdmin = false,
   onEditVacancy,
   alertJobIds = [],
@@ -42,221 +34,287 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 }) => {
   const isHi = lang === 'hi';
 
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    latest_job: true,
-    admit_card: true,
-    result: true,
-    answer_key: true,
-    government_yojana: true,
-  });
-
-  const toggleExpand = (secKey: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [secKey]: !prev[secKey],
-    }));
-  };
-
+  // Sort helper to ensure newest updates always come first
   const sortByNewest = (items: VacancyItem[]) => {
     return [...items].sort((a, b) => {
-      const dateA = a.createdAt || a.importantDates?.applyStartDate || '';
-      const dateB = b.createdAt || b.importantDates?.applyStartDate || '';
+      const dateA = a.updatedAt || a.createdAt || a.importantDates?.notificationDate || '';
+      const dateB = b.updatedAt || b.createdAt || b.importantDates?.notificationDate || '';
       return dateB.localeCompare(dateA);
     });
   };
 
+  // 1. Latest Jobs
   const latestJobs = sortByNewest(vacancies.filter((v) => {
-    if (v.organization === 'Sarkari Yojana' || v.category === 'scheme') return false;
+    if (v.organization === 'Sarkari Yojana' || v.category === 'scheme' || v.category === 'news' || v.category === 'exam_date') return false;
     return (
       v.category === 'latest_job' ||
       v.category === 'ugc_net' ||
-      v.organization === 'UGC NET' ||
-      v.title?.toLowerCase().includes('ugc net') ||
-      v.titleHi?.includes('यूजीसी नेट') ||
       (v.status === 'active' &&
         v.category !== 'admit_card' &&
         v.category !== 'result' &&
         v.category !== 'answer_key')
     );
   }));
-  const admitCards = sortByNewest(vacancies.filter((v) => v.category === 'admit_card' || v.status === 'admit_card_out'));
-  const results = sortByNewest(vacancies.filter((v) => v.category === 'result' || v.status === 'result_declared'));
-  const answerKeys = sortByNewest(vacancies.filter((v) => v.category === 'answer_key' || v.status === 'answer_key_out' || v.category === 'syllabus'));
-  const governmentYojanas = sortByNewest(vacancies.filter(
-    (v) => v.category === 'scheme' || v.organization === 'Sarkari Yojana'
+
+  // 2. Admit Card
+  const admitCards = sortByNewest(vacancies.filter((v) => 
+    v.category === 'admit_card' || v.status === 'admit_card_out'
   ));
 
-  const sections = [
+  // 3. Results
+  const results = sortByNewest(vacancies.filter((v) => 
+    v.category === 'result' || v.status === 'result_declared'
+  ));
+
+  // 4. Exam Date
+  const examDates = sortByNewest(vacancies.filter((v) => 
+    v.category === 'exam_date' || v.category === 'answer_key' || v.title.toLowerCase().includes('exam date') || v.titleHi?.includes('परीक्षा तिथि')
+  ));
+
+  // 5. Latest News
+  const latestNews = sortByNewest(vacancies.filter((v) => 
+    v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice')
+  ));
+
+  // 6. Sarkari Yojana
+  const sarkariYojanas = sortByNewest(vacancies.filter((v) => 
+    v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana')
+  ));
+
+  // Rows configuration matching rajasthanvacancy.com:
+  // Row 1: Latest Jobs, Admit Card, Results
+  const row1Sections = [
     {
       key: 'latest_job',
-      title: isHi ? 'सरकारी भर्तियां (Govt Jobs)' : 'Govt Job Vacancies',
-      icon: Briefcase,
-      headerBg: 'bg-gradient-to-r from-emerald-600 to-teal-700',
-      badgeBg: 'bg-emerald-100 text-emerald-800',
+      title: 'Latest Jobs',
+      titleHi: 'Latest Jobs',
+      categoryType: 'latest_job' as CategoryType,
       items: latestJobs,
     },
     {
       key: 'admit_card',
-      title: isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Cards',
-      icon: Ticket,
-      headerBg: 'bg-gradient-to-r from-blue-600 to-indigo-700',
-      badgeBg: 'bg-blue-100 text-blue-800',
+      title: 'Admit Card',
+      titleHi: 'Admit Card',
+      categoryType: 'admit_card' as CategoryType,
       items: admitCards,
     },
     {
       key: 'result',
-      title: isHi ? 'परीक्षा परिणाम (Results)' : 'Results & Merit',
-      icon: Award,
-      headerBg: 'bg-gradient-to-r from-rose-600 to-red-700',
-      badgeBg: 'bg-rose-100 text-rose-800',
+      title: 'Results',
+      titleHi: 'Results',
+      categoryType: 'result' as CategoryType,
       items: results,
-    },
-    {
-      key: 'answer_key',
-      title: isHi ? 'उत्तर कुंजी व सिलेबस (Answer Key)' : 'Answer Key & Syllabus',
-      icon: KeyRound,
-      headerBg: 'bg-gradient-to-r from-amber-600 to-orange-700',
-      badgeBg: 'bg-amber-100 text-amber-900',
-      items: answerKeys,
-    },
-    {
-      key: 'government_yojana',
-      title: isHi ? 'सरकारी योजनाएं (Government Yojana)' : 'Government Schemes',
-      icon: Landmark,
-      headerBg: 'bg-gradient-to-r from-purple-700 via-indigo-700 to-violet-800',
-      badgeBg: 'bg-purple-100 text-purple-900',
-      items: governmentYojanas,
     },
   ];
 
-  const jobSections = sections.filter(sec => sec.key !== 'government_yojana');
-  const schemeSection = sections.find(sec => sec.key === 'government_yojana');
+  // Row 2: Exam Date, Latest News, Sarkari Yojana
+  const row2Sections = [
+    {
+      key: 'exam_date',
+      title: 'Exam Date',
+      titleHi: 'Exam Date',
+      categoryType: 'exam_date' as CategoryType,
+      items: examDates,
+    },
+    {
+      key: 'news',
+      title: 'Latest News',
+      titleHi: 'Latest News',
+      categoryType: 'news' as CategoryType,
+      items: latestNews,
+    },
+    {
+      key: 'scheme',
+      title: 'Sarkari Yojana',
+      titleHi: 'Sarkari Yojana',
+      categoryType: 'scheme' as CategoryType,
+      items: sarkariYojanas,
+    },
+  ];
+
+  // Format post publication date string
+  const formatPostDate = (item: VacancyItem) => {
+    if (item.createdAt) {
+      try {
+        const parts = item.createdAt.split('-');
+        if (parts.length === 3) {
+          const year = parts[0];
+          const monthNum = parseInt(parts[1], 10);
+          const day = parseInt(parts[2], 10);
+          const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+          const monthNamesHi = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+          if (isHi) {
+            return `${day} ${monthNamesHi[monthNum - 1] || 'अक्टूबर'} ${year}`;
+          }
+          return `${monthNamesEn[monthNum - 1] || 'October'} ${day}, ${year}`;
+        }
+      } catch (e) {}
+    }
+    return isHi ? '22 अक्टूबर 2026' : 'October 22, 2026';
+  };
+
+  const renderSectionBox = (sec: typeof row1Sections[0]) => {
+    return (
+      <div 
+        key={sec.key}
+        className="bg-white rounded-md flex flex-col justify-between transition-shadow hover:shadow-xs"
+        style={{ border: '2px solid #b2b2be' }}
+      >
+        {/* Signature Green Rounded Pill Header */}
+        <div className="p-3 pb-0">
+          <h2 
+            className="headlight text-center font-bold text-white text-base py-1.5 px-3 select-none"
+            style={{ 
+              backgroundColor: '#1e953a', 
+              border: '5px solid #1e953a', 
+              borderRadius: '10px',
+              fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
+              fontSize: '12pt',
+              lineHeight: 1.35
+            }}
+          >
+            {sec.title}
+          </h2>
+        </div>
+
+        {/* List of Posts */}
+        <div className="p-4 pt-3 flex-1 flex flex-col justify-between">
+          <div className="space-y-3">
+            {sec.items.length > 0 ? (
+              sec.items.slice(0, 5).map((item, idx) => (
+                <div 
+                  key={item.id} 
+                  className={`pb-2.5 ${idx !== 4 && idx !== sec.items.length - 1 ? 'border-b border-dashed border-slate-200' : ''}`}
+                >
+                  <div className="flex items-start justify-between gap-1 group">
+                    <button
+                      type="button"
+                      onClick={() => onSelectVacancy(item)}
+                      className="text-left flex-1 min-w-0 cursor-pointer block"
+                    >
+                      <h3 
+                        className="post-item font-semibold text-slate-900 group-hover:text-[#1e953a] group-hover:underline line-clamp-2 leading-snug"
+                        style={{
+                          fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+                          fontSize: '11.5pt',
+                          lineHeight: 1.45
+                        }}
+                      >
+                        {isHi ? (item.titleHi || item.title) : item.title}
+                      </h3>
+                      <p 
+                        className="text-[13px] text-[#575760] mt-1 select-none"
+                        style={{ color: '#575760', fontSize: '13px' }}
+                      >
+                        {formatPostDate(item)}
+                      </p>
+                    </button>
+
+                    {/* Quick Alert Bell toggle */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onToggleAlertMe) onToggleAlertMe(item.id);
+                      }}
+                      className={`p-1 rounded-md transition shrink-0 ${
+                        alertJobIds?.includes(item.id)
+                          ? 'text-rose-600 bg-rose-50'
+                          : 'text-slate-300 hover:text-slate-600'
+                      }`}
+                      title={alertJobIds?.includes(item.id) ? (isHi ? 'अलर्ट सक्रिय' : 'Alert Active') : (isHi ? 'अलर्ट सेट करें' : 'Set Alert')}
+                    >
+                      <Bell className={`w-3.5 h-3.5 ${alertJobIds?.includes(item.id) ? 'fill-rose-600 text-rose-600' : ''}`} />
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-slate-400 text-xs">
+                {isHi ? 'जल्द ही नए अपडेट यहां जोड़े जाएंगे' : 'New updates will be published soon'}
+              </div>
+            )}
+          </div>
+
+          {/* View More Link at Bottom Right */}
+          <div className="text-right pt-3 mt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                if (onFilterCategory) {
+                  onFilterCategory(sec.categoryType);
+                } else if (sec.items.length > 0) {
+                  onSelectVacancy(sec.items[0]);
+                }
+              }}
+              className="font-bold text-xs hover:underline cursor-pointer inline-flex items-center gap-0.5"
+              style={{ color: '#c90000' }}
+            >
+              <span>View More..</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full space-y-8">
-      {/* 5-Box Grid with dedicated Government Yojana Box */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 items-start">
-        {sections.map((sec, index) => {
-          const isExpanded = expandedSections[sec.key];
-          const displayedItems = isExpanded ? sec.items : sec.items.slice(0, 100);
-
-          return (
-            <React.Fragment key={sec.key}>
-              <div
-                className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition"
-              >
-              {/* Box Header */}
-              <div className="bg-white text-slate-950 px-4 py-3 flex items-center justify-between border-b border-slate-200">
-                <div className="flex items-center gap-2 font-black text-sm tracking-wide text-slate-900">
-                  <sec.icon className="w-4 h-4 text-amber-600" />
-                  <span>{sec.title}</span>
-                </div>
-                <span className="text-[11px] font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded-full border border-slate-200">
-                  {sec.items.length}
-                </span>
-              </div>
-
-              {/* List of items with expanded box capacity */}
-              <div className="p-2.5 flex-1 flex flex-col justify-between">
-                <div className="max-h-[950px] overflow-y-auto pr-0.5 scrollbar-thin">
-                  <ul className="space-y-1">
-                  {displayedItems.length > 0 ? (
-                    displayedItems.map((item) => (
-                      <li key={item.id} className="flex items-center gap-1">
-                        <button
-                          onClick={() => onSelectVacancy(item)}
-                          className="flex-1 flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer text-left border border-transparent hover:border-slate-200 min-w-0"
-                        >
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-600 mt-1 shrink-0 transition-transform group-hover:translate-x-0.5" />
-                          <div className="flex-1 min-w-0">
-                            {(item.isHighDemand || (item.clicksCount && item.clicksCount >= 3000) || (item.savesCount && item.savesCount >= 600)) ? (
-                              <div className="mb-1">
-                                <span className="inline-flex items-center gap-0.5 text-[9px] font-black px-1.5 py-0.2 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-2xs uppercase tracking-wide">
-                                  <span>⚡</span>
-                                  <span>{isHi ? 'हाई डिमांड' : 'High Demand'}</span>
-                                </span>
-                              </div>
-                            ) : null}
-                            <p className="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-amber-800 line-clamp-2 leading-snug">
-                              {isHi ? item.titleHi : item.title}
-                            </p>
-                            {(item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate) && (
-                              <div className="mt-1.5">
-                                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
-                                  <Calendar className="w-3 h-3 text-rose-600 shrink-0" />
-                                  <span>
-                                    {isHi 
-                                      ? `अंतिम तिथि: ${item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate}` 
-                                      : `Last Date: ${item.importantDates?.applyLastDate || item.yojanaOverview?.applyLastDate}`}
-                                  </span>
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (onToggleAlertMe) onToggleAlertMe(item.id);
-                          }}
-                          className={`p-2 rounded-xl transition shrink-0 border ${
-                            alertJobIds?.includes(item.id)
-                              ? 'text-rose-600 bg-rose-50 border-rose-200 hover:bg-rose-100'
-                              : 'text-slate-300 hover:text-slate-600 hover:bg-slate-100 border-transparent'
-                          }`}
-                          title={alertJobIds?.includes(item.id) ? (isHi ? 'अलर्ट सक्रिय (Alert Active)' : 'Alert Active') : (isHi ? 'आवेदन शुरू होने पर नोटिफिकेशन पाएं (Alert Me)' : 'Alert Me')}
-                        >
-                          <Bell className={`w-4 h-4 ${alertJobIds?.includes(item.id) ? 'fill-rose-600 text-rose-600 animate-bounce' : ''}`} />
-                        </button>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-center py-7 px-3">
-                      <p className="text-xs font-semibold text-slate-500">
-                        {isHi ? 'कोई पोस्ट उपलब्ध नहीं है' : 'No posts available'}
-                      </p>
-                    </li>
-                  )}
-                </ul>
-                </div>
-
-                {sec.items.length > 100 && (
-                  <div className="pt-2 mt-2 border-t border-slate-100 text-center">
-                    <button
-                      onClick={() => toggleExpand(sec.key)}
-                      className="text-xs font-bold text-amber-700 hover:text-amber-800 inline-flex items-center gap-1 hover:underline py-1 px-2 rounded-lg hover:bg-amber-50 transition cursor-pointer"
-                    >
-                      <span>
-                        {isExpanded
-                          ? isHi
-                            ? 'कम देखें'
-                            : 'Show less'
-                          : isHi
-                          ? `सभी देखें (${sec.items.length})`
-                          : `View all (${sec.items.length})`}
-                      </span>
-                      <ChevronDown
-                        className={`w-3.5 h-3.5 transition-transform ${
-                          isExpanded ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-                  </div>
-                )}
-              </div>
-              </div>
-
-              {/* Injected AdSection between grid sections (e.g. between Admit Card & Results / Answer Key & Schemes) */}
-              {showAds && (index === 1 || index === 3) && (
-                <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-5 my-1">
-                  <AdSection label={isHi ? 'विज्ञापन' : 'Advertisement'} />
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
+      {/* Row 1: Latest Jobs, Admit Card, Results (3 columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+        {row1Sections.map(renderSectionBox)}
       </div>
+
+      {/* Center Responsive Google AdSense Ad Unit */}
+      {showAds && (
+        <div className="w-full my-4 flex flex-col items-center justify-center overflow-hidden">
+          <div className="w-full max-w-4xl bg-slate-50 border border-slate-200/80 rounded-md p-2 text-center">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-wider">
+              {isHi ? 'विज्ञापन' : 'Advertisement'}
+            </span>
+            <ins 
+              className="adsbygoogle"
+              style={{ display: 'block', minHeight: '90px' }}
+              data-ad-client="ca-pub-8302542447035711"
+              data-ad-slot="3785509362"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Row 2: Exam Date, Latest News, Sarkari Yojana (3 columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+        {row2Sections.map(renderSectionBox)}
+      </div>
+
+      {/* "About Rajasthan Vacancy" Section directly below the grid */}
+      <section className="bg-white rounded-md p-6 border border-slate-200 mt-8 shadow-xs">
+        <h2 
+          className="headlight font-bold text-slate-900 mb-3"
+          style={{ 
+            fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
+            fontSize: '12pt',
+            color: '#1a202c'
+          }}
+        >
+          About Rajasthan Vacancy
+        </h2>
+        <p 
+          className="post-item text-slate-700 leading-relaxed text-justify"
+          style={{ 
+            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontSize: '11.5pt',
+            lineHeight: 1.7,
+            color: '#334155'
+          }}
+        >
+          {isHi 
+            ? 'Rajasthan Vacancy (राजस्थान वेकेंसी) राजस्थान की प्रमुख और सबसे विश्वसनीय एजुकेशन और सरकारी नौकरी संबंधी वेबसाइट्स में से एक है। हमारी वेबसाइट का मुख्य उद्देश्य राजस्थान और केंद्र सरकार द्वारा जारी की जाने वाली सभी सरकारी भर्तियों, परीक्षाओं, प्रवेश पत्र (Admit Card), रिजल्ट, उत्तर कुंजी (Answer Key), और विभिन्न सरकारी योजनाओं की सबसे सटीक, प्रामाणिक और त्वरित जानकारी आप तक पहुंचाना है। यहाँ पर आपको प्रतिदिन राजस्थान लोक सेवा आयोग (RPSC), राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), पुलिस विभाग, शिक्षा विभाग, रेलवे, बैंक, और सेना सहित सभी प्रमुख विभागों की नवीनतम अपडेट सबसे पहले प्रदान की जाती हैं।'
+            : 'Rajasthan Vacancy is one of the leading and most trusted educational and government recruitment portals for Rajasthan. Our primary mission is to deliver authentic, accurate, and fastest updates on state and central government job recruitment, exam dates, admit cards, results, answer keys, syllabus, and welfare schemes including RPSC, RSMSSB, Police Department, Education Department, Railway, and Banking exams.'}
+        </p>
+      </section>
     </div>
   );
 };

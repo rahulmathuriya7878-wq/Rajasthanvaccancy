@@ -9,6 +9,9 @@ import {
   VacancyDetailPage 
 } from './components/VacancyDetailPage';
 import { 
+  CategoryArchiveView 
+} from './components/CategoryArchiveView';
+import { 
   FAQSection 
 } from './components/FAQSection';
 import { 
@@ -46,7 +49,6 @@ import {
 import { 
   OfflineIndicator 
 } from './components/OfflineIndicator';
-import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 
@@ -71,7 +73,7 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v17';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v19';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
@@ -491,8 +493,28 @@ export default function App() {
       }
 
       // 3. Category
-      if (selectedCategory !== 'ALL' && item.category !== selectedCategory) {
-        return false;
+      if (selectedCategory !== 'ALL') {
+        if (item.category === selectedCategory) {
+          // direct match
+        } else if (selectedCategory === 'admit_card' && (item.category === 'admit_card' || item.status === 'admit_card_out' || item.title.toLowerCase().includes('admit card') || item.titleHi?.includes('प्रवेश पत्र'))) {
+          // match
+        } else if (selectedCategory === 'result' && (item.category === 'result' || item.status === 'result_declared' || item.title.toLowerCase().includes('result') || item.titleHi?.includes('रिजल्ट') || item.titleHi?.includes('परिणाम'))) {
+          // match
+        } else if (selectedCategory === 'scheme' && (item.category === 'scheme' || item.organization === 'Sarkari Yojana' || item.titleHi?.includes('योजना'))) {
+          // match
+        } else if (selectedCategory === 'exam_date' && (item.category === 'exam_date' || item.title.toLowerCase().includes('exam date') || item.titleHi?.includes('परीक्षा तिथि'))) {
+          // match
+        } else if (selectedCategory === 'news' && (item.category === 'news' || item.title.toLowerCase().includes('news') || item.tags?.includes('news') || item.title.toLowerCase().includes('chunav') || item.titleHi?.includes('न्यूज़') || item.titleHi?.includes('चुनाव'))) {
+          // match
+        } else if (selectedCategory === 'answer_key' && (item.category === 'answer_key' || item.status === 'answer_key_out' || item.title.toLowerCase().includes('answer key') || item.titleHi?.includes('उत्तर कुंजी'))) {
+          // match
+        } else if (selectedCategory === 'syllabus' && (item.category === 'syllabus' || item.title.toLowerCase().includes('syllabus') || item.titleHi?.includes('पाठ्यक्रम') || item.titleHi?.includes('सिलेबस'))) {
+          // match
+        } else if (selectedCategory === 'latest_job' && (item.category === 'latest_job' || item.category === 'ugc_net' || item.status === 'active')) {
+          // match
+        } else {
+          return false;
+        }
       }
 
       // 4. Qualification
@@ -526,6 +548,20 @@ export default function App() {
 
   const isHi = lang === 'hi';
 
+  const getSectionTitle = (cat: string) => {
+    switch (cat) {
+      case 'latest_job': return isHi ? 'सरकारी नौकरियां (Latest Jobs)' : 'Latest Jobs';
+      case 'admit_card': return isHi ? 'प्रवेश पत्र (Admit Card)' : 'Admit Cards';
+      case 'result': return isHi ? 'परीक्षा परिणाम (Results)' : 'Results';
+      case 'exam_date': return isHi ? 'परीक्षा तिथियां (Exam Dates)' : 'Exam Dates';
+      case 'news': return isHi ? 'लेटेस्ट न्यूज़ (Latest News)' : 'Latest News';
+      case 'scheme': return isHi ? 'सरकारी योजनाएं (Sarkari Yojana)' : 'Government Yojana';
+      case 'answer_key': return isHi ? 'उत्तर कुंजी (Answer Key)' : 'Answer Key';
+      case 'syllabus': return isHi ? 'सिलेबस (Syllabus)' : 'Syllabus';
+      default: return isHi ? 'भर्ती एवं सूचनाएं' : 'Job Notifications';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-white">
       {/* Toast Alert */}
@@ -556,6 +592,8 @@ export default function App() {
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onGoHome={() => {
+          setSelectedCategory('ALL');
+          setSearchQuery('');
           setSelectedVacancy(null);
           setActivePolicyView(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -564,7 +602,13 @@ export default function App() {
         onSelectVacancy={handleSelectVacancy}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onSelectCategory={(cat) => setSelectedCategory(cat as any)}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(cat) => {
+          setSelectedCategory(cat as any);
+          setSelectedVacancy(null);
+          setActivePolicyView(null);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
       />
 
@@ -608,14 +652,41 @@ export default function App() {
             isAlertSet={alertJobIds.includes(selectedVacancy.id)}
             onToggleAlertMe={handleToggleAlertMe}
           />
+        ) : selectedCategory !== 'ALL' ? (
+          /* Category Archive View matching authentic rajasthanvacancy.com category layout */
+          <CategoryArchiveView
+            categoryKey={selectedCategory}
+            categoryTitle={getSectionTitle(selectedCategory)}
+            categoryTitleHi={getSectionTitle(selectedCategory)}
+            vacancies={filteredVacancies}
+            allVacancies={vacancies}
+            lang={lang}
+            onSelectVacancy={handleSelectVacancy}
+            onClearCategory={() => {
+              setSelectedCategory('ALL');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onSelectCategory={(catKey) => {
+              setSelectedCategory(catKey as any);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
         ) : (
-          /* Home View: 5-Box Fast Access Updates & FAQ */
+          /* Home View: 3x2 Grid Fast Access Updates & Authentic About Layout */
           <div className="space-y-6">
-            {/* 5-Box Fast Access Updates (Home View) */}
+            <div className="text-center mb-4 sm:mb-6">
+              <h1 className="headlight text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {isHi ? 'राजस्थान वेकेंसी 2026' : 'Rajasthan Vacancy 2026'}
+              </h1>
+            </div>
+
             <FastUpdatesGrid
               vacancies={vacancies}
               lang={lang}
               onSelectVacancy={handleSelectVacancy}
+              onFilterCategory={(cat) => setSelectedCategory(cat as any)}
               isAdmin={isAdmin}
               onEditVacancy={(item) => {
                 setEditingVacancy(item);
@@ -711,7 +782,6 @@ export default function App() {
         lang={lang}
       />
 
-      <FloatingSocialButtons selectedVacancy={selectedVacancy} lang={lang} />
       <OfflineIndicator lang={lang} />
     </div>
   );

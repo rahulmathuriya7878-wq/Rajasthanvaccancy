@@ -19,7 +19,9 @@ export type CategoryType =
   | 'syllabus'
   | 'scheme'
   | 'upcoming'
-  | 'ugc_net';
+  | 'ugc_net'
+  | 'exam_date'
+  | 'news';
 
 export type QualificationType =
   | '10th'

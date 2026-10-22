@@ -1,4 +1,4 @@
-import { VacancyItem } from '../types';
+import { VacancyItem, CategoryType, BoardType } from '../types';
 
 export const SAINIK_SCHOOL_CHITTORGARH_VACANCY: VacancyItem = {
   id: 'sainik-school-chittorgarh-2026',
@@ -1311,14 +1311,392 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
   createdAt: '2026-10-21'
 };
 
+const createQuickVacancy = (
+  id: string,
+  title: string,
+  titleHi: string,
+  category: CategoryType,
+  organization: BoardType,
+  overrides: Partial<VacancyItem> = {}
+): VacancyItem => ({
+  id,
+  title,
+  titleHi,
+  shortTitle: title.slice(0, 40),
+  shortTitleHi: titleHi.slice(0, 40),
+  organization,
+  department: `${organization} Department`,
+  departmentHi: `${organization} विभाग`,
+  advtNo: `${organization}/2026/01`,
+  category,
+  totalPosts: 'विभिन्न पद',
+  postName: title,
+  postNameHi: titleHi,
+  qualification: ['10th', '12th', 'Graduate'],
+  qualificationDetails: 'As per official recruitment notification rules and guidelines.',
+  qualificationDetailsHi: 'आधिकारिक भर्ती विज्ञप्ति नियमानुसार।',
+  ageLimit: {
+    min: 18,
+    max: 40,
+    asOnDate: '2026-01-01',
+    relaxationNotesHi: 'नियमानुसार आरक्षित वर्गों को आयु सीमा में छूट देय है।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNoteHi: 'विज्ञप्ति अनुसार'
+  },
+  importantDates: {
+    notificationDate: '22 अक्टूबर 2026',
+    applyStartDate: '2026-10-01',
+    applyLastDate: '2026-10-31',
+    examDate: 'शीघ्र घोषित होगी',
+    admitCardDate: '22 अक्टूबर 2026'
+  },
+  status: 'active',
+  salary: 'As per 7th Pay Commission Rules',
+  salaryHi: 'पे-मैट्रिक्स नियमानुसार',
+  jobLocation: 'सम्पूर्ण राजस्थान',
+  selectionProcess: ['Written Examination', 'Document Verification'],
+  selectionProcessHi: ['लिखित परीक्षा', 'दस्तावेज सत्यापन'],
+  tags: ['rajasthan vacancy', 'sarkari job 2026'],
+  officialLinks: {
+    officialWebsiteUrl: 'https://rajasthan.gov.in',
+    applyOnlineUrl: 'https://sso.rajasthan.gov.in',
+    notificationPdfUrl: 'https://rajasthan.gov.in'
+  },
+  description: title,
+  descriptionHi: titleHi,
+  briefSummaryHi: titleHi,
+  createdAt: '2026-10-22',
+  updatedAt: '22 अक्टूबर 2026',
+  ...overrides
+});
+
+export const RAJASTHAN_CET_12TH_ADMIT_CARD_VACANCY = createQuickVacancy(
+  'rajasthan-cet-12th-level-admit-card-2026',
+  'Rajasthan CET 12th Level Admit Card 2026: Download Senior Secondary Hall Ticket',
+  'राजस्थान CET 12th Level Admit Card 2026 जारी: सीनियर सेकेंडरी सीईटी प्रवेश पत्र यहां से करें डाउनलोड',
+  'admit_card',
+  'RSMSSB',
+  {
+    status: 'admit_card_out',
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-09-01',
+      applyLastDate: '2026-10-01',
+      examDate: '24 से 26 अक्टूबर 2026',
+      admitCardDate: '22 अक्टूबर 2026'
+    }
+  }
+);
+
+export const UGC_NET_DEC_ADMIT_CARD_VACANCY = createQuickVacancy(
+  'ugc-net-december-admit-card-2026',
+  'UGC NET December 2026 Admit Card Released: Download NTA Hall Ticket & Exam City Slip',
+  'UGC NET December 2026 Admit Card जारी: यूजीसी नेट दिसंबर प्रवेश पत्र एवं एग्जाम सिटी स्लिप डाउनलोड करें',
+  'admit_card',
+  'UGC NET',
+  {
+    status: 'admit_card_out',
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-09-15',
+      applyLastDate: '2026-10-15',
+      admitCardDate: '22 अक्टूबर 2026'
+    }
+  }
+);
+
+export const RPSC_2ND_GRADE_ADMIT_CARD_VACANCY = createQuickVacancy(
+  'rpsc-2nd-grade-teacher-admit-card-2026',
+  'RPSC 2nd Grade Teacher Admit Card 2026: Senior Teacher Hall Ticket Released on SSO Portal',
+  'RPSC 2nd Grade Teacher Admit Card 2026 जारी: वरिष्ठ अध्यापक भर्ती प्रवेश पत्र एसएसओ पोर्टल से डाउनलोड करें',
+  'admit_card',
+  'RPSC',
+  {
+    status: 'admit_card_out',
+    importantDates: {
+      notificationDate: '18 अक्टूबर 2026',
+      applyStartDate: '2026-08-01',
+      applyLastDate: '2026-09-01',
+      admitCardDate: '18 अक्टूबर 2026'
+    },
+    createdAt: '2026-10-18',
+    updatedAt: '18 अक्टूबर 2026'
+  }
+);
+
+export const RAJASTHAN_CET_GRAD_RESULT_VACANCY = createQuickVacancy(
+  'rajasthan-cet-graduation-level-result-2026',
+  'Rajasthan CET Graduation Level Result 2026 Declared: Check Cut Off Marks & Scorecard',
+  'राजस्थान CET Graduation Level Result 2026 घोषित: कट ऑफ मार्क्स एवं स्कोरकार्ड यहां से चेक करें',
+  'result',
+  'RSMSSB',
+  {
+    status: 'result_declared',
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-08-01',
+      applyLastDate: '2026-09-07',
+      resultDate: '22 अक्टूबर 2026'
+    }
+  }
+);
+
+export const RSMSSB_PASHU_PARICHAR_RESULT_VACANCY = createQuickVacancy(
+  'rsmssb-pashu-parichar-result-2026',
+  'RSMSSB Pashu Parichar Result 2026 Declared: Animal Attendant Merit List & Cut Off',
+  'राजस्थान पशु परिचर भर्ती रिजल्ट 2026 घोषित: मेरिट लिस्ट एवं वर्गवार कट ऑफ अंक जारी',
+  'result',
+  'RSMSSB',
+  {
+    status: 'result_declared',
+    totalPosts: 5934,
+    importantDates: {
+      notificationDate: '20 अक्टूबर 2026',
+      applyStartDate: '2026-01-19',
+      applyLastDate: '2026-02-17',
+      resultDate: '20 अक्टूबर 2026'
+    },
+    createdAt: '2026-10-20',
+    updatedAt: '20 अक्टूबर 2026'
+  }
+);
+
+export const RAJASTHAN_CET_12TH_EXAM_DATE_VACANCY = createQuickVacancy(
+  'rajasthan-cet-12th-level-exam-date-2026',
+  'Rajasthan CET 12th Level Exam Date 2026 Announced: Check Subject-wise Exam Schedule',
+  'राजस्थान CET 12th Level Exam Date 2026 घोषित: परीक्षा तिथि व विस्तृत टाइम टेबल जारी',
+  'exam_date',
+  'RSMSSB',
+  {
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-09-01',
+      applyLastDate: '2026-10-01',
+      examDate: '24, 25, 26 अक्टूबर 2026'
+    }
+  }
+);
+
+export const UGC_NET_DEC_EXAM_SCHEDULE_VACANCY = createQuickVacancy(
+  'ugc-net-december-exam-dates-2026',
+  'UGC NET December 2026 Exam Schedule Announced: Check Subject-Wise Shift Timings',
+  'यूजीसी नेट दिसंबर 2026 परीक्षा तिथि घोषित: विषयवार टाइम टेबल एवं शिफ्ट का समय जारी',
+  'exam_date',
+  'UGC NET',
+  {
+    importantDates: {
+      notificationDate: '21 अक्टूबर 2026',
+      applyStartDate: '2026-09-15',
+      applyLastDate: '2026-10-15',
+      examDate: 'दिसंबर 2026'
+    },
+    createdAt: '2026-10-21',
+    updatedAt: '21 अक्टूबर 2026'
+  }
+);
+
+export const RSMSSB_VANPAL_EXAM_DATE_VACANCY = createQuickVacancy(
+  'rsmssb-vanpal-vanrakshak-exam-date-2026',
+  'RSMSSB Vanpal & Vanrakshak Exam Date 2026: Forester Exam Date Sheet Released',
+  'राजस्थान वनपाल एवं वनरक्षक भर्ती परीक्षा तिथि 2026 जारी: एग्जाम डेट शीट यहां देखें',
+  'exam_date',
+  'RSMSSB',
+  {
+    importantDates: {
+      notificationDate: '19 अक्टूबर 2026',
+      applyStartDate: '2026-06-01',
+      applyLastDate: '2026-07-01',
+      examDate: 'नवंबर 2026'
+    },
+    createdAt: '2026-10-19',
+    updatedAt: '19 अक्टूबर 2026'
+  }
+);
+
+export const RAJASTHAN_GRAM_PANCHAYAT_CHUNAV_VACANCY = createQuickVacancy(
+  'rajasthan-gram-panchayat-chunav-2026-news',
+  'Rajasthan Gram Panchayat Chunav 2026: Election Commission Releases Ward Reservation List',
+  'राजस्थान ग्राम पंचायत चुनाव 2026: चुनाव आयोग द्वारा वार्ड आरक्षण सूची व नई गाइडलाइन जारी',
+  'news',
+  'Central Govt',
+  {
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-10-01',
+      applyLastDate: '2026-10-31'
+    }
+  }
+);
+
+export const RRC_NWR_APPRENTICE_NEWS_VACANCY = createQuickVacancy(
+  'rrc-nwr-railway-apprentice-news-2026',
+  'RRC NWR Railway Apprentice 2026: Document Verification & Merit List Released',
+  'उत्तर पश्चिम रेलवे (NWR) अप्रेंटिस भर्ती 2026: दस्तावेज सत्यापन एवं अंतिम चयन सूची जारी',
+  'news',
+  'Railway Board',
+  {
+    importantDates: {
+      notificationDate: '21 अक्टूबर 2026',
+      applyStartDate: '2026-08-01',
+      applyLastDate: '2026-09-01'
+    },
+    createdAt: '2026-10-21',
+    updatedAt: '21 अक्टूबर 2026'
+  }
+);
+
+export const RAJASTHAN_FREE_TABLET_NEWS_VACANCY = createQuickVacancy(
+  'rajasthan-free-tablet-yojana-2026-news',
+  'Rajasthan Free Tablet Yojana 2026: 8th, 10th & 12th Merit Student Distribution List',
+  'राजस्थान फ्री टैबलेट योजना 2026: 8वीं, 10वीं व 12वीं मेधावी विद्यार्थियों की वितरण सूची जारी',
+  'news',
+  'Education Department',
+  {
+    importantDates: {
+      notificationDate: '20 अक्टूबर 2026',
+      applyStartDate: '2026-09-01',
+      applyLastDate: '2026-10-15'
+    },
+    createdAt: '2026-10-20',
+    updatedAt: '20 अक्टूबर 2026'
+  }
+);
+
+export const MUKHYAMANTRI_AYUSHMAN_YOJANA_VACANCY = createQuickVacancy(
+  'mukhyamantri-ayushman-arogya-yojana-2026',
+  'Mukhyamantri Ayushman Arogya Yojana Rajasthan 2026: Free Health Insurance Online Registration',
+  'मुख्यमंत्री आयुष्मान आरोग्य योजना राजस्थान 2026: ₹25 लाख तक मुफ्त इलाज, ऑनलाइन पंजीयन शुरू',
+  'scheme',
+  'Sarkari Yojana',
+  {
+    importantDates: {
+      notificationDate: '19 अक्टूबर 2026',
+      applyStartDate: '2026-04-01',
+      applyLastDate: '2026-12-31'
+    },
+    createdAt: '2026-10-19',
+    updatedAt: '19 अक्टूबर 2026'
+  }
+);
+
+export const KALI_BAI_SCOOTY_YOJANA_VACANCY = createQuickVacancy(
+  'kali-bai-scooty-yojana-2026-list',
+  'Kali Bai Scooty Yojana 2026 Final Merit List Released: Check District Wise Beneficiary List',
+  'काली बाई भील मेधावी छात्रा स्कूटी योजना 2026 अंतिम वरीयता सूची जारी: जिलावार लिस्ट देखें',
+  'scheme',
+  'Sarkari Yojana',
+  {
+    importantDates: {
+      notificationDate: '16 अक्टूबर 2026',
+      applyStartDate: '2026-07-01',
+      applyLastDate: '2026-08-31'
+    },
+    createdAt: '2026-10-16',
+    updatedAt: '16 अक्टूबर 2026'
+  }
+);
+
+export const RSMSSB_CET_12TH_ANSWER_KEY_VACANCY = createQuickVacancy(
+  'rsmssb-cet-12th-answer-key-2026',
+  'Rajasthan CET 12th Level Official Answer Key 2026: Master Question Paper & Key PDF',
+  'राजस्थान CET 12th लेवल ऑफिशियल उत्तर कुंजी 2026 जारी: मास्टर प्रश्न पत्र एवं आंसर की डाउनलोड करें',
+  'answer_key',
+  'RSMSSB',
+  {
+    status: 'answer_key_out',
+    importantDates: {
+      notificationDate: '21 अक्टूबर 2026',
+      applyStartDate: '2026-08-01',
+      applyLastDate: '2026-09-01'
+    },
+    createdAt: '2026-10-21',
+    updatedAt: '21 अक्टूबर 2026'
+  }
+);
+
+export const RAJASTHAN_POLICE_ANSWER_KEY_VACANCY = createQuickVacancy(
+  'rajasthan-police-constable-answer-key-2026',
+  'Rajasthan Police Constable Official Answer Key 2026 Out: Shift Wise Key & Objection Link',
+  'राजस्थान पुलिस कांस्टेबल ऑफिशियल उत्तर कुंजी 2026 जारी: शिफ्ट वाइज आंसर की एवं आपत्ति दर्ज करें',
+  'answer_key',
+  'Rajasthan Police',
+  {
+    status: 'answer_key_out',
+    importantDates: {
+      notificationDate: '20 अक्टूबर 2026',
+      applyStartDate: '2026-05-01',
+      applyLastDate: '2026-06-01'
+    },
+    createdAt: '2026-10-20',
+    updatedAt: '2026-10-20'
+  }
+);
+
+export const RAJASTHAN_PATWARI_SYLLABUS_VACANCY = createQuickVacancy(
+  'rajasthan-patwari-syllabus-2026-pdf',
+  'Rajasthan Patwari Recruitment 2026 Syllabus & Exam Pattern PDF: Topic Wise Syllabus',
+  'राजस्थान पटवारी भर्ती 2026 नया सिलेबस एवं एग्जाम पैटर्न जारी: टॉपिक वाइज सम्पूर्ण सिलेबस PDF',
+  'syllabus',
+  'RSMSSB',
+  {
+    status: 'active',
+    importantDates: {
+      notificationDate: '22 अक्टूबर 2026',
+      applyStartDate: '2026-11-01',
+      applyLastDate: '2026-12-01'
+    },
+    createdAt: '2026-10-22',
+    updatedAt: '22 अक्टूबर 2026'
+  }
+);
+
+export const RPSC_RAS_SI_SYLLABUS_VACANCY = createQuickVacancy(
+  'rajasthan-police-si-syllabus-2026',
+  'Rajasthan Police Sub Inspector (SI) Syllabus 2026 & Exam Pattern: Paper 1 & 2 Detailed PDF',
+  'राजस्थान पुलिस सब इंस्पेक्टर (SI) नया सिलेबस 2026: पेपर 1 (हिंदी) एवं पेपर 2 (GK) विस्तृत पाठ्यक्रम',
+  'syllabus',
+  'RPSC',
+  {
+    status: 'active',
+    importantDates: {
+      notificationDate: '19 अक्टूबर 2026',
+      applyStartDate: '2026-09-01',
+      applyLastDate: '2026-10-01'
+    },
+    createdAt: '2026-10-19',
+    updatedAt: '19 अक्टूबर 2026'
+  }
+);
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
   RRB_STATION_MASTER_2026_VACANCY,
   SUPREME_COURT_COURT_MASTER_2026_VACANCY,
   DSSSB_DISTRICT_COURT_2026_VACANCY,
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,
   UGC_NET_DECEMBER_2026_VACANCY,
+  RAJASTHAN_CET_12TH_ADMIT_CARD_VACANCY,
+  UGC_NET_DEC_ADMIT_CARD_VACANCY,
+  RPSC_2ND_GRADE_ADMIT_CARD_VACANCY,
+  RAJASTHAN_CET_GRAD_RESULT_VACANCY,
+  RSMSSB_PASHU_PARICHAR_RESULT_VACANCY,
+  RAJASTHAN_CET_12TH_EXAM_DATE_VACANCY,
+  UGC_NET_DEC_EXAM_SCHEDULE_VACANCY,
+  RSMSSB_VANPAL_EXAM_DATE_VACANCY,
+  RAJASTHAN_GRAM_PANCHAYAT_CHUNAV_VACANCY,
+  RRC_NWR_APPRENTICE_NEWS_VACANCY,
+  RAJASTHAN_FREE_TABLET_NEWS_VACANCY,
   AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
-  PM_AWAS_YOJANA_URBAN_VACANCY
+  PM_AWAS_YOJANA_URBAN_VACANCY,
+  MUKHYAMANTRI_AYUSHMAN_YOJANA_VACANCY,
+  KALI_BAI_SCOOTY_YOJANA_VACANCY,
+  RSMSSB_CET_12TH_ANSWER_KEY_VACANCY,
+  RAJASTHAN_POLICE_ANSWER_KEY_VACANCY,
+  RAJASTHAN_PATWARI_SYLLABUS_VACANCY,
+  RPSC_RAS_SI_SYLLABUS_VACANCY
 ];
 
 export interface ExamCalendarItem {

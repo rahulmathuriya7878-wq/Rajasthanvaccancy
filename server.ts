@@ -197,7 +197,7 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     });
   } else {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false },
       appType: 'spa',
     });
     app.use(vite.middlewares);
