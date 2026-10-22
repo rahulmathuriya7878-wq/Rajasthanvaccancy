@@ -18,8 +18,11 @@ import {
   Folder,
   Send,
   MessageSquare,
+  MessageCircle,
   HelpCircle,
-  FileText
+  FileText,
+  Copy,
+  Check
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 import { generateHindiShareText } from '../utils/shareUtils';
@@ -116,9 +119,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     };
   }, [vacancy.id, postTitle]);
 
-  const handleShare = () => {
+  const getShareUrl = () => {
     const cleanId = vacancy.id.replace(/^\//, '').replace(/\/$/, '');
-    const websiteUrl = `${window.location.origin}/${cleanId}/`;
+    return `https://rajasthanvaccancy.vercel.app/${cleanId}/`;
+  };
+
+  const handleShare = () => {
+    const websiteUrl = getShareUrl();
     const shareText = generateHindiShareText(vacancy, websiteUrl);
 
     if (navigator.share) {
@@ -135,11 +142,27 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   };
 
   const handleWhatsAppShare = () => {
-    const cleanId = vacancy.id.replace(/^\//, '').replace(/\/$/, '');
-    const websiteUrl = `${window.location.origin}/${cleanId}/`;
+    const websiteUrl = getShareUrl();
     const shareText = generateHindiShareText(vacancy, websiteUrl);
     const message = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+  };
+
+  const handleTelegramShare = () => {
+    const websiteUrl = getShareUrl();
+    const shareText = generateHindiShareText(vacancy, websiteUrl);
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(websiteUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const handleCopyLink = () => {
+    const websiteUrl = getShareUrl();
+    navigator.clipboard.writeText(websiteUrl).then(() => {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }).catch(() => {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    });
   };
 
   // Previous and Next Post for navigation footer
@@ -813,13 +836,65 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </a>
                           </td>
                         </tr>
+                        {/* WhatsApp Channel Link */}
+                        <tr className="bg-emerald-50/40">
+                          <td className="p-3 font-bold text-emerald-950 bg-emerald-100/60 border-r border-emerald-200">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                              <span>Join WhatsApp Channel</span>
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <a 
+                              href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs transition shadow-2xs"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                              <span>Click Here</span>
+                            </a>
+                          </td>
+                        </tr>
+                        {/* Website Home Link */}
+                        <tr className="bg-blue-50/40">
+                          <td className="p-3 font-bold text-blue-950 bg-blue-100/60 border-r border-blue-200">
+                            Rajasthan Vacancy (Home Page)
+                          </td>
+                          <td className="p-3">
+                            <a 
+                              href="https://rajasthanvaccancy.vercel.app/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block px-4 py-1.5 rounded bg-[#0056b3] hover:bg-blue-800 text-white font-extrabold text-xs transition shadow-2xs"
+                            >
+                              Click Here
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
+                            Join Telegram Channel
+                          </td>
+                          <td className="p-3">
+                            <a 
+                              href="https://telegram.me/rajasthanvacancy_in"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#0088cc] hover:bg-[#0077b5] text-white font-extrabold text-xs transition shadow-2xs"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>Click Here</span>
+                            </a>
+                          </td>
+                        </tr>
                         <tr>
                           <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
                             Official Website
                           </td>
                           <td className="p-3">
                             <a 
-                              href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'}
+                              href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-block px-4 py-1.5 rounded bg-[#1e73be] hover:bg-[#155a96] text-white font-extrabold text-xs transition shadow-2xs"
@@ -830,6 +905,64 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         </tr>
                       </tbody>
                     </table>
+                  </div>
+                </div>
+
+                {/* Normal In-Content Post Share Box (सामान्य शेयर सेक्शन) */}
+                <div className="my-6 p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2 headlight">
+                        <Share2 className="w-4 h-4 text-[#1e953a]" />
+                        <span>{isHi ? 'पोस्ट शेयर करें (Share This Post):' : 'Share This Post:'}</span>
+                      </h3>
+                      <p className="text-xs text-slate-600 mt-0.5">
+                        {isHi ? 'व्हाट्सएप एवं टेलीग्राम पर अपने मित्रों के साथ यह जानकारी शेयर करें।' : 'Share this job update with friends on WhatsApp & Telegram.'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={handleWhatsAppShare}
+                        className="px-3.5 py-2 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer active:scale-95"
+                        title="Share on WhatsApp"
+                      >
+                        <MessageCircle className="w-4 h-4 fill-white" />
+                        <span>WhatsApp</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleTelegramShare}
+                        className="px-3.5 py-2 rounded-lg bg-[#0088cc] hover:bg-[#0077b5] text-white font-extrabold text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer active:scale-95"
+                        title="Share on Telegram"
+                      >
+                        <Send className="w-4 h-4" />
+                        <span>Telegram</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        className="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-extrabold text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer active:scale-95"
+                        title="Copy Link"
+                      >
+                        {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                        <span>{copiedLink ? (isHi ? 'कॉपी हो गया!' : 'Copied!') : (isHi ? 'लिंक कॉपी करें' : 'Copy Link')}</span>
+                      </button>
+
+                      {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
+                        <button
+                          type="button"
+                          onClick={handleShare}
+                          className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs flex items-center gap-1.5 transition shadow-2xs cursor-pointer active:scale-95"
+                          title="More Share Options"
+                        >
+                          <Share2 className="w-3.5 h-3.5" />
+                          <span>{isHi ? 'अन्य' : 'More'}</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1077,7 +1210,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </p>
               <div className="flex flex-col gap-2">
                 <a
-                  href="https://whatsapp.com/channel/0029Va4UN8U29757sLNagO25"
+                  href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-2 bg-[#25D366] hover:bg-[#20ba59] text-white rounded font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs"

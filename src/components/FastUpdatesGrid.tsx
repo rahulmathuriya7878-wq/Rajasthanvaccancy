@@ -289,30 +289,31 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         {row2Sections.map(renderSectionBox)}
       </div>
 
-      {/* "About Rajasthan Vacancy" Section directly below the grid */}
+      {/* "ABOUT RAJASTHAN VACCANCY/JOBS" Section */}
       <section className="bg-white rounded-md p-6 border border-slate-200 mt-8 shadow-xs">
         <h2 
           className="headlight font-bold text-slate-900 mb-3"
           style={{ 
-            fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-            fontSize: '12pt',
-            color: '#1a202c'
+            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontSize: '14pt',
+            fontWeight: 'bold',
+            color: '#0f172a'
           }}
         >
-          About Rajasthan Vacancy
+          ABOUT RAJASTHAN JOBS/VACCANCY
         </h2>
         <p 
           className="post-item text-slate-700 leading-relaxed text-justify"
           style={{ 
             fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: '11.5pt',
+            fontSize: '12pt',
             lineHeight: 1.7,
             color: '#334155'
           }}
         >
           {isHi 
-            ? 'Rajasthan Vacancy (राजस्थान वेकेंसी) राजस्थान की प्रमुख और सबसे विश्वसनीय एजुकेशन और सरकारी नौकरी संबंधी वेबसाइट्स में से एक है। हमारी वेबसाइट का मुख्य उद्देश्य राजस्थान और केंद्र सरकार द्वारा जारी की जाने वाली सभी सरकारी भर्तियों, परीक्षाओं, प्रवेश पत्र (Admit Card), रिजल्ट, उत्तर कुंजी (Answer Key), और विभिन्न सरकारी योजनाओं की सबसे सटीक, प्रामाणिक और त्वरित जानकारी आप तक पहुंचाना है। यहाँ पर आपको प्रतिदिन राजस्थान लोक सेवा आयोग (RPSC), राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), पुलिस विभाग, शिक्षा विभाग, रेलवे, बैंक, और सेना सहित सभी प्रमुख विभागों की नवीनतम अपडेट सबसे पहले प्रदान की जाती हैं।'
-            : 'Rajasthan Vacancy is one of the leading and most trusted educational and government recruitment portals for Rajasthan. Our primary mission is to deliver authentic, accurate, and fastest updates on state and central government job recruitment, exam dates, admit cards, results, answer keys, syllabus, and welfare schemes including RPSC, RSMSSB, Police Department, Education Department, Railway, and Banking exams.'}
+            ? 'राजस्थान के सभी आकांक्षी युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, विश्वसनीय, सटीक एवं प्रामाणिक भर्ती सूचना मंच। राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), राजस्थान लोक सेवा आयोग (RPSC), राजस्थान पुलिस, रीट (REET) तथा अन्य सभी राज्य एवं केंद्रीय प्रतियोगी परीक्षाओं के नवीनतम सरकारी जॉब अलर्ट्स, एडमिट कार्ड, सिलेबस, कट-ऑफ और परीक्षा परिणामों की पल-पल की सटीक अपडेट सबसे पहले प्राप्त करें।'
+            : 'Premier recruitment and job notification portal for Rajasthan candidates. Real-time updates on RSMSSB, RPSC, Police, REET, results, admit cards, syllabus, cut-off, and exam notifications.'}
         </p>
       </section>
     </div>

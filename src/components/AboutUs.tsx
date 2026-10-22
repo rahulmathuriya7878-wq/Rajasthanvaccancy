@@ -29,17 +29,17 @@ export const AboutUs: React.FC<AboutUsProps> = ({ lang, onBack }) => {
             {isHi ? 'हमारे बारे में (Comprehensive About Us)' : 'Comprehensive About Us'}
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            {isHi ? 'RAJASTHAN VACCANCY/JOBS पोर्टल की संपूर्ण कहानी व उद्देश्य' : 'The story and mission behind Rajasthan Vaccancy Jobs'}
+            {isHi ? 'RAJASTHAN JOBS/VACANCY पोर्टल की संपूर्ण कहानी व उद्देश्य' : 'The story and mission behind Rajasthan Jobs/Vacancy'}
           </p>
         </div>
       </div>
 
       <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed">
         <section className="space-y-2">
-          <p>
+          <p className="text-sm font-medium leading-relaxed text-slate-800">
             {isHi
-              ? 'RAJASTHAN VACCANCY/JOBS राजस्थान और भारत के उन तमाम मेहनती और प्रतिभावान युवाओं के लिए निर्मित एक अग्रणी डिजिटल मंच है जो सरकारी सेवा में जाने का सपना देखते हैं। हमारे पोर्टल का मुख्य ध्येय राज्य की हर छोटी-बड़ी भर्ती, प्रवेश पत्र, आंसर की और परीक्षा परिणामों की प्रामाणिक सूचना बिना किसी विलंब के सबसे पहले अभ्यर्थियों तक पहुँचाना है।'
-              : 'RAJASTHAN VACCANCY/JOBS is a premier digital recruitment alert portal dedicated to aspirants striving for government careers in Rajasthan.'}
+              ? 'राजस्थान के सभी अभ्यर्थियों के लिए विश्वसनीय, सटीक एवं प्रामाणिक सरकारी नौकरी सूचना मंच।'
+              : 'Reliable recruitment, admit cards, and exam results updates for Rajasthan candidates.'}
           </p>
         </section>
 

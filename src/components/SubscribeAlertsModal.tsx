@@ -106,9 +106,18 @@ export const SubscribeAlertsModal: React.FC<SubscribeAlertsModalProps> = ({
                 </button>
               </div>
 
-              <div className="flex items-center justify-center gap-1 text-[11px] text-slate-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{isHi ? 'अलर्ट सक्रिय है' : 'Alert active'}</span>
+              <div className="pt-2 border-t border-slate-100 text-center space-y-1.5">
+                <p className="text-[11px] text-slate-500 font-medium">
+                  {isHi ? 'या सीधे WhatsApp पर जॉब अलर्ट पाएं:' : 'Or get instant alerts on WhatsApp:'}
+                </p>
+                <a
+                  href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs shadow-xs transition flex items-center justify-center gap-1.5"
+                >
+                  <span>WhatsApp चैनल जॉइन करें</span>
+                </a>
               </div>
             </form>
           )}

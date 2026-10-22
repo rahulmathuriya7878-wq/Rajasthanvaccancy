@@ -116,54 +116,49 @@ export const Footer: React.FC<FooterProps> = ({
     : faqList.filter((item) => item.category === selectedCategory);
 
   const officialLinks = [
+    { name: 'WhatsApp चैनल (Official Alerts)', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
+    { name: 'राजस्थान वैकेंसी (Home Portal)', url: 'https://rajasthanvaccancy.vercel.app/' },
     { name: 'RSMSSB (कर्मचारी चयन बोर्ड)', url: 'https://rsmssb.rajasthan.gov.in' },
     { name: 'RPSC (राजस्थान लोक सेवा आयोग)', url: 'https://rpsc.rajasthan.gov.in' },
     { name: 'Rajasthan SSO Portal (sso.rajasthan.gov.in)', url: 'https://sso.rajasthan.gov.in' },
     { name: 'Rajasthan Police (राजस्थान पुलिस)', url: 'https://police.rajasthan.gov.in' },
-    { name: 'Rajasthan High Court Jodhpur', url: 'https://hcraj.nic.in' },
     { name: 'BSER REET Board Ajmer', url: 'https://rajeduboard.rajasthan.gov.in' },
     { name: 'Jan Soochna Portal Rajasthan', url: 'https://jansoochna.rajasthan.gov.in' },
-    { name: 'Social Justice SJED Scholarships', url: 'https://sje.rajasthan.gov.in' },
   ];
 
   return (
-    <footer className="w-full bg-white text-slate-700 pt-10 pb-8 mt-12 border-t border-slate-200 shadow-sm">
+    <footer 
+      className="w-full bg-white text-slate-700 pt-10 pb-8 mt-12 border-t border-slate-200 shadow-sm"
+      style={{
+        fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontSize: '12pt'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          {/* Col 1: About & Logo */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-extrabold text-xs">
-                RV/J
-              </div>
-              <span className="text-base sm:text-lg font-black text-slate-950 tracking-tight">
-                RAJASTHAN <span className="text-amber-600">VACCANCY/JOBS</span>
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {isHi
-                ? 'राजस्थान के सभी आकांक्षी युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, विश्वसनीय, सटीक एवं प्रामाणिक भर्ती सूचना मंच। राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), राजस्थान लोक सेवा आयोग (RPSC), राजस्थान पुलिस, रीट (REET) तथा अन्य सभी राज्य एवं केंद्रीय प्रतियोगी परीक्षाओं के नवीनतम सरकारी जॉब अलर्ट्स, एडमिट कार्ड, सिलेबस, कट-ऑफ और परीक्षा परिणामों की पल-पल की सटीक अपडेट सबसे पहले प्राप्त करें।'
-                : 'Premier recruitment and job notification portal for Rajasthan candidates. Real-time updates on RSMSSB, RPSC, Police, REET, results, admit cards, and syllabi.'}
-            </p>
-          </div>
-
-          {/* Col 2: Official Portals Directory */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {/* Col 1: Official Portals Directory */}
           <div>
-            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 className="w-4 h-4 text-amber-600" />
+            <h4 
+              className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
+              style={{ 
+                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                fontSize: '14pt', 
+                fontWeight: 'bold' 
+              }}
+            >
+              <Building2 className="w-5 h-5 text-amber-600" />
               <span>{isHi ? 'आधिकारिक सरकारी वेबसाइटें' : 'Official Government Portals'}</span>
             </h4>
-            <ul className="space-y-1.5 text-xs">
-              {officialLinks.slice(0, 3).map((l, idx) => (
+            <ul className="space-y-2" style={{ fontSize: '12pt' }}>
+              {officialLinks.slice(0, 5).map((l, idx) => (
                 <li key={idx}>
                   <a
                     href={l.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-amber-600 transition flex items-center gap-1 text-slate-600 font-medium"
+                    className="hover:text-amber-600 transition flex items-center gap-1.5 text-slate-600 font-medium"
                   >
-                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                    <ExternalLink className="w-4 h-4 text-slate-400" />
                     <span>{l.name}</span>
                   </a>
                 </li>
@@ -173,15 +168,22 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 3: Candidate Fast Tools */}
           <div>
-            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-orange-600" />
+            <h4 
+              className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
+              style={{ 
+                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                fontSize: '14pt', 
+                fontWeight: 'bold' 
+              }}
+            >
+              <ShieldCheck className="w-5 h-5 text-orange-600" />
               <span>{isHi ? 'परीक्षा कैलेंडर' : 'Exam Calendar'}</span>
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2" style={{ fontSize: '12pt' }}>
               <li>
                 <button
                   onClick={onOpenCalendar}
-                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left"
+                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left cursor-pointer"
                 >
                   👉 {isHi ? 'RSMSSB/RPSC वार्षिक परीक्षा कैलेंडर 2025-26' : 'Exam Schedule & Calendar 2025-26'}
                 </button>
@@ -191,11 +193,18 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Col 4: Non-Government Disclaimer */}
           <div>
-            <h4 className="text-slate-900 font-bold text-sm mb-3 uppercase tracking-wider flex items-center gap-1.5">
-              <AlertCircle className="w-4 h-4 text-rose-600" />
+            <h4 
+              className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
+              style={{ 
+                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                fontSize: '14pt', 
+                fontWeight: 'bold' 
+              }}
+            >
+              <AlertCircle className="w-5 h-5 text-rose-600" />
               <span>{isHi ? 'अस्वीकरण (Disclaimer)' : 'Disclaimer & Notice'}</span>
             </h4>
-            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-[11px] text-slate-600 leading-relaxed space-y-2">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-slate-600 leading-relaxed space-y-2" style={{ fontSize: '12pt' }}>
               <p>
                 {isHi
                   ? 'RAJASTHAN JOBS/VACANCY एक गैर-सरकारी एवं निजी सूचनात्मक पोर्टल है। हम किसी भी सरकारी एजेंसी अथवा आयोग से संबद्ध नहीं हैं।'
@@ -211,24 +220,24 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom copyright */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500" style={{ fontSize: '12pt' }}>
           <div>
             © {new Date().getFullYear()} RAJASTHAN JOBS/VACANCY — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-400 transition cursor-pointer">
+          <div className="flex flex-wrap items-center gap-4" style={{ fontSize: '12pt' }}>
+            <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}
             </button>
-            <button onClick={() => onSelectPolicy('terms')} className="hover:text-amber-400 transition cursor-pointer">
+            <button onClick={() => onSelectPolicy('terms')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'नियम व शर्तें' : 'Terms & Conditions'}
             </button>
-            <button onClick={() => onSelectPolicy('contact')} className="hover:text-amber-400 transition cursor-pointer">
+            <button onClick={() => onSelectPolicy('contact')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'संपर्क करें' : 'Contact Us'}
             </button>
-            <button onClick={() => onSelectPolicy('about')} className="hover:text-amber-400 transition cursor-pointer">
+            <button onClick={() => onSelectPolicy('about')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'हमारे बारे में' : 'About Us'}
             </button>
-            <button onClick={() => onSelectPolicy('disclaimer')} className="hover:text-amber-400 transition cursor-pointer">
+            <button onClick={() => onSelectPolicy('disclaimer')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'अस्वीकरण' : 'Disclaimer'}
             </button>
           </div>

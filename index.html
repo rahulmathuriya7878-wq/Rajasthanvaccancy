@@ -4,18 +4,36 @@
     <meta charset="UTF-8" />
     <script>
       // Suppress non-fatal Vite dev HMR WebSocket disconnection errors in iframe preview
-      window.addEventListener('error', function(event) {
-        if (event && event.message && event.message.indexOf('WebSocket') !== -1) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      }, true);
-      window.addEventListener('unhandledrejection', function(event) {
-        if (event && event.reason && typeof event.reason.message === 'string' && event.reason.message.indexOf('WebSocket') !== -1) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      }, true);
+      (function() {
+        var origError = console.error;
+        console.error = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var isWsError = args.some(function(arg) {
+            if (!arg) return false;
+            var text = (arg && arg.message) || String(arg);
+            return text.indexOf('WebSocket') !== -1 || text.indexOf('closed without opened') !== -1;
+          });
+          if (isWsError) {
+            return;
+          }
+          origError.apply(console, args);
+        };
+        window.addEventListener('error', function(event) {
+          if (event && event.message && (event.message.indexOf('WebSocket') !== -1 || event.message.indexOf('closed without opened') !== -1)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        }, true);
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event && event.reason) {
+            var msg = event.reason.message || String(event.reason);
+            if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('closed without opened') !== -1) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+            }
+          }
+        }, true);
+      })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RAJASTHAN VACCANCY/JOBS - Govt Job Alerts & Recruitment Portal</title>

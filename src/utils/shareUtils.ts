@@ -36,7 +36,9 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
   let shareUrl = customUrl;
   if (!shareUrl) {
     const cleanId = item.id.replace(/^\//, '').replace(/\/$/, '');
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://rajasthanvacancy.in';
+    const origin = typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') 
+      ? window.location.origin 
+      : 'https://rajasthanvaccancy.vercel.app';
     shareUrl = `${origin}/${cleanId}/`;
   }
 

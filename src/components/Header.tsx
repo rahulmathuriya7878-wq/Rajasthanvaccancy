@@ -10,7 +10,8 @@ import {
   Ticket,
   Award,
   Megaphone,
-  Landmark
+  Landmark,
+  MessageCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.tsx';
 import { LanguageMode, VacancyItem } from '../types';
@@ -339,6 +340,22 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               );
             })}
+
+            {/* Official WhatsApp Channel Link in Mobile Menu */}
+            <a
+              href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 px-3 py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 fill-white" />
+                <span>{isHi ? 'WhatsApp चैनल जॉइन करें' : 'Join WhatsApp Channel'}</span>
+              </div>
+              <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-black">
+                FREE
+              </span>
+            </a>
           </nav>
         )}
       </div>
