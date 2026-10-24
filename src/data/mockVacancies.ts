@@ -1672,10 +1672,113 @@ export const RPSC_RAS_SI_SYLLABUS_VACANCY = createQuickVacancy(
   }
 );
 
+export const PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY: VacancyItem = {
+  id: 'pm-viksit-bharat-rojgar-yojana-2026',
+  title: 'PM Viksit Bharat Rojgar Yojana 2026: Official Announcement, Subsidy & Beneficiary Registration',
+  titleHi: 'पीएम विकसित भारत रोजगार योजना 2026: केंद्र सरकार की नई रोजगार प्रोत्साहन योजना घोषित, जानें पात्रता व आवेदन प्रक्रिया',
+  shortTitle: 'PM Viksit Bharat Rojgar Yojana 2026',
+  shortTitleHi: 'पीएम विकसित भारत रोजगार योजना',
+  organization: 'Sarkari Yojana',
+  department: 'Ministry of Labour & Employment, Govt of India',
+  departmentHi: 'श्रम एवं रोजगार मंत्रालय, भारत सरकार',
+  advtNo: 'PM-VBRY/2026/01',
+  category: 'scheme',
+  totalPosts: '1,00,000+ युवा लाभार्थी',
+  postName: 'Wage Subsidy, Self-Employment Incentive & Skill Training Support',
+  postNameHi: 'वेतन सब्सिडी, स्वरोजगार प्रोत्साहन एवं कौशल प्रशिक्षण सहायता',
+  qualification: ['10th', '12th', 'Graduate', 'ITI/Diploma'],
+  qualificationDetails: 'Minimum 10th pass / ITI / Diploma / Graduation from recognized board/university.',
+  qualificationDetailsHi: '10वीं / 12वीं / आईटीआई / डिप्लोमा / स्नातक उत्तीर्ण भारतीय नागरिक पात्र हैं।',
+  briefSummary: 'Official announcement summary and government portal registration details for PM Viksit Bharat Rojgar Yojana 2026.',
+  briefSummaryHi: '✍️ प्रिय युवाओं एवं नौकरी चाहने वालों! केंद्र सरकार द्वारा भारत के युवाओं के लिए "पीएम विकसित भारत रोजगार योजना 2026 (PM Viksit Bharat Rojgar Yojana)" की घोषणा की गई है। इस योजना के तहत संगठित व असंगठित क्षेत्रों में नए रोजगार सृजन हेतु प्रथम बार नौकरी पाने वाले युवाओं को डायरेक्ट बेनिफिट ट्रांसफर (DBT) के माध्यम से वित्तीय प्रोत्साहन व वेतन सब्सिडी प्रदान की जाएगी। इसके अतिरिक्त ई-श्रम व नेशनल करियर सर्विस (NCS) के माध्यम से निःशुल्क पंजीयन की सुविधा उपलब्ध है।',
+  description: 'Detailed official announcement, benefits, and registration guide for PM Viksit Bharat Rojgar Yojana 2026.',
+  descriptionHi: '✍️ प्रिय युवाओं एवं परीक्षार्थियों,\n\nश्रम एवं रोजगार मंत्रालय, भारत सरकार द्वारा "पीएम विकसित भारत रोजगार योजना 2026" की विस्तृत अधिसूचना एवं दिशानिर्देश जारी कर दिए गए हैं। यह योजना देश के युवाओं को औपचारिक क्षेत्र (Formal Sector) में पहली नौकरी प्राप्त करने पर कर्मचारी एवं नियोक्ता (Employer) दोनों को वित्तीय सहायता प्रदान करती है।\n\n📌 योजना के प्रमुख आकर्षण व लाभ:\n1. प्रथम बार रोजगार प्राप्त करने वाले युवाओं को EPFO से पंजीकृत होने पर प्रोत्साहन राशि सीधे बैंक खाते (DBT) में हस्तांतरित होगी।\n2. नियोक्ताओं को नए कर्मचारियों के ईपीएफ अंशदान में सरकारी सब्सिडी की सुविधा।\n3. ई-श्रम (e-Shram) एवं नेशनल करियर सर्विस (NCS) पोर्टल पर निःशुल्क पंजीयन।\n4. रोजगार मेलों और कौशल विकास प्रशिक्षण शिविरों में प्राथमिकता।\n\n🎯 आवश्यक पात्रता:\n• आवेदक भारत का मूल नागरिक होना चाहिए।\n• शैक्षणिक योग्यता: न्यूनतम 10वीं पास या समकक्ष।\n• आयु सीमा: 18 से 40 वर्ष।\n• आधार कार्ड से जुड़ा एक्टिव बैंक खाता अनिवार्य।\n\n⚠️ अभ्यर्थियों हेतु महत्वपूर्ण परामर्श (शिक्षक नोट):\n1. इस योजना हेतु कोई भी आवेदन शुल्क (Registration Fee) देय नहीं है। किसी भी फर्जी एजेंट/साइट के झांसे में न आएं।\n2. आवेदन केवल अधिकृत सरकारी पोर्टल (ncs.gov.in / eshram.gov.in) पर ही करें।',
+  jobLocation: 'समस्त भारत (All India)',
+  salary: 'Direct Wage Incentive / EPF Govt Subsidy as per Ministry Norms',
+  salaryHi: 'डीबीटी द्वारा वित्तीय सहायता प्रोत्साहन एवं ईपीएफ अंशदान सब्सिडी',
+  ageLimit: {
+    min: 18,
+    max: 40,
+    asOnDate: '2026-01-01',
+    relaxationNotes: 'Standard age relaxation for reserved categories as per Central Govt guidelines.',
+    relaxationNotesHi: 'आरक्षित वर्गों (SC/ST/OBC/दिव्यांग) को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNote: '100% Free Scheme Registration on Official Government Portals',
+    otrNoteHi: 'आवेदन पूर्णतः निःशुल्क (Zero Registration Fee) - कोई शुल्क देय नहीं है'
+  },
+  importantDates: {
+    notificationDate: '2026-01-10',
+    applyStartDate: '2026-01-15',
+    applyLastDate: '2026-12-31',
+    feeLastDate: '2026-12-31',
+    examDate: 'सीधी पात्रता व आधार ई-केवाईसी सत्यापन'
+  },
+  selectionProcess: [
+    'Online Registration on NCS/e-Shram Portal',
+    'Aadhaar e-KYC & Bank Account Linking',
+    'Employer / Institution Verification',
+    'Direct Benefit Transfer (DBT) Release'
+  ],
+  selectionProcessHi: [
+    'NCS / ई-श्रम पोर्टल पर ऑनलाइन पंजीयन (Online Registration)',
+    'आधार ई-केवाईसी एवं बैंक खाता सत्यापन (Aadhaar e-KYC Verification)',
+    'नियोक्ता / संस्थान द्वारा सत्यापन (Employer Verification)',
+    'डीबीटी (DBT) द्वारा बैंक खाते में प्रोत्साहन राशि हस्तांतरण'
+  ],
+  requiredDocumentsHi: [
+    'आधार कार्ड (मोबाइल नंबर से लिंक)',
+    '10वीं / 12वीं / स्नातक की मार्कशीट एवं प्रमाणपत्र',
+    'बैंक पासबुक (डीबीटी एक्टिवेटेड)',
+    'मूल निवास एवं जाति प्रमाणपत्र',
+    'पासपोर्ट साइज फोटो एवं ई-मेल आईडी'
+  ],
+  howToApplyHi: [
+    'चरण 1: आधिकारिक नेशनल करियर सर्विस पोर्टल (ncs.gov.in) या ई-श्रम (eshram.gov.in) पर जाएं।',
+    'चरण 2: "New Jobseeker Registration / PM VBRY" पर क्लिक करें।',
+    'चरण 3: अपने आधार नंबर व ओटीपी के माध्यम से ई-केवाईसी (e-KYC) पूर्ण करें।',
+    'चरण 4: अपनी शैक्षणिक योग्यता, कौशल अनुभव एवं बैंक विवरण ध्यानपूर्वक दर्ज करें।',
+    'चरण 5: फॉर्म सबमिट करें और अपना यूनिक रजिस्ट्रेशन नंबर / ई-कार्ड सुरक्षित रखें।'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://www.ncs.gov.in',
+    notificationPdfUrl: 'https://labour.gov.in',
+    officialWebsiteUrl: 'https://www.ncs.gov.in'
+  },
+  tags: ['सरकारी योजना', 'PM VBRY 2026', 'Sarkari Yojana', 'Central Govt'],
+  handwrittenNotes: {
+    headingHi: '✍️ योजना विशेषज्ञ शिक्षक नोट व दस्तावेज चेकलिस्ट (PM VBRY 2026)',
+    subheadingHi: 'पीएम विकसित भारत रोजगार योजना हेतु हमारे विशेषज्ञों की प्रामाणिक सलाह',
+    pointsHi: [
+      'यह योजना युवाओं को रोजगार के पहले वर्ष में सीधा वित्तीय प्रोत्साहन (Wage Subsidy) प्रदान करती है।',
+      'अपना बैंक खाता NPCI/Aadhaar Seeding से अवश्य लिंक रखें ताकि DBT राशि अटकने की समस्या न हो।',
+      'योजना का पंजीयन पूरी तरह से निशुल्क है, किसी भी बिचौलिए या साइबर कैफे को अतिरिक्त शुल्क न दें।',
+      'NCS पोर्टल पर अपना जॉब-सीकर प्रोफाइल 100% पूर्ण करके रखें ताकि नियोक्ताओं को आपकी प्रोफाइल आसानी से दिखे।'
+    ],
+    checklistHi: [
+      'आधार कार्ड (मोबाइल नंबर लिंक्ड)',
+      '10वीं बोर्ड मार्कशीट',
+      'बैंक खाता (Aadhaar DBT Enabled)',
+      'जन आधार / ई-श्रम कार्ड (यदि उपलब्ध हो)'
+    ],
+    teacherSignHi: '✍️ सफलता की हार्दिक शुभकामनाओं सहित — राजस्थान वैकेंसी संपादकीय एवं योजना टीम'
+  },
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  createdAt: '2026-01-15',
+  updatedAt: '15 जनवरी 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
-  RRB_STATION_MASTER_2026_VACANCY,
-  SUPREME_COURT_COURT_MASTER_2026_VACANCY,
-  DSSSB_DISTRICT_COURT_2026_VACANCY,
+  PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY,
+  AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
+  PM_AWAS_YOJANA_URBAN_VACANCY,
+  MUKHYAMANTRI_AYUSHMAN_YOJANA_VACANCY,
+  KALI_BAI_SCOOTY_YOJANA_VACANCY,
   SAINIK_SCHOOL_CHITTORGARH_VACANCY,
   UGC_NET_DECEMBER_2026_VACANCY,
   RAJASTHAN_CET_12TH_ADMIT_CARD_VACANCY,
@@ -1689,10 +1792,6 @@ export const INITIAL_VACANCIES: VacancyItem[] = [
   RAJASTHAN_GRAM_PANCHAYAT_CHUNAV_VACANCY,
   RRC_NWR_APPRENTICE_NEWS_VACANCY,
   RAJASTHAN_FREE_TABLET_NEWS_VACANCY,
-  AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
-  PM_AWAS_YOJANA_URBAN_VACANCY,
-  MUKHYAMANTRI_AYUSHMAN_YOJANA_VACANCY,
-  KALI_BAI_SCOOTY_YOJANA_VACANCY,
   RSMSSB_CET_12TH_ANSWER_KEY_VACANCY,
   RAJASTHAN_POLICE_ANSWER_KEY_VACANCY,
   RAJASTHAN_PATWARI_SYLLABUS_VACANCY,
