@@ -320,16 +320,6 @@ export const Header: React.FC<HeaderProps> = ({
                     <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#1e953a]'}`} />
                     <span className="headlight">{isHi ? sec.titleHi : sec.title}</span>
                   </div>
-                  {sec.key === 'news' && (
-                    <span className="text-[9px] bg-rose-600 text-white px-1.5 py-0.2 rounded font-extrabold uppercase">
-                      HOT
-                    </span>
-                  )}
-                  {sec.key === 'scheme' && (
-                    <span className="text-[9px] bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded font-extrabold uppercase">
-                      NEW
-                    </span>
-                  )}
                 </button>
               );
             })}
@@ -353,7 +343,7 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </div>
 
-      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar - Light Blue Featured Theme */}
+      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar */}
       <nav 
         aria-label="Important Website Sections"
         className="hidden md:block w-full bg-white border-t border-b border-slate-200 select-none shadow-xs"
@@ -362,17 +352,14 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center justify-start gap-2 overflow-x-auto py-2 scrollbar-none">
             {importantSections.map((sec) => {
               const isActive = selectedCategory === sec.key;
-              const isLightBlueCategory = sec.key === 'latest_job' || sec.key === 'news';
               const Icon = sec.icon;
 
-              let buttonClasses = 'px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
+              let buttonClasses = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
 
               if (isActive) {
-                buttonClasses += 'bg-[#0284c7] text-white font-black shadow-xs ring-2 ring-[#38bdf8] ';
-              } else if (isLightBlueCategory) {
-                buttonClasses += 'bg-[#e0f2fe] text-[#0284c7] border border-[#38bdf8] hover:bg-[#bae6fd] font-extrabold ';
+                buttonClasses += 'bg-[#1e953a] text-white font-extrabold shadow-xs ';
               } else {
-                buttonClasses += 'text-slate-700 hover:text-[#0284c7] hover:bg-slate-100 active:scale-95 ';
+                buttonClasses += 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:scale-95 ';
               }
 
               return (
@@ -385,20 +372,10 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   title={isHi ? sec.titleHi : sec.title}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : isLightBlueCategory ? 'text-[#0284c7]' : 'text-slate-600'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-600'}`} />
                   <span className="headlight whitespace-nowrap">
                     {sec.shortTitle}
                   </span>
-                  {sec.key === 'news' && (
-                    <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase leading-none ${isActive ? 'bg-white text-[#0284c7]' : 'bg-[#0284c7] text-white'}`}>
-                      HOT
-                    </span>
-                  )}
-                  {sec.key === 'latest_job' && (
-                    <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase leading-none ${isActive ? 'bg-white text-[#0284c7]' : 'bg-emerald-600 text-white'}`}>
-                      NEW
-                    </span>
-                  )}
                 </button>
               );
             })}
