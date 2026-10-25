@@ -54,6 +54,8 @@ interface VacancyDetailPageProps {
   onSelectCategory?: (category: string) => void;
 }
 
+type SarkariPost = VacancyItem;
+
 export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   vacancy,
   onBack,
@@ -70,10 +72,95 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   onToggleAlertMe,
   onSelectCategory,
 }) => {
-  const [currentVacancy, setCurrentVacancy] = useState<VacancyItem>(vacancy);
+  const [editablePost, setEditablePost] = useState<VacancyItem>(vacancy);
+  const currentVacancy = editablePost;
+  const setCurrentVacancy = setEditablePost;
+
+  const [isDirectEditMode, setIsDirectEditMode] = useState<boolean>(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [lastSavedTime, setLastSavedTime] = useState<string>('');
+
   useEffect(() => {
-    setCurrentVacancy(vacancy);
+    setEditablePost(vacancy);
   }, [vacancy]);
+
+  // 1. Reusable In-Place Word Editable Component (FullPagePostView.tsx)
+  const EditableText: React.FC<{
+    value: string | number | undefined;
+    onChange: (newVal: string) => void;
+    className?: string;
+    style?: React.CSSProperties;
+    as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'div' | 'p' | 'td';
+    placeholder?: string;
+    titlePrefix?: string;
+  }> = ({
+    value = '',
+    onChange,
+    className = '',
+    style,
+    as: Tag = 'span',
+    placeholder = '...',
+    titlePrefix = 'टेक्स्ट'
+  }) => {
+    const strVal = String(value ?? '');
+    if (!isDirectEditMode) {
+      return <Tag className={className} style={style}>{strVal || placeholder}</Tag>;
+    }
+
+    return (
+      <Tag
+        contentEditable
+        suppressContentEditableWarning
+        style={style}
+        onBlur={(e) => {
+          const updated = e.currentTarget.innerText.trim();
+          if (updated !== strVal) {
+            onChange(updated);
+            setHasUnsavedChanges(true);
+          }
+        }}
+        className={`${className} outline-none cursor-text transition-all hover:bg-amber-100/90 focus:bg-amber-50 focus:ring-2 focus:ring-amber-500 rounded px-1 -mx-0.5 border-b border-dashed border-amber-500 min-w-[20px] inline-block`}
+        title={`क्लिक करके ${titlePrefix} बदलें`}
+      >
+        {strVal || placeholder}
+      </Tag>
+    );
+  };
+
+  // 2. Real-Time Non-Blocking Auto Persistence (बिना लूप के ऑटो-सेव)
+  const onUpdatePost = onUpdateVacancy;
+  const lastSavedJsonRef = React.useRef<string>('');
+  const onUpdatePostRef = React.useRef(onUpdatePost);
+
+  useEffect(() => {
+    onUpdatePostRef.current = onUpdatePost;
+  }, [onUpdatePost]);
+
+  useEffect(() => {
+    const currentJson = JSON.stringify(editablePost);
+    if (!lastSavedJsonRef.current) {
+      lastSavedJsonRef.current = currentJson;
+      return;
+    }
+    if (currentJson === lastSavedJsonRef.current) return;
+    lastSavedJsonRef.current = currentJson;
+
+    if (onUpdatePostRef.current) {
+      onUpdatePostRef.current(editablePost);
+    }
+    try {
+      const saved = localStorage.getItem('sarkari_admin_posts_v5');
+      let currentArr: SarkariPost[] = saved ? JSON.parse(saved) : [];
+      const idx = currentArr.findIndex(p => p.id === editablePost.id);
+      if (idx >= 0) currentArr[idx] = editablePost;
+      else currentArr.push(editablePost);
+      localStorage.setItem('sarkari_admin_posts_v5', JSON.stringify(currentArr));
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setHasUnsavedChanges(false);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [editablePost]);
 
   const isHi = lang === 'hi';
   const postTitle = isHi ? (currentVacancy.titleHi || currentVacancy.title) : currentVacancy.title;
@@ -413,11 +500,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               {isAdmin && (
                 <div className="mb-4 p-3 bg-slate-100 rounded-lg border border-slate-300 space-y-2.5 text-xs">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                    <div className="flex items-center gap-2 font-bold text-slate-800">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       <span>एडमिन कंट्रोल्स (Admin Mode Active)</span>
+                      {lastSavedTime && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>ऑटो-सेव्ड ({lastSavedTime})</span>
+                        </span>
+                      )}
+                      {hasUnsavedChanges && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-semibold animate-pulse">
+                          <span>सहेजा जा रहा है...</span>
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setIsDirectEditMode(!isDirectEditMode)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-bold text-xs transition cursor-pointer shadow-xs ${
+                          isDirectEditMode
+                            ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 ring-2 ring-amber-300'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        }`}
+                        title="पेज पर सीधे शब्दों पर क्लिक करके एडिट करें"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>{isDirectEditMode ? '✓ वर्ड इन-प्लेस एडिट सक्रिय' : '✏️ वर्ड इन-प्लेस एडिट मोड'}</span>
+                      </button>
                       <button
                         type="button"
                         onClick={() => setIsAddSectionOpen(true)}
@@ -430,10 +541,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         <button
                           type="button"
                           onClick={() => onEditVacancy(currentVacancy)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-600 text-white rounded-md font-bold hover:bg-amber-700 transition cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-700 text-white rounded-md font-bold hover:bg-slate-800 transition cursor-pointer"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
-                          <span>डायरेक्ट पोस्ट एडिटर</span>
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>फॉर्म एडिटर</span>
                         </button>
                       )}
                       {onDeleteVacancy && (
@@ -448,6 +559,25 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       )}
                     </div>
                   </div>
+
+                  {/* Direct Word Edit Guide Banner */}
+                  {isDirectEditMode && (
+                    <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-md text-amber-950 flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">💡</span>
+                        <span className="font-semibold text-xs">
+                          डायरेक्ट वर्ड एडिट मोड चालू है: पेज के शीर्षक, तारीख, पद संख्या या किसी भी टेक्स्ट पर क्लिक करके सीधे टाइप करें। टाइप पूरा होते ही रियल-टाइम बिना लूप के ऑटो-सेव (Real-Time Auto-Save) हो जाएगा।
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsDirectEditMode(false)}
+                        className="px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-[11px] cursor-pointer"
+                      >
+                        एडिट मोड बंद करें
+                      </button>
+                    </div>
+                  )}
 
                   {/* Restorable Deleted Sections Notice */}
                   {deletedKeys.length > 0 && (
@@ -477,16 +607,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
               {/* Entry Header */}
               <header className="entry-header border-b border-slate-200 pb-4 mb-5">
-                <h1 
+                <EditableText
+                  as="h1"
+                  value={isHi ? (editablePost.titleHi || editablePost.title) : editablePost.title}
+                  onChange={(val) => {
+                    setEditablePost(prev => ({
+                      ...prev,
+                      titleHi: val,
+                      title: val
+                    }));
+                  }}
+                  titlePrefix="शीर्षक (Title)"
                   className="entry-title headlight font-bold text-slate-900 tracking-tight leading-snug"
                   style={{
                     fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                     fontSize: '12pt',
                     lineHeight: 1.4
                   }}
-                >
-                  {postTitle}
-                </h1>
+                />
 
                 {/* Entry Meta */}
                 <div className="entry-meta text-[13px] text-[#575760] mt-2 flex items-center gap-3 flex-wrap">
@@ -526,26 +664,40 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <span className="inline-block bg-white/20 text-white text-[11px] font-extrabold uppercase px-2.5 py-1 rounded tracking-wider backdrop-blur-xs">
-                      {vacancy.department || vacancy.organization}
+                      {editablePost.department || editablePost.organization}
                     </span>
-                    <h2 
+                    <EditableText
+                      as="h2"
+                      value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
+                      onChange={(val) => {
+                        setEditablePost(prev => ({
+                          ...prev,
+                          shortTitleHi: val,
+                          shortTitle: val
+                        }));
+                      }}
+                      titlePrefix="संक्षिप्त नाम"
                       className="headlight text-lg sm:text-xl font-bold text-white tracking-wide"
                       style={{ fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif", color: '#ffffff', fontSize: '12pt' }}
-                    >
-                      {shortJobName}
-                    </h2>
+                    />
                     <p className="text-emerald-100 text-xs sm:text-sm font-medium">
                       {isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide'}
                     </p>
                   </div>
 
-                  {vacancy.totalPosts && (
+                  {editablePost.totalPosts && (
                     <div className="bg-white/10 border border-white/20 rounded-lg p-3 text-center shrink-0 backdrop-blur-xs">
                       <span className="text-[10px] uppercase font-bold text-emerald-200 block">
                         {isHi ? 'कुल पद / सीटें' : 'Total Posts'}
                       </span>
                       <span className="text-xl sm:text-2xl font-black text-amber-300">
-                        {vacancy.totalPosts}
+                        <EditableText
+                          value={editablePost.totalPosts}
+                          onChange={(val) => {
+                            setEditablePost(prev => ({ ...prev, totalPosts: val }));
+                          }}
+                          titlePrefix="कुल पद"
+                        />
                       </span>
                     </div>
                   )}
@@ -564,12 +716,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 {/* Opening Lead Paragraphs */}
                 <div className="space-y-3">
                   <p className="post-item">
-                    <strong>{postTitle}:</strong> {vacancy.briefSummaryHi || `${vacancy.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${vacancy.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`}
+                    <strong>{postTitle}:</strong>{' '}
+                    <EditableText
+                      value={editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`}
+                      onChange={(val) => {
+                        setEditablePost(prev => ({ ...prev, briefSummaryHi: val }));
+                      }}
+                      titlePrefix="संक्षिप्त विवरण सारांश"
+                    />
                   </p>
                   <p className="post-item">
                     {isHi 
-                      ? `इस भर्ती के लिए ऑनलाइन आवेदन निर्धारित तिथि से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${vacancy.importantDates?.applyLastDate || 'अंतिम तिथि'} तक आधिकारिक वेबसाइट पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
-                      : `Online applications are invited for eligible candidates. The last date to submit the application form is ${vacancy.importantDates?.applyLastDate}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
+                      ? `इस भर्ती के लिए ऑनलाइन आवेदन निर्धारित तिथि से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${editablePost.importantDates?.applyLastDate || 'अंतिम तिथि'} तक आधिकारिक वेबसाइट पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
+                      : `Online applications are invited for eligible candidates. The last date to submit the application form is ${editablePost.importantDates?.applyLastDate}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
                   </p>
                 </div>
 
@@ -600,31 +759,90 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         <tbody className="divide-y divide-slate-200">
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती संस्था</td>
-                            <td className="p-3">{vacancy.department || vacancy.organization}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.department || editablePost.organization}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, department: val }))}
+                                titlePrefix="विभाग / संस्था"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">भर्ती का नाम</td>
-                            <td className="p-3">{shortJobName}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, shortTitleHi: val, shortTitle: val }))}
+                                titlePrefix="भर्ती नाम"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">विज्ञापन संख्या</td>
-                            <td className="p-3">{vacancy.advtNo || 'विज्ञप्ति अनुसार'}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.advtNo || 'विज्ञप्ति अनुसार'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, advtNo: val }))}
+                                titlePrefix="विज्ञापन संख्या"
+                                placeholder="विज्ञप्ति अनुसार"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">घोषित कुल पद / सीटें</td>
-                            <td className="p-3 font-bold text-emerald-800">{vacancy.totalPosts || 'विभिन्न पद'}</td>
+                            <td className="p-3 font-bold text-emerald-800">
+                              <EditableText
+                                value={editablePost.totalPosts || 'विभिन्न पद'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, totalPosts: val }))}
+                                titlePrefix="कुल पद"
+                                className="font-bold text-emerald-800"
+                                placeholder="विभिन्न पद"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन तिथि</td>
-                            <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.importantDates?.notificationDate || ''}
+                                onChange={(val) => setEditablePost(prev => ({
+                                  ...prev,
+                                  importantDates: { ...prev.importantDates, notificationDate: val }
+                                }))}
+                                titlePrefix="नोटिफिकेशन तिथि"
+                                placeholder="शीघ्र"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन शुरू</td>
-                            <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
+                            <td className="p-3 font-semibold text-emerald-700">
+                              <EditableText
+                                value={editablePost.importantDates?.applyStartDate || ''}
+                                onChange={(val) => setEditablePost(prev => ({
+                                  ...prev,
+                                  importantDates: { ...prev.importantDates, applyStartDate: val }
+                                }))}
+                                titlePrefix="आवेदन शुरू तिथि"
+                                className="font-semibold text-emerald-700"
+                                placeholder="शीघ्र"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
-                            <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
+                            <td className="p-3 font-bold text-rose-700">
+                              <EditableText
+                                value={editablePost.importantDates?.applyLastDate || ''}
+                                onChange={(val) => setEditablePost(prev => ({
+                                  ...prev,
+                                  importantDates: { ...prev.importantDates, applyLastDate: val }
+                                }))}
+                                titlePrefix="अंतिम तिथि"
+                                className="font-bold text-rose-700"
+                                placeholder="शीघ्र"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन का माध्यम</td>
@@ -632,17 +850,37 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">शैक्षणिक योग्यता</td>
-                            <td className="p-3">{vacancy.qualificationDetailsHi || vacancy.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास'}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास'}
+                                onChange={(val) => setEditablePost(prev => ({
+                                  ...prev,
+                                  qualificationDetailsHi: val,
+                                  qualificationDetails: val
+                                }))}
+                                titlePrefix="शैक्षणिक योग्यता"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">वेतनमान / पे-मैट्रिक्स</td>
-                            <td className="p-3">{vacancy.salaryHi || vacancy.salary || 'पे-मैट्रिक्स नियमानुसार देय'}</td>
+                            <td className="p-3">
+                              <EditableText
+                                value={editablePost.salaryHi || editablePost.salary || 'पे-मैट्रिक्स नियमानुसार देय'}
+                                onChange={(val) => setEditablePost(prev => ({
+                                  ...prev,
+                                  salaryHi: val,
+                                  salary: val
+                                }))}
+                                titlePrefix="वेतनमान"
+                              />
+                            </td>
                           </tr>
                           <tr>
                             <td className="p-3 font-semibold text-slate-800 bg-slate-50 border-r border-slate-200">आधिकारिक वेबसाइट</td>
                             <td className="p-3 text-blue-700 font-semibold underline">
-                              <a href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'} target="_blank" rel="noopener noreferrer">
-                                {vacancy.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'rajasthan.gov.in'}
+                              <a href={editablePost.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'} target="_blank" rel="noopener noreferrer">
+                                {editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'rajasthan.gov.in'}
                               </a>
                             </td>
                           </tr>
@@ -701,15 +939,47 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       <tbody className="divide-y divide-slate-200">
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन जारी तिथि</td>
-                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.notificationDate, 'शीघ्र')}</td>
+                          <td className="p-3">
+                            <EditableText
+                              value={editablePost.importantDates?.notificationDate || ''}
+                              onChange={(val) => setEditablePost(prev => ({
+                                ...prev,
+                                importantDates: { ...prev.importantDates, notificationDate: val }
+                              }))}
+                              titlePrefix="नोटिफिकेशन जारी तिथि"
+                              placeholder="शीघ्र"
+                            />
+                          </td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन शुरू</td>
-                          <td className="p-3 font-semibold text-emerald-700">{formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}</td>
+                          <td className="p-3 font-semibold text-emerald-700">
+                            <EditableText
+                              value={editablePost.importantDates?.applyStartDate || ''}
+                              onChange={(val) => setEditablePost(prev => ({
+                                ...prev,
+                                importantDates: { ...prev.importantDates, applyStartDate: val }
+                              }))}
+                              titlePrefix="आवेदन शुरू तिथि"
+                              className="font-semibold text-emerald-700"
+                              placeholder="शीघ्र"
+                            />
+                          </td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
-                          <td className="p-3 font-bold text-rose-700">{formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}</td>
+                          <td className="p-3 font-bold text-rose-700">
+                            <EditableText
+                              value={editablePost.importantDates?.applyLastDate || ''}
+                              onChange={(val) => setEditablePost(prev => ({
+                                ...prev,
+                                importantDates: { ...prev.importantDates, applyLastDate: val }
+                              }))}
+                              titlePrefix="ऑनलाइन आवेदन की अंतिम तिथि"
+                              className="font-bold text-rose-700"
+                              placeholder="शीघ्र"
+                            />
+                          </td>
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन बंद होने का समय</td>
@@ -717,7 +987,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         </tr>
                         <tr>
                           <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">परीक्षा / मेरिट सत्यापन तिथि</td>
-                          <td className="p-3">{formatSingleDate(vacancy.importantDates?.examDate, 'शीघ्र जारी होगी')}</td>
+                          <td className="p-3">
+                            <EditableText
+                              value={editablePost.importantDates?.examDate || ''}
+                              onChange={(val) => setEditablePost(prev => ({
+                                ...prev,
+                                importantDates: { ...prev.importantDates, examDate: val }
+                              }))}
+                              titlePrefix="परीक्षा तिथि"
+                              placeholder="शीघ्र जारी होगी"
+                            />
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -808,7 +1088,48 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       {renderAdminSectionControls('age_limit', 'आयु सीमा')}
                     </div>
                     <p className="post-item mb-3">
-                      अभ्यर्थी की न्यूनतम आयु <strong>{vacancy.ageLimit?.min || 18} वर्ष</strong> तथा अधिकतम आयु <strong>{vacancy.ageLimit?.max || 40} वर्ष</strong> निर्धारित की गई है। आयु की गणना {vacancy.ageLimit?.asOnDate || '2026'} को आधार मानकर की जाएगी। आरक्षित वर्गों को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
+                      अभ्यर्थी की न्यूनतम आयु{' '}
+                      <strong>
+                        <EditableText
+                          value={editablePost.ageLimit?.min || 18}
+                          onChange={(val) => {
+                            const num = parseInt(val) || 18;
+                            setEditablePost(prev => ({
+                              ...prev,
+                              ageLimit: { ...prev.ageLimit, min: num }
+                            }));
+                          }}
+                          titlePrefix="न्यूनतम आयु"
+                        />{' '}
+                        वर्ष
+                      </strong>{' '}
+                      तथा अधिकतम आयु{' '}
+                      <strong>
+                        <EditableText
+                          value={editablePost.ageLimit?.max || 40}
+                          onChange={(val) => {
+                            const num = parseInt(val) || 40;
+                            setEditablePost(prev => ({
+                              ...prev,
+                              ageLimit: { ...prev.ageLimit, max: num }
+                            }));
+                          }}
+                          titlePrefix="अधिकतम आयु"
+                        />{' '}
+                        वर्ष
+                      </strong>{' '}
+                      निर्धारित की गई है। आयु की गणना{' '}
+                      <EditableText
+                        value={editablePost.ageLimit?.asOnDate || '2026'}
+                        onChange={(val) => {
+                          setEditablePost(prev => ({
+                            ...prev,
+                            ageLimit: { ...prev.ageLimit, asOnDate: val }
+                          }));
+                        }}
+                        titlePrefix="आयु गणना तिथि"
+                      />{' '}
+                      को आधार मानकर की जाएगी। आरक्षित वर्गों को नियमानुसार अधिकतम आयु सीमा में छूट देय होगी।
                     </p>
 
                     <div className="overflow-x-auto border border-slate-300 rounded-md">
@@ -870,13 +1191,33 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         <tr>
                           <td className="p-3 bg-slate-50 border-r border-slate-200">सामान्य / ओबीसी / ईडब्ल्यूएस (Gen / OBC / EWS)</td>
                           <td className="p-3 font-bold text-slate-900">
-                            {vacancy.applicationFee?.genObc ? `₹${vacancy.applicationFee.genObc}` : '₹100 (या नियमानुसार)'}
+                            <EditableText
+                              value={editablePost.applicationFee?.genObc !== undefined ? `₹${editablePost.applicationFee.genObc}` : '₹100'}
+                              onChange={(val) => {
+                                const parsedNum = parseInt(val.replace(/[^\d]/g, ''), 10) || 0;
+                                setEditablePost(prev => ({
+                                  ...prev,
+                                  applicationFee: { ...prev.applicationFee, genObc: parsedNum }
+                                }));
+                              }}
+                              titlePrefix="सामान्य / ओबीसी शुल्क"
+                            />
                           </td>
                         </tr>
                         <tr>
                           <td className="p-3 bg-slate-50 border-r border-slate-200">अनुसूचित जाति / अनुसूचित जनजाति (SC / ST)</td>
                           <td className="p-3 font-bold text-emerald-700">
-                            {vacancy.applicationFee?.scSt ? `₹${vacancy.applicationFee.scSt}` : 'निःशुल्क'}
+                            <EditableText
+                              value={editablePost.applicationFee?.scSt !== undefined ? (editablePost.applicationFee.scSt === 0 ? 'निःशुल्क' : `₹${editablePost.applicationFee.scSt}`) : 'निःशुल्क'}
+                              onChange={(val) => {
+                                const parsedNum = parseInt(val.replace(/[^\d]/g, ''), 10) || 0;
+                                setEditablePost(prev => ({
+                                  ...prev,
+                                  applicationFee: { ...prev.applicationFee, scSt: parsedNum }
+                                }));
+                              }}
+                              titlePrefix="एससी / एसटी शुल्क"
+                            />
                           </td>
                         </tr>
                         <tr>
