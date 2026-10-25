@@ -691,12 +691,78 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
     // Dynamic Title & SEO
     const originalTitle = document.title;
-    document.title = `${postTitle} - RajasthanVacancy`;
+    const cleanTitle = `${postTitle} - Rajasthan Vacancy 2026`;
+    document.title = cleanTitle;
+
+    // Dynamic Meta Description & OpenGraph Tags
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const originalDesc = metaDesc?.getAttribute('content') || '';
+    const newDesc = `${postTitle}: कुल पद ${editablePost.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+    if (metaDesc) {
+      metaDesc.setAttribute('content', newDesc);
+    }
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', cleanTitle);
+
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', newDesc);
+
+    // Dynamic Schema.org JobPosting JSON-LD
+    let scriptEl = document.getElementById('vacancy-job-posting-ld') as HTMLScriptElement | null;
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = 'vacancy-job-posting-ld';
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+
+    const startDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
+      ? (editablePost.importantDates as any)?.notificationDate || '2026-10-22'
+      : '2026-10-22';
+
+    const lastDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
+      ? (editablePost.importantDates as any)?.applyLastDate || '2026-11-23'
+      : '2026-11-23';
+
+    const jobPostingData = {
+      "@context": "https://schema.org/",
+      "@type": "JobPosting",
+      "@id": `https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}#job`,
+      "title": editablePost.titleHi || editablePost.title,
+      "description": editablePost.briefSummaryHi || editablePost.descriptionHi || newDesc,
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": editablePost.organization || "Rajasthan Government",
+        "value": editablePost.id
+      },
+      "datePosted": startDate.includes('202') ? startDate : '2026-10-22',
+      "validThrough": lastDate.includes('202') ? lastDate : '2026-11-23',
+      "employmentType": "FULL_TIME",
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": editablePost.organization || "Rajasthan Govt Department",
+        "sameAs": editablePost.officialLinks?.officialWebsiteUrl || "https://rajasthan.gov.in"
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": "Rajasthan",
+          "addressCountry": "IN"
+        }
+      }
+    };
+
+    scriptEl.textContent = JSON.stringify(jobPostingData, null, 2);
 
     return () => {
       document.title = originalTitle;
+      if (metaDesc) metaDesc.setAttribute('content', originalDesc);
+      const scriptToRemove = document.getElementById('vacancy-job-posting-ld');
+      if (scriptToRemove) scriptToRemove.remove();
     };
-  }, [vacancy.id, postTitle]);
+  }, [vacancy.id, postTitle, editablePost]);
 
   const renderSectionShareButton = (_sectionKey: string, _sectionTitle: string) => null;
 

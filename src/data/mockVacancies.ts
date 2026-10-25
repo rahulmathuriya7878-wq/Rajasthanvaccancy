@@ -2087,7 +2087,193 @@ export const INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY: VacancyItem = {
   updatedAt: '24 अक्टूबर 2026'
 };
 
+export const RMS_DHOLPUR_2026_VACANCY: VacancyItem = {
+  id: 'rashtriya-military-school-dholpur-recruitment-2026',
+  title: 'Rashtriya Military School Dholpur Recruitment 2026: Notification Released for PGT English, TGT SST & School Counsellor Posts',
+  titleHi: 'राष्ट्रीय मिलिट्री स्कूल धौलपुर भर्ती 2026: PGT अंग्रेजी, TGT सामाजिक विज्ञान (SST) एवं स्कूल काउंसलर शिक्षकों के पदों पर नोटिफिकेशन जारी',
+  shortTitle: 'RMS Dholpur Teacher Bharti 2026',
+  shortTitleHi: 'राष्ट्रीय मिलिट्री स्कूल धौलपुर शिक्षक भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'Rashtriya Military School Dholpur (Ministry of Defence)',
+  departmentHi: 'राष्ट्रीय मिलिट्री स्कूल धौलपुर (रक्षा मंत्रालय, भारत सरकार)',
+  advtNo: 'EN 30/82',
+  category: 'latest_job',
+  totalPosts: '04 पद (PGT, TGT & Counsellor)',
+  postName: 'Master Gazetted (PGT English), Assistant Master (TGT SST), School Counsellor',
+  postNameHi: 'मास्टर राजपत्रित (PGT अंग्रेजी), असिस्टेंट मास्टर (TGT SST), स्कूल काउंसलर',
+  qualification: ['Graduate', 'PostGraduate', 'B.Ed/BSTC'],
+  qualificationDetails: 'PG in English + B.Ed for PGT (Rs 30,000/mo). Graduation in SST + B.Ed for TGT (Rs 20,000/mo). BA Psychology / Counselling Diploma for Counsellor (Rs 25,000/mo).',
+  qualificationDetailsHi: 'PGT अंग्रेजी: संबंधित विषय में स्नातकोत्तर (PG) + B.Ed (₹30,000/-)। TGT सामाजिक विज्ञान: स्नातक (Graduation) + B.Ed (₹20,000/-)। स्कूल काउंसलर: मनोविज्ञान (Psychology) में बीए / काउंसलिंग में डिप्लोमा (₹25,000/-)।',
+  briefSummary: 'Rashtriya Military School Dholpur official notification for PGT English, TGT SST, and School Counsellor teacher posts on contractual basis under Ministry of Defence.',
+  briefSummaryHi: '✍️ राष्ट्रीय मिलिट्री स्कूल धौलपुर (रक्षा मंत्रालय, भारत सरकार) द्वारा सीनियर सेकेंडरी एवं हायर सेकेंडरी कक्षाओं हेतु अनुबंध (Contractual Basis) पर PGT अंग्रेजी शिक्षक, TGT सामाजिक विज्ञान (SST) शिक्षक तथा स्कूल काउंसलर के पदों पर सीधी भर्ती का आधिकारिक नोटिफिकेशन जारी कर दिया गया है। योग्य एवं इच्छुक अभ्यर्थी नोटिफिकेशन जारी होने के 15 दिवस के भीतर सादे कागज पर हस्तलिखित/टाइप आवेदन पत्र या ईमेल द्वारा (informsdholpur@gmail.com / principalrmsd@gmail.com) आवेदन प्रस्तुत कर सकते हैं। भर्ती से संबंधित विस्तृत शैक्षणिक योग्यता, आयु सीमा, मानदेय (₹20,000 से ₹30,000 प्रति माह), आवेदन प्रक्रिया तथा आधिकारिक PDF नोटिफिकेशन डाउनलोड करने का डायरेक्ट लिंक नीचे दिया गया है।',
+  description: 'Official notification details and application instructions for Rashtriya Military School Dholpur Teacher Recruitment 2026.',
+  descriptionHi: '✍️ नमस्ते प्रिय अभ्यर्थियों,\n\nरक्षा मंत्रालय (भारत सरकार) के अधीन संचालित राष्ट्रीय मिलिट्री स्कूल धौलपुर (राजस्थान - 328028) में शिक्षकों एवं काउंसलर के पदों पर संविदा (Contractual) आधार पर भर्ती का आधिकारिक विज्ञापन जारी किया गया है। भर्ती से जुड़ी सभी मुख्य जानकारियों का विवरण नीचे दिया गया है:\n\n📌 पदों का विवरण व मानदेय:\n1. मास्टर राजपत्रित (PGT - अंग्रेजी): 02 पद | मानदेय: ₹30,000/- प्रति माह\n2. असिस्टेंट मास्टर (TGT - सामाजिक विज्ञान SST): 01 पद | मानदेय: ₹20,000/- प्रति माह\n3. स्कूल काउंसलर (Assistant Master): 01 पद | मानदेय: ₹25,000/- प्रति माह\n\n🎯 आयु सीमा व चयन प्रक्रिया:\n• अधिकतम आयु सीमा: 40 वर्ष से अधिक नहीं (Not more than 40 years)।\n• चयन प्रक्रिया: आवेदन पत्रों की स्क्रूटनी के पश्चात लिखित परीक्षा (Written Test), इंटरव्यू एवं टीचिंग प्रैक्टिस (Teaching Practice) के लिए तिथियों की सूचना ईमेल अथवा फोन द्वारा दी जाएगी।\n\n📧 आवेदन भेजने का माध्यम:\n• ईमेल द्वारा: `informsdholpur@gmail.com` एवं `principalrmsd@gmail.com` पर स्वप्रमाणित दस्तावेजों सहित आवेदन भेजें।\n• डाक द्वारा: `प्रधानाचार्य, राष्ट्रीय मिलिट्री स्कूल, धौलपुर (राजस्थान) - 328028` पर पंजीकृत/स्पीड पोस्ट से भेजें।\n• समय सीमा: विज्ञापन प्रकाशन से 15 दिन के भीतर।',
+  jobLocation: 'धौलपुर (राजस्थान)',
+  salary: '₹20,000 to ₹30,000 per month (Fixed Consolidated Package)',
+  salaryHi: '₹20,000 से ₹30,000/- प्रति माह (मासिक निश्चित मानदेय)',
+  ageLimit: {
+    min: 18,
+    max: 40,
+    asOnDate: '2026-10-25',
+    relaxationNotes: 'Maximum age limit is 40 years for all contractual teaching positions.',
+    relaxationNotesHi: 'सभी संविदा शिक्षक पदों हेतु अधिकतम आयु सीमा 40 वर्ष रखी गई है।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNote: 'No application fee prescribed in official notification.',
+    otrNoteHi: 'आवेदन करने हेतु कोई आवेदन शुल्क नहीं रखा गया है (निःशुल्क)।'
+  },
+  importantDates: {
+    notificationDate: '25 अक्टूबर 2026',
+    applyStartDate: '2026-10-25',
+    applyLastDate: '2026-11-09',
+    feeLastDate: '2026-11-09',
+    examDate: 'ईमेल/फोन द्वारा सूचित होगी',
+    admitCardDate: 'लिखित परीक्षा से पूर्व'
+  },
+  selectionProcess: [
+    'Scrutiny of Applications',
+    'Written Examination',
+    'Teaching Practice / Demo Class',
+    'Personal Interview & Document Verification'
+  ],
+  selectionProcessHi: [
+    'प्राप्त आवेदनों की स्क्रूटनी (Shortlisting)',
+    'लिखित परीक्षा (Written Test)',
+    'टीचिंग प्रैक्टिस / डेमो क्लास (Teaching Practice)',
+    'व्यक्तिगत साक्षात्कार एवं दस्तावेज सत्यापन (Interview & DV)'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'mailto:principalrmsd@gmail.com',
+    notificationPdfUrl: '/assets/aistudio/Rashtriya-Military-School-Dholpur-Recruitment-2026-Notification_266ca697.pdf',
+    officialWebsiteUrl: 'https://rashtriyamilitaryschools.edu.in'
+  },
+  postalAddress: 'Principal, Rashtriya Military School, Dholpur (Raj) - 328028 (Mob: 9413310842 / 9413310843)',
+  postBreakdown: [
+    {
+      postName: 'Master Gazetted (PGT English)',
+      postNameHi: 'मास्टर राजपत्रित (PGT अंग्रेजी)',
+      categoryOrSubjectHi: 'PGT शिक्षक पद',
+      postsCount: '02 पद',
+      qualification: 'Post-Graduation in English + B.Ed',
+      qualificationHi: 'मान्यता प्राप्त विश्वविद्यालय से अंग्रेजी में स्नातकोत्तर (M.A. English) + B.Ed (3 वर्ष का अध्यापन अनुभव वांछनीय)',
+      payLevel: '₹30,000/- प्रतिमाह (फिक्स मानदेय)'
+    },
+    {
+      postName: 'Assistant Master (TGT SST)',
+      postNameHi: 'असिस्टेंट मास्टर (TGT सामाजिक विज्ञान)',
+      categoryOrSubjectHi: 'TGT शिक्षक पद',
+      postsCount: '01 पद',
+      qualification: 'Graduation in SST + B.Ed',
+      qualificationHi: 'इतिहास/पोलाइटिकल/इकोनॉमिक्स/भूगोल में से दो विषयों के साथ सामाजिक विज्ञान में स्नातक + B.Ed',
+      payLevel: '₹20,000/- प्रतिमाह (फिक्स मानदेय)'
+    },
+    {
+      postName: 'School Counsellor (Assistant Master)',
+      postNameHi: 'स्कूल काउंसलर (असिस्टेंट मास्टर)',
+      categoryOrSubjectHi: 'काउंसलर पद',
+      postsCount: '01 पद',
+      qualification: 'BA Psychology or Diploma in Counselling',
+      qualificationHi: 'मनोविज्ञान (Psychology) के साथ B.A. डिग्री अथवा काउंसलिंग में डिप्लोमा + कंप्यूटर का कार्यसाधक ज्ञान',
+      payLevel: '₹25,000/- प्रतिमाह (फिक्स मानदेय)'
+    }
+  ],
+  salaryTable: [
+    {
+      postName: 'PGT Teacher (English)',
+      postNameHi: 'PGT अंग्रेजी शिक्षक',
+      payLevel: 'Contractual Package',
+      payLevelHi: 'समेकित फिक्स मानदेय',
+      salaryRange: '₹30,000 per month',
+      salaryRangeHi: '₹30,000/- प्रति माह'
+    },
+    {
+      postName: 'School Counsellor',
+      postNameHi: 'स्कूल काउंसलर',
+      payLevel: 'Contractual Package',
+      payLevelHi: 'समेकित फिक्स मानदेय',
+      salaryRange: '₹25,000 per month',
+      salaryRangeHi: '₹25,000/- प्रति माह'
+    },
+    {
+      postName: 'TGT Teacher (SST)',
+      postNameHi: 'TGT सामाजिक विज्ञान शिक्षक',
+      payLevel: 'Contractual Package',
+      payLevelHi: 'समेकित फिक्स मानदेय',
+      salaryRange: '₹20,000 per month',
+      salaryRangeHi: '₹20,000/- प्रति माह'
+    }
+  ],
+  requiredDocumentsHi: [
+    'सादे कागज पर हस्तलिखित अथवा टाइप किया गया संपूर्ण विवरण युक्त आवेदन पत्र।',
+    '10वीं, 12वीं, स्नातक एवं स्नातकोत्तर (M.A./B.A.) की मूल अंकतालिकाएं एवं प्रमाण पत्र।',
+    'B.Ed डिग्री एवं अनुभव प्रमाण पत्र की स्वप्रमाणित प्रति।',
+    'कंप्यूटर दक्षता / काउंसलिंग डिप्लोमा प्रमाण पत्र (काउंसलर पद हेतु)।',
+    'नवीनतम पासपोर्ट साइज रंगीन फोटो एवं पहचान पत्र (आधार कार्ड / पैन कार्ड)।'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले नीचे दिए गए "Download Notification (PDF)" लिंक पर क्लिक करके आधिकारिक विज्ञप्ति को ध्यानपूर्वक पढ़ें।',
+    'चरण 2: सादे कागज पर अपना नाम, पिता का नाम, जन्मतिथि, पद का नाम, शैक्षणिक योग्यता एवं अनुभव का विवरण स्पष्ट टाइप या हस्तलिखित करें।',
+    'चरण 3: आवेदन पत्र के साथ सभी शैक्षणिक योग्यता एवं अनुभव प्रमाण पत्रों की स्वप्रमाणित (Self-Attested) प्रति संलग्न करें।',
+    'चरण 4: ईमेल द्वारा आवेदन करने हेतु सभी स्कैन किए गए दस्तावेजों सहित आवेदन की PDF `informsdholpur@gmail.com` तथा `principalrmsd@gmail.com` पर भेजें।',
+    'चरण 5: डाक द्वारा आवेदन करने हेतु आवेदन लिफाफा `Principal, Rashtriya Military School, Dholpur (Raj) - 328028` के पते पर विज्ञापन प्रकाशन के 15 दिन के भीतर भेजें।',
+    'चरण 6: लिखित परीक्षा, इंटरव्यू एवं टीचिंग प्रैक्टिस की तिथियों की सूचना आपको ईमेल या टेलीफोन (9413310842/9413310843) द्वारा प्रदान की जाएगी।'
+  ],
+  directLinks: [
+    {
+      label: 'Download Official Notification PDF (Rashtriya Military School Dholpur)',
+      actionText: 'Download PDF',
+      type: 'notification',
+      url: '/assets/aistudio/Rashtriya-Military-School-Dholpur-Recruitment-2026-Notification_266ca697.pdf',
+      isPdf: true,
+      fileName: 'Rashtriya-Military-School-Dholpur-Recruitment-2026-Notification.pdf',
+      isPrimary: true
+    },
+    {
+      label: 'Send Application via Email (principalrmsd@gmail.com)',
+      actionText: 'Email Application',
+      type: 'apply',
+      url: 'mailto:principalrmsd@gmail.com?cc=informsdholpur@gmail.com&subject=Application%20for%20Teacher%20Post%20-%20RMS%20Dholpur'
+    },
+    {
+      label: 'Official Website (RMS Dholpur)',
+      actionText: 'Click Here',
+      type: 'official',
+      url: 'https://rashtriyamilitaryschools.edu.in'
+    }
+  ],
+  faqs: [
+    {
+      q: 'What is the last date to apply for Rashtriya Military School Dholpur Teacher Recruitment 2026?',
+      qHi: 'राष्ट्रीय मिलिट्री स्कूल धौलपुर शिक्षक भर्ती 2026 के लिए आवेदन करने की अंतिम तिथि क्या है?',
+      a: 'The application must reach within 15 days from the date of publication (by 09 November 2026).',
+      aHi: 'विज्ञापन प्रकाशन तिथि से 15 दिन के भीतर (9 नवंबर 2026 तक) आवेदन ईमेल या डाक द्वारा प्राप्त होना आवश्यक है।'
+    },
+    {
+      q: 'How can I submit the application form for RMS Dholpur?',
+      qHi: 'राष्ट्रीय मिलिट्री स्कूल धौलपुर भर्ती हेतु आवेदन कैसे जमा करें?',
+      a: 'You can send self-attested documents and typed application via email to informsdholpur@gmail.com & principalrmsd@gmail.com OR by post to Principal RMS Dholpur - 328028.',
+      aHi: 'आप अपना सादे कागज पर लिखा फॉर्म व स्वप्रमाणित दस्तावेज ईमेल (informsdholpur@gmail.com / principalrmsd@gmail.com) द्वारा अथवा डाक से प्रधानाचार्य राष्ट्रीय मिलिट्री स्कूल धौलपुर (328028) को भेज सकते हैं।'
+    },
+    {
+      q: 'What is the age limit for PGT English, TGT SST and School Counsellor posts?',
+      qHi: 'PGT अंग्रेजी, TGT SST एवं स्कूल काउंसलर पदों हेतु आयु सीमा क्या है?',
+      a: 'The age limit is not more than 40 years as per notification.',
+      aHi: 'आधिकारिक नोटिफिकेशन के अनुसार अभ्यर्थियों की अधिकतम आयु 40 वर्ष से अधिक नहीं होनी चाहिए।'
+    }
+  ],
+  tags: ['Rashtriya Military School Dholpur', 'RMS Dholpur Teacher', 'PGT English', 'TGT SST', 'School Counsellor', 'Teacher Recruitment 2026', 'Defence School Jobs', 'Dholpur Jobs'],
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  createdAt: '2026-10-25',
+  updatedAt: '25 अक्टूबर 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  RMS_DHOLPUR_2026_VACANCY,
   RAILWAY_GROUP_D_2026_VACANCY,
   INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY,
   PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY,

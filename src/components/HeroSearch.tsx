@@ -90,7 +90,7 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
   return (
     <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-6 mb-8">
       {/* Search Input Box */}
-      <div className="relative w-full mb-4">
+      <div className="relative w-full mb-2">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <Search className="w-4 h-4" />
         </div>
@@ -104,11 +104,43 @@ export const HeroSearch: React.FC<HeroSearchProps> = ({
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+            title="खोज साफ करें"
           >
             <X className="w-4 h-4" />
           </button>
         )}
+      </div>
+
+      {/* Popular Trending Quick Search Chips */}
+      <div className="flex items-center gap-1.5 flex-wrap mb-4 text-xs pt-1">
+        <span className="text-slate-500 font-bold flex items-center gap-1 text-[11px] shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+          <span>{isHi ? 'लोकप्रिय खोजें:' : 'Trending:'}</span>
+        </span>
+        {[
+          'राजस्थान पुलिस',
+          'पटवारी',
+          'पशु परिचर',
+          'REET',
+          'CET 12th',
+          'RPSC SI',
+          'एडमिट कार्ड',
+          'रिजल्ट'
+        ].map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => setSearchQuery(searchQuery === tag ? '' : tag)}
+            className={`px-2 py-0.5 rounded-full text-[11px] font-semibold transition cursor-pointer border ${
+              searchQuery === tag
+                ? 'bg-amber-600 text-white border-amber-600 shadow-2xs'
+                : 'bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-900 border-slate-200 hover:border-amber-300'
+            }`}
+          >
+            #{tag}
+          </button>
+        ))}
       </div>
 
       {/* Category Tabs */}
