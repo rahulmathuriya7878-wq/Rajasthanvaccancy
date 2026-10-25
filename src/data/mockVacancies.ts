@@ -1773,7 +1773,260 @@ export const PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY: VacancyItem = {
   updatedAt: '15 जनवरी 2026'
 };
 
+export const RAILWAY_GROUP_D_2026_VACANCY: VacancyItem = {
+  id: 'railway-group-d-recruitment-2026',
+  title: 'Railway Group D Recruitment 2026: RRB Group D Notification for 30,000+ Posts, Eligibility, Exam Date & Apply Online',
+  titleHi: 'रेलवे ग्रुप डी भर्ती 2026: RRB Group D 30,000+ पदों पर नोटिफिकेशन, 10वीं पास योग्यता, परीक्षा तिथि व ताज़ा समाचार',
+  shortTitle: 'Railway Group D Recruitment 2026',
+  shortTitleHi: 'रेलवे ग्रुप डी भर्ती 2026',
+  organization: 'Railway Board',
+  department: 'Railway Recruitment Board (RRB / RRC)',
+  departmentHi: 'रेलवे भर्ती बोर्ड (RRB / RRC)',
+  advtNo: 'CEN 01/2026 (Level-1)',
+  category: 'latest_job',
+  totalPosts: '30,000+ पद (Level-1 Posts)',
+  postName: 'Track Maintainer Grade IV, Pointsman, Assistant Workshop, Hospital Attendant & Group D Posts',
+  postNameHi: 'ट्रैक मेंटेनर ग्रेड-IV, पॉइंट्समैन, असिस्टेंट वर्कशॉप, हॉस्पिटल अटेंडेंट एवं विभिन्न लेवल-1 पद',
+  qualification: ['10th', 'ITI/Diploma'],
+  qualificationDetails: '10th Pass from recognized board OR National Apprenticeship Certificate (NAC) / ITI from NCVT/SCVT.',
+  qualificationDetailsHi: 'मान्यता प्राप्त बोर्ड से 10वीं (मैट्रिक) पास अथवा NCVT/SCVT द्वारा मान्यता प्राप्त ITI / नेशनल अप्रेंटिसशिप सर्टिफिकेट (NAC)।',
+  briefSummary: 'Railway Group D 2026 notification for 30,000+ Level-1 vacancies by RRB. Check eligibility, CBT pattern, and apply online.',
+  briefSummaryHi: '✍️ नमस्ते साथियों! रेलवे भर्ती बोर्ड (RRB) द्वारा ग्रुप डी (Level-1) के 30,000 से अधिक पदों पर नई भर्ती 2026 की अधिसूचना की तैयारी कर ली गई है। 10वीं पास और ITI धारक युवाओं के लिए भारतीय रेलवे के विभिन्न जोनों में सरकारी नौकरी पाने का यह सुनहरा अवसर है। इस भर्ती के ताज़ा समाचार, आयु सीमा (18 से 33 वर्ष), वेतनमान लेवल-1 (₹18,000 से ₹56,900/-), परीक्षा पैटर्न व ऑनलाइन आवेदन की पूरी जानकारी नीचे आसान भाषा में दी गई है।',
+  description: 'Complete recruitment details for RRB Railway Group D 2026 Level-1 vacancies.',
+  descriptionHi: '✍️ प्रिय अभ्यर्थियों,\n\nभारतीय रेलवे में लेवल-1 (ग्रुप डी) पदों पर भर्ती की प्रतीक्षा कर रहे देश भर के युवाओं के लिए बड़ी खबर सामने आई है। रेलवे भर्ती बोर्ड (RRB) द्वारा आगामी भर्ती चक्र में 30,000 से अधिक पदों पर भर्ती की तैयारी की जा रही है।\n\n📌 मुख्य बिंदु व पद विवरण:\n• भर्ती बोर्ड: रेलवे भर्ती बोर्ड (RRB)\n• पद नाम: ट्रैक मेंटेनर, पॉइंट्समैन, हेल्पर, असिस्टेंट वर्कशॉप\n• कुल पद: 30,000 से अधिक संभावित पद\n• शैक्षणिक योग्यता: 10वीं पास अथवा ITI प्रमाणपत्र\n• आयु सीमा: 18 से 33 वर्ष (नियमानुसार छूट देय)\n• वेतनमान: 7th CPC पे-मैट्रिक्स लेवल-1 (मूल वेतन ₹18,000/- + भत्ते)\n\n🎯 चयन प्रक्रिया के 4 चरण:\n1. कंप्यूटर आधारित परीक्षा (CBT - Stage 1)\n2. शारीरिक दक्षता परीक्षण (PET)\n3. दस्तावेज सत्यापन (Document Verification)\n4. विस्तृत चिकित्सा परीक्षण (Medical Examination)',
+  jobLocation: 'अखिल भारतीय (All India / NWR जयपुर सहित सभी ज़ोन)',
+  salary: 'Level-1 (₹18,000 - ₹56,900 per month + DA, HRA, Transport Allowance)',
+  salaryHi: 'लेवल-1 (₹18,000 से ₹56,900/- प्रति माह + महंगाई भत्ता व अन्य भत्ते)',
+  ageLimit: {
+    min: 18,
+    max: 33,
+    asOnDate: '2026-07-01',
+    relaxationNotes: 'Age relaxation 3 years for OBC, 5 years for SC/ST as per Central Govt rules.',
+    relaxationNotesHi: 'ओबीसी को 3 वर्ष तथा एससी/एसटी को 5 वर्ष की अधिकतम आयु सीमा में नियमानुसार छूट देय होगी।'
+  },
+  applicationFee: [
+    { category: 'General / OBC / EWS', amount: '₹500/- (CBT में शामिल होने पर ₹400 रिफंड)' },
+    { category: 'SC / ST / Divyang / Female', amount: '₹250/- (CBT में शामिल होने पर पूर्ण रिफंड)' },
+    { category: 'Payment Mode', amount: 'Online (Debit / Credit Card / Net Banking / UPI)' }
+  ],
+  importantDates: [
+    { label: 'Short Notice Release', value: 'अक्टूबर / नवंबर 2026' },
+    { label: 'Application Start Date', value: 'शीघ्र (TBA)' },
+    { label: 'Application Last Date', value: 'अधिसूचना अनुसार' },
+    { label: 'Pay Fee Last Date', value: 'अधिसूचना अनुसार' },
+    { label: 'CBT 1 Exam Date', value: 'फरवरी - मार्च 2027 (संभावित)' },
+    { label: 'Admit Card Available', value: 'परीक्षा से 4 दिन पूर्व' }
+  ],
+  latestNews: [
+    {
+      id: 'rrb-news-1',
+      date: '25 अक्टूबर 2026',
+      badge: '🔴 Live Update',
+      headline: 'रेलवे भर्ती बोर्ड द्वारा 30,000+ ग्रुप डी पदों पर भर्ती का प्रस्ताव तैयार',
+      details: 'सभी जोनल रेलवे से रिक्तियों का ब्यौरा संकलित किया जा चुका है। विस्तृत अधिसूचना आधिकारिक पोर्टल rrbapply.gov.in पर जल्द ही लाइव होगी।',
+      isHighlighted: true
+    },
+    {
+      id: 'rrb-news-2',
+      date: '20 अक्टूबर 2026',
+      badge: 'योग्यता स्पष्टीकरण',
+      headline: '10वीं पास व ITI धारकों के लिए अनिवार्य पात्रता नियम',
+      details: 'तकनीकी पदों हेतु ITI/NCVT प्रमाणपत्र अनिवार्य रहेगा, जबकि गैर-तकनीकी एवं पॉइंट्समैन पदों हेतु सामान्य 10वीं पास अभ्यर्थी भी आवेदन के पात्र होंगे।',
+      isHighlighted: false
+    },
+    {
+      id: 'rrb-news-3',
+      date: '15 अक्टूबर 2026',
+      badge: 'परीक्षा पैटर्न',
+      headline: 'CBT 1 परीक्षा में 100 वस्तुनिष्ठ प्रश्न पूछे जाएंगे',
+      details: 'परीक्षा में सामान्य विज्ञान (25), गणित (25), रीजनिंग (30) व करंट अफेयर्स (20) से 100 प्रश्न 90 मिनट में हल करने होंगे। 1/3 नेगेटिव मार्किंग लागू रहेगी।',
+      isHighlighted: false
+    }
+  ],
+  selectionProcess: [
+    'Computer Based Test (CBT - Stage 1)',
+    'Physical Efficiency Test (PET)',
+    'Document Verification (DV)',
+    'Medical Examination'
+  ],
+  selectionProcessHi: [
+    'कंप्यूटर आधारित टेस्ट (CBT 1)',
+    'शारीरिक दक्षता परीक्षण (PET - दौड़ व वजन उठाना)',
+    'दस्तावेज सत्यापन (Document Verification)',
+    'चिकित्सा परीक्षण (Medical Exam)'
+  ],
+  directLinks: [
+    { label: 'Apply Online (RRB Official Portal)', actionText: 'Click Here', type: 'apply', url: 'https://rrbapply.gov.in', isPrimary: true },
+    { label: 'Download Short Notice (PDF)', actionText: 'Download PDF', type: 'notification', url: 'https://rrbapply.gov.in', isPdf: true, fileName: 'Railway_Group_D_Recruitment_2026_Notice.pdf' },
+    { label: 'Syllabus & Exam Pattern PDF', actionText: 'Download PDF', type: 'syllabus', url: 'https://rrbapply.gov.in', isPdf: true, fileName: 'Railway_Group_D_Syllabus_2026.pdf' },
+    { label: 'RRB Official Website', actionText: 'Click Here', type: 'official', url: 'https://rrbapply.gov.in' }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://rrbapply.gov.in',
+    notificationPdfUrl: 'https://rrbapply.gov.in',
+    syllabusPdfUrl: 'https://rrbapply.gov.in',
+    officialWebsiteUrl: 'https://rrbapply.gov.in'
+  },
+  postBreakdown: [
+    {
+      postName: 'Track Maintainer Grade IV',
+      postNameHi: 'ट्रैक मेंटेनर ग्रेड-IV (इंजीनियरिंग)',
+      categoryOrSubjectHi: 'तकनीकी पद',
+      postsCount: '15,000+',
+      qualification: '10th Pass + ITI',
+      qualificationHi: '10वीं पास + सिविल/फिटर में ITI अथवा 10वीं पास',
+      payLevel: 'Level-1 (₹18,000 - ₹56,900)'
+    },
+    {
+      postName: 'Assistant Pointsman (Traffic)',
+      postNameHi: 'असिस्टेंट पॉइंट्समैन (यातायात विभाग)',
+      categoryOrSubjectHi: 'गैर-तकनीकी पद',
+      postsCount: '6,500+',
+      qualification: '10th Pass',
+      qualificationHi: 'मान्यता प्राप्त बोर्ड से 10वीं पास',
+      payLevel: 'Level-1 (₹18,000 - ₹56,900)'
+    },
+    {
+      postName: 'Assistant Workshop / C&W (Mechanical)',
+      postNameHi: 'असिस्टेंट वर्कशॉप / कैरिज एंड वैगन',
+      categoryOrSubjectHi: 'मैकेनिकल संवर्ग',
+      postsCount: '5,000+',
+      qualification: '10th + ITI',
+      qualificationHi: '10वीं पास + संबंधित ट्रेड में ITI / NCVT',
+      payLevel: 'Level-1 (₹18,000 - ₹56,900)'
+    },
+    {
+      postName: 'Hospital Assistant / Attendant (Medical)',
+      postNameHi: 'हॉस्पिटल असिस्टेंट / अटेंडेंट',
+      categoryOrSubjectHi: 'चिकित्सा विभाग',
+      postsCount: '3,500+',
+      qualification: '10th Pass',
+      qualificationHi: '10वीं पास अथवा प्राथमिक चिकित्सा ज्ञान',
+      payLevel: 'Level-1 (₹18,000 - ₹56,900)'
+    }
+  ],
+  tags: ['Railway Group D', 'RRB 2026', 'रेलवे भर्ती', '10th Pass Job', 'Central Govt'],
+  status: 'active',
+  isHot: true,
+  isTrending: true,
+  isNew: true,
+  createdAt: '2026-02-01',
+  updatedAt: '25 अक्टूबर 2026'
+};
+
+export const INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY: VacancyItem = {
+  id: 'indian-air-force-hindi-typist-recruitment-2026',
+  title: 'Indian Air Force Hindi Typist Recruitment 2026: Apply for Group C Hindi Typist & LDC Posts, Eligibility & Application Form',
+  titleHi: 'भारतीय वायु सेना हिंदी टाइपिस्ट भर्ती 2026: 12वीं पास के लिए ग्रुप सी टाइपिस्ट पदों पर भर्ती विज्ञापन जारी, यहां से भरें ऑफलाइन फॉर्म',
+  shortTitle: 'IAF Hindi Typist Recruitment 2026',
+  shortTitleHi: 'वायु सेना हिंदी टाइपिस्ट भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'Indian Air Force (IAF / HQ SWAC)',
+  departmentHi: 'भारतीय वायु सेना (IAF / दक्षिण पश्चिमी वायु कमान)',
+  advtNo: 'IAF/02/2026/GROUP-C',
+  category: 'latest_job',
+  totalPosts: 'विभिन्न पद (Group C Civilian Posts)',
+  postName: 'Hindi Typist, LDC (Lower Division Clerk) & Group C Civilian Posts',
+  postNameHi: 'हिंदी टाइपिस्ट, एलडीसी (क्लर्क) एवं ग्रुप सी सिविलियन पद',
+  qualification: ['12th'],
+  qualificationDetails: '12th Pass from recognized board + Typing speed of 30 wpm in Hindi OR 35 wpm in English on computer.',
+  qualificationDetailsHi: 'मान्यता प्राप्त बोर्ड से 12वीं (10+2) पास + कंप्यूटर पर हिंदी में 30 शब्द प्रति मिनट (WPM) अथवा अंग्रेजी में 35 WPM की टाइपिंग गति।',
+  briefSummary: 'Indian Air Force invites applications for Hindi Typist and Group C posts. 12th pass eligible. Download offline form.',
+  briefSummaryHi: '✍️ भारतीय वायु सेना (Indian Air Force) द्वारा ग्रुप सी सिविलियन संवर्ग में हिंदी टाइपिस्ट एवं क्लर्क पदों पर भर्ती का आधिकारिक विज्ञापन जारी कर दिया गया है। 12वीं पास एवं हिंदी टाइपिंग का ज्ञान रखने वाले पुरुष एवं महिला अभ्यर्थी ऑफलाइन माध्यम से आवेदन कर सकते हैं। आवेदन फॉर्म डाउनलोड करने का लिंक, आयु सीमा (18 से 25 वर्ष), वेतनमान लेवल-2 (₹19,900 - ₹63,200), चयन प्रक्रिया व फॉर्म भेजने का पता नीचे विस्तार से दिया गया है।',
+  description: 'Detailed recruitment guide for IAF Hindi Typist Group C civilian vacancies 2026.',
+  descriptionHi: '✍️ प्रिय अभ्यर्थियों,\n\nभारतीय वायु सेना (Indian Air Force) में ग्रुप सी सिविलियन पदों के तहत हिंदी टाइपिस्ट भर्ती के लिए ऑफलाइन आवेदन आमंत्रित किए गए हैं।\n\n📌 भर्ती की मुख्य बातें:\n• पद का नाम: हिंदी टाइपिस्ट (Hindi Typist / LDC Group C)\n• शैक्षणिक योग्यता: 12वीं पास + हिंदी टाइपिंग 30 WPM\n• आयु सीमा: 18 से 25 वर्ष (आरक्षित वर्गों को नियमानुसार छूट)\n• वेतनमान: 7वें वेतन आयोग पे-मैट्रिक्स लेवल-2 (₹19,900 - ₹63,200)\n• आवेदन माध्यम: केवल ऑफलाइन (पंजीकृत/स्पीड पोस्ट द्वारा)\n\n🎯 चयन प्रक्रिया:\n1. प्राप्त आवेदनों की स्क्रूटनी व कॉल लेटर प्रेषण\n2. लिखित परीक्षा (सामान्य बुद्धिमत्ता, अंग्रेजी, गणित, सामान्य जागरूकता)\n3. स्किल / टाइपिंग टेस्ट (कंप्यूटर पर हिंदी टाइपिंग - क्वालिफाइंग)\n4. मूल दस्तावेज सत्यापन व मेडिकल फिटनेस',
+  jobLocation: 'अखिल भारतीय / राजस्थान एवं गुजरात यूनिट्स (HQ SWAC)',
+  salary: 'Level-2 (₹19,900 - ₹63,200 per month + Central Govt DA & Allowances)',
+  salaryHi: 'लेवल-2 (₹19,900 से ₹63,200/- प्रति माह + केंद्रीय महंगाई भत्ता)',
+  ageLimit: {
+    min: 18,
+    max: 25,
+    asOnDate: '2026-03-01',
+    relaxationNotes: 'OBC: 3 years, SC/ST: 5 years, PwD: 10 years age relaxation.',
+    relaxationNotesHi: 'ओबीसी को 3 वर्ष, एससी/एसटी को 5 वर्ष तथा दिव्यांग अभ्यर्थियों को 10 वर्ष की छूट देय होगी।'
+  },
+  applicationFee: [
+    { category: 'All Categories (सभी वर्ग)', amount: '₹0/- (निशुल्क / Free)' },
+    { category: 'Postal Envelope', amount: '₹10/- का डाक टिकट लगा स्वयं का पता लिखा लिफाफा' }
+  ],
+  importantDates: [
+    { label: 'Notification Released', value: 'फरवरी / मार्च 2026' },
+    { label: 'Offline Form Start Date', value: 'विज्ञापन प्रकाशन तिथि से शुरू' },
+    { label: 'Offline Form Last Date', value: 'प्रकाशन के 30 दिनों के भीतर' },
+    { label: 'Written Exam Date', value: 'डाक द्वारा सूचित की जाएगी' },
+    { label: 'Skill Test Date', value: 'लिखित परीक्षा के उपरांत' }
+  ],
+  latestNews: [
+    {
+      id: 'iaf-news-1',
+      date: '25 अक्टूबर 2026',
+      badge: 'ऑफलाइन फॉर्म शुरू',
+      headline: 'भारतीय वायु सेना हिंदी टाइपिस्ट ऑफलाइन भर्ती फॉर्म जारी',
+      details: 'इच्छुक अभ्यर्थी निर्धारित प्रारूप में आवेदन पत्र डाउनलोड करके सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ संबंधित एयर फोर्स स्टेशन के पते पर भेजें।',
+      isHighlighted: true
+    },
+    {
+      id: 'iaf-news-2',
+      date: 'अक्टूबर 2026',
+      badge: 'टाइपिंग दिशा-निर्देश',
+      headline: 'कंप्यूटर पर 30 WPM हिंदी टाइपिंग की आवश्यकता',
+      details: 'टाइपिंग टेस्ट कंप्यूटर पर लिया जाएगा, जिसमें मंगल (Mangal) या रेमिंगटन गेल फॉन्ट समर्थित होगा। गति 30 शब्द प्रति मिनट होनी चाहिए।',
+      isHighlighted: false
+    }
+  ],
+  selectionProcess: [
+    'Scrutiny of Offline Applications',
+    'Written Examination',
+    'Skill / Typing Test (30 WPM Hindi on Computer)',
+    'Document Verification & Medical Fitness'
+  ],
+  selectionProcessHi: [
+    'ऑफलाइन आवेदनों की स्क्रूटनी व एडमिट कार्ड',
+    'लिखित परीक्षा (Objective Written Exam)',
+    'स्किल टेस्ट (कंप्यूटर पर हिंदी में 30 WPM टाइपिंग गति)',
+    'दस्तावेज सत्यापन व मेडिकल फिटनेस'
+  ],
+  directLinks: [
+    { label: 'Download Offline Application Form (PDF)', actionText: 'Download PDF', type: 'application_form', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Application_Form_2026.pdf', isPrimary: true },
+    { label: 'Download Detailed Notification (PDF)', actionText: 'Download PDF', type: 'notification', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Notification_2026.pdf' },
+    { label: 'Indian Air Force Official Website', actionText: 'Click Here', type: 'official', url: 'https://indianairforce.nic.in' }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://indianairforce.nic.in',
+    notificationPdfUrl: 'https://indianairforce.nic.in',
+    officialWebsiteUrl: 'https://indianairforce.nic.in'
+  },
+  postBreakdown: [
+    {
+      postName: 'Hindi Typist (Group C Civilian)',
+      postNameHi: 'हिंदी टाइपिस्ट (ग्रुप सी सिविलियन)',
+      categoryOrSubjectHi: 'टाइपिंग संवर्ग',
+      postsCount: 'विभिन्न पद',
+      qualification: '12th Pass + Hindi Typing 30 WPM',
+      qualificationHi: '12वीं पास + कंप्यूटर पर 30 शब्द प्रति मिनट हिंदी टाइपिंग',
+      payLevel: 'Level-2 (₹19,900 - ₹63,200)'
+    },
+    {
+      postName: 'LDC (Lower Division Clerk)',
+      postNameHi: 'लोअर डिवीजन क्लर्क (LDC)',
+      categoryOrSubjectHi: 'क्लर्क संवर्ग',
+      postsCount: 'विभिन्न पद',
+      qualification: '12th Pass + English 35 WPM / Hindi 30 WPM',
+      qualificationHi: '12वीं पास + कंप्यूटर टाइपिंग ज्ञान',
+      payLevel: 'Level-2 (₹19,900 - ₹63,200)'
+    }
+  ],
+  tags: ['Indian Air Force', 'Hindi Typist', '12th Pass Job', 'वायु सेना भर्ती', 'Central Govt'],
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  createdAt: '2026-02-10',
+  updatedAt: '25 अक्टूबर 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  RAILWAY_GROUP_D_2026_VACANCY,
+  INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY,
   PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY,
   AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY,
   PM_AWAS_YOJANA_URBAN_VACANCY,

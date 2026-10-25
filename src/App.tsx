@@ -74,13 +74,14 @@ import {
   FileQuestion
 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v20';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v21';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clear legacy cached vacancies
 try {
+  localStorage.removeItem('raj_vacancies_v20');
   localStorage.removeItem('raj_vacancies_v19');
   localStorage.removeItem('raj_vacancies_v1');
   localStorage.removeItem('raj_vacancies_v2');
@@ -308,15 +309,16 @@ export default function App() {
     }
   });
 
-  // Deep linking sync for SEO (reads ?vacancy=... and ?category=... from URL/sitemap)
+  // Deep linking sync for SEO (reads ?vacancy=... or pathname /slug/ and ?category=... from URL/sitemap)
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const vacancyParam = params.get('vacancy');
+      const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '');
+      const vacancyParam = params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
       const categoryParam = params.get('category');
 
       if (vacancyParam) {
-        let found = vacancies.find((v) => v.id === vacancyParam);
+        let found = vacancies.find((v) => v.id === vacancyParam || v.id.toLowerCase() === vacancyParam.toLowerCase());
         if (!found) {
           try {
             const cached = localStorage.getItem(`raj_offline_job_${vacancyParam}`);
@@ -375,9 +377,10 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
-      const vacancyId = params.get('vacancy');
+      const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '');
+      const vacancyId = params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
       if (vacancyId) {
-        const found = vacancies.find(v => v.id === vacancyId);
+        const found = vacancies.find(v => v.id === vacancyId || v.id.toLowerCase() === vacancyId.toLowerCase());
         if (found) {
           setSelectedVacancy(found);
         } else {

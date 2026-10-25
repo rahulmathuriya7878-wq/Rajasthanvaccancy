@@ -41,6 +41,30 @@ export type JobStatusType =
   | 'answer_key_out'
   | 'closed';
 
+export interface DirectLinkItem {
+  label: string;
+  actionText?: string;
+  type?: string;
+  url?: string;
+  fileName?: string;
+  fileSize?: string;
+  isPdf?: boolean;
+  isPrimary?: boolean;
+}
+
+export interface LatestNewsItem {
+  id?: string;
+  date?: string;
+  badge?: string;
+  headline: string;
+  details?: string;
+  linkUrl?: string;
+  linkText?: string;
+  isHighlighted?: boolean;
+}
+
+export type SarkariPost = VacancyItem;
+
 export interface PostBreakdownItem {
   postName: string;
   postNameHi: string;
@@ -116,24 +140,10 @@ export interface VacancyItem {
     relaxationNotes?: string;
     relaxationNotesHi?: string;
   };
-  applicationFee: {
-    genObc: number;
-    scSt: number;
-    ews: number;
-    otrNote?: string;
-    otrNoteHi?: string;
-    paymentMode?: string;
-    paymentModeHi?: string;
-  };
-  importantDates: {
-    notificationDate: string;
-    applyStartDate: string;
-    applyLastDate: string;
-    feeLastDate?: string;
-    examDate?: string;
-    admitCardDate?: string;
-    resultDate?: string;
-  };
+  applicationFee: any;
+  importantDates: any;
+  directLinks?: DirectLinkItem[];
+  latestNews?: LatestNewsItem[];
   status: JobStatusType;
   salary: string;
   salaryHi?: string;

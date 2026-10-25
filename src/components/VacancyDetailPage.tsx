@@ -56,6 +56,86 @@ interface VacancyDetailPageProps {
 
 type SarkariPost = VacancyItem;
 
+// Pure normalizer to safely guarantee Arrays for importantDates, applicationFee, directLinks and latestNews
+export const normalizePost = (v: VacancyItem): any => {
+  if (!v) return v;
+
+  const defaultDirectLinks = (v as any).directLinks && Array.isArray((v as any).directLinks) && (v as any).directLinks.length > 0
+    ? (v as any).directLinks
+    : [
+        {
+          label: 'Apply Online',
+          actionText: 'Click Here',
+          type: 'apply',
+          url: v.officialLinks?.applyOnlineUrl || v.officialLinks?.officialWebsiteUrl || 'https://sso.rajasthan.gov.in',
+          isPrimary: true
+        },
+        {
+          label: 'Download Notification (PDF)',
+          actionText: 'Download PDF',
+          type: 'notification',
+          url: v.officialLinks?.notificationPdfUrl || v.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in',
+          isPdf: true,
+          fileName: `${(v.shortTitle || v.title || 'Notification').replace(/\s+/g, '_')}.pdf`
+        },
+        {
+          label: 'Official Website',
+          actionText: 'Click Here',
+          type: 'official',
+          url: v.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'
+        }
+      ];
+
+  const defaultDatesArray = Array.isArray((v as any).importantDates)
+    ? (v as any).importantDates
+    : [
+        { label: 'Application Begin', value: (v.importantDates as any)?.applyStartDate || 'शीघ्र' },
+        { label: 'Last Date for Apply Online', value: (v.importantDates as any)?.applyLastDate || 'शीघ्र' },
+        { label: 'Pay Exam Fee Last Date', value: (v.importantDates as any)?.feeLastDate || (v.importantDates as any)?.applyLastDate || 'शीघ्र' },
+        { label: 'Exam Date', value: (v.importantDates as any)?.examDate || 'As per Schedule' },
+        { label: 'Admit Card Available', value: (v.importantDates as any)?.admitCardDate || 'Before Exam' },
+        { label: 'Notification Released', value: (v.importantDates as any)?.notificationDate || 'अक्टूबर 2026' },
+      ];
+
+  const defaultFeeArray = Array.isArray((v as any).applicationFee)
+    ? (v as any).applicationFee
+    : [
+        { category: 'General / OBC / EWS', amount: `₹${(v.applicationFee as any)?.genObc ?? 600}/-` },
+        { category: 'SC / ST / Divyang', amount: `₹${(v.applicationFee as any)?.scSt ?? 400}/-` },
+        { category: 'Correction Charge', amount: '₹300/-' },
+        { category: 'Pay Exam Fee Through', amount: (v.applicationFee as any)?.paymentModeHi || (v.applicationFee as any)?.paymentMode || 'Online (Debit / Credit Card / Net Banking)' },
+      ];
+
+  const defaultLatestNews = (v as any).latestNews && Array.isArray((v as any).latestNews) && (v as any).latestNews.length > 0
+    ? (v as any).latestNews
+    : [
+        {
+          id: 'news-1',
+          date: (v.importantDates as any)?.notificationDate || '25 अक्टूबर 2026',
+          badge: 'ताज़ा अपडेट',
+          headline: `${v.shortTitleHi || v.titleHi || v.title} के संबंध में नई सूचना जारी`,
+          details: `${v.organization || 'विभाग'} द्वारा आधिकारिक पोर्टल पर भर्ती संबंधी आवश्यक दिशा-निर्देश व परीक्षा कैलेंडर की जानकारी अपडेट कर दी गई है।`,
+          isHighlighted: true
+        },
+        {
+          id: 'news-2',
+          date: 'अक्टूबर 2026',
+          badge: 'महत्वपूर्ण सूचना',
+          headline: 'ऑनलाइन आवेदन व पात्रता नियम',
+          details: 'इच्छुक अभ्यर्थी आवेदन करने से पूर्व अपनी शैक्षणिक योग्यता, आयु सीमा एवं आवश्यक प्रमाणपत्र (जाति/मूल निवास/EWS) की जांच अवश्य कर लें।',
+          isHighlighted: false
+        }
+      ];
+
+  return {
+    ...v,
+    directLinks: defaultDirectLinks,
+    importantDates: defaultDatesArray,
+    applicationFee: defaultFeeArray,
+    latestNews: defaultLatestNews
+  };
+};
+
 export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   vacancy,
   onBack,
@@ -72,7 +152,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   onToggleAlertMe,
   onSelectCategory,
 }) => {
-  const [editablePost, setEditablePost] = useState<VacancyItem>(vacancy);
+  const [editablePost, setEditablePost] = useState<VacancyItem>(() => normalizePost(vacancy) as VacancyItem);
   const currentVacancy = editablePost;
   const setCurrentVacancy = setEditablePost;
 
@@ -80,14 +160,18 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [lastSavedTime, setLastSavedTime] = useState<string>('');
 
+  const [pdfUploadTargetIndex, setPdfUploadTargetIndex] = useState<number | null>(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
+  const [alertFeedback, setAlertFeedback] = useState<string>('');
+
   useEffect(() => {
-    setEditablePost(vacancy);
+    setEditablePost(normalizePost(vacancy));
   }, [vacancy]);
 
   // 1. Reusable In-Place Word Editable Component (FullPagePostView.tsx)
   const EditableText: React.FC<{
-    value: string | number | undefined;
-    onChange: (newVal: string) => void;
+    value?: string | number;
+    onChange: (val: string) => void;
     className?: string;
     style?: React.CSSProperties;
     as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'div' | 'p' | 'td';
@@ -103,10 +187,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     titlePrefix = 'टेक्स्ट'
   }) => {
     const strVal = String(value ?? '');
+    
+    // यदि वर्ड एडिट मोड बंद है तो साधारण टेक्स्ट दिखाएं
     if (!isDirectEditMode) {
-      return <Tag className={className} style={style}>{strVal || placeholder}</Tag>;
+      return (
+        <Tag className={className} style={style}>
+          {strVal || placeholder}
+        </Tag>
+      );
     }
 
+    // वर्ड एडिट मोड चालू होने पर सीधे क्लिक करके टाइप करें
     return (
       <Tag
         contentEditable
@@ -116,11 +207,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           const updated = e.currentTarget.innerText.trim();
           if (updated !== strVal) {
             onChange(updated);
-            setHasUnsavedChanges(true);
           }
         }}
         className={`${className} outline-none cursor-text transition-all hover:bg-amber-100/90 focus:bg-amber-50 focus:ring-2 focus:ring-amber-500 rounded px-1 -mx-0.5 border-b border-dashed border-amber-500 min-w-[20px] inline-block`}
-        title={`क्लिक करके ${titlePrefix} बदलें`}
+        title={`क्लिक करके ${titlePrefix} बदलें (Click to edit text)`}
       >
         {strVal || placeholder}
       </Tag>
@@ -145,15 +235,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     if (currentJson === lastSavedJsonRef.current) return;
     lastSavedJsonRef.current = currentJson;
 
-    if (onUpdatePostRef.current) {
-      onUpdatePostRef.current(editablePost);
+    // पैरेंट कंपोनेंट व Firestore में अपडेट
+    if (onUpdatePost) {
+      onUpdatePost(editablePost);
     }
+    // LocalStorage में तुरंत सुरक्षित
     try {
       const saved = localStorage.getItem('sarkari_admin_posts_v5');
       let currentArr: SarkariPost[] = saved ? JSON.parse(saved) : [];
       const idx = currentArr.findIndex(p => p.id === editablePost.id);
-      if (idx >= 0) currentArr[idx] = editablePost;
-      else currentArr.push(editablePost);
+      if (idx >= 0) {
+        currentArr[idx] = editablePost;
+      } else {
+        currentArr.push(editablePost);
+      }
       localStorage.setItem('sarkari_admin_posts_v5', JSON.stringify(currentArr));
       setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
       setHasUnsavedChanges(false);
@@ -161,6 +256,81 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       console.error(e);
     }
   }, [editablePost]);
+
+  useEffect(() => {
+    if (alertFeedback) {
+      const timer = setTimeout(() => setAlertFeedback(''), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [alertFeedback]);
+
+  const handleAttachPdfToLink = (idx: number) => {
+    setPdfUploadTargetIndex(idx);
+    setIsPdfModalOpen(true);
+  };
+
+  const handleAddDirectLink = () => {
+    setEditablePost(prev => {
+      const list = [...(prev.directLinks || [])];
+      list.push({
+        label: 'New Important Link / नया लिंक',
+        actionText: 'Click Here',
+        type: 'official',
+        url: 'https://rajasthanvaccancy.vercel.app/'
+      });
+      return { ...prev, directLinks: list };
+    });
+  };
+
+  const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert('कृपया केवल PDF (.pdf) फ़ाइल चुनें।');
+      return;
+    }
+
+    const fileSizeKb = Math.round(file.size / 1024);
+    const fileSizeStr = fileSizeKb > 1024 ? `${(fileSizeKb / 1024).toFixed(2)} MB` : `${fileSizeKb} KB`;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const cleanFileName = file.name.replace(/\.pdf$/i, '');
+
+      setEditablePost(prev => {
+        const list = [...(prev.directLinks || [])];
+        if (pdfUploadTargetIndex !== null && pdfUploadTargetIndex >= 0 && pdfUploadTargetIndex < list.length) {
+          list[pdfUploadTargetIndex] = {
+            ...list[pdfUploadTargetIndex],
+            url: dataUrl,
+            fileName: file.name,
+            fileSize: fileSizeStr,
+            isPdf: true,
+            actionText: list[pdfUploadTargetIndex].actionText || 'Download PDF'
+          };
+        } else {
+          list.push({
+            label: `Download ${cleanFileName} (PDF)`,
+            actionText: 'Download PDF',
+            type: 'notification',
+            url: dataUrl,
+            fileName: file.name,
+            fileSize: fileSizeStr,
+            isPdf: true,
+            isPrimary: true
+          });
+        }
+        return { ...prev, directLinks: list };
+      });
+
+      setAlertFeedback(`✅ PDF फ़ाइल "${file.name}" (${fileSizeStr}) सफलतापूर्वक जोड़ी गई!`);
+      setIsPdfModalOpen(false);
+    };
+
+    reader.readAsDataURL(file);
+  };
 
   const isHi = lang === 'hi';
   const postTitle = isHi ? (currentVacancy.titleHi || currentVacancy.title) : currentVacancy.title;
@@ -182,6 +352,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const sectionLabels: Record<string, string> = {
     overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
     latest_update: 'लेटेस्ट अपडेट (Latest Update)',
+    latest_news: 'ताज़ा समाचार (Latest News)',
     dates: 'महत्वपूर्ण तिथियाँ (Important Dates)',
     post_breakdown: 'पदों का विवरण (Post Breakdown)',
     qualification: 'शैक्षणिक योग्यता (Eligibility)',
@@ -912,7 +1083,163 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </div>
                 )}
 
-                {/* Table 2: महत्वपूर्ण तिथियाँ (Important Dates Table) */}
+                {/* Section: Latest News (ताज़ा समाचार / Live Updates) */}
+                {!isSectionDeleted('latest_news') && (
+                  <div className="my-4 border border-emerald-600 bg-white rounded shadow-2xs overflow-hidden">
+                    <div 
+                      className="text-white px-3 sm:px-4 py-2.5 flex items-center justify-between flex-wrap gap-2"
+                      style={{ backgroundColor: '#008000' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-300 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-yellow-400"></span>
+                        </span>
+                        <h2 className="text-[12pt] sm:text-[14pt] font-black uppercase tracking-wide flex items-center gap-1.5 text-white">
+                          <Bell className="w-4 h-4 text-yellow-300 inline-block" />
+                          <span>{shortJobName} Latest News (ताज़ा समाचार)</span>
+                        </h2>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold bg-yellow-400 text-slate-950 px-2 py-0.5 rounded shadow-2xs">
+                          {(Array.isArray(editablePost?.latestNews) ? editablePost.latestNews : []).length} अपडेट्स
+                        </span>
+                        {isDirectEditMode && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentNews = Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [];
+                              const newItem = {
+                                id: `news-${Date.now()}`,
+                                date: new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                                badge: 'नया अपडेट',
+                                headline: 'नया समाचार शीर्षक यहां लिखें',
+                                details: 'समाचार का विवरण यहां लिखें। अभ्यर्थी नियमित रूप से पोर्टल चेक करते रहें।',
+                                isHighlighted: true
+                              };
+                              setEditablePost({
+                                ...editablePost,
+                                latestNews: [newItem, ...currentNews]
+                              });
+                            }}
+                            className="text-xs bg-amber-300 hover:bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>+ समाचार जोड़ें</span>
+                          </button>
+                        )}
+                        {renderAdminSectionControls('latest_news', 'ताज़ा समाचार')}
+                      </div>
+                    </div>
+
+                    <div className="p-3 sm:p-4 divide-y divide-emerald-100 space-y-3 bg-emerald-50/20">
+                      {(Array.isArray(editablePost?.latestNews) ? editablePost.latestNews : []).map((news: any, idx: number) => (
+                        <div 
+                          key={news.id || idx} 
+                          className={`p-3 rounded border transition-all ${
+                            news.isHighlighted 
+                              ? 'bg-amber-50/70 border-amber-300 shadow-2xs' 
+                              : 'bg-white border-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10.5px] font-black uppercase px-2 py-0.5 rounded bg-emerald-700 text-white shadow-2xs">
+                                <EditableText
+                                  value={news.badge || 'अपडेट'}
+                                  onChange={(val) => {
+                                    const list = [...(Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [])];
+                                    list[idx] = { ...list[idx], badge: val };
+                                    setEditablePost({ ...editablePost, latestNews: list });
+                                  }}
+                                  className="text-white font-black"
+                                  titlePrefix="बैज"
+                                />
+                              </span>
+                              <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                                <Calendar className="w-3 h-3 text-slate-500" />
+                                <EditableText
+                                  value={news.date || 'अक्टूबर 2026'}
+                                  onChange={(val) => {
+                                    const list = [...(Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [])];
+                                    list[idx] = { ...list[idx], date: val };
+                                    setEditablePost({ ...editablePost, latestNews: list });
+                                  }}
+                                  className="font-bold text-slate-700"
+                                  titlePrefix="दिनांक"
+                                />
+                              </span>
+                            </div>
+
+                            {isDirectEditMode && (
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const list = [...(Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [])];
+                                    list[idx] = { ...list[idx], isHighlighted: !list[idx].isHighlighted };
+                                    setEditablePost({ ...editablePost, latestNews: list });
+                                  }}
+                                  className="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-bold cursor-pointer"
+                                  title="हाइलाइट टॉगल करें"
+                                >
+                                  {news.isHighlighted ? '⭐ विशेष' : 'साधारण'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const list = (Array.isArray(editablePost.latestNews) ? editablePost.latestNews : []).filter((_: any, i: number) => i !== idx);
+                                    setEditablePost({ ...editablePost, latestNews: list });
+                                  }}
+                                  className="text-[10px] px-2 py-0.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded border border-rose-300 font-bold cursor-pointer"
+                                  title="समाचार हटाएं"
+                                >
+                                  🗑️ हटाएं
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          <h3 className="font-extrabold text-[11.5pt] sm:text-[12.5pt] mb-1 leading-snug">
+                            <EditableText
+                              value={news.headline}
+                              onChange={(val) => {
+                                const list = [...(Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [])];
+                                list[idx] = { ...list[idx], headline: val };
+                                setEditablePost({ ...editablePost, latestNews: list });
+                              }}
+                              className="text-[#0000ff] font-bold"
+                              titlePrefix="हेडलाइन"
+                            />
+                          </h3>
+
+                          <div className="text-[10.5pt] sm:text-[11pt] text-slate-700 leading-relaxed">
+                            <EditableText
+                              value={news.details}
+                              onChange={(val) => {
+                                const list = [...(Array.isArray(editablePost.latestNews) ? editablePost.latestNews : [])];
+                                list[idx] = { ...list[idx], details: val };
+                                setEditablePost({ ...editablePost, latestNews: list });
+                              }}
+                              as="span"
+                              className="text-slate-800"
+                              titlePrefix="विवरण"
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                      {(!Array.isArray(editablePost?.latestNews) || editablePost.latestNews.length === 0) && (
+                        <div className="p-3 text-center text-slate-500 text-sm">
+                          फिलहाल कोई ताज़ा समाचार नहीं है।
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2-Column Grid: Important Dates & Application Fee */}
                 {!isSectionDeleted('dates') && (
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3 pt-2">
@@ -924,85 +1251,75 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           color: '#0f172a'
                         }}
                       >
-                        महत्वपूर्ण तिथियाँ (Important Dates)
+                        महत्वपूर्ण तिथियाँ एवं आवेदन शुल्क
                       </h2>
-                      {renderAdminSectionControls('dates', 'महत्वपूर्ण तिथियां')}
+                      {renderAdminSectionControls('dates', 'तिथियां व शुल्क')}
                     </div>
-                  <div className="overflow-x-auto border border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300">
-                          <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/2">कार्यक्रम</th>
-                          <th className="p-3 font-bold text-slate-900">तिथि</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">नोटिफिकेशन जारी तिथि</td>
-                          <td className="p-3">
-                            <EditableText
-                              value={editablePost.importantDates?.notificationDate || ''}
-                              onChange={(val) => setEditablePost(prev => ({
-                                ...prev,
-                                importantDates: { ...prev.importantDates, notificationDate: val }
-                              }))}
-                              titlePrefix="नोटिफिकेशन जारी तिथि"
-                              placeholder="शीघ्र"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन शुरू</td>
-                          <td className="p-3 font-semibold text-emerald-700">
-                            <EditableText
-                              value={editablePost.importantDates?.applyStartDate || ''}
-                              onChange={(val) => setEditablePost(prev => ({
-                                ...prev,
-                                importantDates: { ...prev.importantDates, applyStartDate: val }
-                              }))}
-                              titlePrefix="आवेदन शुरू तिथि"
-                              className="font-semibold text-emerald-700"
-                              placeholder="शीघ्र"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">ऑनलाइन आवेदन की अंतिम तिथि</td>
-                          <td className="p-3 font-bold text-rose-700">
-                            <EditableText
-                              value={editablePost.importantDates?.applyLastDate || ''}
-                              onChange={(val) => setEditablePost(prev => ({
-                                ...prev,
-                                importantDates: { ...prev.importantDates, applyLastDate: val }
-                              }))}
-                              titlePrefix="ऑनलाइन आवेदन की अंतिम तिथि"
-                              className="font-bold text-rose-700"
-                              placeholder="शीघ्र"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">आवेदन बंद होने का समय</td>
-                          <td className="p-3">रात 11:59 बजे तक</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 font-medium text-slate-800 bg-slate-50 border-r border-slate-200">परीक्षा / मेरिट सत्यापन तिथि</td>
-                          <td className="p-3">
-                            <EditableText
-                              value={editablePost.importantDates?.examDate || ''}
-                              onChange={(val) => setEditablePost(prev => ({
-                                ...prev,
-                                importantDates: { ...prev.importantDates, examDate: val }
-                              }))}
-                              titlePrefix="परीक्षा तिथि"
-                              placeholder="शीघ्र जारी होगी"
-                            />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-400 border border-slate-400 bg-white overflow-hidden text-[11pt] sm:text-[12pt] shadow-2xs">
+                      {/* कॉलम 1: Important Dates */}
+                      <div className="flex flex-col bg-white">
+                        <div className="text-white px-2 sm:px-3 py-1.5 text-[12pt] sm:text-[14pt] font-black uppercase text-center" style={{ backgroundColor: '#008000' }}>
+                          Important Dates
+                        </div>
+                        <div className="p-2 sm:p-4 divide-y divide-slate-100 space-y-1.5 flex-1">
+                          {(Array.isArray(editablePost?.importantDates) ? editablePost.importantDates : []).map((date: any, idx: number) => (
+                            <div key={idx} className="flex flex-col sm:flex-row sm:justify-between py-1 text-[11pt]">
+                              <EditableText
+                                value={date.label}
+                                onChange={(val) => {
+                                  const list = [...(Array.isArray(editablePost.importantDates) ? editablePost.importantDates : [])];
+                                  list[idx] = { ...list[idx], label: val };
+                                  setEditablePost({ ...editablePost, importantDates: list });
+                                }}
+                                className="font-bold text-slate-900"
+                              />
+                              <EditableText
+                                value={date.value}
+                                onChange={(val) => {
+                                  const list = [...(Array.isArray(editablePost.importantDates) ? editablePost.importantDates : [])];
+                                  list[idx] = { ...list[idx], value: val };
+                                  setEditablePost({ ...editablePost, importantDates: list });
+                                }}
+                                className="font-extrabold text-[#0000ff]"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* कॉलम 2: Application Fee */}
+                      <div className="flex flex-col bg-white">
+                        <div className="text-white px-2 sm:px-3 py-1.5 text-[12pt] sm:text-[14pt] font-black uppercase text-center" style={{ backgroundColor: '#008000' }}>
+                          Application Fee
+                        </div>
+                        <div className="p-2 sm:p-4 divide-y divide-slate-100 space-y-1.5 flex-1">
+                          {(Array.isArray(editablePost?.applicationFee) ? editablePost.applicationFee : []).map((fee: any, idx: number) => (
+                            <div key={idx} className="flex flex-col sm:flex-row sm:justify-between py-1 text-[11pt]">
+                              <EditableText
+                                value={fee.category}
+                                onChange={(val) => {
+                                  const list = [...(Array.isArray(editablePost.applicationFee) ? editablePost.applicationFee : [])];
+                                  list[idx] = { ...list[idx], category: val };
+                                  setEditablePost({ ...editablePost, applicationFee: list });
+                                }}
+                                className="font-bold text-slate-900"
+                              />
+                              <EditableText
+                                value={fee.amount}
+                                onChange={(val) => {
+                                  const list = [...(Array.isArray(editablePost.applicationFee) ? editablePost.applicationFee : [])];
+                                  list[idx] = { ...list[idx], amount: val };
+                                  setEditablePost({ ...editablePost, applicationFee: list });
+                                }}
+                                className="font-extrabold text-[#ff0000]"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
                 )}
 
                 {/* Table 3: पदों का विवरण (Post Breakdown) if available */}
@@ -1163,76 +1480,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </div>
                 )}
 
-                {/* Section 6: आवेदन शुल्क (Application Fee) Table */}
-                {!isSectionDeleted('application_fee') && (
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-3 pt-2">
-                      <h2 
-                        className="headlight font-bold text-slate-900"
-                        style={{ 
-                          fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
-                          fontSize: '12pt',
-                          color: '#0f172a'
-                        }}
-                      >
-                        आवेदन शुल्क (Application Fee)
-                      </h2>
-                      {renderAdminSectionControls('application_fee', 'आवेदन शुल्क')}
-                    </div>
-                  <div className="overflow-x-auto border border-slate-300 rounded-md">
-                    <table className="w-full border-collapse text-left text-sm">
-                      <thead>
-                        <tr className="bg-slate-100 border-b border-slate-300">
-                          <th className="p-3 font-bold text-slate-900 border-r border-slate-300 w-1/2">अभ्यर्थी श्रेणी</th>
-                          <th className="p-3 font-bold text-slate-900">आवेदन शुल्क</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200">
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">सामान्य / ओबीसी / ईडब्ल्यूएस (Gen / OBC / EWS)</td>
-                          <td className="p-3 font-bold text-slate-900">
-                            <EditableText
-                              value={editablePost.applicationFee?.genObc !== undefined ? `₹${editablePost.applicationFee.genObc}` : '₹100'}
-                              onChange={(val) => {
-                                const parsedNum = parseInt(val.replace(/[^\d]/g, ''), 10) || 0;
-                                setEditablePost(prev => ({
-                                  ...prev,
-                                  applicationFee: { ...prev.applicationFee, genObc: parsedNum }
-                                }));
-                              }}
-                              titlePrefix="सामान्य / ओबीसी शुल्क"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">अनुसूचित जाति / अनुसूचित जनजाति (SC / ST)</td>
-                          <td className="p-3 font-bold text-emerald-700">
-                            <EditableText
-                              value={editablePost.applicationFee?.scSt !== undefined ? (editablePost.applicationFee.scSt === 0 ? 'निःशुल्क' : `₹${editablePost.applicationFee.scSt}`) : 'निःशुल्क'}
-                              onChange={(val) => {
-                                const parsedNum = parseInt(val.replace(/[^\d]/g, ''), 10) || 0;
-                                setEditablePost(prev => ({
-                                  ...prev,
-                                  applicationFee: { ...prev.applicationFee, scSt: parsedNum }
-                                }));
-                              }}
-                              titlePrefix="एससी / एसटी शुल्क"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">सभी वर्गों की महिला एवं दिव्यांग अभ्यर्थी</td>
-                          <td className="p-3 font-bold text-emerald-700">निःशुल्क</td>
-                        </tr>
-                        <tr>
-                          <td className="p-3 bg-slate-50 border-r border-slate-200">भुगतान का माध्यम</td>
-                          <td className="p-3">ऑनलाइन (नेट बैंकिंग, डेबिट/क्रेडिट कार्ड, UPI)</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+
 
                 {/* Section 7: चयन प्रक्रिया (Selection Process) */}
                 {!isSectionDeleted('selection_process') && (
@@ -1347,7 +1595,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </div>
                 )}
 
-                {/* Table 10: Important Links Table */}
+                {/* Some Useful Important Links Section */}
                 {!isSectionDeleted('important_links') && (
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3 pt-2">
@@ -1359,76 +1607,148 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           color: '#0f172a'
                         }}
                       >
-                        {shortJobName} Important Links
+                        {shortJobName} Useful Important Links
                       </h2>
                       {renderAdminSectionControls('important_links', 'महत्वपूर्ण लिंक्स')}
                     </div>
-                    <div className="overflow-x-auto border-2 border-slate-300 rounded-md">
-                      <table className="w-full border-collapse text-left text-sm">
-                        <tbody className="divide-y divide-slate-200">
-                          <tr>
-                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200 w-1/2">
-                              Start Online Application Form
-                            </td>
-                            <td className="p-3 font-extrabold text-slate-800">
-                              {formatSingleDate(vacancy.importantDates?.applyStartDate, 'शीघ्र')}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                              Last Date Online Application Form
-                            </td>
-                            <td className="p-3 font-extrabold text-rose-700">
-                              {formatSingleDate(vacancy.importantDates?.applyLastDate, 'शीघ्र')}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                              Apply Online
-                            </td>
-                            <td className="p-3">
-                              <a 
-                                href={vacancy.officialLinks?.applyOnlineUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://sso.rajasthan.gov.in'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block px-4 py-1.5 rounded bg-[#1e953a] hover:bg-[#187a2f] text-white font-extrabold text-xs transition shadow-2xs"
+
+                    <div className="border border-slate-400 bg-white overflow-hidden text-[11.5pt] shadow-2xs">
+                      {/* Header */}
+                      <div 
+                        className="text-white px-4 py-2.5 text-[14pt] sm:text-[16pt] font-black uppercase tracking-wide flex items-center justify-between flex-wrap gap-2" 
+                        style={{ backgroundColor: '#008000' }}
+                      >
+                        <span>Some Useful Important Links</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-yellow-400 text-slate-950 font-bold px-2 py-0.5 rounded shadow-2xs">
+                            {(Array.isArray(editablePost?.directLinks) ? editablePost.directLinks : []).length} लिंक्स
+                          </span>
+                          {isDirectEditMode && (
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              {/* PDF जोड़ने का बटन */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPdfUploadTargetIndex(null);
+                                  setIsPdfModalOpen(true);
+                                }}
+                                className="text-xs bg-rose-600 hover:bg-rose-700 text-white font-black px-2.5 py-1 rounded shadow-2xs cursor-pointer flex items-center gap-1"
                               >
-                                Apply Now
-                              </a>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                              Official Notification PDF
-                            </td>
-                            <td className="p-3">
-                              <a 
-                                href={vacancy.officialLinks?.notificationPdfUrl || vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block px-4 py-1.5 rounded bg-[#cf2e2e] hover:bg-[#a82222] text-white font-extrabold text-xs transition shadow-2xs"
+                                <FileText className="w-3.5 h-3.5" />
+                                <span>+ 📄 PDF जोड़ें</span>
+                              </button>
+                              {/* सामान्य लिंक जोड़ने का बटन */}
+                              <button
+                                type="button"
+                                onClick={handleAddDirectLink}
+                                className="text-xs bg-white text-emerald-900 hover:bg-emerald-100 font-black px-2.5 py-1 rounded shadow-2xs cursor-pointer flex items-center gap-1"
                               >
-                                Click Here
-                              </a>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-3 font-bold text-slate-900 bg-slate-50 border-r border-slate-200">
-                              Official Website
-                            </td>
-                            <td className="p-3">
-                              <a 
-                                href={vacancy.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block px-4 py-1.5 rounded bg-[#1e73be] hover:bg-[#155a96] text-white font-extrabold text-xs transition shadow-2xs"
-                              >
-                                Click Here
-                              </a>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>+ नया लिंक</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Links Rows */}
+                      <div className="divide-y divide-slate-300 text-[11.5pt]">
+                        {(Array.isArray(editablePost?.directLinks) ? editablePost.directLinks : []).map((link: any, idx: number) => {
+                          // PDF लिंक डिटेक्शन
+                          const isPdf = Boolean(
+                            link.isPdf ||
+                            link.type === 'notification' ||
+                            link.type === 'syllabus' ||
+                            link.label?.toLowerCase().includes('pdf') ||
+                            link.actionText?.toLowerCase().includes('pdf') ||
+                            (link.url && (
+                              link.url.toLowerCase().endsWith('.pdf') ||
+                              link.url.toLowerCase().includes('.pdf?') ||
+                              link.url.startsWith('data:application/pdf')
+                            ))
+                          );
+
+                          const btnBg = isPdf
+                            ? 'bg-rose-700 hover:bg-rose-800'
+                            : 'bg-[#0000ff] hover:bg-blue-800';
+
+                          return (
+                            <div 
+                              key={idx} 
+                              className={`flex flex-row items-center justify-between p-2.5 sm:p-4 hover:bg-slate-50 gap-2 sm:gap-4 transition-colors ${
+                                isPdf ? 'border-l-4 border-l-rose-600' : ''
+                              }`}
+                            >
+                              {/* Link Label & PDF Badge */}
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {isPdf ? (
+                                  <span className="font-bold text-rose-600 text-base shrink-0">📄</span>
+                                ) : (
+                                  <span className="font-black text-slate-700 text-lg shrink-0">•</span>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <EditableText
+                                      value={link.label}
+                                      onChange={(newVal) => {
+                                        setEditablePost(prev => {
+                                          const list = [...(prev.directLinks || [])];
+                                          list[idx] = { ...list[idx], label: newVal };
+                                          return { ...prev, directLinks: list };
+                                        });
+                                      }}
+                                      className="font-bold text-[11.5pt] sm:text-[13pt] leading-snug cursor-text"
+                                      style={{ color: '#ff00ff' }}
+                                    />
+                                    {isPdf && (
+                                      <span className="inline-flex items-center gap-1 text-[10px] font-black bg-rose-600 text-white px-1.5 py-0.5 rounded uppercase">
+                                        <FileText className="w-3 h-3" />
+                                        <span>PDF</span>
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Action Button: Click Here or Download PDF */}
+                              <div className="flex items-center gap-2 shrink-0">
+                                <a
+                                  href={link.url || 'https://sarkariresult12.vercel.app/#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  download={isPdf ? (link.fileName || `${(link.label || 'file').replace(/\s+/g, '_')}.pdf`) : undefined}
+                                  className={`inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-1.5 text-white font-bold rounded text-[11pt] sm:text-[11.5pt] shadow-2xs ${btnBg}`}
+                                >
+                                  {isPdf ? (
+                                    <>
+                                      <FileText className="w-3.5 h-3.5" />
+                                      <span>{link.actionText || 'Download PDF'}</span>
+                                      <Download className="w-3.5 h-3.5" />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span>{link.actionText || 'Click Here'}</span>
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </>
+                                  )}
+                                </a>
+
+                                {/* Edit Mode Buttons */}
+                                {isDirectEditMode && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAttachPdfToLink(idx)}
+                                    className="text-[11px] bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-bold px-2 py-1 rounded cursor-pointer"
+                                    title="PDF फ़ाइल बदलें"
+                                  >
+                                    📄 PDF
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1631,19 +1951,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </span>
                 </div>
 
-                {/* Post Navigation: Previous & Next Post Links */}
-                <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+                {/* Post Navigation: Previous & Next Post Links (Light Blue Styling) */}
+                <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-sky-100 pt-4">
                   {prevPost ? (
                     <button
                       type="button"
                       onClick={() => onSelectOtherVacancy(prevPost)}
-                      className="text-left p-3 rounded border border-slate-200 hover:border-[#1e953a] hover:bg-slate-50 transition cursor-pointer group"
+                      className="text-left p-3.5 rounded-lg border border-sky-200 bg-sky-50/80 hover:bg-sky-100/90 hover:border-sky-300 transition cursor-pointer group shadow-2xs"
                     >
-                      <span className="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1 group-hover:text-[#1e953a]">
-                        <ChevronLeft className="w-3.5 h-3.5" />
+                      <span className="text-[11px] font-bold text-sky-700 uppercase flex items-center gap-1 group-hover:text-blue-700">
+                        <ChevronLeft className="w-3.5 h-3.5 text-sky-600" />
                         <span>Previous Post</span>
                       </span>
-                      <p className="post-item font-semibold text-xs sm:text-sm text-slate-800 group-hover:text-[#1e953a] line-clamp-2 mt-1">
+                      <p className="post-item font-semibold text-xs sm:text-sm text-sky-950 group-hover:text-blue-800 line-clamp-2 mt-1">
                         {isHi ? (prevPost.titleHi || prevPost.title) : prevPost.title}
                       </p>
                     </button>
@@ -1653,13 +1973,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     <button
                       type="button"
                       onClick={() => onSelectOtherVacancy(nextPost)}
-                      className="text-right p-3 rounded border border-slate-200 hover:border-[#1e953a] hover:bg-slate-50 transition cursor-pointer group"
+                      className="text-right p-3.5 rounded-lg border border-sky-200 bg-sky-50/80 hover:bg-sky-100/90 hover:border-sky-300 transition cursor-pointer group shadow-2xs"
                     >
-                      <span className="text-[11px] font-bold text-slate-400 uppercase flex items-center justify-end gap-1 group-hover:text-[#1e953a]">
+                      <span className="text-[11px] font-bold text-sky-700 uppercase flex items-center justify-end gap-1 group-hover:text-blue-700">
                         <span>Next Post</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
+                        <ChevronRight className="w-3.5 h-3.5 text-sky-600" />
                       </span>
-                      <p className="post-item font-semibold text-xs sm:text-sm text-slate-800 group-hover:text-[#1e953a] line-clamp-2 mt-1">
+                      <p className="post-item font-semibold text-xs sm:text-sm text-sky-950 group-hover:text-blue-800 line-clamp-2 mt-1">
                         {isHi ? (nextPost.titleHi || nextPost.title) : nextPost.title}
                       </p>
                     </button>
@@ -2080,6 +2400,73 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* PDF Upload Modal */}
+      {isPdfModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-300 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-rose-700 text-white">
+              <div className="flex items-center gap-2 font-black text-sm">
+                <FileText className="w-4 h-4" />
+                <span>
+                  {pdfUploadTargetIndex !== null ? 'मौजूदा लिंक के लिए PDF अपलोड करें' : 'नया PDF डॉक्यूमेंट जोड़ें'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPdfModalOpen(false)}
+                className="text-white hover:bg-rose-800 p-1 rounded cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded text-xs text-rose-900 space-y-1">
+                <p className="font-bold">📄 PDF फाइल अपलोड निर्देश:</p>
+                <p>कंप्यूटर या मोबाइल से कोई भी आधिकारिक PDF (नोटिफिकेशन, सिलेबस, रिजल्ट, फॉर्म) चुनें। यह तुरंत लिंक के साथ अटैच होकर डाउनलोड करने योग्य बन जाएगी।</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  PDF फ़ाइल चुनें (.pdf)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={handlePdfFileChange}
+                  className="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer border border-slate-300 rounded p-1 bg-slate-50"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsPdfModalOpen(false)}
+                  className="px-3 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-300 cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real-time Alert Feedback Notification */}
+      {alertFeedback && (
+        <div className="fixed bottom-5 right-5 z-50 bg-emerald-800 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-bold flex items-center gap-2 border border-emerald-600 animate-in slide-in-from-bottom-2 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+          <span>{alertFeedback}</span>
+          <button
+            type="button"
+            onClick={() => setAlertFeedback('')}
+            className="ml-2 hover:bg-emerald-700 p-0.5 rounded cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
     </div>
