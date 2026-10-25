@@ -263,6 +263,25 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [robotsMeta, setRobotsMeta] = useState('index, follow, max-snippet:-1, max-image-preview:large');
   const [ogImageUrl, setOgImageUrl] = useState('');
 
+  // Section Reordering state
+  const DEFAULT_SECTION_KEYS = [
+    'overview',
+    'latest_update',
+    'dates',
+    'post_breakdown',
+    'salary_table',
+    'exam_pattern',
+    'qualification',
+    'age_limit',
+    'application_fee',
+    'selection_process',
+    'documents',
+    'how_to_apply',
+    'important_links',
+    'faqs'
+  ];
+  const [sectionOrder, setSectionOrder] = useState<string[]>(DEFAULT_SECTION_KEYS);
+
   // Pre-fill fields when editItem is provided
   useEffect(() => {
     if (editItem) {
@@ -401,6 +420,13 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       // Section Management sync
       setDeletedSectionKeys(editItem.deletedSectionKeys ? [...editItem.deletedSectionKeys] : []);
       setCustomSections(editItem.customSections ? [...editItem.customSections] : []);
+      if (editItem.sectionOrder && editItem.sectionOrder.length > 0) {
+        const uniqueSaved = Array.from(new Set(editItem.sectionOrder));
+        const missing = DEFAULT_SECTION_KEYS.filter(k => !uniqueSaved.includes(k));
+        setSectionOrder(Array.from(new Set([...uniqueSaved, ...missing])));
+      } else {
+        setSectionOrder(DEFAULT_SECTION_KEYS);
+      }
 
       // Post Section category mapping
       if (editItem.category === 'scheme' || editItem.organization === 'Sarkari Yojana') {
@@ -417,6 +443,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     } else {
       setDeletedSectionKeys([]);
       setCustomSections([]);
+      setSectionOrder(DEFAULT_SECTION_KEYS);
     }
   }, [editItem]);
 
@@ -685,6 +712,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         seoSettings: constructedSeoSettings,
         deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
         customSections: customSections.length > 0 ? customSections : undefined,
+        sectionOrder: sectionOrder,
         updatedAt: formattedDate
       };
 
@@ -767,6 +795,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         seoSettings: constructedSeoSettings,
         deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
         customSections: customSections.length > 0 ? customSections : undefined,
+        sectionOrder: sectionOrder,
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: formattedDate
       };
@@ -776,22 +805,52 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     onClose();
   };
 
-  const standardSectionList = [
-    { key: 'overview', title: 'संक्षिप्त विवरण तालिका (Overview Table)', desc: 'मुख्य पद, बोर्ड, अंतिम तिथि आदि की पहली टेबल' },
-    { key: 'latest_update', title: 'लेटेस्ट अपडेट बॉक्स (Latest Update)', desc: 'शीर्ष पर दिखने वाला मुख्य अपडेट पैराग्राफ' },
-    { key: 'dates', title: 'महत्वपूर्ण तिथियाँ (Important Dates Table)', desc: 'आवेदन प्रारंभ, अंतिम तिथि और परीक्षा तिथि' },
-    { key: 'post_breakdown', title: 'पदों का विवरण (Post Breakdown Table)', desc: 'पद नाम, विषयवार और श्रेणीवार पदों की संख्या' },
-    { key: 'salary_table', title: 'वेतनमान सारणी (Salary Scale & Pay Level)', desc: 'पदवार पे मैट्रिक्स लेवल व वेतन श्रृंखला तालिका' },
-    { key: 'exam_pattern', title: 'परीक्षा पैटर्न व सिलेबस (Exam Pattern & Scheme)', desc: 'परीक्षा मोड, कुल अंक, नेगेटिव मार्किंग व विषयवार अंक तालिका' },
-    { key: 'qualification', title: 'शैक्षणिक योग्यता (Eligibility & Qualification)', desc: '10वीं/12वीं/स्नातक व अन्य योग्यता' },
-    { key: 'age_limit', title: 'आयु सीमा (Age Limits Table)', desc: 'न्यूनतम व अधिकतम आयु तथा नियमानुसार छूट' },
-    { key: 'application_fee', title: 'आवेदन शुल्क (Application Fee Table)', desc: 'सामान्य/ओबीसी/एससी/एसटी शुल्क व भुगतान माध्यम' },
-    { key: 'selection_process', title: 'चयन प्रक्रिया (Selection Process)', desc: 'लिखित परीक्षा, दस्तावेज सत्यापन, मेरिट लिस्ट चरण' },
-    { key: 'documents', title: 'आवश्यक दस्तावेज (Required Documents)', desc: 'फोटो, हस्ताक्षर, आधार कार्ड व प्रमाण पत्रों की सूची' },
-    { key: 'how_to_apply', title: 'आवेदन कैसे करें (How to Apply Steps)', desc: 'SSO पोर्टल पर आवेदन करने के चरणबद्ध निर्देश' },
-    { key: 'important_links', title: 'महत्वपूर्ण लिंक्स (Important Links Table)', desc: 'Apply Online, Notification PDF, Official Site लिंक्स' },
-    { key: 'faqs', title: 'प्रश्नोत्तर (FAQs Section)', desc: 'अभ्यर्थियों के सामान्य प्रश्न और उनके सटीक उत्तर' }
-  ];
+  const standardSectionMap: Record<string, { title: string; desc: string }> = {
+    overview: { title: 'संक्षिप्त विवरण तालिका (Overview Table)', desc: 'मुख्य पद, बोर्ड, अंतिम तिथि आदि की पहली टेबल' },
+    latest_update: { title: 'लेटेस्ट अपडेट बॉक्स (Latest Update)', desc: 'शीर्ष पर दिखने वाला मुख्य अपडेट पैराग्राफ' },
+    dates: { title: 'महत्वपूर्ण तिथियाँ (Important Dates Table)', desc: 'आवेदन प्रारंभ, अंतिम तिथि और परीक्षा तिथि' },
+    post_breakdown: { title: 'पदों का विवरण (Post Breakdown Table)', desc: 'पद नाम, विषयवार और श्रेणीवार पदों की संख्या' },
+    salary_table: { title: 'वेतनमान सारणी (Salary Scale & Pay Level)', desc: 'पदवार पे मैट्रिक्स लेवल व वेतन श्रृंखला तालिका' },
+    exam_pattern: { title: 'परीक्षा पैटर्न व सिलेबस (Exam Pattern & Scheme)', desc: 'परीक्षा मोड, कुल अंक, नेगेटिव मार्किंग व विषयवार अंक तालिका' },
+    qualification: { title: 'शैक्षणिक योग्यता (Eligibility & Qualification)', desc: '10वीं/12वीं/स्नातक व अन्य योग्यता' },
+    age_limit: { title: 'आयु सीमा (Age Limits Table)', desc: 'न्यूनतम व अधिकतम आयु तथा नियमानुसार छूट' },
+    application_fee: { title: 'आवेदन शुल्क (Application Fee Table)', desc: 'सामान्य/ओबीसी/एससी/एसटी शुल्क व भुगतान माध्यम' },
+    selection_process: { title: 'चयन प्रक्रिया (Selection Process)', desc: 'लिखित परीक्षा, दस्तावेज सत्यापन, मेरिट लिस्ट चरण' },
+    documents: { title: 'आवश्यक दस्तावेज (Required Documents)', desc: 'फोटो, हस्ताक्षर, आधार कार्ड व प्रमाण पत्रों की सूची' },
+    how_to_apply: { title: 'आवेदन कैसे करें (How to Apply Steps)', desc: 'SSO पोर्टल पर आवेदन करने के चरणबद्ध निर्देश' },
+    important_links: { title: 'महत्वपूर्ण लिंक्स (Important Links Table)', desc: 'Apply Online, Notification PDF, Official Site लिंक्स' },
+    faqs: { title: 'प्रश्नोत्तर (FAQs Section)', desc: 'अभ्यर्थियों के सामान्य प्रश्न और उनके सटीक उत्तर' }
+  };
+
+  const standardSectionList = sectionOrder
+    .map(key => ({
+      key,
+      title: standardSectionMap[key]?.title || key,
+      desc: standardSectionMap[key]?.desc || ''
+    }))
+    .filter(sec => standardSectionMap[sec.key]);
+
+  const moveSectionUp = (index: number) => {
+    if (index <= 0) return;
+    setSectionOrder(prev => {
+      const updated = [...prev];
+      const temp = updated[index];
+      updated[index] = updated[index - 1];
+      updated[index - 1] = temp;
+      return updated;
+    });
+  };
+
+  const moveSectionDown = (index: number) => {
+    if (index >= sectionOrder.length - 1) return;
+    setSectionOrder(prev => {
+      const updated = [...prev];
+      const temp = updated[index];
+      updated[index] = updated[index + 1];
+      updated[index + 1] = temp;
+      return updated;
+    });
+  };
 
   const toggleSectionDeletion = (key: string) => {
     if (deletedSectionKeys.includes(key)) {
@@ -846,54 +905,59 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   ] as const;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[94vh]">
-        
-        {/* Header */}
-        <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-              {isEdit ? <Edit3 className="w-5 h-5 text-white" /> : <PlusCircle className="w-5 h-5 text-white" />}
-            </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black leading-tight">
-                {isEdit 
-                  ? (isHi ? 'संपूर्ण पोस्ट संपादक (Full Admin Post Editor)' : 'Full Post Editor (All Sections)') 
-                  : (isHi ? 'नई भर्ती / योजना का संपूर्ण फॉर्म' : 'Publish Complete Job / Scheme Notice')}
-              </h2>
-              <p className="text-xs text-amber-100 mt-0.5">
-                {isHi 
-                  ? 'प्रत्येक बॉक्स, पद विवरण, वेतन सारणी, परीक्षा पैटर्न और लिंक्स को आसानी से अपडेट करें' 
-                  : 'Edit every single box, table, and detail of this post'}
-              </p>
-            </div>
+    <div className="fixed inset-0 z-50 flex flex-col bg-white w-screen h-screen overflow-hidden">
+      {/* Minimal Sleek Header */}
+      <div className="h-11 sm:h-12 bg-slate-900 text-white px-3 sm:px-4 flex items-center justify-between shrink-0 border-b border-slate-800 shadow-xs">
+        <div className="flex items-center gap-2 min-w-0">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition cursor-pointer"
+            title={isHi ? 'वापस जाएं / बंद करें' : 'Close'}
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <div className="w-6 h-6 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+            {isEdit ? <Edit3 className="w-3.5 h-3.5" /> : <PlusCircle className="w-3.5 h-3.5" />}
           </div>
-
-          <div className="flex items-center gap-2">
-            {isEdit && editItem && onDeleteVacancy && (
-              <button
-                type="button"
-                onClick={handleDeleteThisPost}
-                className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-sm"
-                title="Delete this post"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-white" />
-                <span>{isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}</span>
-              </button>
-            )}
-
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white transition cursor-pointer ml-1"
-              title="Close Editor"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <h2 className="text-xs sm:text-sm font-bold text-white truncate">
+            {isEdit 
+              ? (isHi ? 'संपूर्ण पोस्ट संपादक' : 'Full Post Editor') 
+              : (isHi ? 'नई पोस्ट फॉर्म' : 'New Post Form')}
+          </h2>
+          {(shortTitleHi || titleHi) && (
+            <span className="hidden md:inline-block text-[11px] text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded border border-slate-700 truncate max-w-sm">
+              {shortTitleHi || titleHi}
+            </span>
+          )}
         </div>
 
-        {/* Vertical Navigation & Form Body Container */}
-        <div className="flex flex-col sm:flex-row flex-1 overflow-hidden min-h-[500px]">
+        <div className="flex items-center gap-2 shrink-0">
+          {isEdit && editItem && onDeleteVacancy && (
+            <button
+              type="button"
+              onClick={handleDeleteThisPost}
+              className="px-2.5 py-1 rounded bg-rose-600/90 hover:bg-rose-700 text-white font-semibold text-xs flex items-center gap-1 transition cursor-pointer shadow-xs"
+              title="Delete this post"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-white" />
+              <span className="hidden sm:inline">{isHi ? 'पोस्ट डिलीट करें' : 'Delete'}</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-1"
+            title="Close Editor"
+          >
+            <span>{isHi ? 'बंद करें' : 'Close'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Full Post Workspace Body Container */}
+      <div className="flex flex-col sm:flex-row flex-1 overflow-hidden h-[calc(100vh-48px)]">
           
           {/* Vertical Navigation Sidebar Box for Admin Sections */}
           <div className="w-full sm:w-64 bg-slate-50 border-b sm:border-b-0 sm:border-r border-slate-200 p-3 flex flex-col gap-1.5 overflow-y-auto shrink-0 scrollbar-thin max-h-[220px] sm:max-h-none">
@@ -1296,7 +1360,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                  {standardSectionList.map((sec) => {
+                  {standardSectionList.map((sec, idx) => {
                     const isDeleted = deletedSectionKeys.includes(sec.key);
                     const isExpanded = expandedSectionKey === sec.key;
                     return (
@@ -1314,6 +1378,9 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                         <div className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/70">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[11px] font-black px-2 py-0.5 rounded bg-slate-200 text-slate-800 border border-slate-300">
+                                #{idx + 1}
+                              </span>
                               <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isDeleted ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
                               <h5 className="font-bold text-xs sm:text-sm text-slate-900">{sec.title}</h5>
                               <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase ${
@@ -1326,6 +1393,31 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            {/* Reorder Up / Down Controls */}
+                            <div className="flex items-center border border-slate-300 bg-white rounded-lg p-0.5 shadow-2xs">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => moveSectionUp(idx)}
+                                className="px-2 py-1 rounded hover:bg-sky-50 disabled:opacity-30 disabled:hover:bg-transparent text-slate-700 hover:text-sky-800 font-bold text-xs transition cursor-pointer flex items-center gap-1"
+                                title="सेक्शन को ऊपर ले जाएं (Move Up)"
+                              >
+                                <ChevronUp className="w-4 h-4 text-sky-700" />
+                                <span className="text-[11px]">ऊपर</span>
+                              </button>
+                              <div className="w-[1px] h-4 bg-slate-300"></div>
+                              <button
+                                type="button"
+                                disabled={idx === standardSectionList.length - 1}
+                                onClick={() => moveSectionDown(idx)}
+                                className="px-2 py-1 rounded hover:bg-sky-50 disabled:opacity-30 disabled:hover:bg-transparent text-slate-700 hover:text-sky-800 font-bold text-xs transition cursor-pointer flex items-center gap-1"
+                                title="सेक्शन को नीचे ले जाएं (Move Down)"
+                              >
+                                <ChevronDown className="w-4 h-4 text-sky-700" />
+                                <span className="text-[11px]">नीचे</span>
+                              </button>
+                            </div>
+
                             {/* Button 1: Edit Section Content */}
                             <button
                               type="button"
@@ -2377,7 +2469,6 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
             </div>
           </div>
         </form>
-        </div>
       </div>
     </div>
   );

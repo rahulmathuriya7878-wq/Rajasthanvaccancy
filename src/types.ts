@@ -188,8 +188,12 @@ export interface VacancyItem {
   howToApplyHi?: string[];
   requiredDocuments?: string[];
   requiredDocumentsHi?: string[];
+  postalAddress?: string;
+  postalAddressHi?: string;
+  envelopeNoteHi?: string;
   customSections?: CustomPostSection[];
   deletedSectionKeys?: string[];
+  sectionOrder?: string[];
   faqs?: { q: string; qHi: string; a: string; aHi: string }[];
   yojanaOverview?: {
     yojanaName?: string;

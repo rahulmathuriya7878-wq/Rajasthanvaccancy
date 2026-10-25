@@ -318,7 +318,7 @@ export const AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY: VacancyItem = {
     'आधार लिंक सक्रिय बैंक खाता पासबुक (Bank Passbook)'
   ],
   howToApplyHi: [
-    'सर्वप्रथम राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) पर जाकर अपनी SSO ID से लॉगिन करें।',
+    'सर्वप्रथम आधिकारिक पोर्टल (sjms.rajasthan.gov.in) पर जाकर अपनी लॉगिन आईडी से आवेदन करें।',
     'Citizen Apps (G2C) में जाएं और "SJMS SMS / Scholarship" एप्लीकेशन पर क्लिक करें।',
     'स्कीम सूची में से "Ambedkar DBT Voucher Scheme 2026" का चयन करें।',
     'जनाधार नंबर दर्ज कर छात्र प्रोफाइल का सत्यापन करें तथा कॉलेज एवं कोर्स विवरण भरें।',
@@ -1322,8 +1322,8 @@ const createQuickVacancy = (
   id,
   title,
   titleHi,
-  shortTitle: title.slice(0, 40),
-  shortTitleHi: titleHi.slice(0, 40),
+  shortTitle: title.includes(':') ? title.split(':')[0].trim() : (title.length > 55 ? title.slice(0, 52) + '...' : title),
+  shortTitleHi: titleHi.includes(':') ? titleHi.split(':')[0].trim() : (titleHi.length > 55 ? titleHi.slice(0, 52) + '...' : titleHi),
   organization,
   department: `${organization} Department`,
   departmentHi: `${organization} विभाग`,
@@ -1454,6 +1454,8 @@ export const RSMSSB_PASHU_PARICHAR_RESULT_VACANCY = createQuickVacancy(
   {
     status: 'result_declared',
     totalPosts: 5934,
+    shortTitle: 'RSMSSB Pashu Parichar Result 2026',
+    shortTitleHi: 'राजस्थान पशु परिचर भर्ती रिजल्ट 2026 घोषित',
     importantDates: {
       notificationDate: '20 अक्टूबर 2026',
       applyStartDate: '2026-01-19',
@@ -1855,6 +1857,25 @@ export const RAILWAY_GROUP_D_2026_VACANCY: VacancyItem = {
     'दस्तावेज सत्यापन (Document Verification)',
     'चिकित्सा परीक्षण (Medical Exam)'
   ],
+  requiredDocumentsHi: [
+    '10वीं (Matriculation) कक्षा की अंकतालिका एवं उत्तीर्ण प्रमाण पत्र (अधिकतम शैक्षणिक योग्यता व जन्मतिथि सत्यापन हेतु)',
+    'संबंधित ट्रेड में NCVT / SCVT द्वारा जारी ITI अथवा नेशनल अप्रेंटिसशिप सर्टिफिकेट (NAC - तकनीकी पदों हेतु आवश्यक)',
+    'जाति प्रमाण पत्र (SC / ST / OBC Non-Creamy Layer / EWS प्रमाण पत्र)',
+    'मूल निवास प्रमाण पत्र (Bonafide Domicile Certificate)',
+    'पहचान पत्र (आधार कार्ड अनिवार्य - मोबाइल नंबर से लिंक)',
+    'नवीनतम पासपोर्ट साइज रंगीन फोटो (सफेद बैकग्राउंड) एवं स्पष्ट हस्ताक्षर',
+    'दिव्यांग (PwBD) प्रमाण पत्र / एक्स-सर्विसमैन डिस्चार्ज बुक (यदि लागू हो)'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले रेलवे भर्ती बोर्ड (RRB) के आधिकारिक ऑनलाइन पोर्टल (rrbapply.gov.in) पर जाएं।',
+    'चरण 2: होमपेज पर "Apply > Create an Account" पर क्लिक करके अपना मोबाइल नंबर व ईमेल सत्यापित कर खाता बनाएं।',
+    'चरण 3: खाता सक्रिय होने के बाद अपनी लॉगिन क्रेडेंशियल से लॉगिन करें और "Online Application" टैब खोलें।',
+    'चरण 4: Centralized Employment Notice (CEN) Level-1 (Group D) भर्ती के सामने "Apply Now" पर क्लिक करें।',
+    'चरण 5: अपना पसंदीदा रेलवे भर्ती बोर्ड (RRB Zone) चुनें और पदों की प्राथमिकता (Post Preferences) क्रमवार तय करें।',
+    'चरण 6: अपनी व्यक्तिगत जानकारी, 10वीं/ITI शैक्षणिक योग्यता का सही विवरण दर्ज करें।',
+    'चरण 7: निर्धारित आकार (JPG 30-70 KB) में अपनी नवीनतम पासपोर्ट साइज फोटो एवं हस्ताक्षर अपलोड करें।',
+    'चरण 8: अपनी श्रेणी अनुसार निर्धारित आवेदन शुल्क का नेट बैंकिंग/UPI से भुगतान करें, फॉर्म फाइनल सबमिट करें और प्रिंटआउट भविष्य के लिए सुरक्षित रख लें।'
+  ],
   directLinks: [
     { label: 'Apply Online (RRB Official Portal)', actionText: 'Click Here', type: 'apply', url: 'https://rrbapply.gov.in', isPrimary: true },
     { label: 'Download Short Notice (PDF)', actionText: 'Download PDF', type: 'notification', url: 'https://rrbapply.gov.in', isPdf: true, fileName: 'Railway_Group_D_Recruitment_2026_Notice.pdf' },
@@ -1916,79 +1937,104 @@ export const RAILWAY_GROUP_D_2026_VACANCY: VacancyItem = {
 
 export const INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY: VacancyItem = {
   id: 'indian-air-force-hindi-typist-recruitment-2026',
-  title: 'Indian Air Force Hindi Typist Recruitment 2026: Apply for Group C Hindi Typist & LDC Posts, Eligibility & Application Form',
-  titleHi: 'भारतीय वायु सेना हिंदी टाइपिस्ट भर्ती 2026: 12वीं पास के लिए ग्रुप सी टाइपिस्ट पदों पर भर्ती विज्ञापन जारी, यहां से भरें ऑफलाइन फॉर्म',
+  title: 'Indian Air Force Hindi Typist Recruitment 2026 Notification Out, Apply Offline Form',
+  titleHi: 'भारतीय वायु सेना हिंदी टाइपिस्ट भर्ती 2026 का नोटिफिकेशन जारी, आवेदन 24 अक्टूबर से 23 नवंबर 2026 तक',
   shortTitle: 'IAF Hindi Typist Recruitment 2026',
   shortTitleHi: 'वायु सेना हिंदी टाइपिस्ट भर्ती 2026',
   organization: 'Central Govt',
-  department: 'Indian Air Force (IAF / HQ SWAC)',
-  departmentHi: 'भारतीय वायु सेना (IAF / दक्षिण पश्चिमी वायु कमान)',
-  advtNo: 'IAF/02/2026/GROUP-C',
+  department: 'Indian Air Force (IAF)',
+  departmentHi: 'भारतीय वायु सेना (IAF)',
+  advtNo: '04/2026',
   category: 'latest_job',
-  totalPosts: 'विभिन्न पद (Group C Civilian Posts)',
-  postName: 'Hindi Typist, LDC (Lower Division Clerk) & Group C Civilian Posts',
-  postNameHi: 'हिंदी टाइपिस्ट, एलडीसी (क्लर्क) एवं ग्रुप सी सिविलियन पद',
+  totalPosts: '01 Post (OBC)',
+  postName: 'Hindi Typist (Group C Civilian)',
+  postNameHi: 'हिंदी टाइपिस्ट (ग्रुप सी सिविलियन)',
   qualification: ['12th'],
   qualificationDetails: '12th Pass from recognized board + Typing speed of 30 wpm in Hindi OR 35 wpm in English on computer.',
-  qualificationDetailsHi: 'मान्यता प्राप्त बोर्ड से 12वीं (10+2) पास + कंप्यूटर पर हिंदी में 30 शब्द प्रति मिनट (WPM) अथवा अंग्रेजी में 35 WPM की टाइपिंग गति।',
-  briefSummary: 'Indian Air Force invites applications for Hindi Typist and Group C posts. 12th pass eligible. Download offline form.',
-  briefSummaryHi: '✍️ भारतीय वायु सेना (Indian Air Force) द्वारा ग्रुप सी सिविलियन संवर्ग में हिंदी टाइपिस्ट एवं क्लर्क पदों पर भर्ती का आधिकारिक विज्ञापन जारी कर दिया गया है। 12वीं पास एवं हिंदी टाइपिंग का ज्ञान रखने वाले पुरुष एवं महिला अभ्यर्थी ऑफलाइन माध्यम से आवेदन कर सकते हैं। आवेदन फॉर्म डाउनलोड करने का लिंक, आयु सीमा (18 से 25 वर्ष), वेतनमान लेवल-2 (₹19,900 - ₹63,200), चयन प्रक्रिया व फॉर्म भेजने का पता नीचे विस्तार से दिया गया है।',
+  qualificationDetailsHi: 'मान्यता प्राप्त बोर्ड से 12वीं पास + कंप्यूटर पर 30 शब्द प्रति मिनट हिंदी टाइपिंग अथवा 35 शब्द प्रति मिनट अंग्रेजी टाइपिंग।',
+  briefSummary: 'Indian Air Force Hindi Typist Recruitment 2026 notification released. 12th pass eligible candidates can apply offline from 24 October to 23 November 2026.',
+  briefSummaryHi: 'भारतीय वायु सेना (Indian Air Force) द्वारा ग्रुप सी सिविलियन पदों के तहत हिंदी टाइपिस्ट के रिक्त पदों पर भर्ती का आधिकारिक विज्ञापन जारी कर दिया गया है। 12वीं पास एवं हिंदी टाइपिंग का ज्ञान रखने वाले पुरुष एवं महिला अभ्यर्थी 24 अक्टूबर से 23 नवंबर 2026 तक ऑफलाइन माध्यम से आवेदन कर सकते हैं। आवेदन फॉर्म डाउनलोड करने का लिंक, आयु सीमा (18 से 25 वर्ष), वेतनमान लेवल-2 (₹19,900 - ₹63,200), चयन प्रक्रिया व फॉर्म भेजने का पता नीचे विस्तार से दिया गया है।',
   description: 'Detailed recruitment guide for IAF Hindi Typist Group C civilian vacancies 2026.',
-  descriptionHi: '✍️ प्रिय अभ्यर्थियों,\n\nभारतीय वायु सेना (Indian Air Force) में ग्रुप सी सिविलियन पदों के तहत हिंदी टाइपिस्ट भर्ती के लिए ऑफलाइन आवेदन आमंत्रित किए गए हैं।\n\n📌 भर्ती की मुख्य बातें:\n• पद का नाम: हिंदी टाइपिस्ट (Hindi Typist / LDC Group C)\n• शैक्षणिक योग्यता: 12वीं पास + हिंदी टाइपिंग 30 WPM\n• आयु सीमा: 18 से 25 वर्ष (आरक्षित वर्गों को नियमानुसार छूट)\n• वेतनमान: 7वें वेतन आयोग पे-मैट्रिक्स लेवल-2 (₹19,900 - ₹63,200)\n• आवेदन माध्यम: केवल ऑफलाइन (पंजीकृत/स्पीड पोस्ट द्वारा)\n\n🎯 चयन प्रक्रिया:\n1. प्राप्त आवेदनों की स्क्रूटनी व कॉल लेटर प्रेषण\n2. लिखित परीक्षा (सामान्य बुद्धिमत्ता, अंग्रेजी, गणित, सामान्य जागरूकता)\n3. स्किल / टाइपिंग टेस्ट (कंप्यूटर पर हिंदी टाइपिंग - क्वालिफाइंग)\n4. मूल दस्तावेज सत्यापन व मेडिकल फिटनेस',
-  jobLocation: 'अखिल भारतीय / राजस्थान एवं गुजरात यूनिट्स (HQ SWAC)',
-  salary: 'Level-2 (₹19,900 - ₹63,200 per month + Central Govt DA & Allowances)',
-  salaryHi: 'लेवल-2 (₹19,900 से ₹63,200/- प्रति माह + केंद्रीय महंगाई भत्ता)',
+  descriptionHi: 'प्रिय अभ्यर्थियों,\n\nभारतीय वायु सेना (Indian Air Force) में ग्रुप सी सिविलियन पदों के तहत हिंदी टाइपिस्ट भर्ती के लिए ऑफलाइन आवेदन आमंत्रित किए गए हैं।\n\n📌 भर्ती की मुख्य बातें:\n• पद का नाम: हिंदी टाइपिस्ट (Hindi Typist Group C)\n• कुल पद: 01 पद (OBC वर्ग)\n• शैक्षणिक योग्यता: 12वीं पास + कंप्यूटर पर हिंदी 30 WPM / अंग्रेजी 35 WPM टाइपिंग\n• आयु सीमा: 18 से 25 वर्ष (ओबीसी को 3 वर्ष की छूट)\n• वेतनमान: 7वें वेतन आयोग पे-मैट्रिक्स लेवल-2 (₹19,900 - ₹63,200)\n• आवेदन माध्यम: केवल ऑफलाइन (पंजीकृत/स्पीड पोस्ट द्वारा)\n• आवेदन की अंतिम तिथि: 23 नवंबर 2026 (शाम 5:00 बजे तक)\n\n🎯 चयन प्रक्रिया:\n1. प्राप्त ऑफलाइन आवेदनों की स्क्रूटनी व कॉल लेटर\n2. लिखित परीक्षा (Objective Written Exam)\n3. स्किल / टाइपिंग टेस्ट (कंप्यूटर पर टाइपिंग - क्वालिफाइंग)\n4. मूल दस्तावेज सत्यापन व मेडिकल फिटनेस',
+  jobLocation: 'Trivandrum (Kerala)',
+  salary: 'Level-2 (₹19,900 – ₹63,200/- per month)',
+  salaryHi: 'लेवल-2 (₹19,900 से ₹63,200/- प्रति माह)',
   ageLimit: {
     min: 18,
     max: 25,
-    asOnDate: '2026-03-01',
-    relaxationNotes: 'OBC: 3 years, SC/ST: 5 years, PwD: 10 years age relaxation.',
-    relaxationNotesHi: 'ओबीसी को 3 वर्ष, एससी/एसटी को 5 वर्ष तथा दिव्यांग अभ्यर्थियों को 10 वर्ष की छूट देय होगी।'
+    asOnDate: '2026-11-23',
+    relaxationNotes: '3 years upper age relaxation for OBC category (18 to 28 years).',
+    relaxationNotesHi: 'ओबीसी वर्ग के उम्मीदवारों को नियमानुसार अधिकतम आयु सीमा में 3 वर्ष की छूट (18 से 28 वर्ष) देय होगी।'
   },
   applicationFee: [
-    { category: 'All Categories (सभी वर्ग)', amount: '₹0/- (निशुल्क / Free)' },
-    { category: 'Postal Envelope', amount: '₹10/- का डाक टिकट लगा स्वयं का पता लिखा लिफाफा' }
+    { category: 'General / OBC / EWS', amount: '₹0/- (No Fee / निशुल्क)' },
+    { category: 'SC / ST / PwD / Female', amount: '₹0/- (निशुल्क)' },
+    { category: 'Mode of Payment', amount: 'No Fee (आवेदन पूर्णतः निशुल्क है)' }
   ],
   importantDates: [
-    { label: 'Notification Released', value: 'फरवरी / मार्च 2026' },
-    { label: 'Offline Form Start Date', value: 'विज्ञापन प्रकाशन तिथि से शुरू' },
-    { label: 'Offline Form Last Date', value: 'प्रकाशन के 30 दिनों के भीतर' },
-    { label: 'Written Exam Date', value: 'डाक द्वारा सूचित की जाएगी' },
-    { label: 'Skill Test Date', value: 'लिखित परीक्षा के उपरांत' }
+    { label: 'Notification Released', value: '24 अक्टूबर 2026' },
+    { label: 'Offline Application Start Date', value: '24 अक्टूबर 2026' },
+    { label: 'Offline Application Last Date', value: '23 नवंबर 2026 (शाम 5:00 बजे तक)' },
+    { label: 'Exam Date', value: 'डाक/वेबसाइट द्वारा सूचित' }
   ],
+  postalAddress: 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011',
+  postalAddressHi: 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011',
+  envelopeNoteHi: 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC',
   latestNews: [
     {
       id: 'iaf-news-1',
-      date: '25 अक्टूबर 2026',
+      date: '24 अक्टूबर 2026',
       badge: 'ऑफलाइन फॉर्म शुरू',
       headline: 'भारतीय वायु सेना हिंदी टाइपिस्ट ऑफलाइन भर्ती फॉर्म जारी',
-      details: 'इच्छुक अभ्यर्थी निर्धारित प्रारूप में आवेदन पत्र डाउनलोड करके सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ संबंधित एयर फोर्स स्टेशन के पते पर भेजें।',
+      details: 'इच्छुक अभ्यर्थी निर्धारित प्रारूप में आवेदन पत्र डाउनलोड करके सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ 23 नवंबर 2026 तक संबंधित एयर फोर्स स्टेशन के पते पर भेजें।',
       isHighlighted: true
     },
     {
       id: 'iaf-news-2',
-      date: 'अक्टूबर 2026',
-      badge: 'टाइपिंग दिशा-निर्देश',
-      headline: 'कंप्यूटर पर 30 WPM हिंदी टाइपिंग की आवश्यकता',
-      details: 'टाइपिंग टेस्ट कंप्यूटर पर लिया जाएगा, जिसमें मंगल (Mangal) या रेमिंगटन गेल फॉन्ट समर्थित होगा। गति 30 शब्द प्रति मिनट होनी चाहिए।',
+      date: '24 अक्टूबर 2026',
+      badge: 'टाइपिंग दक्षता',
+      headline: 'कंप्यूटर पर 30 WPM हिंदी अथवा 35 WPM अंग्रेजी टाइपिंग आवश्यक',
+      details: 'टाइपिंग टेस्ट कंप्यूटर पर लिया जाएगा। गति 30 शब्द प्रति मिनट (हिंदी) या 35 शब्द प्रति मिनट (अंग्रेजी) होनी चाहिए।',
       isHighlighted: false
     }
   ],
   selectionProcess: [
     'Scrutiny of Offline Applications',
     'Written Examination',
-    'Skill / Typing Test (30 WPM Hindi on Computer)',
-    'Document Verification & Medical Fitness'
+    'Typing Skill Test (30 WPM Hindi / 35 WPM English on Computer)',
+    'Document Verification',
+    'Medical Examination'
   ],
   selectionProcessHi: [
-    'ऑफलाइन आवेदनों की स्क्रूटनी व एडमिट कार्ड',
-    'लिखित परीक्षा (Objective Written Exam)',
-    'स्किल टेस्ट (कंप्यूटर पर हिंदी में 30 WPM टाइपिंग गति)',
-    'दस्तावेज सत्यापन व मेडिकल फिटनेस'
+    'ऑफलाइन आवेदनों की स्क्रूटनी व एडमिट कार्ड जारी करना',
+    'लिखित परीक्षा (Objective Type Written Exam)',
+    'स्किल टेस्ट (कंप्यूटर पर हिंदी में 30 WPM अथवा अंग्रेजी में 35 WPM टाइपिंग)',
+    'मूल दस्तावेज सत्यापन (Document Verification)',
+    'चिकित्सा परीक्षण (Medical Examination)'
+  ],
+  requiredDocumentsHi: [
+    '10वीं (Matriculation) कक्षा की अंकतालिका एवं प्रमाण पत्र (जन्मतिथि सत्यापन हेतु)',
+    '12वीं (10+2 / इंटरमीडिएट) कक्षा उत्तीर्ण की मूल अंकतालिका व प्रमाण पत्र (अधिकतम शैक्षणिक योग्यता)',
+    'कंप्यूटर पर हिंदी/अंग्रेजी टाइपिंग दक्षता प्रमाण पत्र (यदि उपलब्ध हो)',
+    'ओबीसी जाति प्रमाण पत्र (OBC Caste Certificate - केंद्र सरकार के फॉर्मेट में)',
+    'मूल निवास प्रमाण पत्र (Bonafide Domicile Certificate)',
+    'पहचान पत्र (आधार कार्ड / वोटर आईडी की स्वप्रमाणित फोटोकॉपी)',
+    'स्वयं का पूरा डाक पता लिखा हुआ और निर्धारित डाक टिकट लगा खाली लिफाफा',
+    'हाल ही में ली गई 3 पासपोर्ट साइज रंगीन फोटो (1 आवेदन फॉर्म पर चिपकाई गई, 2 अतिरिक्त नत्थी करें)'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले भारतीय वायु सेना (IAF) का विस्तृत भर्ती विज्ञापन एवं निर्धारित ऑफलाइन आवेदन फॉर्म (PDF) डाउनलोड करें।',
+    'चरण 2: आवेदन पत्र को A4 साइज के साफ सफेद पेपर पर स्पष्ट प्रिंट निकालें।',
+    'चरण 3: फॉर्म में आवेदित पद का नाम (Hindi Typist), अपनी श्रेणी (OBC), व्यक्तिगत विवरण तथा 12वीं शैक्षणिक योग्यता का विवरण साफ लिखावट में भरें।',
+    'चरण 4: फॉर्म पर निर्धारित स्थान पर अपनी हालिया पासपोर्ट साइज रंगीन फोटो चिपकाएं और उस पर स्व-हस्ताक्षर (Self-Attest) करें।',
+    'चरण 5: सभी अनिवार्य शैक्षणिक (10वीं, 12वीं), जाति, मूल निवास एवं आधार कार्ड की स्वप्रमाणित (Self-Attested) छायाप्रतियां संलग्न करें।',
+    'चरण 6: निर्धारित डाक टिकट लगा स्वयं का पूरा पता लिखा खाली लिफाफा आवेदन के साथ पिन करें।',
+    'चरण 7: मुख्य लिफाफे के ऊपर स्पष्ट बड़े अक्षरों में लिखें: "APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC"।',
+    'चरण 8: भरे हुए आवेदन फॉर्म को 23 नवंबर 2026 शाम 5:00 बजे से पूर्व "The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011" के पते पर पंजीकृत डाक या स्पीड पोस्ट द्वारा भेजें।'
   ],
   directLinks: [
-    { label: 'Download Offline Application Form (PDF)', actionText: 'Download PDF', type: 'application_form', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Application_Form_2026.pdf', isPrimary: true },
-    { label: 'Download Detailed Notification (PDF)', actionText: 'Download PDF', type: 'notification', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Notification_2026.pdf' },
+    { label: 'Download Offline Application Form (PDF)', actionText: 'Click Here', type: 'application_form', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Application_Form_2026.pdf', isPrimary: true },
+    { label: 'Download Official Notification (PDF)', actionText: 'Click Here', type: 'notification', url: 'https://indianairforce.nic.in', isPdf: true, fileName: 'IAF_Hindi_Typist_Notification_2026.pdf' },
     { label: 'Indian Air Force Official Website', actionText: 'Click Here', type: 'official', url: 'https://indianairforce.nic.in' }
   ],
   officialLinks: {
@@ -2000,28 +2046,45 @@ export const INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY: VacancyItem = {
     {
       postName: 'Hindi Typist (Group C Civilian)',
       postNameHi: 'हिंदी टाइपिस्ट (ग्रुप सी सिविलियन)',
-      categoryOrSubjectHi: 'टाइपिंग संवर्ग',
-      postsCount: 'विभिन्न पद',
-      qualification: '12th Pass + Hindi Typing 30 WPM',
-      qualificationHi: '12वीं पास + कंप्यूटर पर 30 शब्द प्रति मिनट हिंदी टाइपिंग',
-      payLevel: 'Level-2 (₹19,900 - ₹63,200)'
-    },
-    {
-      postName: 'LDC (Lower Division Clerk)',
-      postNameHi: 'लोअर डिवीजन क्लर्क (LDC)',
-      categoryOrSubjectHi: 'क्लर्क संवर्ग',
-      postsCount: 'विभिन्न पद',
-      qualification: '12th Pass + English 35 WPM / Hindi 30 WPM',
-      qualificationHi: '12वीं पास + कंप्यूटर टाइपिंग ज्ञान',
-      payLevel: 'Level-2 (₹19,900 - ₹63,200)'
+      categoryOrSubjectHi: 'टाइपिंग संवर्ग (OBC)',
+      postsCount: '01 पद (OBC)',
+      qualification: '12th Pass + Hindi Typing 30 WPM or English Typing 35 WPM',
+      qualificationHi: '12वीं पास + कंप्यूटर पर 30 WPM हिंदी अथवा 35 WPM अंग्रेजी टाइपिंग',
+      payLevel: 'Level-2 (₹19,900 – ₹63,200/-)'
     }
   ],
-  tags: ['Indian Air Force', 'Hindi Typist', '12th Pass Job', 'वायु सेना भर्ती', 'Central Govt'],
+  faqs: [
+    {
+      q: 'What is the last date to apply for Indian Air Force Hindi Typist Recruitment 2026?',
+      qHi: 'Indian Air Force Hindi Typist भर्ती 2026 के लिए आवेदन की अंतिम तिथि क्या है?',
+      a: 'The last date to submit the offline application form is 23 November 2026 up to 5:00 PM.',
+      aHi: 'भारतीय वायु सेना हिंदी टाइपिस्ट भर्ती 2026 के लिए ऑफलाइन आवेदन जमा करने की अंतिम तिथि 23 नवंबर 2026 (शाम 5:00 बजे तक) है।'
+    },
+    {
+      q: 'What is the qualification required for IAF Hindi Typist Post?',
+      qHi: 'IAF हिंदी टाइपिस्ट पद के लिए शैक्षणिक योग्यता क्या है?',
+      a: 'Candidates must have passed 12th Class from a recognized Board and possess a typing speed of 30 WPM in Hindi or 35 WPM in English on computer.',
+      aHi: 'अभ्यर्थी मान्यता प्राप्त बोर्ड से 12वीं पास होना चाहिए तथा कंप्यूटर पर हिंदी में 30 शब्द प्रति मिनट अथवा अंग्रेजी में 35 शब्द प्रति मिनट की टाइपिंग गति होनी चाहिए।'
+    },
+    {
+      q: 'What is the application fee for IAF Hindi Typist Recruitment 2026?',
+      qHi: 'क्या इस भर्ती के लिए कोई आवेदन शुल्क देय है?',
+      a: 'No, the application is completely free of cost (₹0/-) for all candidates.',
+      aHi: 'नहीं, इस भर्ती के लिए कोई आवेदन शुल्क नहीं लिया जाएगा। यह भर्ती सभी उम्मीदवारों हेतु पूर्णतः निशुल्क (₹0/-) है।'
+    },
+    {
+      q: 'Where to send the IAF Hindi Typist application form?',
+      qHi: 'आवेदन फॉर्म भरकर किस डाक पते पर भेजना है?',
+      a: 'The application must be sent to: The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011.',
+      aHi: 'आवेदन पत्र भरकर इस पते पर भेजें: The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011.'
+    }
+  ],
+  tags: ['Indian Air Force', 'Hindi Typist', '12th Pass Job', 'वायु सेना भर्ती', 'Central Govt Jobs', 'Offline Form'],
   status: 'active',
   isHot: true,
   isNew: true,
-  createdAt: '2026-02-10',
-  updatedAt: '25 अक्टूबर 2026'
+  createdAt: '2026-10-24',
+  updatedAt: '24 अक्टूबर 2026'
 };
 
 export const INITIAL_VACANCIES: VacancyItem[] = [

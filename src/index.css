@@ -22,25 +22,25 @@
     overflow-x: hidden;
   }
 
-  /* Headlight / Headline Typography - Mangal 12pt */
+  /* Headlight / Headline Typography - Mangal 11.5pt */
   h1, h2, h3, h4, h5, h6,
   .headlight, .headline, .section-headline, .box-header {
     font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-size: 12pt !important;
+    font-size: 11.5pt !important;
     color: #0f172a;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.4;
   }
 }
 
-/* Headlight / Headline Classes - Mangal 12pt */
+/* Headlight / Headline Classes - Mangal 11.5pt */
 .headlight,
 .headline,
 .heading-title,
 .box-header {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 12pt !important;
-  line-height: 1.35;
+  font-size: 11.5pt !important;
+  line-height: 1.4;
 }
 
 /* Post Typography - Mangal 11.5pt */
@@ -89,9 +89,9 @@ article.post-content {
 .entry-content h5,
 .entry-content h6 {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 12pt !important;
+  font-size: 11.5pt !important;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.4;
   color: #0f172a;
 }
 
@@ -108,13 +108,14 @@ article.post-content {
   font-size: 11.5pt !important;
   font-weight: 700;
   color: #1e293b;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 .post-content td,
 .entry-content td {
   font-size: 11.5pt !important;
   color: #334155;
+  background-color: #ffffff;
 }
 
 /* Mobile Table & Touch Optimization */
