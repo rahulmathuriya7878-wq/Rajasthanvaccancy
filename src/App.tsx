@@ -829,11 +829,9 @@ export default function App() {
 
       <OfflineIndicator lang={lang} />
 
-      {!selectedVacancy && (
-        <FloatingSocialButtons
-          lang={lang}
-        />
-      )}
+      <FloatingSocialButtons
+        lang={lang}
+      />
     </div>
   );
 }

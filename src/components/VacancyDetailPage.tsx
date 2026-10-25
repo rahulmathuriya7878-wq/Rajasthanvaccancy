@@ -2008,46 +2008,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                           <div className="overflow-x-auto border border-slate-300 bg-white rounded-md">
                             <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
-                              <tbody>
-                                {/* Official WhatsApp Channel Link */}
-                                <tr className="border-b border-slate-300 bg-emerald-50/40">
-                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2">
-                                    <div className="flex items-center gap-2">
-                                      <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
-                                      <span>Join WhatsApp Channel</span>
-                                    </div>
-                                  </td>
-                                  <td className="p-2.5 sm:p-3 font-semibold w-1/2">
-                                    <a
-                                      href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 px-3 py-1 rounded bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition shadow-2xs"
-                                    >
-                                      <span>Click Here</span>
-                                    </a>
-                                  </td>
-                                </tr>
-
-                                {/* Official Telegram Channel Link */}
-                                <tr className="border-b border-slate-300 bg-sky-50/40">
-                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2">
-                                    <div className="flex items-center gap-2">
-                                      <Send className="w-4 h-4 text-[#0088cc] shrink-0" />
-                                      <span>Join Telegram Channel</span>
-                                    </div>
-                                  </td>
-                                  <td className="p-2.5 sm:p-3 font-semibold w-1/2">
-                                    <a
-                                      href="https://telegram.me/rajasthanvacancy_in"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 px-3 py-1 rounded bg-[#0088cc] hover:bg-[#0077b3] text-white font-bold text-xs transition shadow-2xs"
-                                    >
-                                      <span>Click Here</span>
-                                    </a>
-                                  </td>
-                                </tr>
+                               <tbody>
                                 <tr className="border-b border-slate-300">
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
                                     Start {shortJobName} form
