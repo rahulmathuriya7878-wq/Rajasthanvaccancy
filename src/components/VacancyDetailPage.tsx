@@ -523,6 +523,49 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState('');
 
+  const getShareStartDate = () => {
+    if (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates)) {
+      return (editablePost.importantDates as any)?.applyStartDate || 'शीघ्र';
+    }
+    if (Array.isArray(editablePost.importantDates)) {
+      const found = (editablePost.importantDates as any[]).find((d: any) => 
+        d.label?.toLowerCase().includes('begin') || 
+        d.label?.toLowerCase().includes('start') || 
+        d.label?.includes('शुरू') || 
+        d.label?.includes('प्रारंभ')
+      );
+      if (found) return found.value;
+    }
+    return 'शीघ्र';
+  };
+
+  const getShareLastDate = () => {
+    if (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates)) {
+      return (editablePost.importantDates as any)?.applyLastDate || 'शीघ्र';
+    }
+    if (Array.isArray(editablePost.importantDates)) {
+      const found = (editablePost.importantDates as any[]).find((d: any) => 
+        d.label?.toLowerCase().includes('last') || 
+        d.label?.includes('अंतिम')
+      );
+      if (found) return found.value;
+    }
+    return 'शीघ्र';
+  };
+
+  const handleShareBigUpdate = () => {
+    const jobTitle = editablePost.titleHi || editablePost.title || 'राजस्थान भर्ती 2026';
+    const totalPosts = editablePost.totalPosts || '130';
+    const startDate = getShareStartDate();
+    const lastDate = getShareLastDate();
+    const postUrl = window.location.href;
+
+    const shareText = `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${jobTitle}\n🔢 *कुल पद:* ${totalPosts}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDate}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDate}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${postUrl}`;
+
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
   // Section Management State for Admin
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -1014,61 +1057,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
               </div>
 
-              {/* In-Post Social Channels Join Box (WhatsApp Green & Telegram Blue) */}
-              <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-sky-50 to-emerald-50 border border-slate-200 shadow-2xs space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-emerald-600 animate-bounce" />
-                    <span className="font-bold text-slate-900 text-xs sm:text-sm">
-                      {isHi ? 'भर्ती परीक्षा अपडेट सबसे पहले पाने के लिए ऑफिशियल ग्रुप जॉइन करें:' : 'Join Official Social Channels for Instant Job Updates:'}
-                    </span>
-                  </div>
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    100% नि:शुल्क
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* WhatsApp Green Button */}
-                  <a
-                    href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold transition shadow-xs hover:shadow-md group active:scale-[0.99]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                        <MessageCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-sm font-extrabold leading-tight">WhatsApp चैनल</div>
-                        <div className="text-[11px] text-emerald-100 font-medium">ज्वाइन करें (Official)</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform" />
-                  </a>
-
-                  {/* Telegram Blue Button */}
-                  <a
-                    href="https://telegram.me/rajasthanvacancy_in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#0088cc] hover:bg-[#0077b3] text-white font-bold transition shadow-xs hover:shadow-md group active:scale-[0.99]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                        <Send className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-sm font-extrabold leading-tight">Telegram चैनल</div>
-                        <div className="text-[11px] text-sky-100 font-medium">ज्वाइन करें (Official)</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                </div>
-              </div>
-
               {/* Entry Content Body */}
               <div 
                 className="entry-content space-y-6 text-[#334155]"
@@ -1078,6 +1066,23 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   lineHeight: 1.75
                 }}
               >
+                {/* Small Normal WhatsApp Share Bar right above संक्षिप्त विवरण */}
+                <div className="flex items-center justify-between gap-2 p-2 px-3 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                    <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
+                    <span className="text-xs sm:text-sm">🚨 BIG अपडेट व्हाट्सएप पर शेयर करें:</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleShareBigUpdate}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                    title="WhatsApp पर BIG अपडेट शेयर करें"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                    <span>WhatsApp शेयर</span>
+                  </button>
+                </div>
+
                 {/* Opening Lead Paragraphs */}
                 <div className="space-y-3">
                   <p className="post-item">
@@ -1117,6 +1122,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {shortJobName} का संक्षिप्त विवरण
                             </h2>
                             <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={handleShareBigUpdate}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95"
+                                title="WhatsApp पर संक्षिप्त विवरण शेयर करें"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                                <span>शेयर करें</span>
+                              </button>
                               {renderSectionShareButton('overview', `${shortJobName} का संक्षिप्त विवरण`)}
                               {renderAdminSectionControls('overview', 'संक्षिप्त विवरण')}
                             </div>
