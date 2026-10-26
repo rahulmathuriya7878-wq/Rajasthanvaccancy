@@ -54,6 +54,7 @@ import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
+import { AdvancedFilterBar } from './components/AdvancedFilterBar';
 import { 
   VacancyItem, 
   BoardType, 
@@ -287,6 +288,9 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'ALL'>('ALL');
   const [selectedQualification, setSelectedQualification] = useState<QualificationType | 'ALL'>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<JobStatusType | 'ALL'>('ALL');
+  const [selectedLocation, setSelectedLocation] = useState<string>('ALL');
+  const [selectedJobType, setSelectedJobType] = useState<string>('ALL');
+  const [selectedSalaryRange, setSelectedSalaryRange] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'latest' | 'deadline' | 'posts'>('latest');
 
   // Modals & Selection
@@ -500,6 +504,9 @@ export default function App() {
     setSelectedCategory('ALL');
     setSelectedQualification('ALL');
     setSelectedStatus('ALL');
+    setSelectedLocation('ALL');
+    setSelectedJobType('ALL');
+    setSelectedSalaryRange('ALL');
   };
 
   // Filtered and Sorted vacancies
@@ -561,6 +568,30 @@ export default function App() {
         return false;
       }
 
+      // 6. Location
+      if (selectedLocation !== 'ALL') {
+        const locStr = ((item.jobLocation || '') + ' ' + (item.department || '') + ' ' + (item.titleHi || '')).toLowerCase();
+        if (!locStr.includes(selectedLocation.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 7. Job Type
+      if (selectedJobType !== 'ALL') {
+        const descStr = ((item.descriptionHi || '') + ' ' + (item.description || '') + ' ' + (item.briefSummaryHi || '')).toLowerCase();
+        if (selectedJobType === 'contract' && !descStr.includes('संविदा') && !descStr.includes('contract')) return false;
+        if (selectedJobType === 'regular' && (descStr.includes('संविदा') || descStr.includes('contract'))) return false;
+        if (selectedJobType === 'scheme' && item.category !== 'scheme') return false;
+      }
+
+      // 8. Salary Range
+      if (selectedSalaryRange !== 'ALL') {
+        const salStr = ((item.salary || '') + ' ' + (item.salaryHi || '')).toLowerCase();
+        if (selectedSalaryRange === '20k' && !salStr.includes('19,900') && !salStr.includes('20,000') && !salStr.includes('level-2') && !salStr.includes('level-4') && !salStr.includes('level-7')) return false;
+        if (selectedSalaryRange === '40k' && !salStr.includes('44,900') && !salStr.includes('level-7') && !salStr.includes('30,000')) return false;
+        if (selectedSalaryRange === 'contract' && !salStr.includes('मानदेय') && !salStr.includes('contract')) return false;
+      }
+
       return true;
     }).sort((a, b) => {
       if (sortBy === 'deadline') {
@@ -576,7 +607,7 @@ export default function App() {
       // default: latest
       return b.createdAt.localeCompare(a.createdAt);
     });
-  }, [vacancies, searchQuery, selectedBoard, selectedCategory, selectedQualification, selectedStatus, sortBy]);
+  }, [vacancies, searchQuery, selectedBoard, selectedCategory, selectedQualification, selectedStatus, selectedLocation, selectedJobType, selectedSalaryRange, sortBy]);
 
   const isHi = lang === 'hi';
 
@@ -718,11 +749,32 @@ export default function App() {
             onDeleteVacancy={handleDeleteVacancy}
           />
         ) : (
-          /* Home View: 3x2 Grid Fast Access Updates & Authentic About Layout */
+          /* Home View: Advanced Filter Bar & 3x2 Grid Fast Access Updates */
           <div className="space-y-6">
+            <AdvancedFilterBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedBoard={selectedBoard}
+              setSelectedBoard={setSelectedBoard}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedQualification={selectedQualification}
+              setSelectedQualification={setSelectedQualification}
+              selectedLocation={selectedLocation}
+              setSelectedLocation={setSelectedLocation}
+              selectedJobType={selectedJobType}
+              setSelectedJobType={setSelectedJobType}
+              selectedSalaryRange={selectedSalaryRange}
+              setSelectedSalaryRange={setSelectedSalaryRange}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              onResetFilters={handleResetFilters}
+              totalResultsCount={filteredVacancies.length}
+              lang={lang}
+            />
 
             <FastUpdatesGrid
-              vacancies={vacancies}
+              vacancies={filteredVacancies}
               lang={lang}
               onSelectVacancy={handleSelectVacancy}
               onFilterCategory={(cat) => setSelectedCategory(cat as any)}

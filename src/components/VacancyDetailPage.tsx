@@ -718,12 +718,30 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     }
 
     const startDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
-      ? (editablePost.importantDates as any)?.notificationDate || '2026-10-22'
-      : '2026-10-22';
+      ? (editablePost.importantDates as any)?.notificationDate || editablePost.createdAt || '2026-10-25'
+      : editablePost.createdAt || '2026-10-25';
 
     const lastDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
-      ? (editablePost.importantDates as any)?.applyLastDate || '2026-11-23'
-      : '2026-11-23';
+      ? (editablePost.importantDates as any)?.applyLastDate || '2026-11-25'
+      : '2026-11-25';
+
+    const formatIsoDate = (d: any, fallback: string): string => {
+      if (!d || typeof d !== 'string') return fallback;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+      if (/^\d{4}-\d{2}-\d{2}T/.test(d)) return d;
+      if (d.includes('2026') || d.includes('2025')) {
+        if (d.includes('अक्टूबर') || d.includes('Oct')) return '2026-10-25';
+        if (d.includes('जनवरी') || d.includes('Jan')) return '2026-01-15';
+        if (d.includes('फरवरी') || d.includes('Feb')) return '2026-02-15';
+        if (d.includes('मार्च') || d.includes('Mar')) return '2026-03-15';
+        if (d.includes('नवंबर') || d.includes('Nov')) return '2026-11-15';
+        if (d.includes('दिसंबर') || d.includes('Dec')) return '2026-12-15';
+      }
+      return fallback;
+    };
+
+    const isoDatePosted = formatIsoDate(startDate, editablePost.createdAt || '2026-10-25');
+    const isoValidThrough = formatIsoDate(lastDate, '2026-11-25');
 
     const jobPostingData = {
       "@context": "https://schema.org/",
@@ -736,8 +754,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         "name": editablePost.organization || "Rajasthan Government",
         "value": editablePost.id
       },
-      "datePosted": startDate.includes('202') ? startDate : '2026-10-22',
-      "validThrough": lastDate.includes('202') ? lastDate : '2026-11-23',
+      "datePosted": isoDatePosted,
+      "validThrough": isoValidThrough,
       "employmentType": "FULL_TIME",
       "hiringOrganization": {
         "@type": "Organization",

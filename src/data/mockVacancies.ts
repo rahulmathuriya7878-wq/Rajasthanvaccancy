@@ -2272,7 +2272,159 @@ export const RMS_DHOLPUR_2026_VACANCY: VacancyItem = {
   updatedAt: '25 अक्टूबर 2026'
 };
 
+export const UPESSC_TGT_2026_VACANCY: VacancyItem = {
+  id: 'upessc-uttar-pradesh-trained-graduate-teacher-tgt-2026',
+  title: 'UPESSC Uttar Pradesh Trained Graduate Teacher (TGT - Various Subjects) Online Form 2026',
+  titleHi: 'यूपीएसईएससी उत्तर प्रदेश प्रशिक्षित स्नातक शिक्षक (TGT - विभिन्न विषय) ऑनलाइन फॉर्म 2026',
+  shortTitle: 'UPESSC TGT Recruitment 2026',
+  shortTitleHi: 'यूपी टीजीटी भर्ती 2026',
+  organization: 'Education Department',
+  department: 'Uttar Pradesh Secondary Education Services Selection Board (UPESSC)',
+  departmentHi: 'उत्तर प्रदेश माध्यमिक शिक्षा सेवा चयन बोर्ड (UPESSC)',
+  advtNo: 'UPESSC/TGT/2026/01',
+  category: 'latest_job',
+  totalPosts: 'विभिन्न पद (Various TGT Subjects)',
+  postName: 'Trained Graduate Teacher (TGT - English, Hindi, Mathematics, Science, Social Science, Sanskrit & Others)',
+  postNameHi: 'प्रशिक्षित स्नातक शिक्षक (TGT - अंग्रेजी, हिंदी, गणित, विज्ञान, सामाजिक विज्ञान, संस्कृत एवं अन्य)',
+  qualification: ['Graduate', 'B.Ed/BSTC'],
+  qualificationDetails: 'Graduation in relevant subject with B.Ed degree from a recognized university.',
+  qualificationDetailsHi: 'मान्यता प्राप्त विश्वविद्यालय से संबंधित विषय में स्नातक (Graduation) तथा B.Ed / एल.टी. डिप्लोमा या समकक्ष योग्यता।',
+  briefSummary: 'UPESSC Uttar Pradesh Trained Graduate Teacher (TGT) recruitment online form 2026 for various subjects.',
+  briefSummaryHi: '✍️ उत्तर प्रदेश माध्यमिक शिक्षा सेवा चयन बोर्ड (UPESSC) द्वारा उत्तर प्रदेश के सहायता प्राप्त अशासकीय माध्यमिक विद्यालयों में प्रशिक्षित स्नातक शिक्षक (TGT - विभिन्न विषय) के पदों पर सीधी भर्ती 2026 का आधिकारिक नोटिफिकेशन जारी कर दिया गया है। योग्य एवं इच्छुक अभ्यर्थी निर्धारित तिथियों के भीतर आधिकारिक पोर्टल के माध्यम से ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, विषयवार पद विवरण एवं ऑनलाइन आवेदन लिंक नीचे दिया गया है।',
+  description: 'Official notification details and application instructions for UPESSC Uttar Pradesh Trained Graduate Teacher (TGT) Recruitment 2026.',
+  descriptionHi: '✍️ नमस्ते प्रिय अभ्यर्थियों,\n\nउत्तर प्रदेश माध्यमिक शिक्षा सेवा चयन बोर्ड (UPESSC) द्वारा राज्य के सहायता प्राप्त विद्यालयों में TGT (प्रशिक्षित स्नातक शिक्षक) के विभिन्न विषयों के पदों पर भर्ती हेतु विज्ञापन जारी किया गया है।\n\n📌 मुख्य बिंदु व तिथियां:\n• आवेदन प्रारंभ तिथि: 25 अक्टूबर 2026\n• आवेदन की अंतिम तिथि: 25 नवंबर 2026\n• आयु सीमा: 1 जुलाई 2026 को न्यूनतम 21 वर्ष\n• वेतनमान: पे-मैट्रिक्स लेवल-7 (₹44,900 - ₹1,42,400/-)\n\n🎯 योग्यता:\nसंबंधित विषय में स्नातक (Graduation) एवं B.Ed / एल.टी. डिप्लोमा।',
+  jobLocation: 'उत्तर प्रदेश (All Districts)',
+  salary: 'Pay Matrix Level-7 (₹44,900 - ₹1,42,400)',
+  salaryHi: 'पे-मैट्रिक्स लेवल-7 (₹44,900 - ₹1,42,400/- प्रति माह)',
+  ageLimit: {
+    min: 21,
+    max: 40,
+    asOnDate: '2026-07-01',
+    relaxationNotes: 'Age relaxation applicable as per UP Government rules.',
+    relaxationNotesHi: 'उत्तर प्रदेश सरकार के नियमानुसार आरक्षित वर्गों को आयु सीमा में छूट देय होगी।'
+  },
+  applicationFee: {
+    genObc: 750,
+    scSt: 450,
+    ews: 750,
+    otrNote: 'Rs 750 for Gen/OBC/EWS and Rs 450 for SC/ST via online payment gateway.',
+    otrNoteHi: 'सामान्य/ओबीसी/ईडब्ल्यूएस: ₹750/-, एससी/एसटी: ₹450/- (ऑनलाइन भुगतान द्वारा)'
+  },
+  importantDates: {
+    notificationDate: '24 अक्टूबर 2026',
+    applyStartDate: '2026-10-25',
+    applyLastDate: '2026-11-25',
+    feeLastDate: '2026-11-25',
+    examDate: 'शीघ्र घोषित होगी',
+    admitCardDate: 'परीक्षा से 10 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Written Examination',
+    'Document Verification'
+  ],
+  selectionProcessHi: [
+    'लिखित परीक्षा (Written Examination)',
+    'दस्तावेज सत्यापन (Document Verification)'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://upsessb.upsdc.gov.in',
+    notificationPdfUrl: 'https://upsessb.upsdc.gov.in',
+    officialWebsiteUrl: 'https://upsessb.upsdc.gov.in'
+  },
+  postBreakdown: [
+    {
+      postName: 'TGT English / Hindi / Mathematics',
+      postNameHi: 'TGT अंग्रेजी / हिंदी / गणित',
+      categoryOrSubjectHi: 'शिक्षण पद',
+      postsCount: 'विभिन्न पद',
+      qualification: 'Graduate + B.Ed',
+      qualificationHi: 'संबंधित विषय में स्नातक + B.Ed',
+      payLevel: 'Level-7 (₹44,900 - ₹1,42,400)'
+    },
+    {
+      postName: 'TGT Science / Social Science / Sanskrit',
+      postNameHi: 'TGT विज्ञान / सामाजिक विज्ञान / संस्कृत',
+      categoryOrSubjectHi: 'शिक्षण पद',
+      postsCount: 'विभिन्न पद',
+      qualification: 'Graduate + B.Ed',
+      qualificationHi: 'संबंधित विषय में स्नातक + B.Ed',
+      payLevel: 'Level-7 (₹44,900 - ₹1,42,400)'
+    }
+  ],
+  salaryTable: [
+    {
+      postName: 'Trained Graduate Teacher (TGT)',
+      postNameHi: 'प्रशिक्षित स्नातक शिक्षक (TGT)',
+      payLevel: 'Level-7',
+      payLevelHi: 'पे-मैट्रिक्स लेवल 7',
+      salaryRange: '₹44,900 - ₹1,42,400',
+      salaryRangeHi: '₹44,900 - ₹1,42,400/- प्रति माह'
+    }
+  ],
+  requiredDocumentsHi: [
+    '10वीं एवं 12वीं कक्षा की अंकतालिका व प्रमाण पत्र',
+    'स्नातक (Graduation) की डिग्री एवं समस्त वर्षों की अंकतालिकाएं',
+    'B.Ed / एल.टी. डिप्लोमा प्रमाण पत्र',
+    'उत्तर प्रदेश मूल निवास प्रमाण पत्र (यदि आरक्षण का लाभ लेना हो)',
+    'जाति प्रमाण पत्र (SC / ST / OBC / EWS)',
+    'नवीनतम पासपोर्ट साइज रंगीन फोटो एवं हस्ताक्षर',
+    'पहचान पत्र (आधार कार्ड)'
+  ],
+  howToApplyHi: [
+    'चरण 1: उत्तर प्रदेश माध्यमिक शिक्षा सेवा चयन बोर्ड (UPESSC) की आधिकारिक वेबसाइट upsessb.upsdc.gov.in पर जाएं।',
+    'चरण 2: "UP TGT Recruitment 2026 Online Application" लिंक पर क्लिक करें।',
+    'चरण 3: नया पंजीकरण (New Registration) करें और अपनी बेसिक जानकारी भरें।',
+    'चरण 4: निर्धारित आवेदन शुल्क का ऑनलाइन माध्यम (Debit Card / Net Banking / UPI) से भुगतान करें।',
+    'चरण 5: अपनी शैक्षणिक योग्यता व अन्य विवरण भरकर फोटो और हस्ताक्षर अपलोड करें।',
+    'चरण 6: फॉर्म का पूर्वावलोकन (Preview) जांचकर फाइनल सबमिट करें और प्रिंटआउट सुरक्षित रख लें।'
+  ],
+  directLinks: [
+    {
+      label: 'Apply Online (UP TGT Form 2026)',
+      actionText: 'Click Here',
+      type: 'apply',
+      url: 'https://upsessb.upsdc.gov.in',
+      isPrimary: true
+    },
+    {
+      label: 'Download Notification / Syllabus (PDF)',
+      actionText: 'Download PDF',
+      type: 'notification',
+      url: 'https://upsessb.upsdc.gov.in',
+      isPdf: true,
+      fileName: 'UPESSC_TGT_Recruitment_2026_Notification.pdf'
+    },
+    {
+      label: 'Official Website (UPESSC)',
+      actionText: 'Click Here',
+      type: 'official',
+      url: 'https://upsessb.upsdc.gov.in'
+    }
+  ],
+  faqs: [
+    {
+      q: 'What is the last date to apply for UPESSC TGT Recruitment 2026?',
+      qHi: 'यूपीएसईएससी टीजीटी भर्ती 2026 के लिए ऑनलाइन आवेदन करने की अंतिम तिथि क्या है?',
+      a: 'The last date to apply online is 25 November 2026.',
+      aHi: 'ऑनलाइन आवेदन करने की अंतिम तिथि 25 नवंबर 2026 है।'
+    },
+    {
+      q: 'What is the educational qualification for UP TGT 2026?',
+      qHi: 'यूपी टीजीटी भर्ती के लिए शैक्षणिक योग्यता क्या है?',
+      a: 'Candidates must possess Graduation in the relevant subject along with B.Ed or equivalent degree.',
+      aHi: 'अभ्यर्थी के पास संबंधित विषय में स्नातक (Graduation) तथा B.Ed डिग्री होना अनिवार्य है।'
+    }
+  ],
+  tags: ['UP TGT 2026', 'UPESSC', 'Uttar Pradesh Teacher Jobs', 'TGT Recruitment', 'UP Govt Jobs', 'Online Form'],
+  status: 'active',
+  isHot: true,
+  isNew: true,
+  createdAt: '2026-10-25',
+  updatedAt: '25 अक्टूबर 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  UPESSC_TGT_2026_VACANCY,
   RMS_DHOLPUR_2026_VACANCY,
   RAILWAY_GROUP_D_2026_VACANCY,
   INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY,
