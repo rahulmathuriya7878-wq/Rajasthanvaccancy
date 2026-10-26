@@ -105,6 +105,35 @@ async function startServer() {
     }
   });
 
+  // Dynamic XML Sitemap Generator to resolve Google Search Console sitemap errors
+  app.get('/sitemap.xml', async (_req, res) => {
+    try {
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+      
+      // Home
+      xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+
+      // Categories
+      const categories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'exam_date', 'syllabus', 'news'];
+      categories.forEach(cat => {
+        xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+      });
+
+      // Vacancies
+      INITIAL_VACANCIES.forEach(v => {
+        xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+      });
+
+      xml += `</urlset>`;
+      res.header('Content-Type', 'application/xml; charset=utf-8');
+      res.send(xml);
+    } catch (error: any) {
+      console.error('Failed to generate sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
   // AI Blog Writer Endpoint (Gemini 3.8 Flash SDK)
   app.post('/api/ai/generate-blog', async (req, res) => {
     try {
