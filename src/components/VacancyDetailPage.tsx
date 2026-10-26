@@ -708,6 +708,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', newDesc);
 
+    // Dynamic Canonical URL injection for Google Search Indexing
+    let canonicalLinkEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const originalCanonicalHref = canonicalLinkEl?.getAttribute('href') || 'https://rajasthanvaccancy.vercel.app/';
+    const postCanonicalUrl = `https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`;
+    if (!canonicalLinkEl) {
+      canonicalLinkEl = document.createElement('link');
+      canonicalLinkEl.rel = 'canonical';
+      document.head.appendChild(canonicalLinkEl);
+    }
+    canonicalLinkEl.setAttribute('href', postCanonicalUrl);
+
     // Dynamic Schema.org JobPosting JSON-LD
     let scriptEl = document.getElementById('vacancy-job-posting-ld') as HTMLScriptElement | null;
     if (!scriptEl) {
@@ -777,6 +788,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return () => {
       document.title = originalTitle;
       if (metaDesc) metaDesc.setAttribute('content', originalDesc);
+      if (canonicalLinkEl) canonicalLinkEl.setAttribute('href', originalCanonicalHref);
       const scriptToRemove = document.getElementById('vacancy-job-posting-ld');
       if (scriptToRemove) scriptToRemove.remove();
     };

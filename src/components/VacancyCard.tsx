@@ -15,6 +15,7 @@ import {
   Bell
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
+import { formatDisplayDate } from '../utils/dateUtils';
 
 interface VacancyCardProps {
   vacancy: VacancyItem;
@@ -210,7 +211,7 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
             </span>
             <span className="font-bold text-rose-700 flex items-center gap-1">
               <Calendar className="w-3 h-3 text-rose-600" />
-              <span>{vacancy.importantDates.applyLastDate || 'TBA'}</span>
+              <span>{formatDisplayDate(vacancy.importantDates.applyLastDate)}</span>
             </span>
           </div>
 
@@ -220,7 +221,7 @@ export const VacancyCard: React.FC<VacancyCardProps> = ({
             </span>
             <span className="font-medium text-slate-700 flex items-center gap-1">
               <Clock className="w-3 h-3 text-slate-500" />
-              <span>{vacancy.importantDates.examDate || 'Announced Soon'}</span>
+              <span>{formatDisplayDate(vacancy.importantDates.examDate, 'Announced Soon')}</span>
             </span>
           </div>
         </div>
