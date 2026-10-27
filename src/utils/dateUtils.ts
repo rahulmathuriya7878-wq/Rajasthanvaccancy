@@ -10,27 +10,39 @@ export const formatDisplayDate = (dateVal?: string | null, fallback = 'शीघ
   const trimmed = dateVal.trim();
   if (!trimmed || trimmed === 'TBA' || trimmed === '0000-00-00') return fallback;
 
-  // Try parsing ISO date or datetime string
+  // 1. Direct match for YYYY-MM-DD (e.g. 2026-09-01 -> 01/09/2026)
+  const ymdMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (ymdMatch) {
+    const [, year, month, day] = ymdMatch;
+    return `${day}/${month}/${year}`;
+  }
+
+  // 2. Direct match for DD-MM-YYYY (e.g. 01-09-2026 -> 01/09/2026)
+  const dmyMatch = trimmed.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  if (dmyMatch) {
+    const [, d, m, y] = dmyMatch;
+    return `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
+  }
+
+  // 3. Direct match for YYYY-MM-DDTHH:mm(:ss)
+  const ymdTimeMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (ymdTimeMatch) {
+    const [, year, month, day, hStr, mStr] = ymdTimeMatch;
+    let hour = parseInt(hStr, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    const hourFormatted = String(hour).padStart(2, '0');
+    return `${day}/${month}/${year} | ${hourFormatted}:${mStr} ${ampm}`;
+  }
+
+  // 4. Try parsing with native Date if it's a valid date string
   try {
     const parsed = new Date(trimmed);
-    if (!isNaN(parsed.getTime())) {
+    if (!isNaN(parsed.getTime()) && !trimmed.includes('अक्टूबर') && !trimmed.includes('नवंबर') && !trimmed.includes('जनवरी')) {
       const day = String(parsed.getDate()).padStart(2, '0');
       const month = String(parsed.getMonth() + 1).padStart(2, '0');
       const year = parsed.getFullYear();
-
-      // Check if time is present in string (contains 'T' or ':')
-      if (trimmed.includes('T') || trimmed.includes(':')) {
-        let hours = parsed.getHours();
-        const minutes = parsed.getMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-        const hoursStr = hours < 10 ? '0' + hours : hours;
-        return `${day}/${month}/${year} | ${hoursStr}:${minutesStr} ${ampm}`;
-      } else {
-        return `${day}/${month}/${year}`;
-      }
+      return `${day}/${month}/${year}`;
     }
   } catch (e) {
     // fallback if parsing fails

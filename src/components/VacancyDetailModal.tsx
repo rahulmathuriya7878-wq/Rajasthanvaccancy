@@ -20,6 +20,7 @@ import {
   Calculator
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
+import { formatDisplayDate } from '../utils/dateUtils';
 
 interface VacancyDetailModalProps {
   vacancy: VacancyItem | null;
@@ -273,26 +274,26 @@ export const VacancyDetailModal: React.FC<VacancyDetailModalProps> = ({
               <div className="divide-y divide-slate-100 text-xs">
                 <div className="py-2 flex justify-between">
                   <span className="text-slate-500">{isHi ? 'अधिसूचना जारी:' : 'Notification Date:'}</span>
-                  <span className="font-medium text-slate-800">{vacancy.importantDates.notificationDate}</span>
+                  <span className="font-medium text-slate-800">{formatDisplayDate(vacancy.importantDates.notificationDate)}</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-slate-500">{isHi ? 'आवेदन शुरू तिथि:' : 'Application Start Date:'}</span>
-                  <span className="font-medium text-emerald-700">{vacancy.importantDates.applyStartDate}</span>
+                  <span className="font-medium text-emerald-700">{formatDisplayDate(vacancy.importantDates.applyStartDate)}</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-slate-500 font-bold">{isHi ? 'आवेदन अंतिम तिथि:' : 'Application Last Date:'}</span>
-                  <span className="font-bold text-rose-700">{vacancy.importantDates.applyLastDate} (11:59 PM)</span>
+                  <span className="font-bold text-rose-700">{formatDisplayDate(vacancy.importantDates.applyLastDate)}</span>
                 </div>
                 {vacancy.importantDates.examDate && (
                   <div className="py-2 flex justify-between">
                     <span className="text-slate-500">{isHi ? 'परीक्षा संभावित तिथि:' : 'Exam Date:'}</span>
-                    <span className="font-bold text-amber-800">{vacancy.importantDates.examDate}</span>
+                    <span className="font-bold text-amber-800">{formatDisplayDate(vacancy.importantDates.examDate)}</span>
                   </div>
                 )}
                 {vacancy.importantDates.resultDate && (
                   <div className="py-2 flex justify-between">
                     <span className="text-slate-500">{isHi ? 'रिजल्ट घोषणा:' : 'Result Date:'}</span>
-                    <span className="font-bold text-purple-700">{vacancy.importantDates.resultDate}</span>
+                    <span className="font-bold text-purple-700">{formatDisplayDate(vacancy.importantDates.resultDate)}</span>
                   </div>
                 )}
               </div>

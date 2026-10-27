@@ -368,7 +368,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       setLocalVal(strVal);
     }, [strVal]);
 
-    const displayVal = isDate && !isDirectEditMode ? formatDisplayDate(strVal) : strVal;
+    const isIsoOrStandardDate = /^\d{4}-\d{2}-\d{2}/.test(strVal) || /^\d{1,2}-\d{1,2}-\d{4}/.test(strVal);
+    const displayVal = (!isDirectEditMode && (isDate || isIsoOrStandardDate)) ? formatDisplayDate(strVal) : strVal;
 
     // यदि वर्ड एडिट मोड बंद है तो साधारण टेक्स्ट दिखाएं
     if (!isDirectEditMode) {
@@ -1152,7 +1153,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <span className="posted-on flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <time className="entry-date published text-slate-600">
-                      {vacancy.updatedAt || vacancy.importantDates?.notificationDate || 'October 22, 2026'}
+                      {formatDisplayDate(vacancy.updatedAt || vacancy.importantDates?.notificationDate || '2026-10-22')}
                     </time>
                   </span>
                   <span>•</span>
