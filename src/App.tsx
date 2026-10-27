@@ -6,8 +6,8 @@ import {
   FastUpdatesGrid 
 } from './components/FastUpdatesGrid';
 import { 
-  VacancyDetailPage 
-} from './components/VacancyDetailPage';
+  FullPagePostView 
+} from './components/FullPagePostView';
 import { 
   CategoryArchiveView 
 } from './components/CategoryArchiveView';
@@ -64,24 +64,17 @@ import {
   LanguageMode 
 } from './types';
 
-import { 
-  SlidersHorizontal, 
-  Sparkles, 
-  Bell, 
-  AlertCircle, 
-  CheckCircle2, 
-  TrendingUp, 
-  ArrowUpDown,
-  FileQuestion
-} from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v23';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v24';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clear legacy cached vacancies
 try {
+  localStorage.removeItem('raj_vacancies_v23');
+  localStorage.removeItem('raj_vacancies_v22');
   localStorage.removeItem('raj_vacancies_v21');
   localStorage.removeItem('raj_vacancies_v19');
   localStorage.removeItem('raj_vacancies_v1');
@@ -693,8 +686,8 @@ export default function App() {
         ) : activePolicyView === 'disclaimer' ? (
           <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
         ) : selectedVacancy ? (
-          /* Full Page View instead of Popup Modal */
-          <VacancyDetailPage
+          /* Full Page View with Dynamic Head Meta Tags */
+          <FullPagePostView
             vacancy={selectedVacancy}
             onBack={() => {
               setSelectedVacancy(null);

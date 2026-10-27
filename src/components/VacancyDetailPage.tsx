@@ -1263,8 +1263,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </p>
                   <p className="post-item">
                     {isHi 
-                      ? `इस भर्ती के लिए ऑनलाइन आवेदन निर्धारित तिथि से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${editablePost.importantDates?.applyLastDate || 'अंतिम तिथि'} तक आधिकारिक वेबसाइट पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
-                      : `Online applications are invited for eligible candidates. The last date to submit the application form is ${editablePost.importantDates?.applyLastDate}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
+                      ? `इस भर्ती के लिए ऑनलाइन आवेदन निर्धारित तिथि से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : ''))} तक आधिकारिक वेबसाइट पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
+                      : `Online applications are invited for eligible candidates. The last date to submit the application form is ${formatDisplayDate(editablePost.importantDates?.applyLastDate)}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
                   </p>
                 </div>
 
@@ -1975,7 +1975,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
                               </p>
                               <p className="text-slate-600 text-xs sm:text-sm">
-                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '') || '23 नवंबर 2026'}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
+                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '') || '2026-11-23')}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
                               </p>
                             </div>
                           </div>
@@ -2194,7 +2194,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     Start {shortJobName} form
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                    {editablePost.importantDates?.applyStartDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Start') || d.label?.includes('शुरू'))?.value : '') || '24 October 2026'}
+                                    {formatDisplayDate(editablePost.importantDates?.applyStartDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Start') || d.label?.includes('शुरू'))?.value : ''))}
                                   </td>
                                 </tr>
 
@@ -2203,7 +2203,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     Last Date {isOfflinePost ? 'Offline ' : ''}Application form
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                    {editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '') || '23 November 2026'}
+                                    {formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : ''))}
                                   </td>
                                 </tr>
 
@@ -2446,7 +2446,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       </h3>
                       <p className="text-[12px] text-slate-500 mt-1 pl-4 font-medium flex items-center gap-1">
                         <span className="inline-block w-1 h-1 rounded-full bg-slate-400"></span>
-                        <span>{rp.updatedAt || rp.importantDates?.notificationDate || 'October 22, 2026'}</span>
+                        <span>{formatDisplayDate(rp.updatedAt || rp.importantDates?.notificationDate || rp.createdAt)}</span>
                       </p>
                     </button>
                   </li>
@@ -2476,7 +2476,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <span>WhatsApp चैनल जॉइन करें</span>
                 </a>
                 <a
-                  href="https://telegram.me/rajasthanvacancy_in"
+                  href="https://t.me/newrajsthanjobs"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-2 bg-[#0088cc] hover:bg-[#0077b5] text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs"

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
+import { formatDisplayDate } from '../utils/dateUtils';
 
 interface CategoryArchiveViewProps {
   categoryKey: string;
@@ -131,7 +132,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
             <div className="space-y-4">
               {vacancies.map((item) => {
                 const title = isHi ? (item.titleHi || item.title) : item.title;
-                const date = item.updatedAt || item.importantDates?.notificationDate || item.createdAt || 'October 22, 2026';
+                const date = formatDisplayDate(item.updatedAt || item.importantDates?.notificationDate || item.createdAt);
                 const excerpt = isHi ? (item.briefSummaryHi || item.briefSummary) : item.briefSummary;
                 const categoryLabel = isHi ? categoryTitleHi : categoryTitle;
 
@@ -328,7 +329,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <a
-                href="https://telegram.org"
+                href="https://t.me/newrajsthanjobs"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
@@ -361,7 +362,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                   </button>
                   <span className="text-[10px] text-blue-600/80 mt-1 block pl-4 font-medium flex items-center gap-1">
                     <span className="inline-block w-1 h-1 rounded-full bg-blue-500"></span>
-                    <span>{post.updatedAt || post.importantDates?.notificationDate || 'अक्टूबर 2026'}</span>
+                    <span>{formatDisplayDate(post.updatedAt || post.importantDates?.notificationDate || post.createdAt)}</span>
                   </span>
                 </li>
               ))}

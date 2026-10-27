@@ -13,7 +13,7 @@ interface FloatingSocialButtonsProps {
  */
 export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
   whatsappUrl = 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e',
-  telegramUrl = 'https://telegram.me/rajasthanvacancy_in',
+  telegramUrl = 'https://t.me/newrajsthanjobs',
 }) => {
   return (
     <div className="fixed right-3 sm:right-5 bottom-4 z-40 flex flex-col gap-2.5 select-none pointer-events-auto">

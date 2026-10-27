@@ -1,5 +1,129 @@
 import { VacancyItem, CategoryType, BoardType } from '../types';
 
+export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
+  id: 'jee-main-2027-session-1',
+  title: 'NTA JEE Main 2027 Session 1 Registration Started: Apply Online for B.E / B.Tech / B.Arch Entrance Exam',
+  titleHi: 'JEE Main 2027 सेशन-1 के रजिस्ट्रेशन शुरू: लास्ट डेट 22 नवंबर, 13 जनवरी को एडमिट कार्ड जारी, 20 से 28 जनवरी तक एग्जाम',
+  shortTitle: 'JEE Main 2027 Session 1 Online Form',
+  shortTitleHi: 'JEE Main 2027 सेशन-1 रजिस्ट्रेशन शुरू',
+  organization: 'Central Govt',
+  department: 'National Testing Agency (NTA)',
+  departmentHi: 'नेशनल टेस्टिंग एजेंसी (NTA)',
+  advtNo: 'NTA/JEE-MAIN/2027/SES-1',
+  category: 'latest_job',
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 5240,
+  savesCount: 1280,
+  totalPosts: 'विभिन्न इंजीनियरिंग व तकनीकी सीटें (IITs, NITs, IIITs, CFTIs)',
+  postName: 'JEE (Main) 2027 Session 1 (Paper 1: B.E./B.Tech & Paper 2: B.Arch/B.Planning)',
+  postNameHi: 'जेईई मेन 2027 सेशन-1 (बी.ई./बी.टेक एवं बी.आर्क/बी.प्लानिंग प्रवेश परीक्षा)',
+  qualification: ['12th', 'Engineering'],
+  qualificationDetails: 'Passed 10+2 Intermediate with Physics, Mathematics, and Chemistry/Bio/Technical in 2025, 2026 or Appearing in 2027.',
+  qualificationDetailsHi: 'भौतिकी, गणित और रसायन विज्ञान/बायोलॉजी/कंप्यूटर साइंस के साथ 12वीं बोर्ड (10+2) 2025 या 2026 में उत्तीर्ण, अथवा 2027 में 12वीं में अध्ययनरत (Appearing) विद्यार्थी।',
+  briefSummary: 'National Testing Agency (NTA) has started online application for JEE Main 2027 Session 1. Last date to register is 22 November 2026. Admit card will be released on 13 January 2027, and exams will be conducted between 20 to 28 January 2027.',
+  briefSummaryHi: '✍️ देश के शीर्ष इंजीनियरिंग संस्थानों (NITs, IIITs एवं GFTIs) में बी.टेक / बी.ई. प्रवेश और जेईई एडवांस्ड (IIT) की पात्रता परीक्षा "JEE Main 2027 Session-1" के लिए ऑनलाइन आवेदन शुरू हो चुके हैं। आवेदन करने की अंतिम तिथि 22 नवंबर 2026 (रात 9:00 बजे तक) है। 13 जनवरी 2027 को एडमिट कार्ड जारी होंगे और परीक्षा 20 से 28 जनवरी 2027 तक कंप्यूटर आधारित मोड में आयोजित होगी।',
+  description: 'National Testing Agency (NTA) JEE Main 2027 Session 1 online registration, exam dates, syllabus, and paper pattern.',
+  descriptionHi: '✍️ प्रिय विद्यार्थियों व अभिभावकों,\n\nनेशनल टेस्टिंग एजेंसी (NTA) द्वारा ज्वाइंट एंट्रेंस एग्जामिनेशन जेईई (मेन) 2027 सेशन-1 (JEE Main 2027 Session 1) का विस्तृत आधिकारिक नोटिफिकेशन जारी कर दिया गया है। देश के प्रमुख तकनीकी संस्थानों जैसे राष्ट्रीय प्रौद्योगिकी संस्थान (NITs), भारतीय सूचना प्रौद्योगिकी संस्थान (IIITs) और केंद्रीय सहायता प्राप्त तकनीकी संस्थानों में इंजीनियरिंग (B.E./B.Tech) और वास्तुकला (B.Arch/B.Planning) पाठ्यक्रमों में प्रवेश इसी परीक्षा के माध्यम से होता है। साथ ही टॉप 2.5 लाख चयनित विद्यार्थी IIT में प्रवेश हेतु JEE Advanced परीक्षा देने के पात्र होंगे।\n\n📌 मुख्य तारीखें और कार्यक्रम:\n• ऑनलाइन आवेदन शुरू: 27 अक्टूबर 2026\n• ऑनलाइन आवेदन की अंतिम तिथि: 22 नवंबर 2026 (रात 9:00 बजे तक)\n• फीस भुगतान की अंतिम तिथि: 22 नवंबर 2026 (रात 11:50 बजे तक)\n• परीक्षा शहर सूचना (City Slip): जनवरी 2027 के प्रथम सप्ताह में\n• एडमिट कार्ड जारी होने की तिथि: 13 जनवरी 2027\n• परीक्षा तिथि: 20 जनवरी से 28 जनवरी 2027 के बीच\n• रिजल्ट घोषणा: 12 फरवरी 2027 (संभावित)\n\n🎯 पात्रता व योग्यता (Eligibility):\n• 12वीं (10+2) या समकक्ष परीक्षा 2025 या 2026 में उत्तीर्ण की हो, अथवा 2027 में 12वीं बोर्ड परीक्षा दे रहे हों।\n• बीई/बीटेक हेतु अनिवार्य विषय: फिजिक्स और गणित के साथ केमिस्ट्री/बायोटेक/बायोलॉजी/टेक्निकल वोकेशनल विषय।\n• आयु सीमा: जेईई मेन में बैठने के लिए कोई अधिकतम आयु सीमा निर्धारित नहीं है।\n\n⚠️ फॉर्म भरने हेतु जरूरी निर्देश (विशेष शिक्षक परामर्श):\n1. आधार कार्ड या डिजिलॉकर के माध्यम से अपना प्रमाणीकरण (Authentication) पूरा करें।\n2. फोटो हाल ही की (सफेद बैकग्राउंड में, 80% चेहरा साफ) होनी चाहिए।\n3. परीक्षा केंद्र के रूप में अपने नजदीकी गृह शहर को पहली प्राथमिकता दें।',
+  jobLocation: 'All India (Exam Centers in all Rajasthan Districts & Nationwide)',
+  salary: 'Higher Education / B.Tech Admissions (IITs, NITs, IIITs)',
+  salaryHi: 'शीर्ष इंजीनियरिंग संस्थानों (NITs/IIITs/IITs) में बी.टेक प्रवेश',
+  ageLimit: {
+    min: 0,
+    max: 0,
+    asOnDate: '2026-10-27',
+    relaxationNotes: 'No age limit for candidates appearing in JEE (Main) 2027.',
+    relaxationNotesHi: 'जेईई (मेन) 2027 में शामिल होने के लिए अभ्यर्थियों हेतु कोई न्यूनतम या अधिकतम आयु सीमा नहीं है।'
+  },
+  applicationFee: {
+    genObc: 1000,
+    scSt: 500,
+    ews: 1000,
+    otrNote: 'Paper 1 (Male Gen/OBC/EWS: ₹1000, All Females: ₹800, SC/ST/PwD: ₹500)',
+    otrNoteHi: 'पेपर 1 हेतु: सामान्य/ओबीसी पुरुष: ₹1000, सभी वर्ग की महिला: ₹800, एससी/एसटी/दिव्यांग: ₹500 (ऑनलाइन माध्यम से)'
+  },
+  importantDates: {
+    notificationDate: '27 अक्टूबर 2026',
+    applyStartDate: '2026-10-27',
+    applyLastDate: '2026-11-22',
+    feeLastDate: '2026-11-22',
+    examDate: '20 से 28 जनवरी 2027',
+    admitCardDate: '2027-01-13'
+  },
+  selectionProcess: [
+    'Computer Based Test (CBT) - Paper 1 (B.E./B.Tech) or Paper 2 (B.Arch/B.Planning)',
+    'NTA Score (Percentile) & All India Rank (AIR) Declaration',
+    'JoSAA & CSAB Centralized Counseling for NITs, IIITs & GFTIs',
+    'Top 2,50,000 Candidates qualify to appear for JEE Advanced 2027 (for IIT Admissions)'
+  ],
+  selectionProcessHi: [
+    'कंप्यूटर आधारित प्रवेश परीक्षा (CBT Mode - Paper 1 / Paper 2)',
+    'एनटीए स्कोर (पर्सेंटाइल) एवं ऑल इंडिया रैंक (AIR) जारी',
+    'जोसा (JoSAA) एवं सीएसएबी (CSAB) काउंसलिंग द्वारा कॉलेज आवंटन',
+    'शीर्ष 2,50,000 सफल अभ्यर्थी जेईई एडवांस्ड 2027 (IIT प्रवेश) हेतु पात्र'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://jeemain.nta.nic.in/',
+    notificationPdfUrl: 'https://jeemain.nta.nic.in/',
+    officialWebsiteUrl: 'https://jeemain.nta.nic.in/'
+  },
+  postBreakdown: [
+    {
+      postName: 'Paper 1: B.E. / B.Tech (Engineering)',
+      postNameHi: 'पेपर 1: बी.ई. / बी.टेक (इंजीनियरिंग)',
+      categoryOrSubjectHi: 'कंप्यूटर आधारित परीक्षा (CBT)',
+      postsCount: 'NITs, IIITs, CFTIs',
+      qualification: '10+2 with Physics, Mathematics & Chemistry',
+      qualificationHi: '12वीं में भौतिकी, गणित और रसायन विज्ञान विषय',
+      payLevel: 'National Level Exam'
+    },
+    {
+      postName: 'Paper 2A & 2B: B.Arch / B.Planning',
+      postNameHi: 'पेपर 2A एवं 2B: बी.आर्क / बी.प्लानिंग',
+      categoryOrSubjectHi: 'गणित, एप्टीट्यूड व ड्राइंग टेस्ट',
+      postsCount: 'Architecture Seats',
+      qualification: '10+2 with Mathematics',
+      qualificationHi: '12वीं में गणित विषय के साथ न्यूनतम 50% अंक',
+      payLevel: 'National Level Exam'
+    }
+  ],
+  directLinks: [
+    {
+      label: 'Apply Online (रजिस्ट्रेशन एवं ऑनलाइन फॉर्म भरें)',
+      actionText: 'Apply Online',
+      url: 'https://jeemain.nta.nic.in/',
+      isPrimary: true
+    },
+    {
+      label: 'Official Information Bulletin / Notification PDF',
+      actionText: 'Download PDF',
+      url: 'https://jeemain.nta.nic.in/',
+      isPdf: true
+    },
+    {
+      label: 'दैनिक भास्कर आधिकारिक समाचार संदर्भ',
+      actionText: 'Read News',
+      url: 'https://dainik.bhaskar.com/jIxapmKhy7b?ref=MjA4Mjg2MDc0ODU0MDQ0MDU3Ng%3D%3D'
+    },
+    {
+      label: 'Join Telegram Channel (New Rajasthan Jobs)',
+      actionText: 'Join Now',
+      url: 'https://t.me/newrajsthanjobs'
+    },
+    {
+      label: 'NTA Official Portal',
+      actionText: 'Visit Official Site',
+      url: 'https://jeemain.nta.nic.in/'
+    }
+  ],
+  tags: ['JEE Main 2027', 'NTA', 'Session 1', 'Engineering Entrance', 'IIT JEE', 'Online Form', 'Admit Card'],
+  status: 'active',
+  createdAt: '2026-10-27',
+  updatedAt: '27 अक्टूबर 2026'
+};
+
 export const SAINIK_SCHOOL_CHITTORGARH_VACANCY: VacancyItem = {
   id: 'sainik-school-chittorgarh-2026',
   title: 'Sainik School Chittorgarh Recruitment 2026: Notification Released for TGT Teacher & Various Posts',
@@ -2424,6 +2548,7 @@ export const UPESSC_TGT_2026_VACANCY: VacancyItem = {
 };
 
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  JEE_MAIN_2027_SESSION_1_VACANCY,
   UPESSC_TGT_2026_VACANCY,
   RMS_DHOLPUR_2026_VACANCY,
   RAILWAY_GROUP_D_2026_VACANCY,
@@ -2463,6 +2588,15 @@ export interface ExamCalendarItem {
 }
 
 export const UPCOMING_EXAM_CALENDAR: ExamCalendarItem[] = [
+  {
+    examName: 'NTA JEE Main 2027 Session-1 Entrance Exam',
+    examNameHi: 'जेईई मेन 2027 सेशन-1 प्रवेश परीक्षा',
+    board: 'National Testing Agency (NTA)',
+    posts: 'B.E. / B.Tech / B.Arch Admissions',
+    examDate: '20 से 28 जनवरी 2027 (एडमिट कार्ड: 13 जनवरी)',
+    status: 'आवेदन जारी (अंतिम तिथि: 22 नवंबर)',
+    mode: 'Online (Computer Based Test - CBT)'
+  },
   {
     examName: 'Sainik School Chittorgarh Written Test 2026',
     examNameHi: 'सैनिक स्कूल चित्तौड़गढ़ भर्ती परीक्षा 2026',

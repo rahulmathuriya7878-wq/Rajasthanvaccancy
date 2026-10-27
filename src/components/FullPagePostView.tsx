@@ -3,11 +3,12 @@ import { VacancyDetailPage } from './VacancyDetailPage';
 import { VacancyItem, LanguageMode } from '../types';
 
 /**
+ * useDocumentHeadMeta
  * Custom hook for FullPagePostView that automatically updates the document's <head>
- * with dynamic meta tags for title, description, and a canonical URL specific to
- * the currently selected job post, ensuring optimal search engine crawling and indexing.
+ * with dynamic meta tags for title, description, OpenGraph tags, and canonical URL
+ * specific to the currently selected job post, ensuring optimal search engine crawling and indexing.
  */
-export function useFullPagePostMeta(vacancy?: VacancyItem | null, lang: LanguageMode = 'hi') {
+export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: LanguageMode = 'hi') {
   useEffect(() => {
     if (!vacancy) return;
 
@@ -18,19 +19,32 @@ export function useFullPagePostMeta(vacancy?: VacancyItem | null, lang: Language
     document.title = cleanTitle;
 
     // Meta description
-    const metaDesc = document.querySelector('meta[name="description"]');
+    let metaDesc = document.querySelector('meta[name="description"]');
     const originalDesc = metaDesc?.getAttribute('content') || '';
     const newDesc = `${postTitle}: कुल पद ${vacancy.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
-    if (metaDesc) {
-      metaDesc.setAttribute('content', newDesc);
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
     }
+    metaDesc.setAttribute('content', newDesc);
 
     // OpenGraph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', cleanTitle);
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) {
+      ogTitle = document.createElement('meta');
+      ogTitle.setAttribute('property', 'og:title');
+      document.head.appendChild(ogTitle);
+    }
+    ogTitle.setAttribute('content', cleanTitle);
 
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', newDesc);
+    let ogDesc = document.querySelector('meta[property="og:description"]');
+    if (!ogDesc) {
+      ogDesc = document.createElement('meta');
+      ogDesc.setAttribute('property', 'og:description');
+      document.head.appendChild(ogDesc);
+    }
+    ogDesc.setAttribute('content', newDesc);
 
     // Canonical URL
     let canonicalLinkEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
@@ -43,13 +57,21 @@ export function useFullPagePostMeta(vacancy?: VacancyItem | null, lang: Language
     }
     canonicalLinkEl.setAttribute('href', postCanonicalUrl);
 
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute('content', postCanonicalUrl);
+    }
+
     return () => {
       document.title = originalTitle;
-      if (metaDesc) metaDesc.setAttribute('content', originalDesc);
+      if (metaDesc && originalDesc) metaDesc.setAttribute('content', originalDesc);
       if (canonicalLinkEl) canonicalLinkEl.setAttribute('href', originalCanonicalHref);
     };
   }, [vacancy, lang]);
 }
+
+// Backwards compatibility alias
+export const useFullPagePostMeta = useDocumentHeadMeta;
 
 interface FullPagePostViewProps {
   vacancy: VacancyItem;
@@ -70,7 +92,7 @@ interface FullPagePostViewProps {
 }
 
 export const FullPagePostView: React.FC<FullPagePostViewProps> = (props) => {
-  useFullPagePostMeta(props.vacancy, props.lang);
+  useDocumentHeadMeta(props.vacancy, props.lang);
   return <VacancyDetailPage {...props} />;
 };
 

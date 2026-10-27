@@ -3,6 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        if (typeof window !== 'undefined' && window.WebSocket) {
+          var NativeWebSocket = window.WebSocket;
+          window.WebSocket = function(url, protocols) {
+            if (protocols === 'vite-hmr' || (typeof protocols === 'object' && protocols && protocols.indexOf && protocols.indexOf('vite-hmr') !== -1) || (typeof url === 'string' && url.indexOf('vite-hmr') !== -1)) {
+              var target = new EventTarget();
+              target.url = url;
+              target.readyState = 1;
+              target.send = function() {};
+              target.close = function() {};
+              target.binaryType = 'blob';
+              return target;
+            }
+            return new NativeWebSocket(url, protocols);
+          };
+          window.WebSocket.CONNECTING = 0;
+          window.WebSocket.OPEN = 1;
+          window.WebSocket.CLOSING = 2;
+          window.WebSocket.CLOSED = 3;
+        }
+      })();
+    </script>
     <title>Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal</title>
     <meta name="description" content="Rajasthan Vacancy 2026: Latest Rajasthan & Central Govt job alerts, RSMSSB, RPSC, Rajasthan Police, Patwari, REET, Pashu Parichar, Admit Cards, Answer Keys, and Sarkari Results." />
     <meta name="keywords" content="rajasthan vacancy, rajasthan vacancy 2026, rajasthan govt jobs, rsmssb recruitment, rpsc vacancy, rajasthan police constable, pashu parichar, patwari bharti, reet 2026, sarkari result, admit card, answer key, rojgar samachar" />
