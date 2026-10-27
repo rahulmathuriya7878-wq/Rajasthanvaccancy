@@ -11,6 +11,8 @@ import {
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
 
+import { formatDisplayDate } from '../utils/dateUtils';
+
 interface FastUpdatesGridProps {
   vacancies: VacancyItem[];
   lang: LanguageMode;
@@ -136,25 +138,8 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     },
   ];
 
-  // Format post publication date string
   const formatPostDate = (item: VacancyItem) => {
-    if (item.createdAt) {
-      try {
-        const parts = item.createdAt.split('-');
-        if (parts.length === 3) {
-          const year = parts[0];
-          const monthNum = parseInt(parts[1], 10);
-          const day = parseInt(parts[2], 10);
-          const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-          const monthNamesHi = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
-          if (isHi) {
-            return `${day} ${monthNamesHi[monthNum - 1] || 'अक्टूबर'} ${year}`;
-          }
-          return `${monthNamesEn[monthNum - 1] || 'October'} ${day}, ${year}`;
-        }
-      } catch (e) {}
-    }
-    return isHi ? '22 अक्टूबर 2026' : 'October 22, 2026';
+    return formatDisplayDate(item.updatedAt || item.createdAt || item.importantDates?.notificationDate);
   };
 
   const renderSectionBox = (sec: typeof row1Sections[0]) => {

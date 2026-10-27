@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
+import { formatDisplayDate } from '../utils/dateUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -349,6 +350,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'div' | 'p' | 'td';
     placeholder?: string;
     titlePrefix?: string;
+    isDate?: boolean;
   }> = ({
     value = '',
     onChange,
@@ -356,42 +358,58 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     style,
     as: Tag = 'span',
     placeholder = '...',
-    titlePrefix = 'टेक्स्ट'
+    titlePrefix = 'टेक्स्ट',
+    isDate = false
   }) => {
     const strVal = String(value ?? '');
-    
+    const [localVal, setLocalVal] = useState(strVal);
+
+    useEffect(() => {
+      setLocalVal(strVal);
+    }, [strVal]);
+
+    const displayVal = isDate && !isDirectEditMode ? formatDisplayDate(strVal) : strVal;
+
     // यदि वर्ड एडिट मोड बंद है तो साधारण टेक्स्ट दिखाएं
     if (!isDirectEditMode) {
       return (
         <Tag className={className} style={style}>
-          {strVal || placeholder}
+          {displayVal || placeholder}
         </Tag>
       );
     }
 
-    // वर्ड एडिट मोड चालू होने पर सीधे क्लिक करके टाइप करें
+    // वर्ड एडिट मोड चालू होने पर इनपुट / टेक्स्टएरिया दिखाएं
+    if (Tag === 'p' || Tag === 'div') {
+      return (
+        <textarea
+          value={localVal}
+          onChange={(e) => {
+            setLocalVal(e.target.value);
+            onChange(e.target.value);
+          }}
+          style={style}
+          placeholder={placeholder}
+          className={`${className} w-full bg-amber-50 text-slate-900 border border-amber-400 rounded p-1.5 focus:ring-2 focus:ring-amber-500 outline-none text-xs sm:text-sm font-medium`}
+          title={`क्लिक करके ${titlePrefix} बदलें`}
+          rows={3}
+        />
+      );
+    }
+
     return (
-      <Tag
-        contentEditable
-        suppressContentEditableWarning
+      <input
+        type="text"
+        value={localVal}
+        onChange={(e) => {
+          setLocalVal(e.target.value);
+          onChange(e.target.value);
+        }}
         style={style}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && Tag !== 'p' && Tag !== 'div') {
-            e.preventDefault();
-            e.currentTarget.blur();
-          }
-        }}
-        onBlur={(e) => {
-          const updated = e.currentTarget.innerText.trim();
-          if (updated !== strVal) {
-            onChange(updated);
-          }
-        }}
-        className={`${className} outline-none cursor-text transition-all hover:bg-amber-100/90 focus:bg-amber-50 focus:ring-2 focus:ring-amber-500 rounded px-1 -mx-0.5 border-b border-dashed border-amber-500 min-w-[20px] inline-block`}
-        title={`क्लिक करके ${titlePrefix} बदलें (Click to edit text)`}
-      >
-        {strVal || placeholder}
-      </Tag>
+        placeholder={placeholder}
+        className={`${className} bg-amber-50 text-slate-900 border border-amber-400 rounded px-1.5 py-0.5 focus:ring-2 focus:ring-amber-500 outline-none inline-block w-full font-medium text-xs sm:text-sm`}
+        title={`क्लिक करके ${titlePrefix} बदलें`}
+      />
     );
   };
 
