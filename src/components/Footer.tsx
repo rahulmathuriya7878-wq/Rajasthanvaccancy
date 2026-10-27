@@ -7,9 +7,11 @@ import {
   Scale,
   ChevronDown,
   ChevronUp,
-  AlertTriangle
+  AlertTriangle,
+  Globe
 } from 'lucide-react';
-import { LanguageMode } from '../types';
+import { LanguageMode, VacancyItem } from '../types';
+import { INITIAL_VACANCIES } from '../data/mockVacancies';
 
 interface FooterProps {
   lang: LanguageMode;
@@ -18,6 +20,9 @@ interface FooterProps {
   onOpenSSOGuide: () => void;
   onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
   onOpenAdminLogin?: () => void;
+  onOpenUrlIndexation?: () => void;
+  onSelectVacancy?: (item: VacancyItem) => void;
+  isAdmin?: boolean;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -27,6 +32,9 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenSSOGuide,
   onSelectPolicy,
   onOpenAdminLogin,
+  onOpenUrlIndexation,
+  onSelectVacancy,
+  isAdmin = false,
 }) => {
   const isHi = lang === 'hi';
   const [showFullLegal, setShowFullLegal] = useState<boolean>(false);
@@ -225,12 +233,63 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         )}
 
+        {/* Crawlable Internal Links Section (Googlebot Crawl Directory) */}
+        <div className={isAdmin ? "my-8 pt-6 border-t border-slate-200" : "sr-only"}>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-slate-900 font-bold text-sm sm:text-base flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-600" />
+              <span>{isHi ? 'महत्वपूर्ण सरकारी भर्ती एवं योजना डायरेक्टरी (Quick Web Links)' : 'Rajasthan Govt Jobs & Schemes Directory'}</span>
+            </h4>
+            {isAdmin && onOpenUrlIndexation && (
+              <button
+                onClick={onOpenUrlIndexation}
+                className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                title={isHi ? 'Google Search Console URL Indexation Assistant' : 'URL Indexation Assistant'}
+              >
+                <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{isHi ? 'सर्च कंसोल इंडेक्सेशन (GSC)' : 'URL Indexation'}</span>
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-slate-500 mb-3">
+            {isHi 
+              ? 'गूगल सर्च बॉट्स एवं छात्रों की सीधी पहुंच हेतु पोर्टल की सभी सक्रिय भर्तियों के डायरेक्ट लिंक:' 
+              : 'Direct crawlable hyperlinks for candidates and search engine indexing:'}
+          </p>
+          <div className="flex flex-wrap gap-2 text-xs">
+            {INITIAL_VACANCIES.map((vac) => {
+              const postTitle = isHi ? (vac.titleHi || vac.title) : vac.title;
+              return (
+                <a
+                  key={vac.id}
+                  href={`/?vacancy=${vac.id}`}
+                  onClick={(e) => {
+                    if (onSelectVacancy) {
+                      e.preventDefault();
+                      onSelectVacancy(vac);
+                    }
+                  }}
+                  className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 text-slate-700 border border-slate-200 rounded-md transition text-xs font-medium"
+                >
+                  {postTitle}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Bottom copyright */}
         <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500" style={{ fontSize: '12pt' }}>
           <div>
             © {new Date().getFullYear()} RAJASTHAN JOBS/VACANCY — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>
           <div className="flex flex-wrap items-center gap-4" style={{ fontSize: '12pt' }}>
+            {isAdmin && onOpenUrlIndexation && (
+              <button onClick={onOpenUrlIndexation} className="text-emerald-700 font-bold hover:text-emerald-800 transition cursor-pointer flex items-center gap-1">
+                <Globe className="w-3.5 h-3.5" />
+                <span>{isHi ? 'URL Indexation' : 'URL Indexation'}</span>
+              </button>
+            )}
             <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}
             </button>

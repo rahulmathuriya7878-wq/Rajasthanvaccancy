@@ -1,4 +1,17 @@
 User-agent: *
 Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 Sitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml

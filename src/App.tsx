@@ -49,6 +49,7 @@ import {
 import { 
   OfflineIndicator 
 } from './components/OfflineIndicator';
+import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
@@ -299,6 +300,7 @@ export default function App() {
   const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
   const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | null>(null);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(() => {
     try {
@@ -315,6 +317,11 @@ export default function App() {
       const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '');
       const vacancyParam = params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
       const categoryParam = params.get('category');
+      const toolParam = params.get('tool') || params.get('indexation');
+
+      if (toolParam === 'indexation' || toolParam === '1' || toolParam === 'true') {
+        setIsUrlIndexationOpen(true);
+      }
 
       if (vacancyParam) {
         let found = vacancies.find((v) => v.id === vacancyParam || v.id.toLowerCase() === vacancyParam.toLowerCase());
@@ -339,12 +346,14 @@ export default function App() {
     }
   }, []);
 
-  // Update URL and document title when selectedVacancy changes
+  // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy changes
   useEffect(() => {
     try {
+      const origin = 'https://rajasthanvaccancy.vercel.app';
       const url = new URL(window.location.href);
       const metaDescEl = document.querySelector('meta[name="description"]');
       const currentVacancyId = url.searchParams.get('vacancy');
+      let canonEl = document.querySelector('link[rel="canonical"]');
 
       if (selectedVacancy) {
         if (currentVacancyId !== selectedVacancy.id) {
@@ -352,19 +361,84 @@ export default function App() {
           window.history.pushState({ vacancyId: selectedVacancy.id }, '', url.toString());
         }
         const titleText = `${lang === 'hi' ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
+        const descText = selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title;
+        const canonicalHref = `${origin}/?vacancy=${selectedVacancy.id}`;
+
         document.title = titleText;
-        if (metaDescEl) {
-          metaDescEl.setAttribute('content', selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title);
+        if (metaDescEl) metaDescEl.setAttribute('content', descText);
+
+        // Dynamic Canonical Link update
+        if (canonEl) {
+          canonEl.setAttribute('href', canonicalHref);
+        } else {
+          canonEl = document.createElement('link');
+          canonEl.setAttribute('rel', 'canonical');
+          canonEl.setAttribute('href', canonicalHref);
+          document.head.appendChild(canonEl);
         }
+
+        // OpenGraph & Twitter tags
+        const ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', canonicalHref);
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', titleText);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', descText);
+
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', titleText);
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', descText);
+
+        // Dynamic Schema.org JobPosting or Article JSON-LD for rich Googlebot indexing
+        let jobScript = document.getElementById('dynamic-job-schema-ld') as HTMLScriptElement | null;
+        if (!jobScript) {
+          jobScript = document.createElement('script');
+          jobScript.id = 'dynamic-job-schema-ld';
+          jobScript.type = 'application/ld+json';
+          document.head.appendChild(jobScript);
+        }
+        const jobSchema = {
+          "@context": "https://schema.org",
+          "@type": selectedVacancy.category === 'scheme' ? 'Article' : 'JobPosting',
+          "title": selectedVacancy.titleHi || selectedVacancy.title,
+          "description": descText,
+          "datePosted": selectedVacancy.createdAt || '2026-10-27',
+          "validThrough": selectedVacancy.importantDates?.applyLastDate || '2026-12-31',
+          "employmentType": "FULL_TIME",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": selectedVacancy.departmentHi || selectedVacancy.department || selectedVacancy.organization,
+            "sameAs": selectedVacancy.officialLinks?.officialWebsiteUrl || origin
+          },
+          "jobLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressRegion": "Rajasthan",
+              "addressCountry": "IN"
+            }
+          }
+        };
+        jobScript.textContent = JSON.stringify(jobSchema, null, 2);
+
       } else {
         if (currentVacancyId) {
           url.searchParams.delete('vacancy');
           window.history.pushState({ vacancyId: null }, '', url.toString());
         }
-        document.title = 'RAJASTHAN VACANCY - Rajasthan Govt Job Alerts & Recruitment Portal';
-        if (metaDescEl) {
-          metaDescEl.setAttribute('content', 'Latest Rajasthan Government Job Alerts, RSMSSB, RPSC, Police, REET, Admit Cards, Answer Keys, Results, and Sarkari Yojana.');
-        }
+        document.title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';
+        const defaultDesc = 'Latest Rajasthan & Central Govt job alerts 2026: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Pashu Parichar, Admit Card, Answer Key & Sarkari Results.';
+        if (metaDescEl) metaDescEl.setAttribute('content', defaultDesc);
+
+        const canonicalHref = `${origin}/`;
+        if (canonEl) canonEl.setAttribute('href', canonicalHref);
+        const ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', canonicalHref);
+
+        // Clean up individual job schema on home view
+        const jobScript = document.getElementById('dynamic-job-schema-ld');
+        if (jobScript) jobScript.remove();
       }
       (window as any).updateDynamicFaqSchema?.();
     } catch (e) {
@@ -464,16 +538,20 @@ export default function App() {
   const handleAddVacancy = (newJob: VacancyItem) => {
     setVacancies([newJob, ...vacancies]);
     setSelectedVacancy(newJob);
+    // Background Auto-Index ping for new post
+    fetch('/api/seo/auto-index', { method: 'POST' }).catch(() => {});
     if (newJob.category === 'scheme' || newJob.organization === 'Sarkari Yojana') {
-      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक योजना सेक्शन में जोड़ी गई!' : 'Scheme alert posted in Yojana section!');
+      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक जोड़ी गई व ऑटो-इंडेक्स सबमिट!' : 'Scheme alert posted & auto-index dispatched!');
     } else {
-      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जॉब्स सेक्शन में जोड़ी गई!' : 'Govt job alert posted in Jobs section!');
+      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जोड़ी गई व ऑटो-इंडेक्स सबमिट!' : 'Govt job alert posted & auto-index dispatched!');
     }
   };
 
   const handleUpdateVacancy = (updatedJob: VacancyItem) => {
     setVacancies(prev => prev.map(v => v.id === updatedJob.id ? updatedJob : v));
     setSelectedVacancy(updatedJob);
+    // Background Auto-Index ping for updated post
+    fetch('/api/seo/auto-index', { method: 'POST' }).catch(() => {});
     showToast(lang === 'hi' ? 'पोस्ट विवरण सफलतापूर्वक अपडेट कर दिया गया!' : 'Post details updated successfully!');
     setEditingVacancy(null);
   };
@@ -668,6 +746,7 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
+        onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
       />
 
       {/* Main Body Container */}
@@ -781,6 +860,7 @@ export default function App() {
               onDeleteVacancy={handleDeleteVacancy}
               alertJobIds={alertJobIds}
               onToggleAlertMe={handleToggleAlertMe}
+              onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
             />
           </div>
         )}
@@ -798,6 +878,9 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+        onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
+        onSelectVacancy={handleSelectVacancy}
+        isAdmin={isAdmin}
       />
 
       {/* Other Utility Modals */}
@@ -872,6 +955,18 @@ export default function App() {
         isOpen={isSubscribeModalOpen}
         onClose={() => setIsSubscribeModalOpen(false)}
         lang={lang}
+      />
+
+      <UrlIndexationModal
+        isOpen={isUrlIndexationOpen}
+        onClose={() => setIsUrlIndexationOpen(false)}
+        lang={lang}
+        vacancies={vacancies}
+        onSelectVacancy={(item) => {
+          setSelectedVacancy(item);
+          setIsUrlIndexationOpen(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
       <OfflineIndicator lang={lang} />

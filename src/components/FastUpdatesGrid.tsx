@@ -6,7 +6,9 @@ import {
   Sparkles,
   Calendar,
   Edit3,
-  Trash2
+  Trash2,
+  Search,
+  Globe
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
@@ -24,6 +26,7 @@ interface FastUpdatesGridProps {
   alertJobIds?: string[];
   onToggleAlertMe?: (id: string) => void;
   showAds?: boolean;
+  onOpenUrlIndexation?: () => void;
 }
 
 export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
@@ -37,6 +40,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   alertJobIds = [],
   onToggleAlertMe,
   showAds = true,
+  onOpenUrlIndexation,
 }) => {
   const isHi = lang === 'hi';
 
@@ -282,7 +286,37 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   };
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-6">
+      {/* Quick Google URL Inspection & Auto-Index Banner (Admin Only) */}
+      {isAdmin && onOpenUrlIndexation && (
+        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-xl p-3.5 sm:p-4 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shrink-0">
+              <Search className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-1.5">
+                <span>Google Search Console URL Inspection & Auto-Index</span>
+                <span className="text-[10px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded">
+                  GSC
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                {isHi ? 'किसी भी पोस्ट को तुरंत Google Search Console में टेस्ट व इंडेक्स करवाएं' : 'Test live URLs and request immediate indexing in Google Search Console'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenUrlIndexation}
+            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+            aria-label="Open Google URL Inspection Tool"
+          >
+            <Search className="w-3.5 h-3.5 text-slate-950" />
+            <span>{isHi ? '🔍 URL Inspection खोलें' : '🔍 Open URL Inspection'}</span>
+          </button>
+        </div>
+      )}
+
       {/* Row 1: Latest Jobs, Admit Card, Results (3 columns) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
         {row1Sections.map(renderSectionBox)}

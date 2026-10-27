@@ -19,7 +19,9 @@ import {
   RefreshCw,
   EyeOff,
   X,
-  Home
+  Home,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
@@ -1064,6 +1066,36 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             {editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
           </span>
         </nav>
+
+        {/* URL Inspection & Action Buttons (Admin Only) */}
+        {isAdmin && (
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent('https://rajasthanvaccancy.vercel.app/')}&item_url=${encodeURIComponent(`https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-[11px] transition"
+              title="Google Search Console URL Inspection में यह पोस्ट जांचें व तुरंत इंडेक्स करवाएं"
+            >
+              <Search className="w-3 h-3 text-blue-600" />
+              <span>GSC Inspect</span>
+              <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(`https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`);
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition cursor-pointer"
+              title="इस पोस्ट का पूरा URL कॉपी करें"
+            >
+              <Copy className="w-3 h-3" />
+              <span>{copiedLink ? '✓ Copied' : 'Copy URL'}</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main 2-Column WordPress GeneratePress Layout */}
