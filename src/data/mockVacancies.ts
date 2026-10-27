@@ -66,7 +66,7 @@ export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
   ],
   officialLinks: {
     applyOnlineUrl: 'https://jeemain.nta.nic.in/',
-    notificationPdfUrl: 'https://jeemain.nta.nic.in/',
+    notificationPdfUrl: 'https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/10/20261024390682350.pdf',
     officialWebsiteUrl: 'https://jeemain.nta.nic.in/'
   },
   postBreakdown: [
@@ -97,9 +97,11 @@ export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
       isPrimary: true
     },
     {
-      label: 'Official Information Bulletin / Notification PDF',
+      label: 'Official Notification PDF (आधिकारिक विस्तृत अधिसूचना डाउनलोड)',
       actionText: 'Download PDF',
-      url: 'https://jeemain.nta.nic.in/',
+      url: 'https://cdnbbsr.s3waas.gov.in/s3f8e59f4b2fe7c5705bf878bbd494ccdf/uploads/2026/10/20261024390682350.pdf',
+      fileName: 'JEE_Main_2027_Session_1_Official_Notification.pdf',
+      fileSize: '2.4 MB',
       isPdf: true
     },
     {

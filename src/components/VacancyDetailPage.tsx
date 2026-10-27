@@ -1975,7 +1975,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
                               </p>
                               <p className="text-slate-600 text-xs sm:text-sm">
-                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '') || '2026-11-23')}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
+                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({formatDisplayDate(editablePost.importantDates?.applyLastDate || "2026-11-23")}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
                               </p>
                             </div>
                           </div>

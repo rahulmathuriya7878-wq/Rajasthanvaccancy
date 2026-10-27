@@ -66,13 +66,14 @@ import {
 
 import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v24';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v25';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clear legacy cached vacancies
 try {
+  localStorage.removeItem('raj_vacancies_v24');
   localStorage.removeItem('raj_vacancies_v23');
   localStorage.removeItem('raj_vacancies_v22');
   localStorage.removeItem('raj_vacancies_v21');
