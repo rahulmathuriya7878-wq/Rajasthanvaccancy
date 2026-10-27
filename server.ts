@@ -108,8 +108,11 @@ async function startServer() {
   // Dynamic XML Sitemap Generator to resolve Google Search Console sitemap errors
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const protocol = req.protocol || 'https';
-      const host = req.get('host') || 'rajasthanvaccancy.vercel.app';
+      const protocol = 'https';
+      let host = req.get('host') || 'rajasthanvaccancy.vercel.app';
+      if (host.includes('ais-dev') || host.includes('run.app') || host.includes('localhost')) {
+        host = 'rajasthanvaccancy.vercel.app';
+      }
       const baseUrl = `${protocol}://${host}`;
 
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
