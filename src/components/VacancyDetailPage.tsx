@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
-import { formatDisplayDate } from '../utils/dateUtils';
+import { formatDisplayDate, resolveJobDates, IntegratedJobDates } from '../utils/dateUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -75,16 +75,32 @@ export const normalizePost = (v: VacancyItem): any => {
         }
       ];
 
-  const defaultDatesArray = Array.isArray((v as any).importantDates)
-    ? (v as any).importantDates
-    : [
-        { label: 'Application Begin', value: (v.importantDates as any)?.applyStartDate || 'शीघ्र' },
-        { label: 'Last Date for Apply Online', value: (v.importantDates as any)?.applyLastDate || 'शीघ्र' },
-        { label: 'Pay Exam Fee Last Date', value: (v.importantDates as any)?.feeLastDate || (v.importantDates as any)?.applyLastDate || 'शीघ्र' },
-        { label: 'Exam Date', value: (v.importantDates as any)?.examDate || 'As per Schedule' },
-        { label: 'Admit Card Available', value: (v.importantDates as any)?.admitCardDate || 'Before Exam' },
-        { label: 'Notification Released', value: (v.importantDates as any)?.notificationDate || 'अक्टूबर 2026' },
-      ];
+  const resolvedDates = resolveJobDates(v);
+  const defaultDatesArray = [
+    { key: 'notificationDate', label: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)', value: resolvedDates.notificationDate },
+    { key: 'applyStartDate', label: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)', value: resolvedDates.applyStartDate },
+    { key: 'applyLastDate', label: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)', value: resolvedDates.applyLastDate },
+    { key: 'feeLastDate', label: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)', value: resolvedDates.feeLastDate },
+    { key: 'admitCardDate', label: 'Admit Card Available (एडमिट कार्ड जारी तिथि)', value: resolvedDates.admitCardDate },
+    { key: 'examDate', label: 'Exam Date (परीक्षा तिथि)', value: resolvedDates.examDate },
+  ];
+
+  // If user already had custom rows, preserve any extra rows
+  if (Array.isArray((v as any).importantDates)) {
+    const existing = (v as any).importantDates;
+    for (const item of existing) {
+      if (item && item.label) {
+        const lbl = item.label.toLowerCase();
+        const isStandard = lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('begin') ||
+          lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('last') || lbl.includes('अंतिम') ||
+          lbl.includes('fee') || lbl.includes('शुल्क') || lbl.includes('admit') || lbl.includes('एडमिट') ||
+          lbl.includes('exam') || lbl.includes('परीक्षा');
+        if (!isStandard) {
+          defaultDatesArray.push(item);
+        }
+      }
+    }
+  }
 
   const defaultFeeArray = Array.isArray((v as any).applicationFee)
     ? (v as any).applicationFee
@@ -100,7 +116,7 @@ export const normalizePost = (v: VacancyItem): any => {
     : [
         {
           id: 'news-1',
-          date: (v.importantDates as any)?.notificationDate || '25 अक्टूबर 2026',
+          date: resolvedDates.notificationDate || '25 अक्टूबर 2026',
           badge: 'ताज़ा अपडेट',
           headline: `${v.shortTitleHi || v.titleHi || v.title} के संबंध में नई सूचना जारी`,
           details: `${v.organization || 'विभाग'} द्वारा आधिकारिक पोर्टल पर भर्ती संबंधी आवश्यक दिशा-निर्देश व परीक्षा कैलेंडर की जानकारी अपडेट कर दी गई है।`,
@@ -542,44 +558,81 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState('');
 
-  const getShareStartDate = () => {
-    if (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates)) {
-      return (editablePost.importantDates as any)?.applyStartDate || 'शीघ्र';
-    }
-    if (Array.isArray(editablePost.importantDates)) {
-      const found = (editablePost.importantDates as any[]).find((d: any) => 
-        d.label?.toLowerCase().includes('begin') || 
-        d.label?.toLowerCase().includes('start') || 
-        d.label?.includes('शुरू') || 
-        d.label?.includes('प्रारंभ')
-      );
-      if (found) return found.value;
-    }
-    return 'शीघ्र';
-  };
+  // Unified Integrated Dates (Notification, Apply Start, Apply Last, Fee Last, Admit Card, Exam)
+  const resolvedDates = useMemo(() => resolveJobDates(editablePost), [editablePost]);
 
-  const getShareLastDate = () => {
-    if (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates)) {
-      return (editablePost.importantDates as any)?.applyLastDate || 'शीघ्र';
-    }
-    if (Array.isArray(editablePost.importantDates)) {
-      const found = (editablePost.importantDates as any[]).find((d: any) => 
-        d.label?.toLowerCase().includes('last') || 
-        d.label?.includes('अंतिम')
-      );
-      if (found) return found.value;
-    }
-    return 'शीघ्र';
+  const notificationDateDisplay = formatDisplayDate(resolvedDates.notificationDate);
+  const applyStartDateDisplay = formatDisplayDate(resolvedDates.applyStartDate);
+  const applyLastDateDisplay = formatDisplayDate(resolvedDates.applyLastDate);
+  const feeLastDateDisplay = formatDisplayDate(resolvedDates.feeLastDate);
+  const admitCardDateDisplay = formatDisplayDate(resolvedDates.admitCardDate);
+  const examDateDisplay = formatDisplayDate(resolvedDates.examDate);
+
+  // Centralized synchronizer that propagates any date change across all sections
+  const updateIntegratedDate = (
+    field: keyof IntegratedJobDates,
+    newVal: string
+  ) => {
+    setEditablePost(prev => {
+      const current = resolveJobDates(prev);
+      const updatedDates: IntegratedJobDates = { ...current, [field]: newVal };
+
+      const labelsMap: Record<keyof IntegratedJobDates, string> = {
+        notificationDate: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)',
+        applyStartDate: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)',
+        applyLastDate: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)',
+        feeLastDate: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)',
+        admitCardDate: 'Admit Card Available (एडमिट कार्ड जारी तिथि)',
+        examDate: 'Exam Date (परीक्षा तिथि)'
+      };
+
+      let updatedList: any[] = [];
+      if (Array.isArray(prev.importantDates) && prev.importantDates.length > 0) {
+        let matched = false;
+        updatedList = prev.importantDates.map((item: any) => {
+          const lbl = String(item?.label || '').toLowerCase();
+          let isMatch = false;
+          if (field === 'notificationDate' && (item?.key === 'notificationDate' || lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('विज्ञप्ति') || lbl.includes('released'))) isMatch = true;
+          if (field === 'applyStartDate' && (item?.key === 'applyStartDate' || lbl.includes('begin') || lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('आवेदन प्रारंभ'))) isMatch = true;
+          if (field === 'applyLastDate' && (item?.key === 'applyLastDate' || lbl.includes('last') || lbl.includes('अंतिम') || lbl.includes('समाप्त'))) isMatch = true;
+          if (field === 'feeLastDate' && (item?.key === 'feeLastDate' || lbl.includes('fee') || lbl.includes('शुल्क'))) isMatch = true;
+          if (field === 'admitCardDate' && (item?.key === 'admitCardDate' || lbl.includes('admit') || lbl.includes('एडमिट') || lbl.includes('प्रवेश पत्र'))) isMatch = true;
+          if (field === 'examDate' && (item?.key === 'examDate' || lbl.includes('exam') || lbl.includes('परीक्षा'))) isMatch = true;
+
+          if (isMatch) {
+            matched = true;
+            return { ...item, key: field, value: newVal };
+          }
+          return item;
+        });
+
+        if (!matched) {
+          updatedList.push({ key: field, label: labelsMap[field], value: newVal });
+        }
+      } else {
+        updatedList = [
+          { key: 'notificationDate', label: labelsMap.notificationDate, value: updatedDates.notificationDate },
+          { key: 'applyStartDate', label: labelsMap.applyStartDate, value: updatedDates.applyStartDate },
+          { key: 'applyLastDate', label: labelsMap.applyLastDate, value: updatedDates.applyLastDate },
+          { key: 'feeLastDate', label: labelsMap.feeLastDate, value: updatedDates.feeLastDate },
+          { key: 'admitCardDate', label: labelsMap.admitCardDate, value: updatedDates.admitCardDate },
+          { key: 'examDate', label: labelsMap.examDate, value: updatedDates.examDate }
+        ];
+      }
+
+      return {
+        ...prev,
+        importantDates: updatedList
+      };
+    });
   };
 
   const handleShareBigUpdate = () => {
     const jobTitle = editablePost.titleHi || editablePost.title || 'राजस्थान भर्ती 2026';
-    const totalPosts = editablePost.totalPosts || '130';
-    const startDate = getShareStartDate();
-    const lastDate = getShareLastDate();
+    const totalPosts = editablePost.totalPosts || 'विभिन्न पद';
     const postUrl = window.location.href;
 
-    const shareText = `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${jobTitle}\n🔢 *कुल पद:* ${totalPosts}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDate}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDate}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${postUrl}`;
+    const shareText = `🚨 *BIG भर्ती अपडेट: ${jobTitle}* 🚨\n\n🔢 *कुल पद / सीटें:* ${totalPosts}\n📄 *नोटिफिकेशन जारी तिथि:* ${notificationDateDisplay}\n💳 *आवेदन प्रारंभ तिथि:* ${applyStartDateDisplay}\n⏳ *आवेदन की अंतिम तिथि:* ${applyLastDateDisplay}\n🎟️ *एडमिट कार्ड जारी तिथि:* ${admitCardDateDisplay}\n🎯 *परीक्षा तिथि:* ${examDateDisplay}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${postUrl}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
@@ -747,13 +800,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       document.head.appendChild(scriptEl);
     }
 
-    const startDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
-      ? (editablePost.importantDates as any)?.notificationDate || editablePost.createdAt || '2026-10-25'
-      : editablePost.createdAt || '2026-10-25';
-
-    const lastDate = (typeof editablePost.importantDates === 'object' && !Array.isArray(editablePost.importantDates))
-      ? (editablePost.importantDates as any)?.applyLastDate || '2026-11-25'
-      : '2026-11-25';
+    const postDates = resolveJobDates(editablePost);
+    const startDate = postDates.notificationDate || editablePost.createdAt || '2026-10-25';
+    const lastDate = postDates.applyLastDate || '2026-11-25';
 
     const formatIsoDate = (d: any, fallback: string): string => {
       if (!d || typeof d !== 'string') return fallback;
@@ -869,25 +918,31 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return getHowToApplySteps(editablePost, isHi);
   }, [editablePost, isHi]);
 
-  // FAQs
+  // FAQs with fully integrated dates
   const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : [
     {
       q: `What is the last date to apply for this vacancy?`,
       qHi: `इस भर्ती के लिए ऑनलाइन आवेदन की अंतिम तिथि क्या है?`,
-      a: `The last date to apply is ${vacancy.importantDates?.applyLastDate || 'November 2026'}.`,
-      aHi: `ऑनलाइन आवेदन करने की अंतिम तिथि ${vacancy.importantDates?.applyLastDate || '22 नवंबर 2026'} है। आवेदन रात 11:59 बजे तक जमा किए जा सकेंगे।`
+      a: `The last date to submit the application form is ${applyLastDateDisplay}.`,
+      aHi: `ऑनलाइन आवेदन करने की अंतिम तिथि ${applyLastDateDisplay} है। अभ्यर्थी निर्धारित समय से पूर्व अपना आवेदन अवश्य सबमिट कर लें।`
+    },
+    {
+      q: `When did the application process start and notification release?`,
+      qHi: `इस भर्ती का नोटिफिकेशन कब जारी हुआ और आवेदन कब से शुरू हुए?`,
+      a: `Official notification was released on ${notificationDateDisplay} and online application started on ${applyStartDateDisplay}.`,
+      aHi: `आधिकारिक विस्तृत अधिसूचना ${notificationDateDisplay} को जारी की गई थी तथा ऑनलाइन आवेदन की प्रक्रिया ${applyStartDateDisplay} से प्रारंभ है।`
+    },
+    {
+      q: `When will the admit card be available and exam conducted?`,
+      qHi: `एडमिट कार्ड कब जारी होंगे और परीक्षा कब आयोजित होगी?`,
+      a: `Admit card will be released on ${admitCardDateDisplay} and the exam will be held on ${examDateDisplay}.`,
+      aHi: `परीक्षा के एडमिट कार्ड ${admitCardDateDisplay} को जारी किए जाएंगे एवं परीक्षा ${examDateDisplay} को आयोजित की जाएगी।`
     },
     {
       q: `What is the educational qualification required?`,
       qHi: `इस भर्ती के लिए शैक्षणिक योग्यता क्या है?`,
       a: `Candidates must possess minimum required educational qualification as per notification.`,
-      aHi: `${vacancy.qualificationDetailsHi || 'दसवीं में न्यूनतम 50% अंकों के साथ संबंधित अधिसूचित ट्रेड में ITI / स्नातक की योग्यता आवश्यक है।'}`
-    },
-    {
-      q: `Will there be a written exam for this recruitment?`,
-      qHi: `क्या इस भर्ती में लिखित परीक्षा आयोजित की जाएगी?`,
-      a: `Selection criteria is based on merit and exam pattern prescribed in the official notice.`,
-      aHi: `चयन प्रक्रिया मेरिट अथवा लिखित परीक्षा और दस्तावेज सत्यापन के आधार पर नियमानुसार की जाएगी।`
+      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / संबंधित डिग्री उत्तीर्ण होना अनिवार्य है।'}`
     }
   ];
 
@@ -1153,7 +1208,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <span className="posted-on flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <time className="entry-date published text-slate-600">
-                      {formatDisplayDate(vacancy.updatedAt || vacancy.importantDates?.notificationDate || '2026-10-22')}
+                      {notificationDateDisplay}
                     </time>
                   </span>
                   <span>•</span>
@@ -1205,7 +1260,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     {isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide'}
                   </p>
 
-                  {/* Centered Total Posts Box matching screenshot */}
+                  {/* Centered Total Posts Box */}
                   <div className="bg-[#062c26]/75 border border-[#1b6f60]/60 rounded-xl p-3.5 text-center mt-4 w-full shadow-inner">
                     <span className="text-[11px] uppercase font-bold text-[#6ee7b7] block tracking-wider">
                       {isHi ? 'कुल पद / सीटें' : 'Total Posts'}
@@ -1219,6 +1274,26 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         titlePrefix="कुल पद"
                       />
                     </span>
+                  </div>
+
+                  {/* Integrated Key Dates Grid (नोटिफिकेशन, आवेदन शुरू, अंतिम तिथि, एडमिट कार्ड) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-[#1b6f60]/50 text-xs">
+                    <div className="bg-[#062c26]/70 rounded-lg p-2 text-center border border-[#1b6f60]/40">
+                      <span className="text-[10px] uppercase font-bold text-emerald-300 block">नोटिफिकेशन तिथि</span>
+                      <span className="font-bold text-white text-xs mt-0.5 block">{notificationDateDisplay}</span>
+                    </div>
+                    <div className="bg-[#062c26]/70 rounded-lg p-2 text-center border border-[#1b6f60]/40">
+                      <span className="text-[10px] uppercase font-bold text-emerald-300 block">आवेदन शुरू</span>
+                      <span className="font-bold text-white text-xs mt-0.5 block">{applyStartDateDisplay}</span>
+                    </div>
+                    <div className="bg-[#062c26]/70 rounded-lg p-2 text-center border border-amber-500/50">
+                      <span className="text-[10px] uppercase font-bold text-amber-300 block">अंतिम तिथि</span>
+                      <span className="font-bold text-[#fde047] text-xs mt-0.5 block">{applyLastDateDisplay}</span>
+                    </div>
+                    <div className="bg-[#062c26]/70 rounded-lg p-2 text-center border border-[#1b6f60]/40">
+                      <span className="text-[10px] uppercase font-bold text-emerald-300 block">एडमिट कार्ड</span>
+                      <span className="font-bold text-white text-xs mt-0.5 block">{admitCardDateDisplay}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1263,8 +1338,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </p>
                   <p className="post-item">
                     {isHi 
-                      ? `इस भर्ती के लिए ऑनलाइन आवेदन निर्धारित तिथि से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : ''))} तक आधिकारिक वेबसाइट पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
-                      : `Online applications are invited for eligible candidates. The last date to submit the application form is ${formatDisplayDate(editablePost.importantDates?.applyLastDate)}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
+                      ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
+                      : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
                   </p>
                 </div>
 
@@ -1357,13 +1432,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">नोटिफिकेशन तिथि</td>
                                   <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
                                     <EditableText
-                                      value={editablePost.importantDates?.notificationDate || ''}
-                                      onChange={(val) => setEditablePost(prev => ({
-                                       ...prev,
-                                       importantDates: { ...prev.importantDates, notificationDate: val }
-                                      }))}
+                                      value={resolvedDates.notificationDate}
+                                      onChange={(val) => updateIntegratedDate('notificationDate', val)}
                                       titlePrefix="नोटिफिकेशन तिथि"
                                       placeholder="शीघ्र"
+                                      isDate={true}
                                     />
                                   </td>
                                 </tr>
@@ -1371,14 +1444,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">आवेदन शुरू</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
                                     <EditableText
-                                      value={editablePost.importantDates?.applyStartDate || ''}
-                                      onChange={(val) => setEditablePost(prev => ({
-                                        ...prev,
-                                        importantDates: { ...prev.importantDates, applyStartDate: val }
-                                      }))}
+                                      value={resolvedDates.applyStartDate}
+                                      onChange={(val) => updateIntegratedDate('applyStartDate', val)}
                                       titlePrefix="आवेदन शुरू तिथि"
                                       className="font-semibold text-slate-800"
                                       placeholder="शीघ्र"
+                                      isDate={true}
                                     />
                                   </td>
                                 </tr>
@@ -1388,14 +1459,48 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-900 bg-white">
                                     <EditableText
-                                      value={editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '') || 'शीघ्र'}
-                                      onChange={(val) => setEditablePost(prev => ({
-                                        ...prev,
-                                        importantDates: { ...prev.importantDates, applyLastDate: val }
-                                      }))}
+                                      value={resolvedDates.applyLastDate}
+                                      onChange={(val) => updateIntegratedDate('applyLastDate', val)}
                                       titlePrefix="अंतिम तिथि"
                                       className="font-bold text-slate-900"
                                       placeholder="शीघ्र"
+                                      isDate={true}
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">फीस भुगतान अंतिम तिथि</td>
+                                  <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
+                                    <EditableText
+                                      value={resolvedDates.feeLastDate}
+                                      onChange={(val) => updateIntegratedDate('feeLastDate', val)}
+                                      titlePrefix="शुल्क भुगतान अंतिम तिथि"
+                                      placeholder="शीघ्र"
+                                      isDate={true}
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">एडमिट कार्ड जारी तिथि</td>
+                                  <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
+                                    <EditableText
+                                      value={resolvedDates.admitCardDate}
+                                      onChange={(val) => updateIntegratedDate('admitCardDate', val)}
+                                      titlePrefix="एडमिट कार्ड जारी तिथि"
+                                      placeholder="परीक्षा से 7 दिन पूर्व"
+                                      isDate={true}
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">परीक्षा तिथि</td>
+                                  <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
+                                    <EditableText
+                                      value={resolvedDates.examDate}
+                                      onChange={(val) => updateIntegratedDate('examDate', val)}
+                                      titlePrefix="परीक्षा तिथि"
+                                      placeholder="यथासमय घोषित"
+                                      isDate={true}
                                     />
                                   </td>
                                 </tr>
@@ -1975,7 +2080,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
                               </p>
                               <p className="text-slate-600 text-xs sm:text-sm">
-                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({formatDisplayDate(editablePost.importantDates?.applyLastDate || "2026-11-23")}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
+                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({applyLastDateDisplay}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
                               </p>
                             </div>
                           </div>
@@ -2191,19 +2296,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                <tbody>
                                 <tr className="border-b border-slate-300">
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                    Start {shortJobName} form
+                                    Start {shortJobName} form (आवेदन प्रारंभ)
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                    {formatDisplayDate(editablePost.importantDates?.applyStartDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Start') || d.label?.includes('शुरू'))?.value : ''))}
-                                  </td>
-                                </tr>
-
-                                <tr className="border-b border-slate-300">
-                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                    Last Date {isOfflinePost ? 'Offline ' : ''}Application form
-                                  </td>
-                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                    {formatDisplayDate(editablePost.importantDates?.applyLastDate || (Array.isArray(editablePost.importantDates) ? editablePost.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : ''))}
+                                    {applyStartDateDisplay}
                                   </td>
                                 </tr>
 

@@ -105,11 +105,6 @@ export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
       isPdf: true
     },
     {
-      label: 'दैनिक भास्कर आधिकारिक समाचार संदर्भ',
-      actionText: 'Read News',
-      url: 'https://dainik.bhaskar.com/jIxapmKhy7b?ref=MjA4Mjg2MDc0ODU0MDQ0MDU3Ng%3D%3D'
-    },
-    {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',
       actionText: 'Join Now',
       url: 'https://t.me/newrajsthanjobs'
