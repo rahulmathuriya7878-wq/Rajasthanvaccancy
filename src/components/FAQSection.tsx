@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { LanguageMode } from '../types';
 
@@ -62,6 +62,48 @@ interface FAQSectionProps {
 export const FAQSection: React.FC<FAQSectionProps> = ({ lang }) => {
   const isHi = lang === 'hi';
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const el = document.getElementById('faq-section');
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            let scriptEl = document.getElementById('faq-schema-ld') as HTMLScriptElement | null;
+            if (!scriptEl) {
+              scriptEl = document.createElement('script');
+              scriptEl.id = 'faq-schema-ld';
+              scriptEl.type = 'application/ld+json';
+              document.head.appendChild(scriptEl);
+            }
+
+            const faqSchema = {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": FAQS.map(f => ({
+                "@type": "Question",
+                "name": isHi ? f.qHi : f.qEn,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": isHi ? f.aHi : f.aEn
+                }
+              }))
+            };
+            scriptEl.textContent = JSON.stringify(faqSchema);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [isHi]);
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);

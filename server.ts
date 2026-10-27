@@ -106,23 +106,27 @@ async function startServer() {
   });
 
   // Dynamic XML Sitemap Generator to resolve Google Search Console sitemap errors
-  app.get('/sitemap.xml', async (_req, res) => {
+  app.get('/sitemap.xml', async (req, res) => {
     try {
+      const protocol = req.protocol || 'https';
+      const host = req.get('host') || 'rajasthanvaccancy.vercel.app';
+      const baseUrl = `${protocol}://${host}`;
+
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       
       // Home
-      xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
 
-      // Categories
+      // Categories (clean query parameters, NO hashes/anchors!)
       const categories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'exam_date', 'syllabus', 'news'];
       categories.forEach(cat => {
-        xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
       });
 
       // Vacancies
       INITIAL_VACANCIES.forEach(v => {
-        xml += `  <url>\n    <loc>https://rajasthanvaccancy.vercel.app/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
       });
 
       xml += `</urlset>`;

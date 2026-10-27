@@ -872,6 +872,57 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     }
   ];
 
+  // Lazy-loading for dynamic FAQ schema script injection when scrolled into view
+  const [faqInView, setFaqInView] = useState(false);
+  const faqSectionRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (faqInView || !faqSectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setFaqInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(faqSectionRef.current);
+    return () => observer.disconnect();
+  }, [faqInView]);
+
+  useEffect(() => {
+    if (!faqInView) return;
+
+    let faqScriptEl = document.getElementById('vacancy-faq-ld') as HTMLScriptElement | null;
+    if (!faqScriptEl) {
+      faqScriptEl = document.createElement('script');
+      faqScriptEl.id = 'vacancy-faq-ld';
+      faqScriptEl.type = 'application/ld+json';
+      document.head.appendChild(faqScriptEl);
+    }
+
+    const faqSchemaData = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqList.map(faq => ({
+        "@type": "Question",
+        "name": isHi ? (faq.qHi || faq.q) : faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": isHi ? (faq.aHi || faq.a) : faq.a
+        }
+      }))
+    };
+
+    faqScriptEl.textContent = JSON.stringify(faqSchemaData, null, 2);
+
+    return () => {
+      const scriptToRemove = document.getElementById('vacancy-faq-ld');
+      if (scriptToRemove) scriptToRemove.remove();
+    };
+  }, [faqInView, faqList, isHi]);
+
   const DEFAULT_SECTION_ORDER = [
     'overview',
     'latest_update',
@@ -2200,7 +2251,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                     case 'faqs':
                       return !isSectionDeleted('faqs') && (
-                        <div key="faqs">
+                        <div key="faqs" ref={faqSectionRef}>
                           <div className="flex items-center justify-between gap-2 mb-3 pt-2">
                             <h2 
                               className="headlight font-bold text-slate-900"

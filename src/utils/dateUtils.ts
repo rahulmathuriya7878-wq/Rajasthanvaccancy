@@ -27,9 +27,9 @@ export const formatDisplayDate = (dateVal?: string | null, fallback = 'शीघ
         hours = hours ? hours : 12; // the hour '0' should be '12'
         const minutesStr = minutes < 10 ? '0' + minutes : minutes;
         const hoursStr = hours < 10 ? '0' + hours : hours;
-        return `${day}-${month}-${year} | ${hoursStr}:${minutesStr} ${ampm}`;
+        return `${day}/${month}/${year} | ${hoursStr}:${minutesStr} ${ampm}`;
       } else {
-        return `${day}-${month}-${year}`;
+        return `${day}/${month}/${year}`;
       }
     }
   } catch (e) {
