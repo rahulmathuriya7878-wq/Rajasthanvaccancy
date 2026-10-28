@@ -7,8 +7,7 @@ import {
   Calendar,
   Edit3,
   Trash2,
-  Search,
-  Globe
+  Search
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';

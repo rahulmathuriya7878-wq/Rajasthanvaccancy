@@ -5,9 +5,6 @@ import {
   Building2, 
   AlertCircle,
   Scale,
-  ChevronDown,
-  ChevronUp,
-  AlertTriangle,
   Globe
 } from 'lucide-react';
 import { LanguageMode, VacancyItem } from '../types';

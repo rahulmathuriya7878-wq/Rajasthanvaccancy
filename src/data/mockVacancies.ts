@@ -2544,7 +2544,287 @@ export const UPESSC_TGT_2026_VACANCY: VacancyItem = {
   updatedAt: '25 अक्टूबर 2026'
 };
 
+export const PM_INTERNSHIP_SCHEME_2026_VACANCY: VacancyItem = {
+  id: 'pm-internship-scheme-2026',
+  title: 'PM Internship Scheme 2026 Portal Login & Online Registration: Apply for 1.25 Lakh Top Company Internships',
+  titleHi: 'PM इन्टर्नशिप योजना 2026 रजिस्ट्रेशन शुरू: ₹5,000 हर महीने स्टाइपेंड + ₹6,000 वित्तीय सहायता, 1.25 लाख पद, pminternship.mca.gov.in पर करें डायरेक्ट ऑनलाइन आवेदन',
+  shortTitle: 'PM Internship Scheme 2026 Online Form',
+  shortTitleHi: 'पीएम इन्टर्नशिप योजना 2026 रजिस्ट्रेशन',
+  organization: 'Central Govt',
+  department: 'Ministry of Corporate Affairs (MCA), Govt of India',
+  departmentHi: 'कॉर्पोरेट मामलों के मंत्रालय (MCA), भारत सरकार',
+  advtNo: 'MCA/PMIS/2026/PH-02',
+  category: 'scheme',
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 8940,
+  savesCount: 2350,
+  totalPosts: '1,25,000+ युवा (Top 500 Companies in India)',
+  postName: 'PM Internship Scheme 2026 (12 Months Paid Internship in Top Companies)',
+  postNameHi: 'प्रधानमंत्री इन्टर्नशिप योजना 2026 (12 महीने की सवैतनिक इन्टर्नशिप)',
+  qualification: ['10th', '12th', 'ITI/Diploma', 'Graduate'],
+  qualificationDetails: 'Passed 10th, 12th, ITI, Polytechnic Diploma, or Graduation (BA/B.Sc/B.Com/BBA/BCA/B.Pharma) from recognized board/university.',
+  qualificationDetailsHi: '10वीं (हाईस्कूल), 12वीं (इंटरमीडिएट), ITI, पॉलीटेक्निक डिप्लोमा, अथवा स्नातक डिग्री (BA, B.Sc, B.Com, BBA, BCA, B.Pharma) उत्तीर्ण।',
+  briefSummary: 'Ministry of Corporate Affairs (MCA) has opened online registration portal for PM Internship Scheme 2026. Selected candidates receive ₹5,000 monthly stipend and ₹6,000 one-time financial grant for 12 months internship in India top 500 companies.',
+  briefSummaryHi: '✍️ कॉर्पोरेट मामलों के मंत्रालय (MCA), भारत सरकार द्वारा "प्रधानमंत्री इन्टर्नशिप योजना 2026" (PM Internship Scheme 2026) के लिए pminternship.mca.gov.in पर ऑनलाइन रजिस्ट्रेशन और लॉगिन पोर्टल शुरू कर दिया गया है। योजना के अंतर्गत देश की शीर्ष 500 कंपनियों में युवाओं को 12 महीने का व्यावहारिक कार्य अनुभव (Internship) दिया जाएगा। चयनित युवाओं को हर महीने ₹5,000/- वित्तीय सहायता (स्टाइपेंड) तथा एकमुश्त ₹6,000/- अतिरिक्त अनुदान दिया जाएगा। 21 से 24 वर्ष आयु के 10वीं/12वीं/ITI/डिप्लोमा/स्नातक पास युवा बिना किसी आवेदन शुल्क के सीधे अप्लाई कर सकते हैं।',
+  description: 'PM Internship Scheme 2026 online application, eligibility criteria, stipend details, list of companies, age limit, and registration link.',
+  descriptionHi: '✍️ प्रिय अभ्यर्थियों,\n\nभारत सरकार के कॉर्पोरेट मामलों के मंत्रालय (Ministry of Corporate Affairs - MCA) द्वारा देश के शिक्षित बेरोजगार युवाओं को रोजगार योग्य बनाने तथा भारत की टॉप 500 कंपनियों में काम करने का अनुभव प्रदान करने हेतु **प्रधानमंत्री इन्टर्नशिप योजना 2026** (PM Internship Scheme 2026) का विस्तृत पोर्टल लॉन्च कर दिया गया है।\n\n📌 योजना के प्रमुख लाभ व आकर्षण:\n• **मासिक स्टाइपेंड:** ₹5,000/- प्रति माह (जिसमें ₹4,500 केंद्र सरकार द्वारा एवं ₹500 कंपनियों के CSR फंड द्वारा दिया जाएगा)।\n• **एकमुश्त वित्तीय सहायता:** इन्टर्नशिप जॉइन करने पर ₹6,000/- की एकमुश्त सहायता राशि सीधे अभ्यर्थी के आधार-लिंक्ड बैंक खाते (DBT) में भेजी जाएगी।\n• **इन्श्योरेंस कवर:** प्रधानमंत्री सुरक्षा बीमा योजना (PMSBY) एवं जीवन ज्योति बीमा योजना (PMJJBY) के तहत बीमा कवर।\n• **अवधि:** 12 महीने (1 वर्ष) की व्यावहारिक ऑन-जॉब ट्रेनिंग।\n\n🎯 पात्रता व योग्यता (Eligibility Criteria):\n1. **शैक्षणिक योग्यता:** 10वीं पास, 12वीं पास, ITI प्रमाणपत्र धारक, पॉलीटेक्निक डिप्लोमा या स्नातक (BA, B.Sc, B.Com, BBA, BCA) उत्तीर्ण अभ्यर्थी।\n2. **आयु सीमा:** 21 से 24 वर्ष (Cutoff Date को न्यूनतम 21 वर्ष व अधिकतम 24 वर्ष होना चाहिए)।\n3. **नागरिकता:** आवेदक भारत का मूल नागरिक होना अनिवार्य है।\n\n🚫 कौन आवेदन नहीं कर सकते (Ineligibility):\n• जो अभ्यर्थी वर्तमान में किसी नियमित नौकरी (Govt/Private) में कार्यरत हैं या फुल-टाइम पढ़ाई कर रहे हैं।\n• IIT, IIM, IISER, NID, IIIT, CA, CMA, CS, MBBS, BDS, M.Tech, PhD डिग्री धारक।\n• जिन परिवारों की वार्षिक आय ₹8 लाख से अधिक है या परिवार में कोई स्थायी सरकारी कर्मचारी है।',
+  jobLocation: 'All India & Rajasthan (Top 500 Companies like Tata, Reliance, L&T, Mahindra, HDFC, SBI)',
+  salary: '₹5,000 Stipend/Month + ₹6,000 One-time Grant',
+  salaryHi: '₹5,000/- स्टाइपेंड प्रति माह + ₹6,000/- एकमुश्त वित्तीय सहायता (Direct Bank Transfer)',
+  ageLimit: {
+    min: 21,
+    max: 24,
+    asOnDate: '2026-10-27',
+    relaxationNotes: 'Age must be between 21 to 24 years. Reserved categories get relaxation as per scheme rules.',
+    relaxationNotesHi: 'आवेदक की आयु 21 से 24 वर्ष के मध्य होनी चाहिए।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNote: 'No Registration Fee. 100% Free Application for All Candidates.',
+    otrNoteHi: 'सभी श्रेणियों (General / OBC / EWS / SC / ST / Female) के अभ्यर्थियों के लिए आवेदन 100% निःशुल्क है।'
+  },
+  importantDates: {
+    notificationDate: '27 अक्टूबर 2026',
+    applyStartDate: '2026-10-27',
+    applyLastDate: '2026-11-25',
+    feeLastDate: 'निःशुल्क (FREE)',
+    examDate: 'कोई परीक्षा नहीं (Direct Selection / Shortlisting based on Profile)',
+    admitCardDate: 'शॉर्टलिस्टेड अभ्यर्थियों को ईमेल/SMS द्वारा सूचना'
+  },
+  selectionProcess: [
+    'Online Candidate Profile Registration on Portal',
+    'AI-based Shortlisting & Selection by Participating Top 500 Companies',
+    'Offer Letter Generation & Acceptance',
+    'Joining & Monthly Stipend Transfer via DBT'
+  ],
+  selectionProcessHi: [
+    'pminternship.mca.gov.in पोर्टल पर ऑनलाइन रजिस्ट्रेशन एवं प्रोफाइल क्रिएशन',
+    'शीर्ष कंपनियों द्वारा योग्यता अनुसार अभ्यर्थियों का चयन व शॉर्टलिस्टिंग (कोई लिखित परीक्षा नहीं)',
+    'ऑफर लेटर (इन्टर्नशिप लेटर) जारी होना व स्वीकृति',
+    'इन्टर्नशिप जॉइनिंग तथा खातों में मासिक स्टाइपेंड का हस्तांतरण'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://pminternship.mca.gov.in/login/',
+    notificationPdfUrl: 'https://pminternship.mca.gov.in/login/',
+    officialWebsiteUrl: 'https://pminternship.mca.gov.in/login/'
+  },
+  postBreakdown: [
+    {
+      postName: 'PM Internship (Top Companies - Tech, Retail, Manufacturing, Banking, Telecom)',
+      postNameHi: 'पीएम इन्टर्नशिप (टेक, बैंकिंग, मैन्युफैक्चरिंग, रिटेल व ऑटोमोबाइल सेक्टर)',
+      categoryOrSubjectHi: 'कॉर्पोरेट इन्टर्नशिप',
+      postsCount: '1,25,000+ पद',
+      qualification: '10th / 12th / ITI / Diploma / Graduate',
+      qualificationHi: '10वीं / 12वीं / आईटीआई / डिप्लोमा / स्नातक पास',
+      payLevel: '₹5,000/माह स्टाइपेंड + ₹6,000 अनुदान'
+    }
+  ],
+  salaryTable: [
+    {
+      postName: 'PM Internship Trainee',
+      postNameHi: 'पीएम इन्टर्नशिप ट्रेनी',
+      payLevel: 'Monthly Allowance',
+      payLevelHi: 'मासिक स्टाइपेंड भत्ता',
+      salaryRange: '₹5,000 / Month + ₹6,000 Grant',
+      salaryRangeHi: '₹5,000/- प्रति माह (₹4,500 Govt + ₹500 Company) + ₹6,000/- एकमुश्त'
+    }
+  ],
+  requiredDocumentsHi: [
+    'आधार कार्ड (Aadhaar Card) - मोबाइल नंबर से लिंक',
+    '10वीं / 12वीं / ITI / डिप्लोमा / स्नातक की अंकतालिका व प्रमाण पत्र',
+    'बैंक पासबुक की प्रति (बैंक खाता आधार से सीडेड/DBT एनेबल्ड होना चाहिए)',
+    'मूल निवास प्रमाण पत्र एवं जाति प्रमाण पत्र',
+    'आय प्रमाण पत्र (पारिवारिक आय ₹8 लाख/वर्ष से कम)',
+    'नवीनतम पासपोर्ट साइज फोटो एवं मोबाइल नंबर / ईमेल आईडी'
+  ],
+  howToApplyHi: [
+    'चरण 1: कॉर्पोरेट मामलों के मंत्रालय की अधिकृत पोर्टल लिंक pminternship.mca.gov.in/login/ पर जाएं।',
+    'चरण 2: "Register Now / Candidate Login" विकल्प पर क्लिक करें और अपना मोबाइल नंबर दर्ज कर ई-केवाईसी (Aadhaar OTP) पूरा करें।',
+    'चरण 3: अपनी व्यक्तिगत जानकारी, शैक्षणिक योग्यता, संपर्क विवरण और बैंक खाता संख्या भरें।',
+    'चरण 4: अपनी पसंद की शीर्ष कंपनियों, उद्योग क्षेत्रों (Sectors) और पसंदीदा जिलों का चयन करें।',
+    'चरण 5: सभी विवरण जांचने के पश्चात निःशुल्क फॉर्म सबमिट करें और पंजीकरण रसीद का प्रिंट डाउनलोड कर लें।'
+  ],
+  directLinks: [
+    {
+      label: 'PM Internship Candidate Portal Login & Apply Online',
+      actionText: 'Apply Online',
+      type: 'apply',
+      url: 'https://pminternship.mca.gov.in/login/',
+      isPrimary: true
+    },
+    {
+      label: 'Official Guidelines & Notification (PMIS Guidelines PDF)',
+      actionText: 'View Guidelines',
+      type: 'notification',
+      url: 'https://pminternship.mca.gov.in/login/',
+      isPdf: false
+    },
+    {
+      label: 'Official MCA PM Internship Portal',
+      actionText: 'Click Here',
+      type: 'official',
+      url: 'https://pminternship.mca.gov.in/login/'
+    }
+  ],
+  faqs: [
+    {
+      q: 'What is the stipend under PM Internship Scheme 2026?',
+      qHi: 'प्रधानमंत्री इन्टर्नशिप योजना 2026 के तहत कितना स्टाइपेंड मिलता है?',
+      a: 'Selected candidates get ₹5,000 per month (₹4,500 by Central Govt + ₹500 by Company CSR) plus a one-time grant of ₹6,000.',
+      aHi: 'चयनित युवाओं को हर महीने ₹5,000/- का स्टाइपेंड (₹4,500 सरकार + ₹500 कंपनी) तथा जॉइनिंग के समय ₹6,000/- की एकमुश्त वित्तीय सहायता दी जाती है।'
+    },
+    {
+      q: 'What is the official website for PM Internship Scheme login and registration?',
+      qHi: 'पीएम इन्टर्नशिप योजना के रजिस्ट्रेशन व लॉगिन की आधिकारिक वेबसाइट क्या है?',
+      a: 'The official portal is pminternship.mca.gov.in.',
+      aHi: 'आधिकारिक लॉगिन पोर्टल pminternship.mca.gov.in है।'
+    },
+    {
+      q: 'What is the age limit and qualification required?',
+      qHi: 'पीएम इन्टर्नशिप योजना के लिए आयु सीमा और योग्यता क्या है?',
+      a: 'Candidates must be between 21 to 24 years old and passed 10th, 12th, ITI, Diploma, or Graduation degree.',
+      aHi: 'अभ्यर्थी की आयु 21 से 24 वर्ष के बीच होनी चाहिए तथा 10वीं, 12वीं, ITI, डिप्लोमा या स्नातक पास होना अनिवार्य है।'
+    }
+  ],
+  tags: ['PM Internship Scheme 2026', 'PMIS MCA', 'pminternship mca gov in', 'PM Internship Login', 'Sarkari Yojana 2026', 'Central Govt Internship', 'PM Internship Stipend'],
+  status: 'active',
+  createdAt: '2026-10-27',
+  updatedAt: '27 अक्टूबर 2026'
+};
+
+export const NTA_EXAM_CALENDAR_2026_27_VACANCY: VacancyItem = {
+  id: 'nta-exam-calendar-2026-27',
+  title: 'NTA Exam Calendar 2026-27 Released: Download JEE Main, NEET UG, CUET UG/PG & UGC NET Schedule PDF',
+  titleHi: 'NTA वार्षिक परीक्षा कैलेंडर 2026-27 जारी: JEE Main, NEET UG, CUET UG/PG और UGC NET परीक्षा तिथियां घोषित, यहाँ देखें विस्तृत टाइमटेबल PDF',
+  shortTitle: 'NTA Exam Calendar 2026-27 PDF',
+  shortTitleHi: 'NTA परीक्षा कैलेंडर 2026-27',
+  organization: 'Central Govt',
+  department: 'National Testing Agency (NTA), Ministry of Education',
+  departmentHi: 'नेशनल टेस्टिंग एजेंसी (NTA), शिक्षा मंत्रालय',
+  advtNo: 'NTA/EXAM-CALENDAR/2026-27',
+  category: 'news',
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 12450,
+  savesCount: 3890,
+  totalPosts: 'राष्ट्रीय स्तर की प्रवेश व पात्रता परीक्षाएं (JEE Main, NEET UG, CUET, UGC NET)',
+  postName: 'NTA Annual Examination Calendar 2026-27 (JEE Main, NEET UG, CUET UG/PG, UGC NET Schedule)',
+  postNameHi: 'एनटीए वार्षिक परीक्षा टाइमटेबल व शेड्यूल 2026-27',
+  qualification: ['10th', '12th', 'Graduate', 'PostGraduate'],
+  qualificationDetails: 'Candidates appearing or passed 10th, 12th, Graduation, or Post Graduation for national entrance exams.',
+  qualificationDetailsHi: '12वीं/स्नातक/परास्नातक स्तर की प्रवेश एवं पात्रता परीक्षाओं में सम्मिलित होने वाले देश भर के अभ्यर्थी।',
+  briefSummary: 'National Testing Agency (NTA) has officially released the Annual Exam Calendar 2026-27 for major national exams including JEE Main 2027 Session 1 & 2, NEET UG 2027, CUET UG/PG 2027, and UGC NET. Download schedule PDF and check exam dates below.',
+  briefSummaryHi: '✍️ नेशनल टेस्टिंग एजेंसी (NTA) द्वारा शैक्षणिक सत्र 2026-27 के लिए देश की प्रमुख राष्ट्रीय प्रवेश व पात्रता परीक्षाओं का वार्षिक "NTA Exam Calendar 2026-27" आधिकारिक वेबसाइट nta.ac.in पर जारी कर दिया गया है। एनटीए द्वारा जारी प्रेस विज्ञप्ति के अनुसार JEE Main 2027 Session-1 की परीक्षा 20 से 28 जनवरी 2027, Session-2 अप्रैल 2027 में, CUET UG/PG मई 2027 में और NEET UG परीक्षा मई 2027 में आयोजित की जाएगी। अभ्यर्थी आधिकारिक पीडीएफ नोटिफिकेशन डाउनलोड कर पूरी तिथियां देख सकते हैं।',
+  description: 'NTA Exam Calendar 2026-27 PDF release date, JEE Main 2027, NEET UG 2027, CUET UG 2027 exam dates, and official notification download link.',
+  descriptionHi: '✍️ प्रिय छात्रों व अभिभावकों,\n\nनेशनल टेस्टिंग एजेंसी (NTA) ने आगामी सत्र 2026-27 के लिए अपनी प्रमुख परीक्षाओं का वार्षिक परीक्षा कैलेंडर (NTA Examination Calendar 2026-27) जारी कर दिया है। एनटीए द्वारा आयोजित होने वाली प्रमुख परीक्षाओं जैसे जेईई मेन (JEE Main), नीट यूजी (NEET UG), सीयूईटी (CUET UG/PG) तथा यूजीसी नेट (UGC NET) की तिथियां और परीक्षा माध्यम घोषित कर दिए गए हैं।\n\n📌 NTA परीक्षा तिथियाँ 2026-27 (Exam Dates Summary):\n1. **JEE Main 2027 Session-1:** 20 जनवरी से 28 जनवरी 2027 (CBT Mode)\n2. **JEE Main 2027 Session-2:** 1 अप्रैल से 15 अप्रैल 2027 (CBT Mode)\n3. **CUET PG 2027:** मार्च 2027 (CBT Mode)\n4. **CUET UG 2027:** मई 2027 (Hybrid / CBT Mode)\n5. **NEET (UG) 2027:** मई 2027 (Pen & Paper / OMR Mode)\n6. **UGC NET June 2027:** जून 2027 (CBT Mode)\n\n🎯 छात्रों के लिए आवश्यक निर्देश:\n• सभी परीक्षाएं कंप्यूटर आधारित टेस्ट (CBT Mode) में आयोजित की जाएंगी (केवल NEET UG पेन-पेपर मोड में होगी)।\n• अभ्यर्थियों को सलाह दी जाती है कि आवेदन पत्र भरने हेतु अपने पासपोर्ट फोटो, आधार कार्ड और शैक्षणिक दस्तावेज अपडेट रखें।\n• परीक्षा शहर सूचना (City Slip) परीक्षा तिथि से 10 दिन पूर्व तथा एडमिट कार्ड परीक्षा से 3-4 दिन पूर्व एनटीए पोर्टल से डाउनलोड होंगे।',
+  jobLocation: 'All India (Exam Centers in all Rajasthan Districts & Nationwide)',
+  salary: 'National Level Entrance & Eligibility Examinations',
+  salaryHi: 'राष्ट्रीय स्तरीय प्रवेश व पात्रता परीक्षा टाइमटेबल 2026-27',
+  ageLimit: {
+    min: 0,
+    max: 0,
+    asOnDate: '2026-10-27',
+    relaxationNotes: 'Age limit as per individual exam guidelines.',
+    relaxationNotesHi: 'प्रत्येक परीक्षा के मूल नोटिफिकेशन अनुसार आयु सीमा लागू होगी।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNote: 'Exam Calendar PDF is free to download for all candidates.',
+    otrNoteHi: 'परीक्षा टाइमटेबल पीडीएफ डाउनलोड पूर्णतः निःशुल्क है।'
+  },
+  importantDates: {
+    notificationDate: '27 अक्टूबर 2026',
+    applyStartDate: '2026-10-27',
+    applyLastDate: 'सत्र 2026-27 के लिए लागू',
+    feeLastDate: 'परीक्षा अनुसार',
+    examDate: '20 जनवरी 2027 से प्रारंभ (विभिन्न तिथियां)',
+    admitCardDate: 'प्रत्येक परीक्षा से 4 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Release of Official NTA Exam Calendar',
+    'Online Application & Form Submission',
+    'Computer Based Test (CBT) or OMR Exam',
+    'Result Declaration & All India Rank (AIR)'
+  ],
+  selectionProcessHi: [
+    'आधिकारिक एनटीए परीक्षा कैलेंडर जारी',
+    'ऑनलाइन रजिस्ट्रेशन व फॉर्म सबमिशन',
+    'कंप्यूटर आधारित परीक्षा (CBT) या OMR परीक्षा',
+    'रिजल्ट व ऑल इंडिया रैंक (AIR) जारी'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://nta.ac.in/',
+    notificationPdfUrl: 'https://nta.ac.in/',
+    officialWebsiteUrl: 'https://nta.ac.in/'
+  },
+  postBreakdown: [
+    {
+      postName: 'JEE Main 2027 Session 1 & 2',
+      postNameHi: 'जेईई मेन 2027 सेशन 1 व 2',
+      categoryOrSubjectHi: 'इंजीनियरिंग प्रवेश परीक्षा',
+      postsCount: 'NITs, IIITs Seats',
+      qualification: '12th Science Stream',
+      qualificationHi: '12वीं गणित विषय',
+      payLevel: '20-28 जनवरी 2027 & अप्रैल 2027'
+    },
+    {
+      postName: 'NEET UG 2027 & CUET UG 2027',
+      postNameHi: 'नीट यूजी 2027 व सीयूईटी यूजी 2027',
+      categoryOrSubjectHi: 'मेडिकल व सेंट्रल यूनिवर्सिटी प्रवेश',
+      postsCount: 'MBBS/BDS & UG Degrees',
+      qualification: '12th Passed / Appearing',
+      qualificationHi: '12वीं पास / अपीयरिंग',
+      payLevel: 'मई 2027'
+    }
+  ],
+  directLinks: [
+    {
+      label: 'Download NTA Annual Exam Calendar 2026-27 (Official Press Release PDF)',
+      actionText: 'Download PDF',
+      type: 'notification',
+      url: 'https://nta.ac.in/',
+      isPdf: true,
+      fileName: 'NTA_Exam_Calendar_2026_27_Official_Notification.pdf'
+    },
+    {
+      label: 'NTA Official Website (nta.ac.in)',
+      actionText: 'Click Here',
+      type: 'official',
+      url: 'https://nta.ac.in/'
+    }
+  ],
+  faqs: [
+    {
+      q: 'When is JEE Main 2027 Session 1 Exam Date as per NTA Calendar?',
+      qHi: 'एनटीए कैलेंडर अनुसार जेईई मेन 2027 सेशन-1 की परीक्षा कब होगी?',
+      a: 'JEE Main 2027 Session 1 exam is scheduled between 20 to 28 January 2027.',
+      aHi: 'जेईई मेन 2027 सेशन-1 की परीक्षा 20 से 28 जनवरी 2027 के बीच आयोजित होगी।'
+    },
+    {
+      q: 'Where can I download NTA Exam Calendar 2026-27 PDF?',
+      qHi: 'NTA वार्षिक परीक्षा कैलेंडर 2026-27 PDF कहां से डाउनलोड करें?',
+      a: 'You can download the official calendar PDF from nta.ac.in or directly on our portal.',
+      aHi: 'आप NTA की अधिकृत वेबसाइट nta.ac.in तथा हमारे पोर्टल के डायरेक्ट लिंक से परीक्षा कैलेंडर पीडीएफ डाउनलोड कर सकते हैं।'
+    }
+  ],
+  tags: ['NTA Exam Calendar 2026-27', 'NTA Exam Dates 2027', 'JEE Main 2027 Exam Date', 'NEET UG 2027 Date', 'CUET UG 2027', 'UGC NET 2027 Schedule', 'Sarkari News'],
+  status: 'active',
+  createdAt: '2026-10-27',
+  updatedAt: '27 अक्टूबर 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  NTA_EXAM_CALENDAR_2026_27_VACANCY,
+  PM_INTERNSHIP_SCHEME_2026_VACANCY,
   JEE_MAIN_2027_SESSION_1_VACANCY,
   UPESSC_TGT_2026_VACANCY,
   RMS_DHOLPUR_2026_VACANCY,

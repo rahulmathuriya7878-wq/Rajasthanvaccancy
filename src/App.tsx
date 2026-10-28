@@ -12,9 +12,6 @@ import {
   CategoryArchiveView 
 } from './components/CategoryArchiveView';
 import { 
-  FAQSection 
-} from './components/FAQSection';
-import { 
   Footer 
 } from './components/Footer';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -72,30 +69,17 @@ const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
-// Clear legacy cached vacancies
+// Clean up legacy cached storage versions
 try {
-  localStorage.removeItem('raj_vacancies_v25');
-  localStorage.removeItem('raj_vacancies_v24');
-  localStorage.removeItem('raj_vacancies_v23');
-  localStorage.removeItem('raj_vacancies_v22');
-  localStorage.removeItem('raj_vacancies_v21');
-  localStorage.removeItem('raj_vacancies_v19');
-  localStorage.removeItem('raj_vacancies_v1');
-  localStorage.removeItem('raj_vacancies_v2');
-  localStorage.removeItem('raj_vacancies_v3');
-  localStorage.removeItem('raj_vacancies_v4');
-  localStorage.removeItem('raj_vacancies_v5');
-  localStorage.removeItem('raj_vacancies_v6');
-  localStorage.removeItem('raj_vacancies_v7');
-  localStorage.removeItem('raj_vacancies_v8');
-  localStorage.removeItem('raj_vacancies_v9');
-  localStorage.removeItem('raj_vacancies_v10');
-  localStorage.removeItem('raj_vacancies_v11');
-  localStorage.removeItem('raj_vacancies_v12');
-  localStorage.removeItem('raj_vacancies_v13');
-  localStorage.removeItem('raj_vacancies_v14');
-  localStorage.removeItem('raj_saved_ids_v1');
-  localStorage.removeItem('raj_saved_ids_v2');
+  if (typeof window !== 'undefined' && window.localStorage) {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('raj_vacancies_v') && key !== STORAGE_KEY_VACANCIES) || 
+          (key && key.startsWith('raj_saved_ids_v') && key !== STORAGE_KEY_SAVED)) {
+        localStorage.removeItem(key);
+      }
+    }
+  }
 } catch (e) {}
 
 export default function App() {
