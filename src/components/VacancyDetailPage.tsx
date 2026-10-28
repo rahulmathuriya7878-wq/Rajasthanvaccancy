@@ -734,6 +734,34 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     if (onUpdateVacancy) onUpdateVacancy(updated);
   };
 
+  const handleMoveSectionOrderUp = (index: number) => {
+    if (index <= 0) return;
+    const order = [...activeSectionKeys];
+    const temp = order[index];
+    order[index] = order[index - 1];
+    order[index - 1] = temp;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      sectionOrder: order
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
+  const handleMoveSectionOrderDown = (index: number) => {
+    if (index >= activeSectionKeys.length - 1) return;
+    const order = [...activeSectionKeys];
+    const temp = order[index];
+    order[index] = order[index + 1];
+    order[index + 1] = temp;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      sectionOrder: order
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
   const renderAdminSectionControls = (key: string, label: string) => {
     const hasTable = Boolean(getSectionTable(key));
 
@@ -1381,16 +1409,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         <PlusCircle className="w-3.5 h-3.5" />
                         <span>+ नया सेक्शन जोड़ें</span>
                       </button>
-                      {onEditVacancy && (
-                        <button
-                          type="button"
-                          onClick={() => onEditVacancy(currentVacancy)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-700 text-white rounded-md font-bold hover:bg-slate-800 transition cursor-pointer"
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>फॉर्म एडिटर</span>
-                        </button>
-                      )}
+
                       {onDeleteVacancy && (
                         <button
                           type="button"
@@ -1420,6 +1439,80 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       >
                         एडिट मोड बंद करें
                       </button>
+                    </div>
+                  )}
+
+                  {/* Merged Direct Sections Manager & Reorder Bar in Word In-Place Edit Mode */}
+                  {isDirectEditMode && (
+                    <div className="p-3 bg-sky-50 border border-sky-300 rounded-lg space-y-2 text-xs">
+                      <div className="flex items-center justify-between font-bold text-sky-900 border-b border-sky-200 pb-1.5">
+                        <span className="flex items-center gap-1.5">
+                          <span>⚡</span>
+                          <span>डायरेक्ट सेक्शन व पोस्ट मैनेजर (Merged Sections Control & Reorder):</span>
+                        </span>
+                        <span className="bg-sky-200 text-sky-900 px-2 py-0.5 rounded font-extrabold">{activeSectionKeys.length} सेक्शंस</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                        {activeSectionKeys.map((secKey, sIdx) => {
+                          const titleDefault = sectionLabels[secKey] || secKey;
+                          const currentSecTitle = getSectionTitle(secKey, titleDefault);
+                          const isDeleted = isSectionDeleted(secKey);
+
+                          return (
+                            <div key={secKey} className={`flex items-center justify-between gap-2 p-2 rounded border bg-white shadow-2xs ${isDeleted ? 'border-rose-300 bg-rose-50/50' : 'border-slate-200'}`}>
+                              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                <span className="font-black text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 shrink-0">#{sIdx + 1}</span>
+                                <input
+                                  type="text"
+                                  value={currentSecTitle}
+                                  onChange={(e) => setSectionTitle(secKey, e.target.value)}
+                                  className="font-bold text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded px-1.5 py-0.5 w-full focus:bg-white focus:outline-none focus:border-sky-500"
+                                  title="सेक्शन का नाम बदलें"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  disabled={sIdx === 0}
+                                  onClick={() => handleMoveSectionOrderUp(sIdx)}
+                                  className="p-1 bg-slate-100 hover:bg-sky-100 text-slate-700 rounded disabled:opacity-30 cursor-pointer font-bold text-[11px]"
+                                  title="ऊपर ले जाएं"
+                                >
+                                  ⬆️
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={sIdx === activeSectionKeys.length - 1}
+                                  onClick={() => handleMoveSectionOrderDown(sIdx)}
+                                  className="p-1 bg-slate-100 hover:bg-sky-100 text-slate-700 rounded disabled:opacity-30 cursor-pointer font-bold text-[11px]"
+                                  title="नीचे ले जाएं"
+                                >
+                                  ⬇️
+                                </button>
+                                {isDeleted ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRestoreSection(secKey)}
+                                    className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px] cursor-pointer"
+                                    title="वापस लाएं"
+                                  >
+                                    चालू करें
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSection(secKey)}
+                                    className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px] cursor-pointer"
+                                    title="सेक्शन हटाएं"
+                                  >
+                                    हटाएं
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
 
@@ -1633,7 +1726,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         return placeholders.some(p => val.trim().toLowerCase() === p.toLowerCase());
                       };
 
-                      const overviewRows = [
+                      const defaultOverviewRows = [
                         { label: 'भर्ती / योजना संस्था', val: editablePost.department || editablePost.organization, isEdit: true, keyName: 'department' },
                         { label: 'नाम / शीर्षक', val: editablePost.shortTitleHi || editablePost.shortTitle || shortJobName, isEdit: true, keyName: 'shortTitleHi' },
                         { 
@@ -1722,6 +1815,29 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         }
                       ].filter(r => r.show !== false);
 
+                      const overviewRows = Array.isArray(editablePost.overviewRows) && editablePost.overviewRows.length > 0
+                        ? editablePost.overviewRows
+                        : defaultOverviewRows;
+
+                      const handleUpdateOverviewRows = (newRows: any[]) => {
+                        setEditablePost(prev => ({ ...prev, overviewRows: newRows }));
+                      };
+
+                      const handleMoveOverviewRow = (rowIdx: number, direction: 'up' | 'down') => {
+                        const targetIdx = direction === 'up' ? rowIdx - 1 : rowIdx + 1;
+                        if (targetIdx < 0 || targetIdx >= overviewRows.length) return;
+                        const rows = [...overviewRows];
+                        const temp = rows[rowIdx];
+                        rows[rowIdx] = rows[targetIdx];
+                        rows[targetIdx] = temp;
+                        handleUpdateOverviewRows(rows);
+                      };
+
+                      const handleDeleteOverviewRow = (rowIdx: number) => {
+                        const rows = overviewRows.filter((_, i) => i !== rowIdx);
+                        handleUpdateOverviewRows(rows);
+                      };
+
                       return (
                         <div key="overview">
                           <div className="flex items-center justify-between gap-2 mb-2 pt-2">
@@ -1738,6 +1854,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               }}
                             />
                             <div className="flex items-center gap-1.5">
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const rows = [...overviewRows, { label: 'नया विवरण', val: 'जानकारी दर्ज करें', isEdit: true }];
+                                    handleUpdateOverviewRows(rows);
+                                  }}
+                                  className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>+ नई रो</span>
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={handleShareBigUpdate}
@@ -1760,26 +1889,87 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-200">
-                                {overviewRows.map((row, idx) => (
-                                  <tr key={idx}>
-                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">{row.label}</td>
+                                {overviewRows.map((row: any, idx: number) => (
+                                  <tr key={idx} className="border-b border-slate-200 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200 w-1/3">
+                                      <EditableText
+                                        value={row.label}
+                                        onChange={(val) => {
+                                          const rows = [...overviewRows];
+                                          rows[idx] = { ...rows[idx], label: val };
+                                          handleUpdateOverviewRows(rows);
+                                        }}
+                                        titlePrefix="रो शीर्षक"
+                                      />
+                                    </td>
                                     <td className="p-2.5 sm:p-3 text-slate-700 bg-white font-semibold">
-                                      {row.isDate ? (
-                                        <EditableText
-                                          value={row.val as string}
-                                          onChange={(val) => updateIntegratedDate(row.dateKey as any, val)}
-                                          titlePrefix={row.label}
-                                          isDate={true}
-                                        />
-                                      ) : row.isEdit ? (
-                                        <EditableText
-                                          value={row.val as string}
-                                          onChange={(val) => setEditablePost(prev => ({ ...prev, [row.keyName!]: val }))}
-                                          titlePrefix={row.label}
-                                        />
-                                      ) : (
-                                        <span>{row.val}</span>
-                                      )}
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div className="flex-1">
+                                          {row.isDate ? (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => updateIntegratedDate(row.dateKey as any, val)}
+                                              titlePrefix={row.label}
+                                              isDate={true}
+                                            />
+                                          ) : row.isEdit ? (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => {
+                                                const rows = [...overviewRows];
+                                                rows[idx] = { ...rows[idx], val: val };
+                                                if (row.keyName) {
+                                                  setEditablePost(prev => ({ ...prev, [row.keyName]: val }));
+                                                }
+                                                handleUpdateOverviewRows(rows);
+                                              }}
+                                              titlePrefix={row.label}
+                                            />
+                                          ) : (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => {
+                                                const rows = [...overviewRows];
+                                                rows[idx] = { ...rows[idx], val: val };
+                                                handleUpdateOverviewRows(rows);
+                                              }}
+                                              titlePrefix={row.label}
+                                            />
+                                          )}
+                                        </div>
+                                        {isDirectEditMode && (
+                                          <div className="flex items-center gap-1 shrink-0 ml-2">
+                                            {idx > 0 && (
+                                              <button
+                                                type="button"
+                                                onClick={() => handleMoveOverviewRow(idx, 'up')}
+                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                title="रो ऊपर करें"
+                                              >
+                                                ⬆️
+                                              </button>
+                                            )}
+                                            {idx < overviewRows.length - 1 && (
+                                              <button
+                                                type="button"
+                                                onClick={() => handleMoveOverviewRow(idx, 'down')}
+                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                title="रो नीचे करें"
+                                              >
+                                                ⬇️
+                                              </button>
+                                            )}
+                                            <button
+                                              type="button"
+                                              onClick={() => handleDeleteOverviewRow(idx)}
+                                              className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
+                                              title="यह रो हटाएं"
+                                            >
+                                              🗑️
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
                                     </td>
                                   </tr>
                                 ))}
@@ -2820,6 +3010,28 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     ))
                                   );
 
+                                  const handleMoveDirectLink = (direction: 'up' | 'down') => {
+                                    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+                                    setEditablePost(prev => {
+                                      const links = [...(prev.directLinks || [])];
+                                      if (targetIdx < 0 || targetIdx >= links.length) return prev;
+                                      const temp = links[idx];
+                                      links[idx] = links[targetIdx];
+                                      links[targetIdx] = temp;
+                                      return { ...prev, directLinks: links };
+                                    });
+                                  };
+
+                                  const handleDeleteDirectLink = () => {
+                                    setEditablePost(prev => {
+                                      const links = [...(prev.directLinks || [])];
+                                      links.splice(idx, 1);
+                                      return { ...prev, directLinks: links };
+                                    });
+                                  };
+
+                                  const linksArr = editablePost.directLinks || [];
+
                                   return (
                                     <tr key={idx} className="border-b border-slate-300 last:border-b-0">
                                       <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
@@ -2836,7 +3048,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                         />
                                       </td>
                                       <td className="p-2.5 sm:p-3 font-semibold w-1/2 bg-white">
-                                        <div className="flex items-center gap-2 flex-wrap">
+                                        <div className="flex items-center justify-between gap-2 flex-wrap">
                                           <a
                                             href={link.url || 'https://sarkariresult12.vercel.app/#'}
                                             target="_blank"
@@ -2846,16 +3058,48 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                           >
                                             <span>Click Here</span>
                                           </a>
-                                          {isDirectEditMode && (
-                                            <button
-                                              type="button"
-                                              onClick={() => handleAttachPdfToLink(idx)}
-                                              className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold px-1.5 py-0.5 rounded cursor-pointer ml-auto"
-                                              title="PDF फ़ाइल बदलें"
-                                            >
-                                              📄 PDF
-                                            </button>
-                                          )}
+                                          <div className="flex items-center gap-1.5 ml-auto">
+                                            {isDirectEditMode && (
+                                              <>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => handleAttachPdfToLink(idx)}
+                                                  className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold px-1.5 py-0.5 rounded cursor-pointer"
+                                                  title="PDF फ़ाइल बदलें"
+                                                >
+                                                  📄 PDF
+                                                </button>
+                                                {idx > 0 && (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleMoveDirectLink('up')}
+                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                    title="लिंक ऊपर करें"
+                                                  >
+                                                    ⬆️
+                                                  </button>
+                                                )}
+                                                {idx < linksArr.length - 1 && (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleMoveDirectLink('down')}
+                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                    title="लिंक नीचे करें"
+                                                  >
+                                                    ⬇️
+                                                  </button>
+                                                )}
+                                                <button
+                                                  type="button"
+                                                  onClick={handleDeleteDirectLink}
+                                                  className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
+                                                  title="यह लिंक हटाएं"
+                                                >
+                                                  🗑️
+                                                </button>
+                                              </>
+                                            )}
+                                          </div>
                                         </div>
                                       </td>
                                     </tr>

@@ -203,6 +203,7 @@ export interface VacancyItem {
   sectionTitleMap?: Record<string, string>;
   deletedSectionKeys?: string[];
   sectionOrder?: string[];
+  overviewRows?: any[];
   faqs?: { q: string; qHi: string; a: string; aHi: string }[];
   yojanaOverview?: {
     yojanaName?: string;

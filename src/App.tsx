@@ -35,9 +35,6 @@ import {
   SavedJobsModal 
 } from './components/SavedJobsModal';
 import { 
-  AddVacancyModal 
-} from './components/AddVacancyModal';
-import { 
   AdminLoginModal 
 } from './components/AdminLoginModal';
 import { 
@@ -912,22 +909,7 @@ export default function App() {
         }}
       />
 
-      <AddVacancyModal
-        isOpen={isAddJobOpen}
-        onClose={() => {
-          setIsAddJobOpen(false);
-          setEditingVacancy(null);
-        }}
-        lang={lang}
-        onAddVacancy={handleAddVacancy}
-        onUpdateVacancy={handleUpdateVacancy}
-        onDeleteVacancy={(id) => {
-          handleDeleteVacancy(id);
-          setIsAddJobOpen(false);
-          setEditingVacancy(null);
-        }}
-        editItem={editingVacancy}
-      />
+
 
       <AdminLoginModal
         isOpen={isAdminLoginOpen}

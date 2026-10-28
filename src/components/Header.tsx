@@ -270,19 +270,12 @@ export const Header: React.FC<HeaderProps> = ({
             {isAdmin && (
               <div className="flex items-center gap-1.5">
                 <button
-                  onClick={onOpenAddJob}
-                  className="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs"
-                  title="Post New Job or Scheme"
-                >
-                  <PlusCircle className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{isHi ? '+ नई पोस्ट' : '+ Post'}</span>
-                </button>
-                <button
                   onClick={() => toggleAdminMode(false)}
-                  className="px-2 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center gap-1 transition cursor-pointer hover:bg-emerald-100"
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-emerald-100"
                   title="Admin Mode Active"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-[11px] font-extrabold">{isHi ? 'Admin Active' : 'Admin'}</span>
                 </button>
               </div>
             )}
