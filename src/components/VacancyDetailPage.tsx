@@ -2295,8 +2295,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }
 
                     case 'age_limit': {
-                      if (isSectionDeleted('age_limit')) return null;
-                      if (isFlexCategory && !editablePost.ageLimit?.min && !editablePost.ageLimit?.max) return null;
+                      if (isSectionDeleted('age_limit') || isFlexCategory) return null;
 
                       const minAgeVal = editablePost.ageLimit?.min || 18;
                       const maxAgeVal = editablePost.ageLimit?.max || 40;
@@ -2444,7 +2443,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }
 
                     case 'selection_process': {
-                      if (isSectionDeleted('selection_process')) return null;
+                      if (isSectionDeleted('selection_process') || isFlexCategory) return null;
                       const defaultSelectionSteps = [
                         'लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।',
                         'मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।',

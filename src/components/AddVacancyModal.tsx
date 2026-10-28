@@ -281,6 +281,18 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     'faqs'
   ];
   const [sectionOrder, setSectionOrder] = useState<string[]>(DEFAULT_SECTION_KEYS);
+  const [sectionTitleMap, setSectionTitleMap] = useState<Record<string, string>>({});
+
+  const handleUpdateSectionTitleInModal = (key: string, newTitle: string) => {
+    setSectionTitleMap(prev => ({
+      ...prev,
+      [key]: newTitle
+    }));
+  };
+
+  const getSectionTitleInModal = (key: string, defaultTitle: string) => {
+    return sectionTitleMap[key] !== undefined ? sectionTitleMap[key] : defaultTitle;
+  };
 
   // Pre-fill fields when editItem is provided
   useEffect(() => {
@@ -420,6 +432,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       // Section Management sync
       setDeletedSectionKeys(editItem.deletedSectionKeys ? [...editItem.deletedSectionKeys] : []);
       setCustomSections(editItem.customSections ? [...editItem.customSections] : []);
+      setSectionTitleMap(editItem.sectionTitleMap ? { ...editItem.sectionTitleMap } : {});
       if (editItem.sectionOrder && editItem.sectionOrder.length > 0) {
         const uniqueSaved = Array.from(new Set(editItem.sectionOrder));
         const missing = DEFAULT_SECTION_KEYS.filter(k => !uniqueSaved.includes(k));
@@ -443,6 +456,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     } else {
       setDeletedSectionKeys([]);
       setCustomSections([]);
+      setSectionTitleMap({});
       setSectionOrder(DEFAULT_SECTION_KEYS);
     }
   }, [editItem]);
@@ -713,6 +727,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
         customSections: customSections.length > 0 ? customSections : undefined,
         sectionOrder: sectionOrder,
+        sectionTitleMap: Object.keys(sectionTitleMap).length > 0 ? sectionTitleMap : undefined,
         updatedAt: formattedDate
       };
 
@@ -796,6 +811,7 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
         deletedSectionKeys: deletedSectionKeys.length > 0 ? deletedSectionKeys : undefined,
         customSections: customSections.length > 0 ? customSections : undefined,
         sectionOrder: sectionOrder,
+        sectionTitleMap: Object.keys(sectionTitleMap).length > 0 ? sectionTitleMap : undefined,
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: formattedDate
       };
@@ -1382,7 +1398,13 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                                 #{idx + 1}
                               </span>
                               <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isDeleted ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
-                              <h5 className="font-bold text-xs sm:text-sm text-slate-900">{sec.title}</h5>
+                              <input
+                                type="text"
+                                value={getSectionTitleInModal(sec.key, sec.title)}
+                                onChange={(e) => handleUpdateSectionTitleInModal(sec.key, e.target.value)}
+                                className="font-bold text-xs sm:text-sm text-slate-900 bg-white border border-slate-300 rounded px-2 py-0.5 focus:border-sky-600 focus:outline-none w-56 sm:w-64"
+                                title="क्लिक करके सेक्शन का नाम बदलें"
+                              />
                               <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase ${
                                 isDeleted ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'
                               }`}>
