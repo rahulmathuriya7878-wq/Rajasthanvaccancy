@@ -52,19 +52,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     });
   };
 
-  // 1. Latest Jobs
-  const latestJobs = sortByNewest(vacancies.filter((v) => {
-    if (v.organization === 'Sarkari Yojana' || v.category === 'scheme' || v.category === 'news' || v.category === 'exam_date') return false;
-    return (
-      v.category === 'latest_job' ||
-      v.category === 'ugc_net' ||
-      (v.status === 'active' &&
-        v.category !== 'admit_card' &&
-        v.category !== 'result' &&
-        v.category !== 'answer_key')
-    );
-  }));
-
   // 2. Admit Card
   const admitCards = sortByNewest(vacancies.filter((v) => 
     v.category === 'admit_card' || v.status === 'admit_card_out'
@@ -82,13 +69,25 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 
   // 5. Latest News
   const latestNews = sortByNewest(vacancies.filter((v) => 
-    v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice')
+    v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice') || v.id?.includes('ctet')
   ));
 
   // 6. Sarkari Yojana
   const sarkariYojanas = sortByNewest(vacancies.filter((v) => 
     v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana')
   ));
+
+  // 1. Latest Jobs (Fallback ensuring all other active posts are shown)
+  const latestJobs = sortByNewest(vacancies.filter((v) => {
+    const isAdmit = v.category === 'admit_card' || v.status === 'admit_card_out';
+    const isResult = v.category === 'result' || v.status === 'result_declared';
+    const isExamDate = v.category === 'exam_date' || v.category === 'answer_key' || v.title.toLowerCase().includes('exam date') || v.titleHi?.includes('परीक्षा तिथि');
+    const isNews = v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice') || v.id?.includes('ctet');
+    const isYojana = v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana');
+
+    if (isAdmit || isResult || isExamDate || isNews || isYojana) return false;
+    return true;
+  }));
 
   // Rows configuration matching rajasthanvacancy.com:
   // Row 1: Latest Jobs, Admit Card, Results

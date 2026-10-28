@@ -2824,35 +2824,35 @@ export const NTA_EXAM_CALENDAR_2026_27_VACANCY: VacancyItem = {
 
 export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
   id: 'ctet-2026-exam-center-news',
-  title: 'CTET 2026 Exam Center City Notification Released: Check Your Exam City & Center Details',
-  titleHi: 'CTET 2026 परीक्षा केंद्र एवं एग्जाम सिटी नोटिस जारी: यहाँ देखें अपने परीक्षा शहर व सेंटर की जानकारी',
-  shortTitle: 'CTET 2026 Exam Center City',
-  shortTitleHi: 'CTET 2026 परीक्षा केंद्र सूची जारी',
+  title: 'CTET 2026 22nd Edition Public Notice Released: Exam Scheduled on 12th & 13th December 2026',
+  titleHi: 'CTET 2026 22वीं संस्करण पब्लिक नोटिस जारी: परीक्षा 12 और 13 दिसंबर 2026 को आयोजित होगी',
+  shortTitle: 'CTET 2026 Exam Notice (12-13 Dec)',
+  shortTitleHi: 'CTET 2026 परीक्षा नोटिस (12-13 दिसंबर)',
   organization: 'Central Govt',
   department: 'CTET Unit, CBSE Delhi',
-  departmentHi: 'केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE)',
-  advtNo: 'CTET/2026/ExamCenter',
+  departmentHi: 'केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE दिल्ली)',
+  advtNo: 'F. No. CBSE/CTET/2026',
   category: 'news',
-  tags: ['CTET', 'Exam Center', 'CBSE'],
+  tags: ['CTET 2026', 'CBSE Public Notice', '12-13 December 2026', 'Teacher Eligibility Test', 'Admit Card'],
   isTrending: true,
   isHighDemand: true,
   isHot: true,
   isNew: true,
-  clicksCount: 4120,
-  savesCount: 950,
+  clicksCount: 5120,
+  savesCount: 1250,
   totalPosts: 'देशभर में निर्धारित परीक्षा केंद्र (All India Exam Centers)',
-  postName: 'Central Teacher Eligibility Test (CTET) 2026 Exam City & Center Allocation',
-  postNameHi: 'केंद्रीय शिक्षक पात्रता परीक्षा (सीटीईटी) 2026 परीक्षा केंद्र व शहर आवंटन',
+  postName: 'Conduct of 22nd Edition of Central Teacher Eligibility Test (CTET) December 2026',
+  postNameHi: 'केंद्रीय शिक्षक पात्रता परीक्षा (सीटीईटी) 22वां संस्करण दिसंबर 2026 परीक्षा आयोजन',
   qualification: ['Graduate', 'B.Ed/BSTC'],
   qualificationDetails: 'Candidates enrolled or passed in Teacher Training Courses (B.Ed / D.El.Ed / BTC / PTC).',
   qualificationDetailsHi: 'बी.एड (B.Ed) अथवा डी.एल.एड / बीएसटीसी (D.El.Ed / BTC) धारक या अध्ययनरत अभ्यर्थी।',
-  briefSummary: 'CBSE has released the official notification and details regarding CTET 2026 Exam Centers and City Intimation Slip. Candidates can check their allocated exam city and center details through the official portal.',
-  briefSummaryHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा केंद्रीय शिक्षक पात्रता परीक्षा (CTET 2026) के लिए परीक्षा केंद्रों (Exam Centers) और परीक्षा शहर की जानकारी (Exam City Intimation) से संबंधित आधिकारिक सूचना जारी कर दी गई है। सभी पंजीकृत अभ्यर्थी अपने परीक्षा शहर और केंद्र का विवरण आधिकारिक पोर्टल से जांच सकते हैं।',
-  description: 'CTET 2026 Exam Center city intimation, admit card release date, and exam guidelines.',
-  descriptionHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा आयोजित होने वाली केंद्रीय शिक्षक पात्रता परीक्षा (CTET 2026) के लिए परीक्षा केंद्रों (Exam Centers) और परीक्षा शहर आवंटन की प्रक्रिया शुरू कर दी गई है。\n\n📌 मुख्य बिंदु व जानकारियां:\n• परीक्षा शहर सूचना पर्ची (Exam City Slip): परीक्षा से लगभग 7 से 10 दिन पूर्व जारी की जाती है।\n• एडमिट कार्ड (Admit Card): परीक्षा तिथि से 2 दिन पूर्व आधिकारिक वेबसाइट पर लाइव होगा।\n• परीक्षा केंद्र पर आवश्यक दस्तावेज: एडमिट कार्ड की प्रिंटेड कॉपी, मूल फोटो पहचान पत्र (आधार कार्ड/पैन कार्ड) और पासपोर्ट साइज फोटो।\n\n⚠️ सभी अभ्यर्थी अपने एडमिट कार्ड में दिए गए परीक्षा केंद्र के पते पर निर्धारित समय से 1 घंटे पूर्व पहुँचना सुनिश्चित करें।',
+  briefSummary: 'CBSE has released the official public notice (F. No. CBSE/CTET/2026 dated 14th September 2026) stating that the 22nd edition of CTET will be conducted on 12th and 13th December 2026. Exam city intimation will be available 15 days before and admit card 2 days before the exam.',
+  briefSummaryHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा 14 सितंबर 2026 को जारी आधिकारिक पब्लिक नोटिस (F. No. CBSE/CTET/2026) के अनुसार, केंद्रीय शिक्षक पात्रता परीक्षा (CTET) का 22वां संस्करण 12 और 13 दिसंबर 2026 को आयोजित किया जाएगा। परीक्षा शहर की जानकारी परीक्षा से 15 दिन पूर्व तथा एडमिट कार्ड परीक्षा से 2 दिन पूर्व सीटीईटी पोर्टल पर डाउनलोड हेतु उपलब्ध होंगे।',
+  description: 'Official Public Notice for CTET 22nd Edition Conduct on 12th & 13th December 2026 by CBSE.',
+  descriptionHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा जारी आधिकारिक पब्लिक नोटिस (Dated: 14th September 2026, F. No. CBSE/CTET/2026):\n\n📌 मुख्य दिशा-निर्देश व तिथियां:\n• परीक्षा तिथि (Exam Dates): केंद्रीय शिक्षक पात्रता परीक्षा (CTET) का 22वां संस्करण दिनांक 12 और 13 दिसंबर 2026 को आयोजित किया जाएगा।\n• परीक्षा शहर सूचना (Exam City & Date Slip): प्रत्येक अभ्यर्थी को आवंटित परीक्षा शहर और तिथि की जानकारी परीक्षा से 15 दिन पूर्व सीटीईटी पोर्टल पर उपलब्ध कराई जाएगी।\n• एडमिट कार्ड (Admit Card with Centre Details): परीक्षा केंद्र के पूरे विवरण वाला एडमिट कार्ड परीक्षा से ठीक 2 दिन पूर्व डाउनलोड हेतु जारी किया जाएगा।\n\nDirector (CTET)\nCBSE Integrated Office Complex, Sector-23, Phase-1, Dwarka, New Delhi-110077',
   jobLocation: 'All India & Rajasthan Exam Centers',
-  salary: 'Teacher Eligibility Certification',
-  salaryHi: 'शिक्षक पात्रता प्रमाण पत्र (Class 1 to 8)',
+  salary: 'Teacher Eligibility Certification (Class 1 to 8)',
+  salaryHi: 'शिक्षक पात्रता प्रमाण पत्र (कक्षा 1 से 8 हेतु)',
   ageLimit: {
     min: 18,
     max: 65,
@@ -2867,11 +2867,11 @@ export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
     otrNoteHi: 'पेपर I या II: सामान्य/ओबीसी ₹1000, एससी/एसटी/दिव्यांग ₹500 | दोनों पेपर: सामान्य/ओबीसी ₹1200, एससी/एसटी ₹600'
   },
   importantDates: {
-    notificationDate: '27 अक्टूबर 2026',
-    applyStartDate: '2026-09-01',
-    applyLastDate: '2026-10-01',
-    examDate: 'शीघ्र घोषित (December 2026 / January 2027)',
-    admitCardDate: 'परीक्षा से 2 दिन पूर्व'
+    notificationDate: '14 सितंबर 2026',
+    applyStartDate: '2026-09-14',
+    applyLastDate: '2026-10-15',
+    examDate: '12 और 13 दिसंबर 2026',
+    admitCardDate: '10 दिसंबर 2026 (परीक्षा से 2 दिन पूर्व)'
   },
   selectionProcess: [
     'Written Examination (Paper I for Primary & Paper II for Upper Primary)',
@@ -2883,7 +2883,7 @@ export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
   ],
   officialLinks: {
     applyOnlineUrl: 'https://ctet.nic.in/',
-    notificationPdfUrl: 'https://ctet.nic.in/',
+    notificationPdfUrl: '/assets/aistudio/20260914325514446_a6f21bff.pdf',
     officialWebsiteUrl: 'https://ctet.nic.in/'
   },
   postBreakdown: [
@@ -2908,10 +2908,18 @@ export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
   ],
   directLinks: [
     {
+      label: 'Official Public Notice PDF (CBSE 14 Sept 2026)',
+      actionText: 'Download PDF',
+      url: '/assets/aistudio/20260914325514446_a6f21bff.pdf',
+      fileName: 'CTET_2026_Public_Notice_CBSE.pdf',
+      fileSize: '1.2 MB',
+      isPdf: true,
+      isPrimary: true
+    },
+    {
       label: 'Check Exam City / Center Details (परीक्षा शहर व केंद्र देखें)',
       actionText: 'Check Exam City',
-      url: 'https://ctet.nic.in/',
-      isPrimary: true
+      url: 'https://ctet.nic.in/'
     },
     {
       label: 'Download Admit Card (एडमिट कार्ड डाउनलोड करें)',
