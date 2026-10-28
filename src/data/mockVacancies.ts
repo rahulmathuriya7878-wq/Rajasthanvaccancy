@@ -2822,7 +2822,114 @@ export const NTA_EXAM_CALENDAR_2026_27_VACANCY: VacancyItem = {
   updatedAt: '27 अक्टूबर 2026'
 };
 
+export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
+  id: 'ctet-2026-exam-center-news',
+  title: 'CTET 2026 Exam Center City Notification Released: Check Your Exam City & Center Details',
+  titleHi: 'CTET 2026 परीक्षा केंद्र एवं एग्जाम सिटी नोटिस जारी: यहाँ देखें अपने परीक्षा शहर व सेंटर की जानकारी',
+  shortTitle: 'CTET 2026 Exam Center City',
+  shortTitleHi: 'CTET 2026 परीक्षा केंद्र सूची जारी',
+  organization: 'Central Govt',
+  department: 'CTET Unit, CBSE Delhi',
+  departmentHi: 'केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE)',
+  advtNo: 'CTET/2026/ExamCenter',
+  category: 'news',
+  tags: ['CTET', 'Exam Center', 'CBSE'],
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 4120,
+  savesCount: 950,
+  totalPosts: 'देशभर में निर्धारित परीक्षा केंद्र (All India Exam Centers)',
+  postName: 'Central Teacher Eligibility Test (CTET) 2026 Exam City & Center Allocation',
+  postNameHi: 'केंद्रीय शिक्षक पात्रता परीक्षा (सीटीईटी) 2026 परीक्षा केंद्र व शहर आवंटन',
+  qualification: ['Graduate', 'B.Ed/BSTC'],
+  qualificationDetails: 'Candidates enrolled or passed in Teacher Training Courses (B.Ed / D.El.Ed / BTC / PTC).',
+  qualificationDetailsHi: 'बी.एड (B.Ed) अथवा डी.एल.एड / बीएसटीसी (D.El.Ed / BTC) धारक या अध्ययनरत अभ्यर्थी।',
+  briefSummary: 'CBSE has released the official notification and details regarding CTET 2026 Exam Centers and City Intimation Slip. Candidates can check their allocated exam city and center details through the official portal.',
+  briefSummaryHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा केंद्रीय शिक्षक पात्रता परीक्षा (CTET 2026) के लिए परीक्षा केंद्रों (Exam Centers) और परीक्षा शहर की जानकारी (Exam City Intimation) से संबंधित आधिकारिक सूचना जारी कर दी गई है। सभी पंजीकृत अभ्यर्थी अपने परीक्षा शहर और केंद्र का विवरण आधिकारिक पोर्टल से जांच सकते हैं।',
+  description: 'CTET 2026 Exam Center city intimation, admit card release date, and exam guidelines.',
+  descriptionHi: '📢 केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE) द्वारा आयोजित होने वाली केंद्रीय शिक्षक पात्रता परीक्षा (CTET 2026) के लिए परीक्षा केंद्रों (Exam Centers) और परीक्षा शहर आवंटन की प्रक्रिया शुरू कर दी गई है。\n\n📌 मुख्य बिंदु व जानकारियां:\n• परीक्षा शहर सूचना पर्ची (Exam City Slip): परीक्षा से लगभग 7 से 10 दिन पूर्व जारी की जाती है।\n• एडमिट कार्ड (Admit Card): परीक्षा तिथि से 2 दिन पूर्व आधिकारिक वेबसाइट पर लाइव होगा।\n• परीक्षा केंद्र पर आवश्यक दस्तावेज: एडमिट कार्ड की प्रिंटेड कॉपी, मूल फोटो पहचान पत्र (आधार कार्ड/पैन कार्ड) और पासपोर्ट साइज फोटो।\n\n⚠️ सभी अभ्यर्थी अपने एडमिट कार्ड में दिए गए परीक्षा केंद्र के पते पर निर्धारित समय से 1 घंटे पूर्व पहुँचना सुनिश्चित करें।',
+  jobLocation: 'All India & Rajasthan Exam Centers',
+  salary: 'Teacher Eligibility Certification',
+  salaryHi: 'शिक्षक पात्रता प्रमाण पत्र (Class 1 to 8)',
+  ageLimit: {
+    min: 18,
+    max: 65,
+    asOnDate: '2026-10-27',
+    relaxationNotes: 'No age limit for CTET exam.',
+    relaxationNotesHi: 'सीटीईटी परीक्षा में शामिल होने के लिए कोई आयु सीमा निर्धारित नहीं है।'
+  },
+  applicationFee: {
+    genObc: 1000,
+    scSt: 500,
+    otrNote: 'Paper I or II: Gen/OBC ₹1000, SC/ST/Divyang ₹500. Both Papers: Gen/OBC ₹1200, SC/ST ₹600',
+    otrNoteHi: 'पेपर I या II: सामान्य/ओबीसी ₹1000, एससी/एसटी/दिव्यांग ₹500 | दोनों पेपर: सामान्य/ओबीसी ₹1200, एससी/एसटी ₹600'
+  },
+  importantDates: {
+    notificationDate: '27 अक्टूबर 2026',
+    applyStartDate: '2026-09-01',
+    applyLastDate: '2026-10-01',
+    examDate: 'शीघ्र घोषित (December 2026 / January 2027)',
+    admitCardDate: 'परीक्षा से 2 दिन पूर्व'
+  },
+  selectionProcess: [
+    'Written Examination (Paper I for Primary & Paper II for Upper Primary)',
+    'Qualifying Marks: 60% (90 out of 150 marks) for General, 55% for reserved categories'
+  ],
+  selectionProcessHi: [
+    'लिखित परीक्षा (पेपर I - कक्षा 1 से 5 हेतु, पेपर II - कक्षा 6 से 8 हेतु)',
+    'उत्त्तीर्ण अंक: सामान्य वर्ग हेतु 60% (150 में से 90 अंक), आरक्षित वर्ग हेतु 55%'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://ctet.nic.in/',
+    notificationPdfUrl: 'https://ctet.nic.in/',
+    officialWebsiteUrl: 'https://ctet.nic.in/'
+  },
+  postBreakdown: [
+    {
+      postName: 'Paper I (Primary Teacher - Class I to V)',
+      postNameHi: 'पेपर I (प्राथमिक शिक्षक - कक्षा 1 से 5)',
+      categoryOrSubjectHi: 'बाल विकास, भाषा I व II, गणित, पर्यावरण अध्ययन',
+      postsCount: 'Primary Level Eligibility',
+      qualification: 'Senior Secondary with 50% & D.El.Ed / B.Ed',
+      qualificationHi: '12वीं (50% अंकों के साथ) एवं डी.एल.एड / बी.एड',
+      payLevel: 'Central Teacher Eligibility'
+    },
+    {
+      postName: 'Paper II (Upper Primary Teacher - Class VI to VIII)',
+      postNameHi: 'पेपर II (उच्च प्राथमिक शिक्षक - कक्षा 6 से 8)',
+      categoryOrSubjectHi: 'बाल विकास, भाषा I व II, गणित व विज्ञान / सामाजिक विज्ञान',
+      postsCount: 'Upper Primary Level Eligibility',
+      qualification: 'Graduation & B.Ed / D.El.Ed',
+      qualificationHi: 'स्नातक एवं बी.एड / डी.एल.एड',
+      payLevel: 'Central Teacher Eligibility'
+    }
+  ],
+  directLinks: [
+    {
+      label: 'Check Exam City / Center Details (परीक्षा शहर व केंद्र देखें)',
+      actionText: 'Check Exam City',
+      url: 'https://ctet.nic.in/',
+      isPrimary: true
+    },
+    {
+      label: 'Download Admit Card (एडमिट कार्ड डाउनलोड करें)',
+      actionText: 'Download Admit Card',
+      url: 'https://ctet.nic.in/'
+    },
+    {
+      label: 'Official Website (आधिकारिक वेबसाइट)',
+      actionText: 'Official Website',
+      url: 'https://ctet.nic.in/'
+    }
+  ],
+  createdAt: '2026-10-27',
+  status: 'active'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  CTET_2026_EXAM_CENTER_VACANCY,
   NTA_EXAM_CALENDAR_2026_27_VACANCY,
   PM_INTERNSHIP_SCHEME_2026_VACANCY,
   JEE_MAIN_2027_SESSION_1_VACANCY,

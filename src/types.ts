@@ -107,6 +107,11 @@ export interface ExamPatternDetails {
   notesHi?: string[];
 }
 
+export interface CustomTableData {
+  headers: string[];
+  rows: string[][];
+}
+
 export interface CustomPostSection {
   id: string;
   title: string;
@@ -114,6 +119,7 @@ export interface CustomPostSection {
   content: string;
   contentHi?: string;
   sectionType?: 'paragraph' | 'table' | 'bullets' | 'alert_box';
+  tableData?: CustomTableData;
 }
 
 export interface VacancyItem {
@@ -141,6 +147,7 @@ export interface VacancyItem {
     relaxationNotesHi?: string;
   };
   applicationFee: any;
+  applicationMode?: string;
   importantDates: any;
   directLinks?: DirectLinkItem[];
   latestNews?: LatestNewsItem[];
@@ -192,6 +199,8 @@ export interface VacancyItem {
   postalAddressHi?: string;
   envelopeNoteHi?: string;
   customSections?: CustomPostSection[];
+  sectionTableMap?: Record<string, CustomTableData | null>;
+  sectionTitleMap?: Record<string, string>;
   deletedSectionKeys?: string[];
   sectionOrder?: string[];
   faqs?: { q: string; qHi: string; a: string; aHi: string }[];

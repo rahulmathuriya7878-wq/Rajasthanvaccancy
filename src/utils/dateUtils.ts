@@ -88,6 +88,17 @@ export interface IntegratedJobDates {
  * regardless of whether importantDates is stored as an object or as an array of items.
  */
 export const resolveJobDates = (v?: any): IntegratedJobDates => {
+  if (v?.category === 'scheme') {
+    return {
+      notificationDate: '',
+      applyStartDate: '',
+      applyLastDate: '',
+      feeLastDate: '',
+      admitCardDate: '',
+      examDate: ''
+    };
+  }
+
   if (!v) {
     return {
       notificationDate: 'शीघ्र',
