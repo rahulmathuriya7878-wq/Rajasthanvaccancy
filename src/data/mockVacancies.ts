@@ -3057,6 +3057,21 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
       url: 'https://samvida-sathi.kvs.gov.in/'
     },
     {
+      label: 'Check School-Wise Open Advertisements (स्कूल-वार रिक्तियां देखें)',
+      actionText: 'Check Invites',
+      url: 'https://samvida-sathi.kvs.gov.in/'
+    },
+    {
+      label: 'KVS Official Contractual Guidelines / Manual (दिशानिर्देश)',
+      actionText: 'Visit KVS Portal',
+      url: 'https://kvsangathan.nic.in/'
+    },
+    {
+      label: 'Join WhatsApp Channel (राजस्थान भर्ती अपडेट्स)',
+      actionText: 'Join Channel',
+      url: 'https://whatsapp.com/channel/0029VaA7MglAojYpS1E86t1j'
+    },
+    {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',
       actionText: 'Join Now',
       url: 'https://t.me/newrajsthanjobs'

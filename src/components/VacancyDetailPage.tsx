@@ -3048,16 +3048,48 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                         />
                                       </td>
                                       <td className="p-2.5 sm:p-3 font-semibold w-1/2 bg-white">
-                                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                                          <a
-                                            href={link.url || 'https://sarkariresult12.vercel.app/#'}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            download={isPdf ? (link.fileName || `${(link.label || 'file').replace(/\s+/g, '_')}.pdf`) : undefined}
-                                            className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
-                                          >
-                                            <span>Click Here</span>
-                                          </a>
+                                        <div className="flex flex-col gap-1.5 w-full">
+                                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                                            <div className="flex items-center gap-1.5">
+                                              {isDirectEditMode ? (
+                                                <input
+                                                  type="text"
+                                                  value={link.actionText || 'Click Here'}
+                                                  onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setEditablePost(prev => {
+                                                      const list = [...(prev.directLinks || [])];
+                                                      list[idx] = { ...list[idx], actionText: val };
+                                                      return { ...prev, directLinks: list };
+                                                    });
+                                                  }}
+                                                  className="bg-amber-50 text-blue-700 font-bold border border-amber-300 rounded px-1.5 py-0.5 text-xs w-28 focus:ring-1 focus:ring-amber-500 outline-none"
+                                                  title="बटन का नाम (जैसे: Click Here / Download)"
+                                                />
+                                              ) : (
+                                                <a
+                                                  href={link.url || 'https://sarkariresult12.vercel.app/#'}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  download={isPdf ? (link.fileName || `${(link.label || 'file').replace(/\s+/g, '_')}.pdf`) : undefined}
+                                                  className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
+                                                >
+                                                  <span>{link.actionText || 'Click Here'}</span>
+                                                </a>
+                                              )}
+
+                                              {isDirectEditMode && (
+                                                <a
+                                                  href={link.url || '#'}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-slate-400 hover:text-blue-600 p-0.5"
+                                                  title="इस लिंक को नए टैब में खोलकर जांचें"
+                                                >
+                                                  <ExternalLink className="w-3.5 h-3.5" />
+                                                </a>
+                                              )}
+                                            </div>
                                           <div className="flex items-center gap-1.5 ml-auto">
                                             {isDirectEditMode && (
                                               <>
@@ -3101,10 +3133,45 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                             )}
                                           </div>
                                         </div>
+                                        {isDirectEditMode && (
+                                            <div className="flex items-center gap-1.5 w-full mt-1 pt-1 border-t border-slate-100">
+                                              <span className="text-[10px] font-bold text-slate-500 shrink-0">URL:</span>
+                                              <input
+                                                type="url"
+                                                value={link.url || ''}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setEditablePost(prev => {
+                                                    const list = [...(prev.directLinks || [])];
+                                                    list[idx] = { ...list[idx], url: val };
+                                                    return { ...prev, directLinks: list };
+                                                  });
+                                                }}
+                                                placeholder="वेब लिंक (URL) दर्ज करें जैसे: https://..."
+                                                className="bg-amber-50 text-slate-900 border border-amber-300 rounded px-1.5 py-0.5 text-[11px] font-mono w-full focus:ring-1 focus:ring-amber-500 outline-none"
+                                                title="इस लिंक का वेब पता (URL) बदलें"
+                                              />
+                                            </div>
+                                          )}
+                                        </div>
                                       </td>
                                     </tr>
                                   );
                                 })}
+                                {isDirectEditMode && (
+                                  <tr className="bg-slate-50 border-t border-slate-300">
+                                    <td colSpan={2} className="p-2.5 text-center bg-slate-50">
+                                      <button
+                                        type="button"
+                                        onClick={handleAddDirectLink}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-bold text-xs shadow-xs cursor-pointer transition"
+                                      >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        <span>+ नया लिंक जोड़ें (Add Important Link)</span>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                )}
                               </tbody>
                             </table>
                           </div>
