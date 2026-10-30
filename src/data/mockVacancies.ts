@@ -2936,7 +2936,144 @@ export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
   status: 'active'
 };
 
+export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
+  id: 'kvs-samvida-sathi-recruitment-2026',
+  title: 'KVS Samvida Sathi Recruitment 2026: Online Registration Started for PGT, TGT, PRT & Various Posts',
+  titleHi: 'KVS संविदा साथी भर्ती 2026: PGT, TGT, PRT एवं अन्य विभिन्न पदों के लिए रजिस्ट्रेशन शुरू, यहां से करें आवेदन',
+  shortTitle: 'KVS Samvida Sathi Recruitment 2026',
+  shortTitleHi: 'KVS संविदा साथी भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'Kendriya Vidyalaya Sangathan (KVS)',
+  departmentHi: 'केन्द्रीय विद्यालय संगठन (KVS)',
+  advtNo: 'KVS/Samvida-Sathi/2026-27',
+  category: 'latest_job',
+  tags: ['KVS Samvida Sathi', 'Kendriya Vidyalaya', 'Contractual Teacher', 'PGT', 'TGT', 'PRT', 'Rajasthan KVS'],
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 6840,
+  savesCount: 1820,
+  totalPosts: 'विभिन्न पद (School-wise Vacancies across Rajasthan & India)',
+  postName: 'PGT, TGT, PRT, Computer Instructor, Counselor, Special Educator & Sports Coach',
+  postNameHi: 'पीजीटी, टीजीटी, पीआरटी, कंप्यूटर अनुदेशक, काउंसलर, स्पेशल एजुकेटर एवं स्पोर्ट्स कोच',
+  qualification: ['B.Ed/BSTC', 'Graduate', 'PostGraduate', '12th'],
+  qualificationDetails: 'Post Graduation + B.Ed for PGT, Graduation + B.Ed + CTET for TGT, 12th + D.El.Ed / B.Ed + CTET for PRT. Degree/Diploma for Other Posts.',
+  qualificationDetailsHi: 'पीजीटी हेतु संबंधित विषय में 50% के साथ स्नातकोत्तर + B.Ed, टीजीटी हेतु संबंधित विषय में स्नातक + B.Ed + CTET Paper-II, पीआरटी हेतु 12वीं + D.El.Ed/JBT/B.Ed + CTET Paper-I पास। अन्य पदों हेतु संबंधित विषय में डिग्री/डिप्लोमा।',
+  briefSummary: 'Kendriya Vidyalaya Sangathan (KVS) has launched the centralized Samvida Sathi Portal for contractual teacher and staff recruitment session 2026-27. Candidates can create a single online profile at samvida-sathi.kvs.gov.in and apply for active school-wise vacancies without any fee.',
+  briefSummaryHi: '📢 केन्द्रीय विद्यालय संगठन (KVS) द्वारा शैक्षणिक सत्र 2026–27 के लिए संविदा शिक्षकों और गैर-शैक्षणिक पदों पर भर्ती प्रक्रिया को पूरी तरह डिजिटल और केंद्रीकृत करते हुए "KVS Samvida Sathi Portal" (samvida-sathi.kvs.gov.in) शुरू कर दिया गया है। अब अभ्यर्थियों को अलग-अलग स्कूलों के चक्कर नहीं लगाने होंगे; पोर्टल पर एक ही बार प्रोफाइल बनाकर राजस्थान सहित देशभर के केंद्रीय विद्यालयों के एक्टिव विज्ञापनों में सीधे आवेदन कर सकते हैं। आवेदन पूर्णतः निःशुल्क (₹0) है।',
+  description: 'Detailed Notification, Registration Guide and School-wise Invites for KVS Samvida Sathi Recruitment 2026.',
+  descriptionHi: '📢 केन्द्रीय विद्यालय संगठन (KVS) संविदा साथी पोर्टल भर्ती 2026:\n\nकेन्द्रीय विद्यालय संगठन (KVS) ने देशभर के सभी केंद्रीय विद्यालयों में शैक्षणिक सत्र 2026-27 हेतु संविदा (Contractual) आधार पर शिक्षकों (PGT, TGT, PRT) एवं अन्य सह-शैक्षणिक पदों (कंप्यूटर अनुदेशक, वोकेशनल ट्रेनर, काउंसलर, स्पेशल एजुकेटर आदि) के चयन के लिए नया केंद्रीकृत "Samvida Sathi Portal" शुरू किया है।\n\n📌 इस पोर्टल की प्रमुख विशेषताएं:\n• सिंगल विंडो रजिस्ट्रेशन: अभ्यर्थी एक बार पोर्टल पर अपनी प्रोफाइल बनाकर सभी आवश्यक शैक्षणिक दस्तावेज अपलोड कर सकते हैं।\n• स्कूल-वार एक्टिव इनवाइट्स: राजस्थान के सभी संभागों (जयपुर, जोधपुर एवं अन्य जिले) तथा देशभर के केंद्रीय विद्यालयों में रिक्त पदों की लाइव सूची पोर्टल के "Advertisements" सेक्शन में देखी जा सकती है।\n• आवेदन शुल्क: सभी वर्गों (General/OBC/SC/ST/EWS/महिला) के लिए आवेदन पूर्णतः निःशुल्क (₹0/-) है।\n• चयन प्रक्रिया: पोर्टल पर ऑनलाइन आवेदन के उपरांत संबंधित विद्यालय द्वारा निर्धारित तिथि पर इंटरव्यू और दस्तावेज सत्यापन (Interview & Document Verification) आयोजित किया जाता है।',
+  jobLocation: 'सम्पूर्ण राजस्थान एवं ऑल इंडिया केंद्रीय विद्यालय',
+  salary: '₹21,250 to ₹32,500 per month (As per KVS Norms)',
+  salaryHi: '₹21,250/- से ₹32,500/- प्रति माह (KVS संविदा नियमानुसार)',
+  ageLimit: {
+    min: 18,
+    max: 65,
+    asOnDate: '2026-01-01',
+    relaxationNotes: 'As per KVS Contractual engagement rules (Candidates up to 65 years eligible).',
+    relaxationNotesHi: 'KVS संविदा शिक्षक नियमों के तहत 18 से 65 वर्ष तक के योग्य अभ्यर्थी पात्र हैं।'
+  },
+  applicationFee: {
+    genObc: 0,
+    scSt: 0,
+    ews: 0,
+    otrNote: 'No Application Fee (₹0/- for all categories)',
+    otrNoteHi: 'सभी श्रेणियों (सामान्य, ओबीसी, ईडब्ल्यूएस, एससी, एसटी, महिला) के लिए आवेदन पूर्णतः निःशुल्क है।'
+  },
+  importantDates: {
+    notificationDate: '28 अक्टूबर 2026',
+    applyStartDate: '2026-10-28',
+    applyLastDate: 'विद्यालय वार विज्ञप्ति अनुसार',
+    feeLastDate: 'निशुल्क (₹0)',
+    examDate: 'इंटरव्यू विद्यालय अनुसार आयोजित होंगे',
+    admitCardDate: 'इंटरव्यू कॉल लेटर पोर्टल पर'
+  },
+  selectionProcess: [
+    'Online Registration on KVS Samvida Sathi Portal',
+    'Applying for School-specific Advertisement',
+    'Walk-in Interview / Skill Assessment',
+    'Document Verification & Panel Empanelment'
+  ],
+  selectionProcessHi: [
+    'KVS संविदा साथी पोर्टल (samvida-sathi.kvs.gov.in) पर ऑनलाइन प्रोफाइल रजिस्ट्रेशन',
+    'संबंधित केंद्रीय विद्यालय के रिक्त पद हेतु ऑनलाइन आवेदन',
+    'विद्यालय स्तर पर व्यक्तिगत साक्षात्कार (Walk-in Interview) व अध्यापन कौशल प्रदर्शन',
+    'मूल दस्तावेज सत्यापन एवं अंतिम चयन सूची (Panel Merit List)'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://samvida-sathi.kvs.gov.in/',
+    notificationPdfUrl: 'https://kvsangathan.nic.in/',
+    officialWebsiteUrl: 'https://samvida-sathi.kvs.gov.in/'
+  },
+  postBreakdown: [
+    {
+      postName: 'PGT (All Subjects - Hindi, Eng, Maths, Physics, Chem, Bio, CS, Commerce, Economics)',
+      postNameHi: 'पीजीटी (समस्त विषय - हिंदी, अंग्रेजी, गणित, भौतिकी, रसायन, जीव विज्ञान, कॉमर्स, अर्थशास्त्र)',
+      categoryOrSubjectHi: 'उच्च माध्यमिक शिक्षक',
+      postsCount: 'स्कूल अनुसार रिक्त पद',
+      qualification: 'Master Degree in relevant subject with 50% + B.Ed',
+      qualificationHi: 'संबंधित विषय में न्यूनतम 50% अंकों के साथ स्नातकोत्तर (PG) डिग्री एवं B.Ed उत्तीर्ण',
+      payLevel: '₹27,500 - ₹32,500/- प्रति माह'
+    },
+    {
+      postName: 'TGT (Hindi, English, Sanskrit, Maths, Science, Social Science)',
+      postNameHi: 'टीजीटी (हिंदी, अंग्रेजी, संस्कृत, गणित, विज्ञान, सामाजिक विज्ञान)',
+      categoryOrSubjectHi: 'माध्यमिक शिक्षक',
+      postsCount: 'स्कूल अनुसार रिक्त पद',
+      qualification: 'Graduation in relevant subject with 50% + B.Ed + CTET Paper-II',
+      qualificationHi: 'संबंधित विषय में 50% अंकों के साथ स्नातक (Graduation) + B.Ed + CBSE CTET (Paper-II) पास',
+      payLevel: '₹26,250 - ₹31,250/- प्रति माह'
+    },
+    {
+      postName: 'PRT (Primary Teacher)',
+      postNameHi: 'पीआरटी (प्राथमिक शिक्षक)',
+      categoryOrSubjectHi: 'प्राथमिक स्तर',
+      postsCount: 'स्कूल अनुसार रिक्त पद',
+      qualification: 'Senior Secondary (50%) + 2 Year D.El.Ed / JBT / B.Ed + CTET Paper-I',
+      qualificationHi: '12वीं कक्षा में न्यूनतम 50% अंक + डी.एल.एड / जेबीटी / बी.एड एवं CTET Paper-I उत्तीर्ण',
+      payLevel: '₹21,250/- प्रति माह'
+    },
+    {
+      postName: 'Computer Instructor, Counselor, Special Educator & Sports Coach',
+      postNameHi: 'कंप्यूटर अनुदेशक, काउंसलर, स्पेशल एजुकेटर एवं खेल प्रशिक्षक',
+      categoryOrSubjectHi: 'सह-शैक्षणिक व तकनीकी पद',
+      postsCount: 'स्कूल अनुसार रिक्त पद',
+      qualification: 'BCA/B.Sc CS/MCA for Computer, MA Psychology for Counselor, B.Ed Special Ed',
+      qualificationHi: 'पद अनुसार संबंधित विषय में स्नातक/डिप्लोमा/डिग्री',
+      payLevel: '₹21,250 - ₹26,250/- प्रति माह'
+    }
+  ],
+  directLinks: [
+    {
+      label: 'Apply Online (KVS Samvida Sathi Portal Registration)',
+      actionText: 'Apply Online',
+      url: 'https://samvida-sathi.kvs.gov.in/',
+      isPrimary: true
+    },
+    {
+      label: 'KVS Samvida Sathi Portal Login (लॉगिन लिंक)',
+      actionText: 'Login Here',
+      url: 'https://samvida-sathi.kvs.gov.in/'
+    },
+    {
+      label: 'Join Telegram Channel (New Rajasthan Jobs)',
+      actionText: 'Join Now',
+      url: 'https://t.me/newrajsthanjobs'
+    },
+    {
+      label: 'Official Website (केन्द्रीय विद्यालय संगठन)',
+      actionText: 'Official Website',
+      url: 'https://kvsangathan.nic.in/'
+    }
+  ],
+  createdAt: '2026-10-29',
+  updatedAt: '29 अक्टूबर 2026',
+  status: 'active'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  KVS_SAMVIDA_SATHI_2026_VACANCY,
   CTET_2026_EXAM_CENTER_VACANCY,
   NTA_EXAM_CALENDAR_2026_27_VACANCY,
   PM_INTERNSHIP_SCHEME_2026_VACANCY,

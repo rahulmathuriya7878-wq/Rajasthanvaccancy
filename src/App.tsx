@@ -61,7 +61,7 @@ import {
 
 import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v26';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v27';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
