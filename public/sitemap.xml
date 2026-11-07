@@ -60,8 +60,20 @@
 
   <!-- Major Trending & High Priority Recruitment Pages -->
   <url>
+    <loc>https://rajasthanvaccancy.vercel.app/?vacancy=kvs-samvida-sathi-recruitment-2026</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://rajasthanvaccancy.vercel.app/?vacancy=ctet-2026-exam-center-news</loc>
+    <lastmod>2026-11-07</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://rajasthanvaccancy.vercel.app/?vacancy=nta-exam-calendar-2026-27</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
