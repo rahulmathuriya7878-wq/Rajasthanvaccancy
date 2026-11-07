@@ -57,6 +57,19 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     }
     canonicalLinkEl.setAttribute('href', postCanonicalUrl);
 
+    // Meta keywords with all viral tags for search crawlers (hidden from UI)
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    const originalKeywords = metaKeywords?.getAttribute('content') || '';
+    if (vacancy.tags && vacancy.tags.length > 0) {
+      const cleanKeywords = vacancy.tags.map(t => t.replace(/^#/, '')).join(', ');
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', cleanKeywords);
+    }
+
     let ogUrl = document.querySelector('meta[property="og:url"]');
     if (ogUrl) {
       ogUrl.setAttribute('content', postCanonicalUrl);
@@ -65,6 +78,7 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     return () => {
       document.title = originalTitle;
       if (metaDesc && originalDesc) metaDesc.setAttribute('content', originalDesc);
+      if (metaKeywords && originalKeywords) metaKeywords.setAttribute('content', originalKeywords);
       if (canonicalLinkEl) canonicalLinkEl.setAttribute('href', originalCanonicalHref);
     };
   }, [vacancy, lang]);
@@ -89,6 +103,7 @@ interface FullPagePostViewProps {
   isAlertSet?: boolean;
   onToggleAlertMe?: (id: string) => void;
   onSelectCategory?: (category: string) => void;
+  onSearchKeyword?: (keyword: string) => void;
 }
 
 export const FullPagePostView: React.FC<FullPagePostViewProps> = (props) => {

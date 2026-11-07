@@ -115,7 +115,7 @@ export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
       url: 'https://jeemain.nta.nic.in/'
     }
   ],
-  tags: ['JEE Main 2027', 'NTA', 'Session 1', 'Engineering Entrance', 'IIT JEE', 'Online Form', 'Admit Card'],
+  tags: ['#JEEMain2027', '#NTAJEEMain', '#Session1Registration', '#JEEMainOnlineForm', '#IITJEE2027', '#JEEMainAdmitCard', '#EngineeringEntrance', '#SarkariResult2026', '#NTAExamCalendar', '#RajasthanVacancy2026'],
   status: 'active',
   createdAt: '2026-10-27',
   updatedAt: '27 अक्टूबर 2026'
@@ -307,7 +307,7 @@ export const SAINIK_SCHOOL_CHITTORGARH_VACANCY: VacancyItem = {
       aHi: 'सामान्य/ओबीसी/ईडब्ल्यूएस श्रेणी हेतु ₹500/- तथा एससी/एसटी अभ्यर्थियों हेतु ₹250/- आवेदन शुल्क निर्धारित है।'
     }
   ],
-  tags: ['sainik school', 'chittorgarh', 'tgt teacher', 'rajasthan bharti', 'govt job 2026'],
+  tags: ['#SainikSchoolChittorgarh', '#SainikSchoolRecruitment2026', '#RajasthanTeacherBharti', '#TGTTeacher', '#GeneralEmployee', '#GovtJobsRajasthan', '#RajasthanVacancy2026', '#SarkariResult2026', '#OfflineForm2026'],
   status: 'active',
   updatedAt: '18 अक्टूबर 2026',
   createdAt: '2026-01-15'
@@ -484,7 +484,7 @@ export const AMBEDKAR_DBT_VOUCHER_YOJANA_VACANCY: VacancyItem = {
       aHi: 'ऑनलाइन आवेदन करने की अंतिम तिथि 31 मार्च 2026 निर्धारित की गई है।'
     }
   ],
-  tags: ['ambedkar dbt voucher', 'yojana 2026', 'rajasthan yojana', 'sso rajasthan', 'scholarship', 'sarkari yojana'],
+  tags: ['#AmbedkarDBTVoucher', '#RajasthanYojana2026', '#SSORajasthan', '#DBTVoucherYojana', '#FreeHostelAllowance', '#RajasthanSarkariYojana', '#Scholarship2026', '#SarkariYojana2026', '#RajasthanVacancy2026'],
   yojanaOverview: {
     yojanaName: 'राजस्थान अंबेडकर डीबीटी वाउचर योजना 2026',
     state: 'राजस्थान',
@@ -650,7 +650,7 @@ export const PM_AWAS_YOJANA_URBAN_VACANCY: VacancyItem = {
       aHi: 'PMAY-U 2.0 के तहत ऑनलाइन आवेदन 31 दिसंबर 2026 तक स्वीकार किए जाएंगे।'
     }
   ],
-  tags: ['pm awas yojana urban 2026', 'pmay u 2.0', 'rajasthan awas yojana', 'pmay mis', 'sarkari yojana', 'housing subsidy'],
+  tags: ['#PMAwasYojanaUrban', '#PMAYU2', '#PMAYSubsidy', '#PradhanMantriAwasYojana', '#SarkariYojana2026', '#AwasYojanaOnlineForm', '#HousingSubsidyScheme', '#PMAYMIS', '#SarkariResult'],
   yojanaOverview: {
     yojanaName: 'प्रधानमंत्री आवास योजना शहरी 2.0 (PMAY-U 2.0)',
     state: 'राजस्थान एवं संपूर्ण भारत',
@@ -889,7 +889,7 @@ export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
       aHi: 'जेआरएफ हेतु सामान्य वर्ग के पुरुषों के लिए अधिकतम 30 वर्ष है। महिला अभ्यर्थियों तथा आरक्षित वर्गों (OBC/SC/ST/PwD) को 5 वर्ष की छूट प्राप्त है।'
     }
   ],
-  tags: ['ugc net', 'december 2026', 'assistant professor', 'jrf'],
+  tags: ['#UGCNET2026', '#UGCNETDec2026', '#NTAUGCNET', '#AssistantProfessor', '#JRF2026', '#UGCNETAdmitCard', '#UGCNETResult', '#SarkariResult2026', '#CollegeLecturerJob', '#RajasthanVacancy2026'],
   status: 'active',
   updatedAt: '19 अक्टूबर 2026',
   createdAt: '2026-10-19'
@@ -1099,7 +1099,7 @@ export const DSSSB_DISTRICT_COURT_2026_VACANCY: VacancyItem = {
       aHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) डिग्री तथा कंप्यूटर पर 35 शब्द प्रति मिनट अंग्रेजी टाइपिंग स्पीड।'
     }
   ],
-  tags: ['dsssb', 'district court', 'jja', 'delhi court recruitment 2026', 'court bharti'],
+  tags: ['#DSSSB2026', '#DelhiDistrictCourt', '#DSSSBJJA', '#JuniorJudicialAssistant', '#CourtBharti2026', '#DelhiGovtJobs', '#SarkariResult2026', '#CourtJobAlert', '#GovtJobsAlert'],
   status: 'active',
   isHot: true,
   isNew: true,
@@ -1290,7 +1290,7 @@ export const SUPREME_COURT_COURT_MASTER_2026_VACANCY: VacancyItem = {
       aHi: 'कोर्ट मास्टर पद पे-मैट्रिक्स लेवल 11 के तहत आता है, जिसमें ₹67,700 से ₹2,08,700/- प्रति माह मूल वेतन के साथ महंगाई भत्ता (DA) व अन्य केंद्रीय भत्ते मिलते हैं।'
     }
   ],
-  tags: ['supreme court', 'court master', 'sci', 'shorthand', 'court bharti 2026', 'sci recruitment'],
+  tags: ['#SupremeCourtRecruitment', '#CourtMasterStenographer', '#SCIBharti2026', '#ShorthandJobs', '#SupremeCourtOfIndia', '#SarkariNaukri2026', '#CentralGovtJob', '#SarkariResult2026'],
   status: 'active',
   isHot: true,
   isNew: true,
@@ -1424,12 +1424,56 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
       aHi: 'कुल 1250 पदों पर भर्ती हेतु नोटिफिकेशन जारी किया गया है।'
     }
   ],
-  tags: ['rrb station master', 'railway bharti 2026', 'rrb recruitment', 'station master jobs', 'govt job 2026'],
+  tags: ['#RRBStationMaster', '#RailwayBharti2026', '#RRBRecruitment', '#NTPCStationMaster', '#RailwayJobs2026', '#RRBNotificationPDF', '#SarkariResult2026', '#CentralGovtJobs', '#RailwayExam'],
   status: 'active',
   isHot: true,
   isNew: true,
   updatedAt: '21 अक्टूबर 2026',
   createdAt: '2026-10-21'
+};
+
+export const generateQuickViralTags = (title: string, titleHi: string, category: CategoryType, org: BoardType): string[] => {
+  const tags: string[] = ['#RajasthanVacancy2026', '#SarkariResult2026', '#GovtJobsAlert', '#SarkariBharti'];
+  const t = (title + ' ' + titleHi).toLowerCase();
+  
+  if (t.includes('cet 12th') || t.includes('सीनियर सेकेंडरी') || t.includes('senior secondary')) {
+    tags.push('#CET12thLevel', '#RajasthanCET2026', '#CETAdmitCard', '#RSMSSBCET');
+  } else if (t.includes('cet grad') || t.includes('स्नातक स्तर')) {
+    tags.push('#CETGraduateLevel', '#RajasthanCETResult', '#RSMSSBCETGrad', '#CETResult2026');
+  } else if (t.includes('pashu parichar') || t.includes('पशु परिचर')) {
+    tags.push('#PashuParicharResult', '#AnimalAttendant', '#RSMSSBPashuParichar', '#PashuParicharCutoff');
+  } else if (t.includes('patwari') || t.includes('पटवारी')) {
+    tags.push('#RajasthanPatwari', '#PatwariSyllabus', '#PatwariBharti2026', '#RSMSSBPatwari');
+  } else if (t.includes('police') || t.includes('पुलिस')) {
+    tags.push('#RajasthanPolice', '#PoliceAnswerKey', '#ConstableBharti2026', '#PoliceResult');
+  } else if (t.includes('2nd grade') || t.includes('rpsc') || t.includes('सेकंड ग्रेड')) {
+    tags.push('#RPSC2ndGrade', '#RPSCAdmitCard', '#RPSCExam2026', '#RPSCBharti');
+  } else if (t.includes('ugc net') || t.includes('यूजीसी नेट')) {
+    tags.push('#UGCNET2026', '#UGCNETAdmitCard', '#NTAUGCNET', '#UGCNETExamDate');
+  } else if (t.includes('vanpal') || t.includes('forester') || t.includes('वनपाल')) {
+    tags.push('#RSMSSBVanpal', '#VanpalExamDate', '#ForesterBharti', '#RSMSSBVanguard');
+  } else if (t.includes('chunav') || t.includes('panchayat') || t.includes('चुनाव') || t.includes('पंचायत')) {
+    tags.push('#GramPanchayatChunav', '#RajasthanElection', '#PanchayatNews', '#ChunavNotification');
+  } else if (t.includes('apprentice') || t.includes('rrc') || t.includes('railway') || t.includes('अप्रेंटिस')) {
+    tags.push('#RailwayApprentice', '#RRCNWR', '#RailwayRecruitment2026', '#ApprenticeOnlineForm');
+  } else if (t.includes('tablet') || t.includes('free') || t.includes('टैबलेट')) {
+    tags.push('#FreeTabletYojana', '#RajasthanTabletScheme', '#MedhaviChhatra', '#SarkariYojana');
+  } else if (t.includes('ayushman') || t.includes('mukhyamantri') || t.includes('आयुष्मान')) {
+    tags.push('#AyushmanYojana', '#MukhyamantriAyushman', '#FreeHealthInsurance', '#RajasthanYojana');
+  } else if (t.includes('scooty') || t.includes('kali bai') || t.includes('स्कूटी')) {
+    tags.push('#KaliBaiScootyYojana', '#FreeScootyScheme', '#ScootyYojana2026', '#RajasthanChhatravriti');
+  } else if (t.includes('ras') || t.includes('si') || t.includes('आरएएस') || t.includes('सब इंस्पेक्टर')) {
+    tags.push('#RPSCRAS', '#RajasthanSI', '#SyllabusPDF', '#ExamPattern2026');
+  }
+
+  if (category === 'admit_card') tags.push('#AdmitCardDownload', '#HallTicket2026');
+  if (category === 'result') tags.push('#ResultDeclared', '#CutoffMarks2026');
+  if (category === 'answer_key') tags.push('#OfficialAnswerKey', '#AnswerKeyDownload');
+  if (category === 'syllabus') tags.push('#ExamPattern', '#SyllabusDownload');
+  if (category === 'scheme') tags.push('#SarkariYojana', '#SchemeOnlineForm');
+  if (category === 'news') tags.push('#SarkariNews', '#LatestJobNotice');
+
+  return Array.from(new Set(tags));
 };
 
 const createQuickVacancy = (
@@ -1481,7 +1525,7 @@ const createQuickVacancy = (
   jobLocation: 'सम्पूर्ण राजस्थान',
   selectionProcess: ['Written Examination', 'Document Verification'],
   selectionProcessHi: ['लिखित परीक्षा', 'दस्तावेज सत्यापन'],
-  tags: ['rajasthan vacancy', 'sarkari job 2026'],
+  tags: overrides.tags || generateQuickViralTags(title, titleHi, category, organization),
   officialLinks: {
     officialWebsiteUrl: 'https://rajasthan.gov.in',
     applyOnlineUrl: 'https://sso.rajasthan.gov.in',
@@ -1871,7 +1915,7 @@ export const PM_VIKSIT_BHARAT_ROJGAR_YOJANA_VACANCY: VacancyItem = {
     notificationPdfUrl: 'https://labour.gov.in',
     officialWebsiteUrl: 'https://www.ncs.gov.in'
   },
-  tags: ['सरकारी योजना', 'PM VBRY 2026', 'Sarkari Yojana', 'Central Govt'],
+  tags: ['#PMViksitBharatRojgarYojana', '#PMVBRY2026', '#PradhanMantriYojana', '#SarkariYojana2026', '#YouthEmployment', '#RojgarYojana', '#CentralGovtScheme', '#SarkariResult2026'],
   handwrittenNotes: {
     headingHi: '✍️ योजना विशेषज्ञ शिक्षक नोट व दस्तावेज चेकलिस्ट (PM VBRY 2026)',
     subheadingHi: 'पीएम विकसित भारत रोजगार योजना हेतु हमारे विशेषज्ञों की प्रामाणिक सलाह',
@@ -2047,7 +2091,7 @@ export const RAILWAY_GROUP_D_2026_VACANCY: VacancyItem = {
       payLevel: 'Level-1 (₹18,000 - ₹56,900)'
     }
   ],
-  tags: ['Railway Group D', 'RRB 2026', 'रेलवे भर्ती', '10th Pass Job', 'Central Govt'],
+  tags: ['#RailwayGroupD', '#RRBGroupD2026', '#10thPassGovtJob', '#RailwayBharti2026', '#RRBNotification', '#RailwayGroupDOnlineForm', '#SarkariResult2026', '#IndianRailways', '#CentralGovtJobs'],
   status: 'active',
   isHot: true,
   isTrending: true,
@@ -2200,7 +2244,7 @@ export const INDIAN_AIR_FORCE_HINDI_TYPIST_2026_VACANCY: VacancyItem = {
       aHi: 'आवेदन पत्र भरकर इस पते पर भेजें: The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011.'
     }
   ],
-  tags: ['Indian Air Force', 'Hindi Typist', '12th Pass Job', 'वायु सेना भर्ती', 'Central Govt Jobs', 'Offline Form'],
+  tags: ['#IndianAirForceRecruitment', '#IAFHindiTypist', '#12thPassJob', '#AirForceGroupC', '#DefenceJobs2026', '#OfflineForm', '#SarkariJobAlert', '#AirForceBharti2026', '#SarkariResult2026'],
   status: 'active',
   isHot: true,
   isNew: true,
@@ -2385,7 +2429,7 @@ export const RMS_DHOLPUR_2026_VACANCY: VacancyItem = {
       aHi: 'आधिकारिक नोटिफिकेशन के अनुसार अभ्यर्थियों की अधिकतम आयु 40 वर्ष से अधिक नहीं होनी चाहिए।'
     }
   ],
-  tags: ['Rashtriya Military School Dholpur', 'RMS Dholpur Teacher', 'PGT English', 'TGT SST', 'School Counsellor', 'Teacher Recruitment 2026', 'Defence School Jobs', 'Dholpur Jobs'],
+  tags: ['#RMSDholpur', '#RashtriyaMilitarySchool', '#DholpurTeacherBharti', '#PGTEnglish', '#TGTSST', '#DefenceSchoolJobs', '#RajasthanJobs2026', '#SarkariNaukri', '#RajasthanVacancy2026'],
   status: 'active',
   isHot: true,
   isNew: true,
@@ -2536,7 +2580,7 @@ export const UPESSC_TGT_2026_VACANCY: VacancyItem = {
       aHi: 'अभ्यर्थी के पास संबंधित विषय में स्नातक (Graduation) तथा B.Ed डिग्री होना अनिवार्य है।'
     }
   ],
-  tags: ['UP TGT 2026', 'UPESSC', 'Uttar Pradesh Teacher Jobs', 'TGT Recruitment', 'UP Govt Jobs', 'Online Form'],
+  tags: ['#UPTGT2026', '#UPESSC', '#UPTeacherRecruitment', '#TGTOnlineForm', '#UttarPradeshGovtJobs', '#SarkariResult2026', '#UPTGTNotification', '#TeacherBharti2026'],
   status: 'active',
   isHot: true,
   isNew: true,
@@ -2691,7 +2735,7 @@ export const PM_INTERNSHIP_SCHEME_2026_VACANCY: VacancyItem = {
       aHi: 'अभ्यर्थी की आयु 21 से 24 वर्ष के बीच होनी चाहिए तथा 10वीं, 12वीं, ITI, डिप्लोमा या स्नातक पास होना अनिवार्य है।'
     }
   ],
-  tags: ['PM Internship Scheme 2026', 'PMIS MCA', 'pminternship mca gov in', 'PM Internship Login', 'Sarkari Yojana 2026', 'Central Govt Internship', 'PM Internship Stipend'],
+  tags: ['#PMInternshipScheme2026', '#PMISPortal', '#pminternship.mca.gov.in', '#CentralGovtInternship', '#PMInternshipStipend', '#SarkariYojana2026', '#YouthSkillDevelopment', '#PMInternshipLogin'],
   status: 'active',
   createdAt: '2026-10-27',
   updatedAt: '27 अक्टूबर 2026'
@@ -2816,7 +2860,7 @@ export const NTA_EXAM_CALENDAR_2026_27_VACANCY: VacancyItem = {
       aHi: 'आप NTA की अधिकृत वेबसाइट nta.ac.in तथा हमारे पोर्टल के डायरेक्ट लिंक से परीक्षा कैलेंडर पीडीएफ डाउनलोड कर सकते हैं।'
     }
   ],
-  tags: ['NTA Exam Calendar 2026-27', 'NTA Exam Dates 2027', 'JEE Main 2027 Exam Date', 'NEET UG 2027 Date', 'CUET UG 2027', 'UGC NET 2027 Schedule', 'Sarkari News'],
+  tags: ['#NTAExamCalendar2027', '#JEEMain2027ExamDate', '#NEETUG2027Date', '#CUETUG2027', '#UGCNET2027', '#NTAOfficialNotice', '#ExamDatesAlert', '#SarkariNews2026', '#SarkariResult2026'],
   status: 'active',
   createdAt: '2026-10-27',
   updatedAt: '27 अक्टूबर 2026'
@@ -2833,7 +2877,7 @@ export const CTET_2026_EXAM_CENTER_VACANCY: VacancyItem = {
   departmentHi: 'केंद्रीय माध्यमिक शिक्षा बोर्ड (CBSE दिल्ली)',
   advtNo: 'F. No. CBSE/CTET/2026',
   category: 'news',
-  tags: ['CTET 2026', 'CBSE Public Notice', '12-13 December 2026', 'Teacher Eligibility Test', 'Admit Card'],
+  tags: ['#CTET2026', '#CTETAdmitCard', '#CTETExamCenter', '#CBSECTET', '#CTETNotification', '#TeacherEligibilityTest', '#SarkariResult2026', '#CTETLatestNews', '#RajasthanVacancy2026'],
   isTrending: true,
   isHighDemand: true,
   isHot: true,
@@ -2947,7 +2991,7 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
   departmentHi: 'केन्द्रीय विद्यालय संगठन (KVS)',
   advtNo: 'KVS/Samvida-Sathi/2026-27',
   category: 'latest_job',
-  tags: ['KVS Samvida Sathi', 'Kendriya Vidyalaya', 'Contractual Teacher', 'PGT', 'TGT', 'PRT', 'Rajasthan KVS'],
+  tags: ['#KVSSamvidaSathi', '#KVSVacancy2026', '#KendriyaVidyalayaBharti', '#KVSContractualTeacher', '#KVSPRT', '#KVSTGT', '#KVSPGT', '#RajasthanVacancy2026', '#SarkariJobAlert', '#SarkariResult2026', '#TeacherRecruitment2026'],
   isTrending: true,
   isHighDemand: true,
   isHot: true,

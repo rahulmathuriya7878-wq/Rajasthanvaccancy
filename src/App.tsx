@@ -776,6 +776,11 @@ export default function App() {
               setSelectedCategory(cat as any);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onSearchKeyword={(keyword) => {
+              setSelectedVacancy(null);
+              setSearchQuery(keyword.replace(/^#/, ''));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         ) : selectedCategory !== 'ALL' ? (
           /* Category Archive View matching authentic rajasthanvacancy.com category layout */

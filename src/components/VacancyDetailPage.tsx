@@ -21,7 +21,10 @@ import {
   X,
   Home,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Tag,
+  Flame,
+  Hash
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
@@ -43,6 +46,7 @@ interface VacancyDetailPageProps {
   isAlertSet?: boolean;
   onToggleAlertMe?: (id: string) => void;
   onSelectCategory?: (category: string) => void;
+  onSearchKeyword?: (keyword: string) => void;
 }
 
 type SarkariPost = VacancyItem;
@@ -342,6 +346,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   isAlertSet = false,
   onToggleAlertMe,
   onSelectCategory,
+  onSearchKeyword,
 }) => {
   const [editablePost, setEditablePost] = useState<VacancyItem>(() => normalizePost(vacancy) as VacancyItem);
   const currentVacancy = editablePost;
@@ -354,6 +359,55 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const [pdfUploadTargetIndex, setPdfUploadTargetIndex] = useState<number | null>(null);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
   const [alertFeedback, setAlertFeedback] = useState<string>('');
+  const [newTagInput, setNewTagInput] = useState<string>('');
+
+  const displayTags = (editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0)
+    ? editablePost.tags
+    : (vacancy.tags && Array.isArray(vacancy.tags) && vacancy.tags.length > 0)
+      ? vacancy.tags
+      : ['#RajasthanVacancy2026', '#SarkariResult2026', '#GovtJobsAlert', '#SarkariBharti'];
+
+  const handleAddTag = () => {
+    const trimmed = newTagInput.trim();
+    if (!trimmed) return;
+    const formatted = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+    if (!displayTags.includes(formatted)) {
+      const updated = [...displayTags, formatted];
+      const updatedPost = { ...editablePost, tags: updated };
+      setEditablePost(updatedPost);
+      setHasUnsavedChanges(true);
+      if (onUpdateVacancy) onUpdateVacancy(updatedPost);
+      setAlertFeedback(`✅ नया टैग "${formatted}" सफलतापूर्वक जोड़ा गया!`);
+    }
+    setNewTagInput('');
+  };
+
+  const handleRemoveTag = (index: number) => {
+    const updated = displayTags.filter((_, idx) => idx !== index);
+    const updatedPost = { ...editablePost, tags: updated };
+    setEditablePost(updatedPost);
+    setHasUnsavedChanges(true);
+    if (onUpdateVacancy) onUpdateVacancy(updatedPost);
+    setAlertFeedback('❌ टैग हटा दिया गया।');
+  };
+
+  const handleTagClick = (tag: string) => {
+    const clean = tag.replace(/^#/, '');
+    if (onSearchKeyword) {
+      onSearchKeyword(clean);
+      return;
+    }
+    const matching = allVacancies.find(v => v.id !== vacancy.id && (
+      (v.tags && v.tags.some(t => t.toLowerCase().includes(clean.toLowerCase()))) ||
+      v.title.toLowerCase().includes(clean.toLowerCase()) ||
+      (v.titleHi && v.titleHi.toLowerCase().includes(clean.toLowerCase()))
+    ));
+    if (matching) {
+      onSelectOtherVacancy(matching);
+    } else if (onBack) {
+      onBack();
+    }
+  };
 
   useEffect(() => {
     setEditablePost(normalizePost(vacancy));
@@ -3317,10 +3371,96 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 })}
               </div>
 
-              {/* Entry Footer Meta: Categories & Post Navigation */}
+              {/* Trending Viral Tags / SEO Related Searches Card - Hidden for normal user, accessible only to admin */}
+              {isAdmin ? (
+                <section className="bg-gradient-to-r from-slate-50 via-blue-50/40 to-slate-50 rounded-xl p-4 sm:p-5 border border-blue-200/80 my-6 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-blue-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0">
+                        <Flame className="w-4 h-4 fill-rose-600 text-rose-600 animate-bounce" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                          <span>{isHi ? 'वायरल टैग्स (Admin View)' : 'Viral Tags (Admin View)'}</span>
+                          <span className="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            {isHi ? 'केवल एडमिन' : 'Admin Only'}
+                          </span>
+                        </h3>
+                        <p className="text-[11px] text-slate-500">
+                          {isHi ? 'यह सेक्शन सामान्य यूजर्स के लिए छिपा हुआ है, केवल एडमिन मोड में दिखाई देता है।' : 'Hidden for normal users, visible only in admin mode for SEO tag management.'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Direct Edit Mode: Admin Tag Input */}
+                    {isDirectEditMode && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <input
+                          type="text"
+                          value={newTagInput}
+                          onChange={(e) => setNewTagInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddTag();
+                            }
+                          }}
+                          placeholder="नया वायरल टैग लिखें (उदा. #CET2026)"
+                          className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-none focus:border-blue-500 w-44"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddTag}
+                          className="text-xs font-bold bg-[#0056b3] text-white px-3 py-1.5 rounded-md hover:bg-blue-800 transition cursor-pointer"
+                        >
+                          + जोड़ें
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Viral Tags Badges Cloud */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {displayTags.map((tag, idx) => {
+                      const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+                      return (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white hover:bg-blue-50 text-[#0056b3] border border-blue-200 hover:border-blue-400 shadow-2xs group"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleTagClick(cleanTag)}
+                            className="inline-flex items-center gap-1.5 cursor-pointer text-left focus:outline-none"
+                            title={`${cleanTag} से संबंधित अन्य भर्तियां खोजें`}
+                          >
+                            <Tag className="w-3.5 h-3.5 text-[#0056b3]/70 group-hover:text-blue-700 shrink-0" />
+                            <span className="group-hover:underline underline-offset-2">{cleanTag}</span>
+                          </button>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTag(idx)}
+                              className="ml-1 text-slate-400 hover:text-rose-600 transition p-0.5 rounded cursor-pointer"
+                              title="टैग हटाएं"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </section>
+              ) : (
+                /* Hidden for normal user, available semantically for search bots without UI footprint */
+                <div className="hidden" aria-hidden="true" data-post-tags={displayTags.join(', ')}></div>
+              )}
+
+              {/* Entry Footer Meta: Categories, Tags & Post Navigation */}
               <footer className="entry-meta border-t border-slate-200 pt-5 mt-8">
                 {/* Categories Tagging */}
-                <div className="flex items-center gap-2 mb-6 flex-wrap text-xs font-semibold">
+                <div className="flex items-center gap-2 mb-3 flex-wrap text-xs font-semibold">
                   <Folder className="w-4 h-4 text-[#0056b3]" />
                   <span className="text-slate-700 font-bold">Categories:</span>
                   <button
@@ -3350,6 +3490,30 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     {vacancy.organization || 'RSMSSB'}
                   </button>
                 </div>
+
+                {/* Tags Metadata Line - Only visible for admin, hidden for normal user */}
+                {isAdmin && (
+                  <div className="flex items-center gap-2 mb-6 flex-wrap text-xs font-semibold">
+                    <Tag className="w-4 h-4 text-[#0056b3]" />
+                    <span className="text-slate-700 font-bold">Tags (Admin):</span>
+                    {displayTags.slice(0, 6).map((tag, idx) => {
+                      const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+                      return (
+                        <React.Fragment key={idx}>
+                          <button
+                            type="button"
+                            onClick={() => handleTagClick(cleanTag)}
+                            className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
+                            style={{ color: '#0056b3' }}
+                          >
+                            {cleanTag}
+                          </button>
+                          {idx < Math.min(displayTags.length, 6) - 1 && <span className="text-slate-400">,</span>}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Post Navigation: Previous & Next Post Links */}
                 <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
@@ -3524,6 +3688,41 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* Widget 5: Trending Viral Tags Cloud Widget - Hidden for normal user, visible only for admin */}
+            {isAdmin && (
+              <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs">
+                <h2 
+                  className="font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2 flex items-center justify-between"
+                  style={{ fontSize: '11.5pt' }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Flame className="w-4 h-4 text-rose-600 fill-rose-600 animate-bounce" />
+                    <span>{isHi ? 'वायरल टैग्स (Admin View)' : 'Viral Tags (Admin View)'}</span>
+                  </div>
+                  <span className="text-[10px] font-extrabold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full border border-rose-200 uppercase">
+                    {displayTags.length} {isHi ? 'टैग्स' : 'Tags'}
+                  </span>
+                </h2>
+                <div className="flex flex-wrap gap-1.5">
+                  {displayTags.map((tag, idx) => {
+                    const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleTagClick(cleanTag)}
+                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#0056b3] border border-slate-200 hover:border-blue-300 transition cursor-pointer flex items-center gap-1 group"
+                        title={`${cleanTag} की अन्य पोस्ट देखें`}
+                      >
+                        <Tag className="w-3 h-3 text-[#0056b3]/60 group-hover:text-[#0056b3]" />
+                        <span>{cleanTag}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* In-sidebar Ad unit */}
             <AdSection 
