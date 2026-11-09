@@ -1647,12 +1647,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
               </header>
 
-              {/* Professional Canvas-Generated Featured Thumbnail Banner for Higher CTR */}
-              <div className="mb-6 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs aspect-[16/9] sm:aspect-[2.1/1] max-h-[360px] bg-slate-950">
+              {/* Professional Canvas-Generated Featured Thumbnail Banner for Higher CTR (800x600 px, 4:3) */}
+              <div className="mb-6 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs aspect-[4/3] max-h-[460px] max-w-[640px] mx-auto bg-slate-950">
                 <img
                   src={getJobFeaturedImage(editablePost)}
                   alt={postTitle}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain bg-slate-950"
                   loading="eager"
                 />
               </div>
