@@ -30,6 +30,8 @@ import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
+import { generateHindiShareText } from '../utils/shareUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -669,12 +671,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   };
 
   const handleShareBigUpdate = () => {
-    const jobTitle = editablePost.titleHi || editablePost.title || 'राजस्थान भर्ती 2026';
-    const totalPosts = editablePost.totalPosts || 'विभिन्न पद';
-    const postUrl = window.location.href;
-
-    const shareText = `🚨 *BIG भर्ती अपडेट: ${jobTitle}* 🚨\n\n🔢 *कुल पद / सीटें:* ${totalPosts}\n📄 *नोटिफिकेशन जारी तिथि:* ${notificationDateDisplay}\n💳 *आवेदन प्रारंभ तिथि:* ${applyStartDateDisplay}\n⏳ *आवेदन की अंतिम तिथि:* ${applyLastDateDisplay}\n🎟️ *एडमिट कार्ड जारी तिथि:* ${admitCardDateDisplay}\n🎯 *परीक्षा तिथि:* ${examDateDisplay}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${postUrl}`;
-
+    const shareText = generateHindiShareText(editablePost);
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
@@ -937,7 +934,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </div>
         )}
 
-        <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+        <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
           <thead>
             <tr className="bg-slate-50 border-b border-slate-300">
               {table.headers.map((h, colIdx) => (
@@ -1089,6 +1086,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', newDesc);
+
+    // Dynamic High-CTR Featured Image Thumbnail for WhatsApp, Telegram & Social Sharing
+    const featuredThumbUrl = getJobFeaturedImage(editablePost);
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage) ogImage.setAttribute('content', featuredThumbUrl);
+    let twImage = document.querySelector('meta[name="twitter:image"]');
+    if (twImage) twImage.setAttribute('content', featuredThumbUrl);
 
     // Dynamic Canonical URL injection for Google Search Indexing (Strict Self-Referential Canonical)
     const postCanonicalUrl = buildCanonicalUrl({ vacancyId: editablePost.id });
@@ -1643,6 +1647,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
               </header>
 
+              {/* Professional Canvas-Generated Featured Thumbnail Banner for Higher CTR */}
+              <div className="mb-6 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs aspect-[16/9] sm:aspect-[2.1/1] max-h-[360px] bg-slate-950">
+                <img
+                  src={getJobFeaturedImage(editablePost)}
+                  alt={postTitle}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                />
+              </div>
+
               {/* Featured Header Card - Exact Match to User Screenshot */}
               <div className="mb-6 rounded-2xl border border-emerald-900/40 bg-gradient-to-br from-[#0c594d] via-[#093f36] to-[#0d222c] p-5 sm:p-6 shadow-md text-white">
                 <div className="space-y-2">
@@ -1720,7 +1734,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 className="entry-content space-y-6 text-[#334155]"
                 style={{
                   fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                  fontSize: '11.5pt',
+                  fontSize: '10pt',
                   lineHeight: 1.75
                 }}
               >
@@ -1928,7 +1942,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
                           </div>
                           <div className="overflow-x-auto border border-slate-300 bg-white rounded-md">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                               <thead>
                                 <tr className="bg-slate-50 border-b border-slate-300">
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 w-1/3">विवरण</th>
@@ -2155,7 +2169,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   />
                                 </h3>
 
-                                <div className="text-slate-700 leading-relaxed" style={{ fontSize: '11.5pt' }}>
+                                <div className="text-slate-700 leading-relaxed" style={{ fontSize: '10pt' }}>
                                   <EditableText
                                     value={news.details}
                                     onChange={(val) => {
@@ -2223,7 +2237,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </div>
 
                           <div className="overflow-x-auto border border-slate-300 bg-white rounded-md">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                               <tbody>
                                 {datesList.map((date: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-300 last:border-b-0">
@@ -2315,7 +2329,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </div>
 
                           <div className="overflow-x-auto border border-slate-300 bg-white rounded-md">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                               <tbody>
                                 {feeList.map((fee: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-300 last:border-b-0">
@@ -2399,7 +2413,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
                           </div>
                           <div className="overflow-x-auto border border-slate-300 rounded-md bg-white">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                               <thead>
                                 <tr className="bg-slate-50 border-b border-slate-300">
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">क्रमांक</th>
@@ -2492,7 +2506,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {renderAdminSectionControls('qualification', 'शैक्षणिक योग्यता')}
                             </div>
                           </div>
-                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '11.5pt' }}>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '10pt' }}>
                             <li>
                               <EditableText
                                 value={(editablePost as any).qualificationNote1 || 'मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।'}
@@ -2559,7 +2573,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
                           </div>
 
-                          <p className="post-item mb-3 text-slate-800" style={{ fontSize: '11.5pt' }}>
+                          <p className="post-item mb-3 text-slate-800" style={{ fontSize: '10pt' }}>
                             {editablePost.organization || 'विभाग'} भर्ती के विस्तृत नोटिफिकेशन में सामान्य आयु सीमा{' '}
                             <strong>
                               <EditableText
@@ -2604,7 +2618,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </p>
 
                           <div className="overflow-x-auto border border-slate-300 rounded-md bg-white">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                               <thead>
                                 <tr className="bg-slate-50 border-b border-slate-300">
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 w-1/2 text-center">विवरण</th>
@@ -2711,10 +2725,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {renderAdminSectionControls('selection_process', 'चयन प्रक्रिया')}
                             </div>
                           </div>
-                          <p className="post-item mb-2" style={{ fontSize: '11.5pt' }}>
+                          <p className="post-item mb-2" style={{ fontSize: '10pt' }}>
                             इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:
                           </p>
-                          <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '11.5pt' }}>
+                          <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '10pt' }}>
                             {stepsList.map((step, idx) => (
                               <li key={idx}>
                                 <EditableText
@@ -2771,10 +2785,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
                           </div>
                           <div className="p-4 rounded-md border border-slate-300 bg-white space-y-2.5">
-                            <p className="post-item text-slate-800" style={{ fontSize: '11.5pt' }}>
+                            <p className="post-item text-slate-800" style={{ fontSize: '10pt' }}>
                               अभ्यर्थी पूर्ण रूप से भरे हुए ऑफलाइन आवेदन फॉर्म को सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ नीचे दिए गए आधिकारिक पते पर पंजीकृत डाक (Registered Post) अथवा स्पीड पोस्ट (Speed Post) द्वारा भेजें:
                             </p>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed" style={{ fontSize: '11.5pt' }}>
+                            <div className="p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed" style={{ fontSize: '10pt' }}>
                               <p className="font-mono text-slate-900 select-all">
                                 <EditableText
                                   value={editablePost.postalAddressHi || editablePost.postalAddress || 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011'}
@@ -2783,7 +2797,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 />
                               </p>
                             </div>
-                            <div className="text-slate-700 space-y-1" style={{ fontSize: '11.5pt' }}>
+                            <div className="text-slate-700 space-y-1" style={{ fontSize: '10pt' }}>
                               <p>
                                 <strong>लिफाफे के ऊपर क्या लिखें (Envelope Superscription):</strong>
                               </p>
@@ -2829,10 +2843,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {renderAdminSectionControls('documents', 'आवश्यक दस्तावेज')}
                             </div>
                           </div>
-                          <p className="post-item mb-2" style={{ fontSize: '11.5pt' }}>
+                          <p className="post-item mb-2" style={{ fontSize: '10pt' }}>
                             ऑनलाइन फॉर्म भरने से पूर्व अभ्यर्थी पद की अधिकतम योग्यता अनुसार निम्नलिखित दस्तावेज तैयार रखें:
                           </p>
-                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '11.5pt' }}>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '10pt' }}>
                             {documentsList.map((doc, i) => (
                               <li key={i} className="group">
                                 {isDirectEditMode ? (
@@ -2880,7 +2894,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                           {!isFlexCategory && (
                             <div className="overflow-x-auto border border-slate-300 rounded-md bg-white">
-                              <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                              <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                                 <thead>
                                   <tr className="bg-slate-50 border-b border-slate-300">
                                     <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">दस्तावेज</th>
@@ -2934,7 +2948,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {renderAdminSectionControls('how_to_apply', 'आवेदन कैसे करें')}
                             </div>
                           </div>
-                          <ol className="list-decimal pl-5 space-y-2 text-slate-700" style={{ fontSize: '11.5pt' }}>
+                          <ol className="list-decimal pl-5 space-y-2 text-slate-700" style={{ fontSize: '10pt' }}>
                             {howToApplySteps.map((step, idx) => (
                               <li key={idx} className="group">
                                 {isDirectEditMode ? (
@@ -3032,7 +3046,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </div>
 
                           <div className="overflow-x-auto border border-slate-300 bg-white rounded-md">
-                            <table className="w-full border-collapse text-left" style={{ fontSize: '11.5pt' }}>
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '10pt' }}>
                                <tbody>
                                 <tr className="border-b border-slate-300">
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
@@ -3270,7 +3284,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   />
                                 </h3>
                                 <div className="text-slate-700 text-xs sm:text-sm pl-4 border-l-2 border-slate-300 mt-2">
-                                  <p className="post-item" style={{ fontSize: '11.5pt' }}>
+                                  <p className="post-item" style={{ fontSize: '10pt' }}>
                                     <EditableText
                                       value={isHi ? (faq.aHi || faq.a) : faq.a}
                                       onChange={(val) => {

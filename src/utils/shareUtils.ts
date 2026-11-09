@@ -1,5 +1,6 @@
 import { VacancyItem } from '../types';
 import { buildCanonicalUrl } from './seoCanonical';
+import { resolveJobDates } from './dateUtils';
 
 /**
  * Format date string into Hindi readable date e.g. "27 अक्टूबर 2026" or "25 नवंबर 2026"
@@ -28,82 +29,35 @@ export function formatHindiDateString(dateStr?: string): string {
  * Generate comprehensive Hindi share text for any vacancy / yojana / result / admit card
  * formatted with WhatsApp friendly bolding and emojis.
  * 
- * Format:
- * 🔥 *Bharti ka naam ka numbers pado par notification jaary aavedan kab se kab tak*
- * 👇👇
- * Post link
+ * Standard Format across all posts:
+ * 🚨 *BIG अपडेट* 🚨
+ * 
+ * 📋 *भर्ती का नाम:* [भर्ती का नाम]
+ * 🔢 *कुल पद:* [कुल पद]
+ * 💳 *आवेदन की प्रारंभ तिथि:* [तारीख]
+ * ⏳ *आवेदन की अंतिम तिथि:* [तारीख]
+ * 
+ * 👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*
+ * https://rajasthanvaccancy.vercel.app/?vacancy=[post-slug]
  */
 export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
   const cleanId = (item.id || '').replace(/^\//, '').replace(/\/$/, '');
-  const canonicalUrl = buildCanonicalUrl({ vacancyId: cleanId });
-  const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app') 
-    ? customUrl 
-    : canonicalUrl;
+  const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app')
+    ? customUrl
+    : `https://rajasthanvaccancy.vercel.app/?vacancy=${cleanId}`;
 
-  const postTitle = (item.shortTitleHi || item.postNameHi || item.titleHi || item.title)
+  const postTitle = (item.titleHi || item.title || item.shortTitleHi || item.postNameHi || 'सरकारी भर्ती')
     .replace(/:\s*Notification Released.*$/i, '')
     .trim();
 
-  // Total Posts
-  let postsText = '1';
-  if (item.totalPosts) {
-    const raw = String(item.totalPosts);
-    const match = raw.match(/\d[\d,]*/);
-    postsText = match ? match[0] : raw;
-  }
+  const totalPosts = item.totalPosts || 'विभिन्न पद';
 
-  // Qualification
-  let qual = '12th Pass';
-  if (Array.isArray(item.qualification) && item.qualification.length > 0) {
-    if (item.qualification.includes('12th')) {
-      qual = '12th Pass';
-    } else if (item.qualification.includes('Graduate')) {
-      qual = 'Graduate Pass';
-    } else if (item.qualification.includes('10th')) {
-      qual = '10th Pass';
-    } else {
-      qual = item.qualification[0];
-    }
-  } else if (item.qualificationDetailsHi) {
-    qual = item.qualificationDetailsHi.includes('12') ? '12th Pass' : item.qualificationDetailsHi.split(/[+,।]/)[0].trim();
-  }
+  // Integrated date resolution for all posts across the portal
+  const resolved = resolveJobDates(item);
+  const startDateText = resolved.applyStartDate || (item.importantDates as any)?.applyStartDate || '2026-10-25';
+  const lastDateText = resolved.applyLastDate || (item.importantDates as any)?.applyLastDate || '2026-11-09';
 
-  // Age limit
-  const minAge = item.ageLimit?.min || 18;
-  const maxAge = item.ageLimit?.max || 25;
-  const ageLimitText = `${minAge} से ${maxAge} वर्ष`;
-
-  // Application Fee
-  let feeText = '₹ 0/- (Nil)';
-  if (Array.isArray(item.applicationFee) && item.applicationFee.length > 0) {
-    const fee0 = item.applicationFee[0];
-    const amt = fee0.amount || '';
-    if (amt.includes('0') || amt.toLowerCase().includes('free') || amt.includes('निशुल्क')) {
-      feeText = '₹ 0/- (Nil)';
-    } else {
-      feeText = amt;
-    }
-  } else if (item.applicationFee?.genObc === 0 || item.applicationFee?.genObc === '0') {
-    feeText = '₹ 0/- (Nil)';
-  } else if (item.applicationFee?.genObc) {
-    feeText = `₹ ${item.applicationFee.genObc}/-`;
-  }
-
-  // Apply Last Date in DD/MM/YYYY or readable date
-  let lastDateText = '23/11/2026';
-  const lastRaw = item.importantDates?.applyLastDate || (Array.isArray(item.importantDates) ? item.importantDates.find((d: any) => d.label?.includes('Last') || d.label?.includes('अंतिम'))?.value : '');
-  if (lastRaw) {
-    const ymd = lastRaw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (ymd) {
-      lastDateText = `${ymd[3]}/${ymd[2]}/${ymd[1]}`;
-    } else if (lastRaw.includes('23 नवंबर') || lastRaw.includes('23 November')) {
-      lastDateText = '23/11/2026';
-    } else {
-      lastDateText = lastRaw.replace(/\s*\(.*\)/, '').trim();
-    }
-  }
-
-  return `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${postTitle}\n🔢 *कुल पद:* ${postsText}\n🎓 *योग्यता:* ${qual}\n🎂 *आयु सीमा:* ${ageLimitText}\n💳 *आवेदन शुल्क:* ${feeText}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDateText}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें*\n${shareUrl}`;
+  return `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${postTitle}\n🔢 *कुल पद:* ${totalPosts}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDateText}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDateText}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${shareUrl}`;
 }
 
 /**

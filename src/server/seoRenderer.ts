@@ -1,6 +1,7 @@
 import type { Request } from 'express';
 import { INITIAL_VACANCIES } from '../data/mockVacancies.ts';
 import { VacancyItem, CategoryType } from '../types.ts';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator.ts';
 
 const CATEGORY_NAMES_HI: Record<string, string> = {
   latest_job: 'सरकारी नौकरियां (Latest Govt Jobs)',
@@ -353,6 +354,19 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   modifiedHtml = modifiedHtml.replace(
     /<meta\s+name="twitter:description"\s+content=".*?"\s*\/?>/i,
     `<meta name="twitter:description" content="${escapeHtml(description)}" />`
+  );
+
+  const featuredThumbUrl = matchedVacancy 
+    ? getJobFeaturedImage(matchedVacancy)
+    : `${baseUrl}/og-preview.png`;
+
+  modifiedHtml = modifiedHtml.replace(
+    /<meta\s+property="og:image"\s+content=".*?"\s*\/?>/i,
+    `<meta property="og:image" content="${featuredThumbUrl}" />`
+  );
+  modifiedHtml = modifiedHtml.replace(
+    /<meta\s+name="twitter:image"\s+content=".*?"\s*\/?>/i,
+    `<meta name="twitter:image" content="${featuredThumbUrl}" />`
   );
 
   // Inject structured data before </head>

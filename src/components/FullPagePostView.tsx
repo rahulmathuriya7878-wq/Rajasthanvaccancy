@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { VacancyDetailPage } from './VacancyDetailPage';
 import { VacancyItem, LanguageMode } from '../types';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 
 /**
  * useDocumentHeadMeta
@@ -50,6 +51,24 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     // Canonical URL via unified SEO utility
     const postCanonicalUrl = buildCanonicalUrl({ vacancyId: vacancy.id });
     applyCanonicalTag(postCanonicalUrl);
+
+    // High-CTR Canvas Thumbnail for Social Sharing Preview (WhatsApp, Telegram, Twitter)
+    const featuredThumbUrl = getJobFeaturedImage(vacancy);
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    if (!ogImage) {
+      ogImage = document.createElement('meta');
+      ogImage.setAttribute('property', 'og:image');
+      document.head.appendChild(ogImage);
+    }
+    ogImage.setAttribute('content', featuredThumbUrl);
+
+    let twImage = document.querySelector('meta[name="twitter:image"]');
+    if (!twImage) {
+      twImage = document.createElement('meta');
+      twImage.setAttribute('name', 'twitter:image');
+      document.head.appendChild(twImage);
+    }
+    twImage.setAttribute('content', featuredThumbUrl);
 
     // Meta keywords with all viral tags for search crawlers (hidden from UI)
     let metaKeywords = document.querySelector('meta[name="keywords"]');

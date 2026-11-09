@@ -48,6 +48,7 @@ import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
+import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { AdvancedFilterBar } from './components/AdvancedFilterBar';
@@ -63,7 +64,7 @@ import {
 
 import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v27';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v28';
 const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
 const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
@@ -364,6 +365,13 @@ export default function App() {
         const twDesc = document.querySelector('meta[name="twitter:description"]');
         if (twDesc) twDesc.setAttribute('content', descText);
 
+        // High-CTR Canvas Thumbnail for Social Previews (WhatsApp, Telegram, Twitter)
+        const featuredThumb = getJobFeaturedImage(selectedVacancy);
+        let ogImg = document.querySelector('meta[property="og:image"]');
+        if (ogImg) ogImg.setAttribute('content', featuredThumb);
+        let twImg = document.querySelector('meta[name="twitter:image"]');
+        if (twImg) twImg.setAttribute('content', featuredThumb);
+
         // Dynamic Schema.org JobPosting or Article JSON-LD for rich Googlebot indexing
         let jobScript = document.getElementById('dynamic-job-schema-ld') as HTMLScriptElement | null;
         if (!jobScript) {
@@ -550,14 +558,12 @@ export default function App() {
 
   const handleShareVacancy = (item: VacancyItem) => {
     const titleHi = item.titleHi || item.title;
-    const shareUrl = `${window.location.origin}${window.location.pathname}?vacancy=${item.id}`;
-    const text = generateHindiShareText(item, shareUrl);
+    const text = generateHindiShareText(item);
 
     if (navigator.share) {
       navigator.share({
         title: titleHi,
         text: text,
-        url: shareUrl,
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);

@@ -18,6 +18,7 @@ import {
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate } from '../utils/dateUtils';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 
 interface CategoryArchiveViewProps {
   categoryKey: string;
@@ -172,13 +173,26 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                           </div>
                         </div>
                       )}
-                      <h2 
-                        onClick={() => onSelectVacancy(item)}
-                        className="entry-title text-xl sm:text-2xl font-bold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
-                        style={{ color: '#0284c7', textDecoration: 'underline' }}
-                      >
-                        <span>{title}</span>
-                      </h2>
+                    {/* Professional Canvas-Generated Featured Thumbnail for Higher CTR */}
+                    <div 
+                      onClick={() => onSelectVacancy(item)}
+                      className="mb-3.5 overflow-hidden rounded-lg border border-slate-200/90 shadow-2xs aspect-[16/9] sm:aspect-[2.2/1] max-h-[220px] bg-slate-950 cursor-pointer group"
+                    >
+                      <img 
+                        src={getJobFeaturedImage(item)} 
+                        alt={title} 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    <h2 
+                      onClick={() => onSelectVacancy(item)}
+                      className="entry-title text-xl sm:text-2xl font-bold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
+                      style={{ color: '#0284c7', textDecoration: 'underline' }}
+                    >
+                      <span>{title}</span>
+                    </h2>
                       <div className="entry-meta text-xs text-[#575760] flex items-center gap-2 flex-wrap">
                         <span className="posted-on">
                           <time className="entry-date published">{date}</time>

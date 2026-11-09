@@ -15,7 +15,7 @@
   body {
     font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
-    font-size: 11.5pt;
+    font-size: 10pt;
     line-height: 1.75;
     color: #0f172a;
     background-color: #ffffff;
@@ -24,7 +24,7 @@
 
   /* Headlight / Headline Typography - Mangal 11.5pt */
   h1, h2, h3, h4, h5, h6,
-  .headlight, .headline, .section-headline, .box-header {
+  .headlight, .headline, .section-headline, .box-header, .heading-title {
     font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
     font-size: 11.5pt !important;
     color: #0f172a;
@@ -43,17 +43,16 @@
   line-height: 1.4;
 }
 
-/* Post Typography - Mangal 11.5pt */
+/* Post Content & Body Typography - Mangal 10pt */
 .post-content,
 .post-body,
 .post-item,
-.post-title,
 .post-text,
 .post-article,
 .entry-content,
 article.post-content {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 11.5pt !important;
+  font-size: 10pt !important;
   line-height: 1.75;
   color: #334155;
 }
@@ -71,9 +70,10 @@ article.post-content {
 .entry-content span,
 .entry-content div {
   font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 11.5pt;
+  font-size: 10pt;
 }
 
+/* Headings inside post content remain 11.5pt */
 .post-content h1,
 .post-content h2,
 .post-content h3,
@@ -105,7 +105,7 @@ article.post-content {
 
 .post-content th,
 .entry-content th {
-  font-size: 11.5pt !important;
+  font-size: 10pt !important;
   font-weight: 700;
   color: #1e293b;
   background-color: #ffffff;
@@ -113,7 +113,7 @@ article.post-content {
 
 .post-content td,
 .entry-content td {
-  font-size: 11.5pt !important;
+  font-size: 10pt !important;
   color: #334155;
   background-color: #ffffff;
 }

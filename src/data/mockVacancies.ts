@@ -1,5 +1,195 @@
 import { VacancyItem, CategoryType, BoardType } from '../types';
 
+export const INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY: VacancyItem = {
+  id: 'indian-air-force-recruitment-afcat-01-2027',
+  title: 'Indian Air Force AFCAT 01/2027 Recruitment Notification Out, Apply Online for 317+ Flying & Ground Duty Officer Posts',
+  titleHi: '🔥 इंडियन एयरफोर्स AFCAT 01/2027 भर्ती का नोटिफिकेशन जारी, आवेदन 12 नवंबर से 11 दिसंबर 2026 तक',
+  shortTitle: 'IAF AFCAT 01/2027 Recruitment',
+  shortTitleHi: 'इंडियन एयरफोर्स AFCAT 01/2027 भर्ती',
+  organization: 'Central Govt',
+  department: 'Indian Air Force (IAF)',
+  departmentHi: 'भारतीय वायु सेना (IAF)',
+  advtNo: 'AFCAT 01/2027 / NCC SPECIAL ENTRY',
+  category: 'latest_job',
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 8940,
+  savesCount: 2680,
+  totalPosts: '317+ पद',
+  postName: 'Air Force Common Admission Test (AFCAT 01/2027) - Commissioned Officers',
+  postNameHi: 'एयर फोर्स कॉमन एडमिशन टेस्ट (AFCAT 01/2027) - फ्लाइंग, टेक्निकल एवं नॉन-टेक्निकल ऑफिसर',
+  qualification: ['Graduate', 'Engineering'],
+  qualificationDetails: 'Graduation in any discipline with min 60% marks and 50% in Math & Physics at 10+2, or B.E / B.Tech.',
+  qualificationDetailsHi: '12वीं में भौतिकी एवं गणित में न्यूनतम 50% अंकों के साथ किसी भी विषय में स्नातक (Graduation) में न्यूनतम 60% अंक, अथवा बी.ई./बी.टेक (इंजीनियरिंग शाखा हेतु)।',
+  briefSummary: 'Indian Air Force has released the official notification for AFCAT 01/2027 batch. Online application window opens from 12 November 2026 to 11 December 2026 for 317+ Flying Branch and Ground Duty (Technical & Non-Technical) officer posts.',
+  briefSummaryHi: '✍️ भारतीय वायु सेना (Indian Air Force) द्वारा राजपत्रित अधिकारी (Commissioned Officer) पदों हेतु AFCAT 01/2027 बैच भर्ती का विस्तृत आधिकारिक नोटिफिकेशन जारी कर दिया गया है। फ्लाइंग ब्रांच एवं ग्राउंड ड्यूटी (टेक्निकल व नॉन-टेक्निकल) के 317+ पदों पर पुरुष एवं महिला अभ्यर्थी ऑनलाइन आवेदन कर सकते हैं। ऑनलाइन आवेदन 12 नवंबर 2026 से प्रारंभ होकर 11 दिसंबर 2026 तक चलेंगे। वेतनमान पे मैट्रिक्स लेवल-10 (₹56,100 - ₹1,77,500 + मिलिट्री सर्विस पे ₹15,500/-) रहेगा। संपूर्ण विवरण नीचे देखें।',
+  description: 'Detailed recruitment guide for Indian Air Force AFCAT 01/2027 batch notification, eligibility criteria, exam pattern, syllabus, selection procedure, and direct application links.',
+  descriptionHi: 'प्रिय अभ्यर्थियों,\n\nभारतीय वायु सेना (IAF) ने फ्लाइंग ब्रांच एवं ग्राउंड ड्यूटी (तकनीकी एवं गैर-तकनीकी) शाखाओं में शॉर्ट सर्विस कमीशन (SSC) और परमानेंट कमीशन (PC) अधिकारियों के चयन हेतु एयर फोर्स कॉमन एडमिशन टेस्ट (AFCAT 01/2027) का आधिकारिक नोटिफिकेशन जारी किया है।\n\n📌 महत्वपूर्ण तिथियां (Important Dates):\n• विस्तृत नोटिफिकेशन जारी: 10 नवंबर 2026\n• ऑनलाइन आवेदन प्रारंभ तिथि: 12 नवंबर 2026\n• ऑनलाइन आवेदन की अंतिम तिथि: 11 दिसंबर 2026 (रात 11:30 बजे तक)\n• फीस भुगतान की अंतिम तिथि: 11 दिसंबर 2026\n• एडमिट कार्ड जारी: जनवरी 2027\n• लिखित परीक्षा (CBT Exam): फरवरी 2027\n\n🎯 आयु सीमा (Age Limit):\n• फ्लाइंग ब्रांच: 20 से 24 वर्ष (जन्म 02 जनवरी 2003 से 01 जनवरी 2007 के बीच)। कमर्शियल पायलट लाइसेंस धारकों को 26 वर्ष तक छूट।\n• ग्राउंड ड्यूटी (टेक्निकल / नॉन-टेक्निकल): 20 से 26 वर्ष (जन्म 02 जनवरी 2001 से 01 जनवरी 2007 के बीच)।\n\n💳 आवेदन शुल्क (Application Fee):\n• AFCAT एंट्री (सभी वर्ग के अभ्यर्थी): ₹550/- + GST\n• NCC स्पेशल एंट्री: ₹0/- (निशुल्क)\n• भुगतान मोड: ऑनलाइन (डेबिट/क्रेडिट कार्ड, नेट बैंकिंग, यूपीआई)\n\n🎖️ चयन प्रक्रिया:\n1. ऑनलाइन लिखित परीक्षा (AFCAT CBT Test - 300 अंक)\n2. एयर फोर्स सिलेक्शन बोर्ड (AFSB) साक्षात्कार एवं साइकोलॉजी टेस्ट (5 दिन)\n3. कंप्यूटराइज्ड पायलट सिलेक्शन सिस्टम (CPSS) - केवल फ्लाइंग ब्रांच हेतु\n4. विस्तृत सैन्य चिकित्सा परीक्षण (Medical Examination)\n5. ऑल इंडिया मेरिट लिस्ट एवं वायु सेना अकादमी (AFA डुंडीगल, हैदराबाद) में प्रशिक्षण।\n\n⚠️ फॉर्म भरने हेतु विशेष निर्देश:\n1. आवेदन केवल आधिकारिक वेबसाइट afcat.cdac.in के माध्यम से करें।\n2. आधार कार्ड, 10वीं/12वीं एवं स्नातक मार्कशीट की स्कैन कॉपी तैयार रखें।\n3. पासपोर्ट साइज फोटो हाल ही की (लाइट बैकग्राउंड) होनी चाहिए।',
+  jobLocation: 'All India / Air Force Academy (AFA Dundigal, Hyderabad)',
+  salary: 'Level-10 (₹56,100 – ₹1,77,500/- + MSP ₹15,500/-)',
+  salaryHi: 'पे लेवल-10 (₹56,100 से ₹1,77,500/- + मिलिट्री सर्विस पे ₹15,500/- प्रति माह)',
+  ageLimit: {
+    min: 20,
+    max: 26,
+    asOnDate: '2027-01-01',
+    relaxationNotes: 'Flying Branch: 20 to 24 years (Commercial Pilot License holders up to 26 years). Ground Duty: 20 to 26 years.',
+    relaxationNotesHi: 'फ्लाइंग ब्रांच हेतु 20 से 24 वर्ष (डीजीसीए कमर्शियल पायलट लाइसेंस धारकों को 26 वर्ष तक छूट) एवं ग्राउंड ड्यूटी (तकनीकी/गैर-तकनीकी) हेतु 20 से 26 वर्ष।'
+  },
+  applicationFee: [
+    { category: 'AFCAT Entry (सभी वर्ग के अभ्यर्थी - General / OBC / SC / ST / EWS / Female)', amount: '₹550/- + GST' },
+    { category: 'NCC Special Entry Candidates', amount: '₹0/- (निशुल्क / No Fee)' },
+    { category: 'Mode of Payment', amount: 'Online (Debit Card, Credit Card, Net Banking, UPI)' }
+  ],
+  importantDates: {
+    notificationDate: '10 नवंबर 2026',
+    applyStartDate: '2026-11-12',
+    applyLastDate: '2026-12-11',
+    feeLastDate: '2026-12-11',
+    examDate: 'फरवरी 2027 (संभावित)',
+    admitCardDate: '2027-01-25'
+  },
+  latestNews: [
+    {
+      id: 'iaf-afcat-news-1',
+      date: '10 नवंबर 2026',
+      badge: 'ऑनलाइन आवेदन 12 नवंबर',
+      headline: 'इंडियन एयरफोर्स AFCAT 01/2027 भर्ती का आधिकारिक नोटिफिकेशन जारी',
+      details: 'फ्लाइंग ब्रांच और ग्राउंड ड्यूटी (तकनीकी व गैर-तकनीकी) के 317+ पदों पर ऑनलाइन आवेदन 12 नवंबर 2026 से 11 दिसंबर 2026 तक आमंत्रित किए गए हैं।',
+      isHighlighted: true
+    },
+    {
+      id: 'iaf-afcat-news-2',
+      date: '10 नवंबर 2026',
+      badge: 'वेतनमान लेवल-10',
+      headline: 'चयनित अधिकारियों को पे मैट्रिक्स लेवल-10 व ₹15,500 MSP देय',
+      details: 'ट्रेनिंग पूर्ण होने पर फ्लाइंग ऑफिसर रैंक में ₹56,100 मूल वेतन, डीए व उड़ान भत्ता सहित ₹85,000+ मासिक परिलब्धियां मिलेंगी।',
+      isHighlighted: false
+    }
+  ],
+  selectionProcess: [
+    'Online AFCAT Written Exam (100 Questions, 300 Marks - 2 Hours)',
+    'Air Force Selection Board (AFSB) 5-Day Interview & Psychological Testing',
+    'CPSS (Computerised Pilot Selection System - Only for Flying Branch)',
+    'Comprehensive Military Medical Examination',
+    'All India Merit List & Training at AFA Dundigal'
+  ],
+  selectionProcessHi: [
+    'कंप्यूटर आधारित ऑनलाइन लिखित परीक्षा (AFCAT CBT - 100 प्रश्न, 300 अंक)',
+    'एयर फोर्स सिलेक्शन बोर्ड (AFSB) 5-दिवसीय साक्षात्कार व मनोवैज्ञानिक परीक्षण',
+    'कंप्यूटराइज्ड पायलट सिलेक्शन सिस्टम (CPSS) - केवल फ्लाइंग ब्रांच के लिए',
+    'विस्तृत सैन्य चिकित्सा परीक्षण (Medical Examination)',
+    'ऑल इंडिया मेरिट सूची एवं एयर फोर्स अकादमी (AFA डुंडीगल, हैदराबाद) में प्रशिक्षण'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://afcat.cdac.in/AFCAT/',
+    notificationPdfUrl: 'https://afcat.cdac.in/AFCAT/assets/images/news/AFCAT_01_2027_Notification.pdf',
+    officialWebsiteUrl: 'https://afcat.cdac.in/'
+  },
+  postBreakdown: [
+    {
+      postName: 'Flying Branch (SSC for Men & Women)',
+      postNameHi: 'फ्लाइंग ब्रांच (शॉर्ट सर्विस कमीशन - पुरुष व महिला)',
+      categoryOrSubjectHi: 'पायलट / लड़ाकू विमान व हेलीकॉप्टर संचालन',
+      postsCount: '28+ पद',
+      qualification: 'Graduation (Min 60%) with Math & Physics in 12th OR B.E/B.Tech',
+      qualificationHi: '12वीं में भौतिकी व गणित के साथ स्नातक (न्यूनतम 60% अंक) अथवा बी.ई./बी.टेक',
+      payLevel: 'Level-10 (₹56,100 - ₹1,77,500)'
+    },
+    {
+      postName: 'Ground Duty Technical (Aeronautical Engineer Electronics & Mechanical)',
+      postNameHi: 'ग्राउंड ड्यूटी (तकनीकी) - एयरोनॉटिकल इंजीनियर इलेक्ट्रॉनिक्स व मैकेनिकल',
+      categoryOrSubjectHi: 'विमान रख-रखाव, एवियोनिक्स व सिस्टम इंजीनियरिंग',
+      postsCount: '156+ पद',
+      qualification: '4-Year Engineering Degree (B.E / B.Tech) with 60% marks',
+      qualificationHi: 'चार वर्षीय इंजीनियरिंग डिग्री (बी.ई./बी.टेक) न्यूनतम 60% अंकों के साथ',
+      payLevel: 'Level-10 (₹56,100 - ₹1,77,500)'
+    },
+    {
+      postName: 'Ground Duty Non-Technical (Admin, Logistics, Accounts, Education, Weapon Systems)',
+      postNameHi: 'ग्राउंड ड्यूटी (गैर-तकनीकी) - प्रशासन, लॉजिस्टिक्स, एकाउंट्स, एजुकेशन व वेपन सिस्टम्स',
+      categoryOrSubjectHi: 'एयर बेस प्रशासन, लॉजिस्टिक सपोर्ट व वित्त प्रबंधन',
+      postsCount: '133+ पद',
+      qualification: 'Graduation in any stream with min 60% marks (B.Com for Accounts)',
+      qualificationHi: 'किसी भी स्ट्रीम में स्नातक (न्यूनतम 60% अंक) / एकाउंट्स हेतु बी.कॉम',
+      payLevel: 'Level-10 (₹56,100 - ₹1,77,500)'
+    }
+  ],
+  directLinks: [
+    {
+      label: 'Apply Online (ऑनलाइन आवेदन फॉर्म भरें - लिंक 12 नवंबर से सक्रिय)',
+      actionText: 'Apply Online',
+      url: 'https://afcat.cdac.in/AFCAT/',
+      isPrimary: true
+    },
+    {
+      label: 'Official Notification PDF (आधिकारिक विस्तृत विज्ञापन डाउनलोड करें)',
+      actionText: 'Download PDF',
+      url: 'https://afcat.cdac.in/',
+      isPdf: true
+    },
+    {
+      label: 'IAF Official Career Portal (भारतीय वायु सेना आधिकारिक पोर्टल)',
+      actionText: 'Visit Portal',
+      url: 'https://careerindianairforce.cdac.in/'
+    },
+    {
+      label: 'Join WhatsApp Group (व्हाट्सएप ग्रुप से तुरंत जुड़ें)',
+      actionText: 'Join WhatsApp',
+      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+    },
+    {
+      label: 'Join Telegram Channel (टेलीग्राम चैनल से जुड़ें)',
+      actionText: 'Join Telegram',
+      url: 'https://t.me/newrajsthanjobs'
+    }
+  ],
+  faqs: [
+    {
+      q: 'When will Indian Air Force AFCAT 01/2027 online applications start?',
+      qHi: 'इंडियन एयरफोर्स AFCAT 01/2027 भर्ती के ऑनलाइन आवेदन कब से शुरू होंगे?',
+      a: 'Online applications will start on 12 November 2026 and the last date to apply is 11 December 2026.',
+      aHi: 'एयरफोर्स AFCAT 01/2027 के लिए ऑनलाइन आवेदन 12 नवंबर 2026 से शुरू होंगे और आवेदन की अंतिम तिथि 11 दिसंबर 2026 (रात 11:30 बजे तक) निर्धारित है।'
+    },
+    {
+      q: 'What is the application fee for AFCAT 01/2027?',
+      qHi: 'AFCAT 01/2027 भर्ती के लिए आवेदन शुल्क कितना है?',
+      a: 'The application fee is Rs 550 + GST for AFCAT entry candidates, whereas NCC Special entry is free.',
+      aHi: 'AFCAT एंट्री के तहत सभी वर्गों के पुरुष एवं महिला अभ्यर्थियों के लिए परीक्षा शुल्क ₹550/- + GST देय है, जबकि NCC स्पेशल एंट्री हेतु कोई शुल्क नहीं है।'
+    },
+    {
+      q: 'What is the age limit for AFCAT 01/2027?',
+      qHi: 'AFCAT 01/2027 के लिए आयु सीमा क्या रखी गई है?',
+      a: 'Flying branch: 20 to 24 years. Ground Duty: 20 to 26 years as of 01 January 2027.',
+      aHi: 'फ्लाइंग ब्रांच के लिए आयु सीमा 20 से 24 वर्ष तथा ग्राउंड ड्यूटी (तकनीकी एवं गैर-तकनीकी) के लिए 20 से 26 वर्ष (01 जनवरी 2027 के अनुसार) रखी गई है।'
+    },
+    {
+      q: 'How to apply for Indian Air Force AFCAT 01/2027 recruitment?',
+      qHi: 'इंडियन एयरफोर्स AFCAT 01/2027 भर्ती के लिए आवेदन कैसे करें?',
+      a: 'Candidates can apply online through the official portal afcat.cdac.in between 12 November to 11 December 2026.',
+      aHi: 'अभ्यर्थी भारतीय वायु सेना के आधिकारिक भर्ती पोर्टल afcat.cdac.in पर जाकर 12 नवंबर से 11 दिसंबर 2026 तक ऑनलाइन आवेदन फॉर्म भर सकते हैं।'
+    }
+  ],
+  tags: [
+    '#AFCAT2027',
+    '#IndianAirForceRecruitment',
+    '#AFCAT012027',
+    '#IAFRecruitment2026',
+    '#AirForceOfficerRecruitment',
+    '#AFCATOnlineForm',
+    '#DefenceJobs2026',
+    '#FlyingBranchAFCAT',
+    '#GroundDutyAFCAT',
+    '#RajasthanVacancy2026',
+    '#SarkariResult2026',
+    '#GovtJobs2026'
+  ],
+  status: 'active',
+  createdAt: '2026-11-10',
+  updatedAt: '10 नवंबर 2026'
+};
+
 export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
   id: 'jee-main-2027-session-1',
   title: 'NTA JEE Main 2027 Session 1 Registration Started: Apply Online for B.E / B.Tech / B.Arch Entrance Exam',
@@ -3132,6 +3322,7 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
 };
 
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY,
   KVS_SAMVIDA_SATHI_2026_VACANCY,
   CTET_2026_EXAM_CENTER_VACANCY,
   NTA_EXAM_CALENDAR_2026_27_VACANCY,
@@ -3176,6 +3367,15 @@ export interface ExamCalendarItem {
 }
 
 export const UPCOMING_EXAM_CALENDAR: ExamCalendarItem[] = [
+  {
+    examName: 'IAF AFCAT 01/2027 Commissioned Officers Exam',
+    examNameHi: 'इंडियन एयरफोर्स AFCAT 01/2027 प्रवेश परीक्षा',
+    board: 'Indian Air Force (IAF)',
+    posts: '317+ Flying & Ground Duty Officers',
+    examDate: 'फरवरी 2027 (आवेदन 12 नवंबर से 11 दिसंबर 2026)',
+    status: 'आवेदन 12 नवंबर से शुरू',
+    mode: 'Online (Computer Based Test - CBT)'
+  },
   {
     examName: 'NTA JEE Main 2027 Session-1 Entrance Exam',
     examNameHi: 'जेईई मेन 2027 सेशन-1 प्रवेश परीक्षा',

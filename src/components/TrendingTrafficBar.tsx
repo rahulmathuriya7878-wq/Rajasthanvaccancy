@@ -28,6 +28,7 @@ export const TrendingTrafficBar: React.FC<TrendingTrafficBarProps> = ({
   const isHi = lang === 'hi';
 
   const trendingKeywords = [
+    { label: 'एयरफोर्स AFCAT 01/2027', id: 'indian-air-force-recruitment-afcat-01-2027', isHot: true },
     { label: 'KVS संविदा साथी 2026', id: 'kvs-samvida-sathi-recruitment-2026', isHot: true },
     { label: 'CTET 2026 एग्जाम सेंटर', id: 'ctet-2026-exam-center-news', isHot: true },
     { label: 'JEE Main 2027', id: 'jee-main-2027-session-1', isHot: false },

@@ -242,6 +242,8 @@ export interface VacancyItem {
     body?: string;
   };
   seoSettings?: SeoSettings;
+  featuredImage?: string;
+  imageUrl?: string;
   updatedAt?: string;
   createdAt: string;
 }
