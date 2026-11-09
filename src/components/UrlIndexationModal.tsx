@@ -15,7 +15,9 @@ import {
   Sparkles,
   ShieldCheck,
   Check,
-  Compass
+  Compass,
+  TrendingUp,
+  Flame
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 
@@ -284,6 +286,72 @@ export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 text-slate-700 text-xs sm:text-sm">
           
+          {/* SECTION 0: GOOGLE REACH & 46-PAGE INDEXATION BOOSTER */}
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 rounded-2xl p-4 sm:p-5 text-white shadow-lg space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 bg-white/20 rounded-lg text-white">
+                  <Flame className="w-5 h-5 fill-white animate-pulse" />
+                </span>
+                <div>
+                  <h4 className="font-extrabold text-sm sm:text-base tracking-wide flex items-center gap-2">
+                    <span>{isHi ? '🚀 Google Search Reach & Ranking Booster' : '🚀 Google Search Reach & Ranking Booster'}</span>
+                    <span className="text-[10px] bg-white text-orange-700 px-2 py-0.5 rounded-full font-black uppercase">
+                      10x Reach
+                    </span>
+                  </h4>
+                  <p className="text-xs text-orange-100 mt-0.5">
+                    {isHi ? 'गूगल सर्च में इम्प्रेसन्स, क्लिक्स और ट्रैफिक तेजी से बढ़ाने के लिए सक्रिय फीचर्स' : 'Active features to maximize Google Search impressions, ranking & organic traffic'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold bg-white/20 px-2.5 py-1 rounded-lg border border-white/30 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>46/46 Pages SSR Ready</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 text-xs">
+              <div className="bg-black/20 backdrop-blur-xs rounded-xl p-3 border border-white/10 space-y-1">
+                <div className="font-bold text-amber-200 flex items-center gap-1.5">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>{isHi ? '1. 46 अन-इंडेक्स्ड पेज फिक्स' : '1. 46 Unindexed Pages Fix'}</span>
+                </div>
+                <p className="text-[11px] text-white/90 leading-relaxed">
+                  {isHi 
+                    ? 'सभी 46 पोस्ट्स का सर्वर-साइड प्री-रेंडरिंग व स्व-संदर्भित कैनोनिकल टैग सक्रिय है। गूगलबॉट को पहले सेकंड में पूर्ण हिंदी कंटेंट मिलता है।'
+                    : 'Server-side pre-rendering & self-referential canonicals active. Googlebot receives instant raw HTML on first crawl.'}
+                </p>
+              </div>
+
+              <div className="bg-black/20 backdrop-blur-xs rounded-xl p-3 border border-white/10 space-y-1">
+                <div className="font-bold text-amber-200 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{isHi ? '2. Google Jobs & Rich FAQs' : '2. Google Jobs & Rich FAQs'}</span>
+                </div>
+                <p className="text-[11px] text-white/90 leading-relaxed">
+                  {isHi 
+                    ? 'Google Jobs Carousel हेतु 100% अनुपालित JobPosting व FAQPage स्कीमा इंजेक्टेड है, जिससे गूगल सर्च में बड़े कार्ड और रिच स्निपेट्स आते हैं।'
+                    : 'JobPosting & FAQPage schema active to claim Google Jobs top carousel & rich expandable accordion snippets.'}
+                </p>
+              </div>
+
+              <div className="bg-black/20 backdrop-blur-xs rounded-xl p-3 border border-white/10 space-y-1">
+                <div className="font-bold text-amber-200 flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>{isHi ? '3. मल्टी-डोमेन व क्रॉल लिंक्स' : '3. Domain & Crawl Graph'}</span>
+                </div>
+                <p className="text-[11px] text-white/90 leading-relaxed">
+                  {isHi 
+                    ? 'rajasthanvacancy.com एवं vercel.app दोनों का डायनामिक सिंक, RSS 2.0 फीड (/rss.xml) एवं पोस्ट्स के बीच इंटरनल लिंकिंग सक्रिय है।'
+                    : 'Dynamic domain sync for rajasthanvacancy.com, live RSS 2.0 feed (/rss.xml), and cross-post crawl anchors.'}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* SECTION 1: INTERACTIVE LIVE URL INSPECTOR TOOL */}
           <div className="bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-300 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { VacancyDetailPage } from './VacancyDetailPage';
 import { VacancyItem, LanguageMode } from '../types';
+import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 
 /**
  * useDocumentHeadMeta
@@ -46,16 +47,9 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     }
     ogDesc.setAttribute('content', newDesc);
 
-    // Canonical URL
-    let canonicalLinkEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    const originalCanonicalHref = canonicalLinkEl?.getAttribute('href') || 'https://rajasthanvaccancy.vercel.app/';
-    const postCanonicalUrl = `https://rajasthanvaccancy.vercel.app/?vacancy=${vacancy.id}`;
-    if (!canonicalLinkEl) {
-      canonicalLinkEl = document.createElement('link');
-      canonicalLinkEl.rel = 'canonical';
-      document.head.appendChild(canonicalLinkEl);
-    }
-    canonicalLinkEl.setAttribute('href', postCanonicalUrl);
+    // Canonical URL via unified SEO utility
+    const postCanonicalUrl = buildCanonicalUrl({ vacancyId: vacancy.id });
+    applyCanonicalTag(postCanonicalUrl);
 
     // Meta keywords with all viral tags for search crawlers (hidden from UI)
     let metaKeywords = document.querySelector('meta[name="keywords"]');
@@ -70,16 +64,10 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
       metaKeywords.setAttribute('content', cleanKeywords);
     }
 
-    let ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) {
-      ogUrl.setAttribute('content', postCanonicalUrl);
-    }
-
     return () => {
       document.title = originalTitle;
       if (metaDesc && originalDesc) metaDesc.setAttribute('content', originalDesc);
       if (metaKeywords && originalKeywords) metaKeywords.setAttribute('content', originalKeywords);
-      if (canonicalLinkEl) canonicalLinkEl.setAttribute('href', originalCanonicalHref);
     };
   }, [vacancy, lang]);
 }

@@ -47,6 +47,7 @@ import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
+import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { AdvancedFilterBar } from './components/AdvancedFilterBar';
@@ -328,40 +329,31 @@ export default function App() {
     }
   }, []);
 
-  // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy changes
+  // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy or selectedCategory changes
   useEffect(() => {
     try {
-      const origin = 'https://rajasthanvaccancy.vercel.app';
+      const origin = getCanonicalOrigin();
       const url = new URL(window.location.href);
       const metaDescEl = document.querySelector('meta[name="description"]');
       const currentVacancyId = url.searchParams.get('vacancy');
-      let canonEl = document.querySelector('link[rel="canonical"]');
+      const isHi = lang === 'hi';
 
       if (selectedVacancy) {
-        if (currentVacancyId !== selectedVacancy.id) {
+        if (currentVacancyId !== selectedVacancy.id || url.pathname !== '/') {
+          url.pathname = '/';
           url.searchParams.set('vacancy', selectedVacancy.id);
-          window.history.pushState({ vacancyId: selectedVacancy.id }, '', url.toString());
+          url.searchParams.delete('category');
+          window.history.replaceState({ vacancyId: selectedVacancy.id }, '', url.toString());
         }
-        const titleText = `${lang === 'hi' ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
+        const titleText = `${isHi ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
         const descText = selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title;
-        const canonicalHref = `${origin}/?vacancy=${selectedVacancy.id}`;
+        const canonicalHref = buildCanonicalUrl({ vacancyId: selectedVacancy.id });
 
         document.title = titleText;
         if (metaDescEl) metaDescEl.setAttribute('content', descText);
-
-        // Dynamic Canonical Link update
-        if (canonEl) {
-          canonEl.setAttribute('href', canonicalHref);
-        } else {
-          canonEl = document.createElement('link');
-          canonEl.setAttribute('rel', 'canonical');
-          canonEl.setAttribute('href', canonicalHref);
-          document.head.appendChild(canonEl);
-        }
+        applyCanonicalTag(canonicalHref);
 
         // OpenGraph & Twitter tags
-        const ogUrl = document.querySelector('meta[property="og:url"]');
-        if (ogUrl) ogUrl.setAttribute('content', canonicalHref);
         const ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) ogTitle.setAttribute('content', titleText);
         const ogDesc = document.querySelector('meta[property="og:description"]');
@@ -404,19 +396,75 @@ export default function App() {
         };
         jobScript.textContent = JSON.stringify(jobSchema, null, 2);
 
-      } else {
+      } else if (selectedCategory !== 'ALL') {
         if (currentVacancyId) {
           url.searchParams.delete('vacancy');
-          window.history.pushState({ vacancyId: null }, '', url.toString());
+          window.history.replaceState({ vacancyId: null }, '', url.toString());
+        }
+        if (url.searchParams.get('category') !== selectedCategory || url.pathname !== '/') {
+          url.pathname = '/';
+          url.searchParams.set('category', selectedCategory);
+          window.history.replaceState({ category: selectedCategory }, '', url.toString());
+        }
+
+        const catTitles: Record<string, { hi: string; en: string }> = {
+          latest_job: { hi: 'लेटेस्ट जॉब्स 2026 - राजस्थान व केंद्र सरकारी नौकरियां', en: 'Latest Jobs 2026 - Rajasthan Govt Jobs & Recruitment' },
+          admit_card: { hi: 'एडमिट कार्ड 2026 - प्रवेश पत्र डाउनलोड करें', en: 'Admit Card 2026 - Hall Ticket & Exam City Slip' },
+          result: { hi: 'रिजल्ट 2026 - सरकारी भर्ती परिणाम एवं कट ऑफ मार्क्स', en: 'Result 2026 - Sarkari Result & Cutoff Marks' },
+          answer_key: { hi: 'उत्तर कुंजी (Answer Key) 2026 - आधिकारिक आंसर की', en: 'Answer Key 2026 - Official Question Paper & Answer Key' },
+          scheme: { hi: 'सरकारी योजनाएं 2026 - राजस्थान एवं केंद्र सरकारी योजनाएं', en: 'Sarkari Yojana 2026 - Government Schemes & Subsidy' },
+          news: { hi: 'लेटेस्ट न्यूज़ 2026 - सरकारी भर्ती व परीक्षा ताज़ा समाचार', en: 'Latest News 2026 - Sarkari Job News & Announcements' },
+          exam_date: { hi: 'परीक्षा तिथियां (Exam Dates) 2026 - एग्जाम कैलेंडर', en: 'Exam Dates 2026 - Sarkari Exam Schedule & Dates' },
+          syllabus: { hi: 'पाठ्यक्रम (Syllabus) 2026 - विस्तृत सिलेबस एवं परीक्षा पैटर्न', en: 'Syllabus 2026 - Exam Pattern & Syllabus PDF' }
+        };
+        const catInfo = catTitles[selectedCategory] || { hi: `${getSectionTitle(selectedCategory)} 2026`, en: `${getSectionTitle(selectedCategory)} 2026` };
+        const catTitle = `${isHi ? catInfo.hi : catInfo.en} - Rajasthan Vacancy`;
+        const catDesc = `सभी ${isHi ? catInfo.hi : catInfo.en} की नवीनतम सूची, ऑनलाइन आवेदन, महत्वपूर्ण तिथियां व आधिकारिक अधिसूचना पीडीएफ यहां देखें।`;
+
+        document.title = catTitle;
+        if (metaDescEl) metaDescEl.setAttribute('content', catDesc);
+
+        // Self-referential canonical for Category pages so GSC indexes each category URL
+        const canonicalHref = buildCanonicalUrl({ category: selectedCategory });
+        applyCanonicalTag(canonicalHref);
+
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', catTitle);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', catDesc);
+
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', catTitle);
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', catDesc);
+
+        const jobScript = document.getElementById('dynamic-job-schema-ld');
+        if (jobScript) jobScript.remove();
+
+      } else {
+        if (currentVacancyId || url.searchParams.has('category') || url.pathname !== '/') {
+          url.pathname = '/';
+          url.searchParams.delete('vacancy');
+          url.searchParams.delete('category');
+          window.history.replaceState({ vacancyId: null, category: null }, '', url.toString());
         }
         document.title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';
         const defaultDesc = 'Latest Rajasthan & Central Govt job alerts 2026: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Pashu Parichar, Admit Card, Answer Key & Sarkari Results.';
         if (metaDescEl) metaDescEl.setAttribute('content', defaultDesc);
 
-        const canonicalHref = `${origin}/`;
-        if (canonEl) canonEl.setAttribute('href', canonicalHref);
-        const ogUrl = document.querySelector('meta[property="og:url"]');
-        if (ogUrl) ogUrl.setAttribute('content', canonicalHref);
+        // Self-referential canonical for Home portal
+        const canonicalHref = buildCanonicalUrl({});
+        applyCanonicalTag(canonicalHref);
+
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal');
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', defaultDesc);
+
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', 'Rajasthan Vacancy 2026');
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', defaultDesc);
 
         // Clean up individual job schema on home view
         const jobScript = document.getElementById('dynamic-job-schema-ld');
@@ -426,7 +474,7 @@ export default function App() {
     } catch (e) {
       console.error('Error updating URL params and SEO titles', e);
     }
-  }, [selectedVacancy, lang]);
+  }, [selectedVacancy, selectedCategory, lang]);
 
   // Handle browser Back/Forward button
   useEffect(() => {

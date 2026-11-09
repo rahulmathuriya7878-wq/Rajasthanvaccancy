@@ -29,6 +29,7 @@ import {
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates } from '../utils/dateUtils';
+import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -1089,16 +1090,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', newDesc);
 
-    // Dynamic Canonical URL injection for Google Search Indexing
-    let canonicalLinkEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    const originalCanonicalHref = canonicalLinkEl?.getAttribute('href') || 'https://rajasthanvaccancy.vercel.app/';
-    const postCanonicalUrl = `https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`;
-    if (!canonicalLinkEl) {
-      canonicalLinkEl = document.createElement('link');
-      canonicalLinkEl.rel = 'canonical';
-      document.head.appendChild(canonicalLinkEl);
-    }
-    canonicalLinkEl.setAttribute('href', postCanonicalUrl);
+    // Dynamic Canonical URL injection for Google Search Indexing (Strict Self-Referential Canonical)
+    const postCanonicalUrl = buildCanonicalUrl({ vacancyId: editablePost.id });
+    applyCanonicalTag(postCanonicalUrl);
 
     // Dynamic Schema.org JobPosting JSON-LD
     let scriptEl = document.getElementById('vacancy-job-posting-ld') as HTMLScriptElement | null;
@@ -1134,7 +1128,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const jobPostingData = {
       "@context": "https://schema.org/",
       "@type": "JobPosting",
-      "@id": `https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}#job`,
+      "@id": `${postCanonicalUrl}#job`,
       "title": editablePost.titleHi || editablePost.title,
       "description": editablePost.briefSummaryHi || editablePost.descriptionHi || newDesc,
       "identifier": {
@@ -1165,7 +1159,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return () => {
       document.title = originalTitle;
       if (metaDesc) metaDesc.setAttribute('content', originalDesc);
-      if (canonicalLinkEl) canonicalLinkEl.setAttribute('href', originalCanonicalHref);
       const scriptToRemove = document.getElementById('vacancy-job-posting-ld');
       if (scriptToRemove) scriptToRemove.remove();
     };
@@ -3518,10 +3511,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 {/* Post Navigation: Previous & Next Post Links */}
                 <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
                   {prevPost ? (
-                    <button
-                      type="button"
-                      onClick={() => onSelectOtherVacancy(prevPost)}
-                      className="text-left p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs"
+                    <a
+                      href={`?vacancy=${prevPost.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectOtherVacancy(prevPost);
+                      }}
+                      className="text-left p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs block"
                     >
                       <span className="text-[11px] font-bold text-[#0056b3] uppercase flex items-center gap-1 group-hover:text-blue-800">
                         <ChevronLeft className="w-3.5 h-3.5 text-[#0056b3]" />
@@ -3533,14 +3529,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       >
                         {isHi ? (prevPost.titleHi || prevPost.title) : prevPost.title}
                       </p>
-                    </button>
+                    </a>
                   ) : <div />}
 
                   {nextPost ? (
-                    <button
-                      type="button"
-                      onClick={() => onSelectOtherVacancy(nextPost)}
-                      className="text-right p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs"
+                    <a
+                      href={`?vacancy=${nextPost.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectOtherVacancy(nextPost);
+                      }}
+                      className="text-right p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs block"
                     >
                       <span className="text-[11px] font-bold text-[#0056b3] uppercase flex items-center justify-end gap-1 group-hover:text-blue-800">
                         <span>Next Post</span>
@@ -3552,7 +3551,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       >
                         {isHi ? (nextPost.titleHi || nextPost.title) : nextPost.title}
                       </p>
-                    </button>
+                    </a>
                   ) : <div />}
                 </nav>
               </footer>
@@ -3594,9 +3593,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               <ul className="space-y-3 divide-y divide-slate-100">
                 {filteredRecentPosts.map((rp) => (
                   <li key={rp.id} className="pt-2.5 first:pt-0">
-                    <button
-                      type="button"
-                      onClick={() => onSelectOtherVacancy(rp)}
+                    <a
+                      href={`?vacancy=${rp.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectOtherVacancy(rp);
+                      }}
                       className="text-left w-full group cursor-pointer block"
                     >
                       <h3 
@@ -3614,7 +3616,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         <span className="inline-block w-1 h-1 rounded-full bg-slate-400"></span>
                         <span>{formatDisplayDate(rp.updatedAt || rp.importantDates?.notificationDate || rp.createdAt)}</span>
                       </p>
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>

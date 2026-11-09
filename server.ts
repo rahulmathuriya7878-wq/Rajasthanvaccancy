@@ -1,8 +1,11 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { requireAuth, AuthRequest } from './src/middleware/auth.ts';
 import { getOrCreateUser, getUserByUid } from './src/db/users.ts';
 import { getSavedVacanciesByUserId, saveVacancyItem, removeSavedVacancyItem } from './src/db/vacancies.ts';
+import { renderSeoEnhancedHtml, getBaseOriginFromRequest } from './src/server/seoRenderer.ts';
 
 async function startServer() {
   const app = express();
@@ -108,13 +111,7 @@ async function startServer() {
   // Dynamic XML Sitemap Generator to resolve Google Search Console sitemap errors
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const protocol = 'https';
-      let host = req.get('host') || 'rajasthanvaccancy.vercel.app';
-      if (host.includes('ais-dev') || host.includes('run.app') || host.includes('localhost')) {
-        host = 'rajasthanvaccancy.vercel.app';
-      }
-      const baseUrl = `${protocol}://${host}`;
-
+      const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       
@@ -124,13 +121,13 @@ async function startServer() {
       // Categories (clean query parameters, NO hashes/anchors!)
       const categories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'exam_date', 'syllabus', 'news'];
       categories.forEach(cat => {
-        xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
       });
 
-      // Vacancies
+      // Vacancies (All 42+ Posts indexed)
       INITIAL_VACANCIES.forEach(v => {
-        const priority = v.id === 'jee-main-2027-session-1' ? '1.0' : '0.9';
-        xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
+        const priority = (v.isTrending || v.isHot || v.id === 'kvs-samvida-sathi-recruitment-2026' || v.id === 'jee-main-2027-session-1') ? '1.0' : '0.9';
+        xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
       });
 
       xml += `</urlset>`;
@@ -142,10 +139,41 @@ async function startServer() {
     }
   });
 
-  // Robots.txt
-  app.get('/robots.txt', (_req, res) => {
+  // Robots.txt with Multi-Bot Allow & Sitemap Directives
+  app.get('/robots.txt', (req, res) => {
+    const origin = getBaseOriginFromRequest(req);
     res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml\n`);
+    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://rajasthanvacancy.com/sitemap.xml\nSitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml\n`);
+  });
+
+  // Dynamic RSS 2.0 Feed for Google News & Search Instant Reach
+  app.get('/rss.xml', async (req, res) => {
+    try {
+      const baseUrl = getBaseOriginFromRequest(req);
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
+      let rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n`;
+      rss += `  <title>Rajasthan Vacancy 2026 - Sarkari Job Alerts</title>\n`;
+      rss += `  <link>${baseUrl}/</link>\n`;
+      rss += `  <description>Latest Rajasthan Government Job Notifications, Admit Cards, Results, and Sarkari Yojana</description>\n`;
+      rss += `  <language>hi-IN</language>\n`;
+      rss += `  <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />\n`;
+
+      INITIAL_VACANCIES.slice(0, 30).forEach(v => {
+        rss += `  <item>\n`;
+        rss += `    <title><![CDATA[${v.titleHi || v.title}]]></title>\n`;
+        rss += `    <link>${baseUrl}/?vacancy=${v.id}</link>\n`;
+        rss += `    <guid isPermaLink="true">${baseUrl}/?vacancy=${v.id}</guid>\n`;
+        rss += `    <description><![CDATA[${v.briefSummaryHi || v.descriptionHi || v.title}]]></description>\n`;
+        rss += `    <pubDate>${new Date(v.createdAt || '2026-10-25').toUTCString()}</pubDate>\n`;
+        rss += `  </item>\n`;
+      });
+
+      rss += `</channel>\n</rss>`;
+      res.header('Content-Type', 'application/rss+xml; charset=utf-8');
+      res.send(rss);
+    } catch (e) {
+      res.status(500).send('Error generating RSS feed');
+    }
   });
 
   // IndexNow Key verification endpoint
@@ -314,17 +342,53 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     }
   });
 
-  // Vite dev middleware or production static files
+  // Vite dev middleware or production static files with SSR Pre-Rendering for Googlebot & Users
+  let vite: any = null;
+  if (process.env.NODE_ENV !== 'production') {
+    vite = await createViteServer({
+      server: { middlewareMode: true, hmr: false },
+      appType: 'custom',
+    });
+  }
+
+  // Pre-render HTML for Googlebot / Search Crawlers & Browsers
+  app.use(async (req, res, next) => {
+    const url = req.originalUrl;
+    // Skip API, asset requests, and static extensions
+    if (url.startsWith('/api/') || /\.(js|jsx|ts|tsx|css|png|jpg|jpeg|gif|svg|ico|json|txt|xml|woff|woff2|ttf|map)$/i.test(req.path)) {
+      return next();
+    }
+
+    try {
+      let template: string;
+      if (process.env.NODE_ENV === 'production') {
+        const indexPath = path.resolve('dist/index.html');
+        if (fs.existsSync(indexPath)) {
+          template = fs.readFileSync(indexPath, 'utf-8');
+        } else {
+          template = fs.readFileSync(path.resolve('index.html'), 'utf-8');
+        }
+      } else {
+        template = fs.readFileSync(path.resolve('index.html'), 'utf-8');
+        if (vite) {
+          template = await vite.transformIndexHtml(url, template);
+        }
+      }
+
+      const enhancedHtml = renderSeoEnhancedHtml(template, req);
+      res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(enhancedHtml);
+    } catch (e: any) {
+      if (vite) {
+        vite.ssrFixStacktrace(e);
+      }
+      console.error('SEO Renderer Error:', e);
+      next(e);
+    }
+  });
+
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static('dist'));
-    app.get('*', (_req, res) => {
-      res.sendFile('dist/index.html', { root: '.' });
-    });
-  } else {
-    const vite = await createViteServer({
-      server: { middlewareMode: true, hmr: false },
-      appType: 'spa',
-    });
+  } else if (vite) {
     app.use(vite.middlewares);
   }
 

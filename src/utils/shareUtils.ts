@@ -1,4 +1,5 @@
 import { VacancyItem } from '../types';
+import { buildCanonicalUrl } from './seoCanonical';
 
 /**
  * Format date string into Hindi readable date e.g. "27 अक्टूबर 2026" or "25 नवंबर 2026"
@@ -34,7 +35,7 @@ export function formatHindiDateString(dateStr?: string): string {
  */
 export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
   const cleanId = (item.id || '').replace(/^\//, '').replace(/\/$/, '');
-  const canonicalUrl = `https://rajasthanvaccancy.vercel.app/${cleanId}/`;
+  const canonicalUrl = buildCanonicalUrl({ vacancyId: cleanId });
   const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app') 
     ? customUrl 
     : canonicalUrl;
@@ -115,7 +116,7 @@ export function generateSectionShareText(
   customUrl?: string
 ): string {
   const cleanId = (item.id || '').replace(/^\//, '').replace(/\/$/, '');
-  const canonicalUrl = `https://rajasthanvaccancy.vercel.app/${cleanId}/`;
+  const canonicalUrl = buildCanonicalUrl({ vacancyId: cleanId });
   const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app') 
     ? customUrl 
     : canonicalUrl;

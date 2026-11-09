@@ -36,17 +36,37 @@
     <script>
       (function() {
         try {
+          var host = window.location.hostname.toLowerCase();
           var origin = 'https://rajasthanvaccancy.vercel.app';
+          if (host.indexOf('rajasthanvacancy.com') !== -1) {
+            origin = 'https://rajasthanvacancy.com';
+          } else if (host.indexOf('vercel.app') !== -1) {
+            origin = 'https://' + window.location.host;
+          } else if (host !== 'localhost' && host.indexOf('run.app') === -1) {
+            origin = window.location.origin;
+          }
+
           var search = window.location.search || '';
-          var pathname = window.location.pathname || '/';
-          var fullCanonical = origin + pathname + search;
+          var pathname = (window.location.pathname || '/').replace(/^\/+|\/+$/g, '');
+          var canonicalUrl = origin + '/';
+
+          var params = new URLSearchParams(search);
+          var vacancyId = params.get('vacancy') || (pathname && pathname.indexOf('.') === -1 ? pathname : null);
+          var category = params.get('category');
+
+          if (vacancyId) {
+            canonicalUrl = origin + '/?vacancy=' + encodeURIComponent(vacancyId);
+          } else if (category && category !== 'ALL') {
+            canonicalUrl = origin + '/?category=' + encodeURIComponent(category);
+          }
+
           var canonLink = document.getElementById('primary-canonical') || document.querySelector('link[rel="canonical"]');
           if (canonLink) {
-            canonLink.setAttribute('href', fullCanonical);
+            canonLink.setAttribute('href', canonicalUrl);
           }
           var ogUrl = document.querySelector('meta[property="og:url"]');
           if (ogUrl) {
-            ogUrl.setAttribute('content', fullCanonical);
+            ogUrl.setAttribute('content', canonicalUrl);
           }
         } catch (e) {}
       })();
