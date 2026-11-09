@@ -18,7 +18,6 @@ import {
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate } from '../utils/dateUtils';
-import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 
 interface CategoryArchiveViewProps {
   categoryKey: string;
@@ -173,18 +172,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                           </div>
                         </div>
                       )}
-                    {/* Professional Canvas-Generated Featured Thumbnail for Higher CTR (800x600 px, 4:3) */}
-                    <div 
-                      onClick={() => onSelectVacancy(item)}
-                      className="mb-3.5 overflow-hidden rounded-lg border border-slate-200/90 shadow-2xs aspect-[4/3] max-h-[260px] bg-slate-950 cursor-pointer group"
-                    >
-                      <img 
-                        src={getJobFeaturedImage(item)} 
-                        alt={title} 
-                        className="w-full h-full object-contain bg-slate-950 transition-transform duration-300 group-hover:scale-102"
-                        loading="lazy"
-                      />
-                    </div>
 
                     <h2 
                       onClick={() => onSelectVacancy(item)}

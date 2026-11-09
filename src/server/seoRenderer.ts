@@ -369,6 +369,35 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     `<meta name="twitter:image" content="${featuredThumbUrl}" />`
   );
 
+  // Inject Viral Keywords & Tags meta tags for organic SEO reach
+  const viralTagsList = (matchedVacancy?.tags && matchedVacancy.tags.length > 0)
+    ? matchedVacancy.tags.map(t => t.replace(/^#/, ''))
+    : [
+        matchedVacancy ? (matchedVacancy.titleHi || matchedVacancy.title) : 'Rajasthan Vacancy',
+        matchedVacancy?.organization || 'Rajasthan Govt',
+        'Rajasthan Vacancy 2026',
+        'Sarkari Result',
+        'Govt Job Alert',
+        'RPSC',
+        'RSMSSB'
+      ];
+  const keywordsContent = viralTagsList.join(', ');
+
+  if (modifiedHtml.includes('<meta name="keywords"')) {
+    modifiedHtml = modifiedHtml.replace(
+      /<meta\s+name="keywords"\s+content=".*?"\s*\/?>/i,
+      `<meta name="keywords" content="${escapeHtml(keywordsContent)}" />`
+    );
+  } else {
+    modifiedHtml = modifiedHtml.replace('</head>', `<meta name="keywords" content="${escapeHtml(keywordsContent)}" />\n</head>`);
+  }
+
+  const additionalTags = `
+    <meta name="news_keywords" content="${escapeHtml(keywordsContent)}" />
+    <meta name="viral-tags" content="${escapeHtml(keywordsContent)}" />
+  `;
+  modifiedHtml = modifiedHtml.replace('</head>', `${additionalTags}\n</head>`);
+
   // Inject structured data before </head>
   if (structuredDataSnippet) {
     modifiedHtml = modifiedHtml.replace('</head>', `${structuredDataSnippet}\n</head>`);

@@ -71,17 +71,35 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     twImage.setAttribute('content', featuredThumbUrl);
 
     // Meta keywords with all viral tags for search crawlers (hidden from UI)
+    const rawTags = (vacancy.tags && vacancy.tags.length > 0)
+      ? vacancy.tags.map(t => t.replace(/^#/, ''))
+      : [cleanTitle, vacancy.organization || 'Rajasthan Govt', 'Rajasthan Vacancy 2026', 'Sarkari Result', 'RPSC', 'RSMSSB'];
+    const cleanKeywords = rawTags.join(', ');
+
     let metaKeywords = document.querySelector('meta[name="keywords"]');
     const originalKeywords = metaKeywords?.getAttribute('content') || '';
-    if (vacancy.tags && vacancy.tags.length > 0) {
-      const cleanKeywords = vacancy.tags.map(t => t.replace(/^#/, '')).join(', ');
-      if (!metaKeywords) {
-        metaKeywords = document.createElement('meta');
-        metaKeywords.setAttribute('name', 'keywords');
-        document.head.appendChild(metaKeywords);
-      }
-      metaKeywords.setAttribute('content', cleanKeywords);
+    if (!metaKeywords) {
+      metaKeywords = document.createElement('meta');
+      metaKeywords.setAttribute('name', 'keywords');
+      document.head.appendChild(metaKeywords);
     }
+    metaKeywords.setAttribute('content', cleanKeywords);
+
+    let metaNewsKeywords = document.querySelector('meta[name="news_keywords"]');
+    if (!metaNewsKeywords) {
+      metaNewsKeywords = document.createElement('meta');
+      metaNewsKeywords.setAttribute('name', 'news_keywords');
+      document.head.appendChild(metaNewsKeywords);
+    }
+    metaNewsKeywords.setAttribute('content', cleanKeywords);
+
+    let metaViral = document.querySelector('meta[name="viral-tags"]');
+    if (!metaViral) {
+      metaViral = document.createElement('meta');
+      metaViral.setAttribute('name', 'viral-tags');
+      document.head.appendChild(metaViral);
+    }
+    metaViral.setAttribute('content', cleanKeywords);
 
     return () => {
       document.title = originalTitle;

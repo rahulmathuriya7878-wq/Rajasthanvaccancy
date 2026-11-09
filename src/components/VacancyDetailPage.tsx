@@ -1094,6 +1094,37 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     let twImage = document.querySelector('meta[name="twitter:image"]');
     if (twImage) twImage.setAttribute('content', featuredThumbUrl);
 
+    // Meta keywords & viral tags injection for search engines & web crawlers
+    const activeTagsList = (editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0)
+      ? editablePost.tags.map(t => t.replace(/^#/, ''))
+      : [cleanTitle, editablePost.organization || 'Rajasthan Govt', 'Rajasthan Vacancy 2026', 'Sarkari Result', 'RPSC', 'RSMSSB'];
+    const keywordsStr = activeTagsList.join(', ');
+
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    const origKeywords = metaKeywords?.getAttribute('content') || '';
+    if (!metaKeywords) {
+      metaKeywords = document.createElement('meta');
+      metaKeywords.setAttribute('name', 'keywords');
+      document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.setAttribute('content', keywordsStr);
+
+    let metaNewsKeywords = document.querySelector('meta[name="news_keywords"]');
+    if (!metaNewsKeywords) {
+      metaNewsKeywords = document.createElement('meta');
+      metaNewsKeywords.setAttribute('name', 'news_keywords');
+      document.head.appendChild(metaNewsKeywords);
+    }
+    metaNewsKeywords.setAttribute('content', keywordsStr);
+
+    let metaViral = document.querySelector('meta[name="viral-tags"]');
+    if (!metaViral) {
+      metaViral = document.createElement('meta');
+      metaViral.setAttribute('name', 'viral-tags');
+      document.head.appendChild(metaViral);
+    }
+    metaViral.setAttribute('content', keywordsStr);
+
     // Dynamic Canonical URL injection for Google Search Indexing (Strict Self-Referential Canonical)
     const postCanonicalUrl = buildCanonicalUrl({ vacancyId: editablePost.id });
     applyCanonicalTag(postCanonicalUrl);
@@ -1474,6 +1505,31 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </div>
                   </div>
 
+                  {/* Hidden Meta-Data Field for 'Viral Tags' in Admin Panel */}
+                  <div className="pt-2 border-t border-slate-200 mt-2 bg-white/80 p-2.5 rounded-md border border-slate-200">
+                    <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+                      <label className="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                        <Tag className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span>वायरल टैग्स / SEO कीवर्ड्स मेथाडेटा (Admin Meta-Field - Normal Users के लिए हिडन)</span>
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-medium">कॉमा (,) या हैशटैग (#) से अलग करें • ये टैग्स हेड में Hidden keywords meta-tag के रूप में इंजेक्ट होते हैं</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={editablePost.tags ? editablePost.tags.join(', ') : ''}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const parsed = raw.split(',').map(s => s.trim()).filter(Boolean);
+                        const updated = { ...editablePost, tags: parsed };
+                        setEditablePost(updated);
+                        setHasUnsavedChanges(true);
+                        if (onUpdateVacancy) onUpdateVacancy(updated);
+                      }}
+                      placeholder="#RajasthanVacancy, #RPSC2026, #CET2026, Patwari Bharti, Sarkari Result..."
+                      className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:border-blue-500 font-mono bg-white text-slate-900 shadow-2xs"
+                    />
+                  </div>
+
                   {/* Direct Word Edit Guide Banner */}
                   {isDirectEditMode && (
                     <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-md text-amber-950 flex items-center justify-between gap-2 flex-wrap">
@@ -1646,16 +1702,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </span>
                 </div>
               </header>
-
-              {/* Professional Canvas-Generated Featured Thumbnail Banner for Higher CTR (800x600 px, 4:3) */}
-              <div className="mb-6 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs aspect-[4/3] max-h-[460px] max-w-[640px] mx-auto bg-slate-950">
-                <img
-                  src={getJobFeaturedImage(editablePost)}
-                  alt={postTitle}
-                  className="w-full h-full object-contain bg-slate-950"
-                  loading="eager"
-                />
-              </div>
 
               {/* Featured Header Card - Exact Match to User Screenshot */}
               <div className="mb-6 rounded-2xl border border-emerald-900/40 bg-gradient-to-br from-[#0c594d] via-[#093f36] to-[#0d222c] p-5 sm:p-6 shadow-md text-white">
