@@ -13,7 +13,6 @@ import { INITIAL_VACANCIES } from '../data/mockVacancies';
 interface FooterProps {
   lang: LanguageMode;
   onOpenAgeCalc: () => void;
-  onOpenCalendar: () => void;
   onOpenSSOGuide: () => void;
   onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
   onOpenAdminLogin?: () => void;
@@ -25,7 +24,6 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   lang,
   onOpenAgeCalc,
-  onOpenCalendar,
   onOpenSSOGuide,
   onSelectPolicy,
   onOpenAdminLogin,
@@ -99,17 +97,9 @@ export const Footer: React.FC<FooterProps> = ({
               }}
             >
               <ShieldCheck className="w-5 h-5 text-orange-600" />
-              <span>{isHi ? 'परीक्षा कैलेंडर' : 'Exam Calendar'}</span>
+              <span>{isHi ? 'अभ्यर्थी उपयोगी सेवाएं' : 'Candidate Tools'}</span>
             </h4>
             <ul className="space-y-2" style={{ fontSize: '12pt' }}>
-              <li>
-                <button
-                  onClick={onOpenCalendar}
-                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left cursor-pointer"
-                >
-                  👉 {isHi ? 'RSMSSB/RPSC वार्षिक परीक्षा कैलेंडर 2025-26' : 'Exam Schedule & Calendar 2025-26'}
-                </button>
-              </li>
               <li>
                 <button
                   onClick={onOpenSSOGuide}

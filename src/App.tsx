@@ -26,9 +26,6 @@ import {
   EligibilityFinderModal 
 } from './components/EligibilityFinderModal';
 import { 
-  ExamCalendarModal 
-} from './components/ExamCalendarModal';
-import { 
   SSOGuideModal 
 } from './components/SSOGuideModal';
 import { 
@@ -51,7 +48,6 @@ import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './util
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
-import { AdvancedFilterBar } from './components/AdvancedFilterBar';
 import { 
   VacancyItem, 
   BoardType, 
@@ -571,14 +567,26 @@ export default function App() {
   };
 
   const handleAddVacancy = (newJob: VacancyItem) => {
-    setVacancies([newJob, ...vacancies]);
-    setSelectedVacancy(newJob);
+    // Reset active search & category filter so new post is immediately visible on homepage
+    setSearchQuery('');
+    setSelectedCategory('ALL');
+
+    const formattedJob: VacancyItem = {
+      ...newJob,
+      createdAt: newJob.createdAt || new Date().toISOString().split('T')[0],
+      updatedAt: newJob.updatedAt || 'अभी-अभी (Just Now)',
+      status: newJob.status || 'active'
+    };
+
+    setVacancies(prev => [formattedJob, ...prev.filter(v => v.id !== formattedJob.id)]);
+    setSelectedVacancy(formattedJob);
+
     // Background Auto-Index ping for new post
     fetch('/api/seo/auto-index', { method: 'POST' }).catch(() => {});
-    if (newJob.category === 'scheme' || newJob.organization === 'Sarkari Yojana') {
-      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक जोड़ी गई व ऑटो-इंडेक्स सबमिट!' : 'Scheme alert posted & auto-index dispatched!');
+    if (formattedJob.category === 'scheme' || formattedJob.organization === 'Sarkari Yojana') {
+      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक जोड़ी गई व तुरंत होमपेज पर लाइव!' : 'Scheme alert posted & live on homepage!');
     } else {
-      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जोड़ी गई व ऑटो-इंडेक्स सबमिट!' : 'Govt job alert posted & auto-index dispatched!');
+      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जोड़ी गई व तुरंत होमपेज पर लाइव!' : 'Govt job alert posted & live on homepage!');
     }
   };
 
@@ -750,7 +758,6 @@ export default function App() {
         savedCount={savedIds.length}
         onOpenSaved={() => setIsSavedOpen(true)}
         onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
-        onOpenCalendar={() => setIsCalendarOpen(true)}
         onOpenEligibility={() => setIsEligibilityOpen(true)}
         onOpenAddJob={() => {
           if (!isAdmin) {
@@ -888,7 +895,6 @@ export default function App() {
       <Footer
         lang={lang}
         onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
-        onOpenCalendar={() => setIsCalendarOpen(true)}
         onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onSelectPolicy={(policy) => {
           setActivePolicyView(policy);
@@ -918,12 +924,6 @@ export default function App() {
         vacancies={vacancies}
         lang={lang}
         onSelectVacancy={(item) => setSelectedVacancy(item)}
-      />
-
-      <ExamCalendarModal
-        isOpen={isCalendarOpen}
-        onClose={() => setIsCalendarOpen(false)}
-        lang={lang}
       />
 
       <SSOGuideModal

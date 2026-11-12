@@ -77,16 +77,17 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana')
   ));
 
-  // 1. Latest Jobs (Fallback ensuring all other active posts are shown)
+  // 1. Latest Jobs (Includes all latest_job category posts & newly added job alerts)
   const latestJobs = sortByNewest(vacancies.filter((v) => {
-    const isAdmit = v.category === 'admit_card' || v.status === 'admit_card_out';
-    const isResult = v.category === 'result' || v.status === 'result_declared';
-    const isExamDate = v.category === 'exam_date' || v.category === 'answer_key' || v.title.toLowerCase().includes('exam date') || v.titleHi?.includes('परीक्षा तिथि');
-    const isNews = v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice') || v.id?.includes('ctet');
-    const isYojana = v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana');
-
-    if (isAdmit || isResult || isExamDate || isNews || isYojana) return false;
-    return true;
+    if (v.category === 'latest_job' || (v as any).category === 'job' || v.category === 'ugc_net' || !v.category) {
+      return true;
+    }
+    const isAdmit = v.category === 'admit_card';
+    const isResult = v.category === 'result';
+    const isExamDate = v.category === 'exam_date';
+    const isNews = v.category === 'news';
+    const isYojana = v.category === 'scheme';
+    return !(isAdmit || isResult || isExamDate || isNews || isYojana);
   }));
 
   // Rows configuration matching rajasthanvacancy.com:

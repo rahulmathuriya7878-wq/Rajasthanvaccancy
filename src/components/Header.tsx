@@ -23,7 +23,6 @@ interface HeaderProps {
   savedCount: number;
   onOpenSaved: () => void;
   onOpenAgeCalc: () => void;
-  onOpenCalendar: () => void;
   onOpenEligibility: () => void;
   onOpenAddJob?: () => void;
   onOpenAdminLogin?: () => void;
@@ -47,7 +46,6 @@ export const Header: React.FC<HeaderProps> = ({
   savedCount,
   onOpenSaved,
   onOpenAgeCalc,
-  onOpenCalendar,
   onOpenEligibility,
   onOpenAddJob,
   onOpenAdminLogin,
@@ -66,7 +64,6 @@ export const Header: React.FC<HeaderProps> = ({
   const isHi = lang === 'hi';
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = React.useState(false);
 
   // Sort vacancies by newest added/updated date so new posts appear at the front of header ribbon ticker
   const sortedVacancies = [...latestVacancies].sort((a, b) => {
@@ -200,7 +197,6 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 setMobileMenuOpen(!mobileMenuOpen);
-                if (mobileSearchOpen) setMobileSearchOpen(false);
               }}
               className="md:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
               aria-label="Toggle Menu"
