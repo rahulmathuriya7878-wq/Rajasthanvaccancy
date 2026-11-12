@@ -14,7 +14,7 @@ import {
   MessageCircle,
   Globe
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.tsx';
+import { useAuth } from '../context/AuthContext';
 import { LanguageMode, VacancyItem } from '../types';
 
 interface HeaderProps {
@@ -22,11 +22,9 @@ interface HeaderProps {
   setLang: (lang: LanguageMode) => void;
   savedCount: number;
   onOpenSaved: () => void;
-  onOpenAgeCalc: () => void;
   onOpenEligibility: () => void;
   onOpenAddJob?: () => void;
   onOpenAdminLogin?: () => void;
-  onOpenSSOGuide: () => void;
   onGoHome?: () => void;
   latestVacancies?: VacancyItem[];
   onSelectVacancy?: (item: VacancyItem) => void;
@@ -45,11 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
   setLang,
   savedCount,
   onOpenSaved,
-  onOpenAgeCalc,
   onOpenEligibility,
   onOpenAddJob,
   onOpenAdminLogin,
-  onOpenSSOGuide,
   onGoHome,
   latestVacancies = [],
   onSelectVacancy,

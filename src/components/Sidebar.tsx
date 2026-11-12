@@ -21,8 +21,6 @@ interface SidebarProps {
   allVacancies: VacancyItem[];
   onSelectVacancy: (item: VacancyItem) => void;
   onSelectCategory: (category: CategoryType) => void;
-  onOpenAgeCalc: () => void;
-  onOpenSSOGuide: () => void;
   onOpenSaved: () => void;
   onOpenEligibility: () => void;
 }
@@ -32,8 +30,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   allVacancies,
   onSelectVacancy,
   onSelectCategory,
-  onOpenAgeCalc,
-  onOpenSSOGuide,
   onOpenSaved,
   onOpenEligibility,
 }) => {
@@ -206,33 +202,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="font-bold text-amber-300"
             style={{ fontSize: '11.5pt', fontWeight: 'bold' }}
           >
-            {isHi ? 'अभ्यर्थी उपयोगी सेवाएं (Fast Tools)' : 'Candidate Utilities'}
+            {isHi ? 'त्वरित सेवाएं (Quick Tools)' : 'Quick Tools'}
           </h3>
         </div>
 
         <div className="space-y-2 text-xs">
-          <button
-            onClick={onOpenSSOGuide}
-            className="w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 border border-slate-700/60 transition flex items-center justify-between text-slate-200 font-semibold cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>{isHi ? '👉 SSO ID व OTR संपूर्ण गाइडलाइन' : '👉 SSO ID & OTR Guide'}</span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
-          <button
-            onClick={onOpenAgeCalc}
-            className="w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 border border-slate-700/60 transition flex items-center justify-between text-slate-200 font-semibold cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <Calculator className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>{isHi ? '👉 आयु सीमा कैलकुलेटर (Age Calculator)' : '👉 Age Calculator'}</span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
           <button
             onClick={onOpenEligibility}
             className="w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 border border-slate-700/60 transition flex items-center justify-between text-slate-200 font-semibold cursor-pointer"

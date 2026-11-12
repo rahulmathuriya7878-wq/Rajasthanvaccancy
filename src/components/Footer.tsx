@@ -10,8 +10,6 @@ import { INITIAL_VACANCIES } from '../data/mockVacancies';
 
 interface FooterProps {
   lang: LanguageMode;
-  onOpenAgeCalc: () => void;
-  onOpenSSOGuide: () => void;
   onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
   onOpenAdminLogin?: () => void;
   onOpenUrlIndexation?: () => void;
@@ -21,8 +19,6 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({
   lang,
-  onOpenAgeCalc,
-  onOpenSSOGuide,
   onSelectPolicy,
   onOpenAdminLogin,
   onOpenUrlIndexation,
@@ -52,8 +48,8 @@ export const Footer: React.FC<FooterProps> = ({
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* Col 1: Official Portals Directory */}
+        <div className="mb-8">
+          {/* Official Portals Directory */}
           <div>
             <h4 
               className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
@@ -66,8 +62,8 @@ export const Footer: React.FC<FooterProps> = ({
               <Building2 className="w-5 h-5 text-amber-600" />
               <span>{isHi ? 'आधिकारिक सरकारी वेबसाइटें' : 'Official Government Portals'}</span>
             </h4>
-            <ul className="space-y-2" style={{ fontSize: '12pt' }}>
-              {officialLinks.slice(0, 5).map((l, idx) => (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2" style={{ fontSize: '12pt' }}>
+              {officialLinks.slice(0, 6).map((l, idx) => (
                 <li key={idx}>
                   <a
                     href={l.url}
@@ -80,39 +76,6 @@ export const Footer: React.FC<FooterProps> = ({
                   </a>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          {/* Col 2: Candidate Fast Tools */}
-          <div>
-            <h4 
-              className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
-              style={{ 
-                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
-                fontSize: '14pt', 
-                fontWeight: 'bold' 
-              }}
-            >
-              <ShieldCheck className="w-5 h-5 text-orange-600" />
-              <span>{isHi ? 'अभ्यर्थी उपयोगी सेवाएं' : 'Candidate Tools'}</span>
-            </h4>
-            <ul className="space-y-2" style={{ fontSize: '12pt' }}>
-              <li>
-                <button
-                  onClick={onOpenSSOGuide}
-                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left cursor-pointer"
-                >
-                  👉 {isHi ? 'SSO ID व OTR संपूर्ण गाइडलाइन' : 'SSO ID & OTR Complete Guide'}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={onOpenAgeCalc}
-                  className="hover:text-amber-600 transition text-slate-600 font-medium text-left cursor-pointer"
-                >
-                  👉 {isHi ? 'आयु सीमा कैलकुलेटर (Age Calculator)' : 'Age Eligibility Calculator'}
-                </button>
-              </li>
             </ul>
           </div>
         </div>
