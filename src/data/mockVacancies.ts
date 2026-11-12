@@ -3552,7 +3552,118 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
   status: 'active'
 };
 
+export const CRPF_SPORTS_QUOTA_RECRUITMENT_2026_VACANCY: VacancyItem = {
+  id: 'crpf-sports-quota-recruitment-2026',
+  title: 'CRPF Sports Quota Recruitment 2026: Apply Online for 169+ Constable (General Duty) Posts',
+  titleHi: 'CRPF स्पोर्ट्स कोटा भर्ती 2026: कॉन्स्टेबल GD पदों पर भर्ती का नोटिफिकेशन जारी, ऑनलाइन आवेदन शुरू',
+  shortTitle: 'CRPF Sports Quota Recruitment 2026',
+  shortTitleHi: 'CRPF स्पोर्ट्स कोटा भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'Central Reserve Police Force (CRPF)',
+  departmentHi: 'केंद्रीय रिजर्व पुलिस बल (CRPF)',
+  advtNo: 'CRPF/RECT/SPORTS-QUOTA/2026',
+  category: 'latest_job',
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 7850,
+  savesCount: 2130,
+  totalPosts: '169+ पद',
+  postName: 'Constable (General Duty) under Sports Quota 2026',
+  postNameHi: 'कॉन्स्टेबल (जनरल ड्यूटी) - स्पोर्ट्स कोटा 2026',
+  qualification: ['10th'],
+  qualificationDetails: 'Matriculation (10th Pass) from a recognized board + Sports achievement certificate in national/international games.',
+  qualificationDetailsHi: 'किसी मान्यता प्राप्त बोर्ड से 10वीं पास (Matriculation) एवं राष्ट्रीय / अंतर्राष्ट्रीय खेलकूद स्पर्धा में प्रतिनिधित्व या पदक प्रमाण पत्र।',
+  briefSummary: 'Central Reserve Police Force (CRPF) has released notification for Constable (GD) recruitment under Sports Quota 2026. Online applications are invited from eligible sportspersons.',
+  briefSummaryHi: '✍️ केंद्रीय रिजर्व पुलिस बल (CRPF) द्वारा स्पोर्ट्स कोटा के तहत कॉन्स्टेबल (जनरल ड्यूटी) के 169+ पदों पर योग्य खिलाड़ियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं। 10वीं पास पुरुष व महिला खेल अभ्यर्थी जो राष्ट्रीय या अंतर्राष्ट्रीय स्तर के टूर्नामेंट में भाग ले चुके हैं, वे आधिकारिक पोर्टल crpf.gov.in के माध्यम से आवेदन कर सकते हैं।',
+  description: 'Complete details for CRPF Sports Quota Recruitment 2026 including age limit, application fee, sports eligibility, selection process, and official links.',
+  descriptionHi: 'प्रिय अभ्यर्थियों,\n\nकेंद्रीय रिजर्व पुलिस बल (CRPF) ने उत्कृष्ट खिलाड़ियों हेतु स्पोर्ट्स कोटा भर्ती 2026 का आधिकारिक नोटिफिकेशन जारी कर दिया है। भर्ती प्रक्रिया एवं मुख्य बिंदु निम्नलिखित हैं:\n\n📌 महत्वपूर्ण तिथियां (Important Dates):\n• ऑनलाइन आवेदन प्रारंभ तिथि: 16 जनवरी 2026\n• ऑनलाइन आवेदन की अंतिम तिथि: 15 फरवरी 2026\n• ट्रायल व डॉक्यूमेंट वेरिफिकेशन: मार्च 2026\n\n🎯 आयु सीमा (Age Limit):\n• 18 से 23 वर्ष (आरक्षित श्रेणियों एवं उत्कृष्ट खिलाड़ियों को नियमानुसार 5 से 10 वर्ष तक की अतिरिक्त छूट)।\n\n💳 आवेदन शुल्क (Application Fee):\n• Unreserved / OBC / EWS Male: ₹100/-\n• SC / ST / All Female Candidates: ₹0/- (निशुल्क)\n\n🎖️ चयन प्रक्रिया:\n1. खेल दस्तावेज जांच एवं ट्रायल (Physical Standard Test & Sports Trial)\n2. शारीरिक दक्षता परीक्षण (PST/PET)\n3. विस्तृत चिकित्सा परीक्षण (Medical Examination)\n4. अंतिम मेरिट सूची।',
+  jobLocation: 'All India',
+  salary: 'Level-3 (₹21,700 – ₹69,100/- + Allowances)',
+  salaryHi: 'पे लेवल-3 (₹21,700 से ₹69,100/- + केंद्रीय भत्ते)',
+  ageLimit: {
+    min: 18,
+    max: 23,
+    asOnDate: '2026-02-15',
+    relaxationNotes: '18 to 23 years. Relaxation of 5 to 10 years for meritorious sportspersons as per rules.',
+    relaxationNotesHi: '18 से 23 वर्ष। नियमानुसार उत्कृष्ट खिलाड़ियों तथा SC/ST/OBC श्रेणियों को अधिकतम आयु सीमा में 5 से 10 वर्ष की छूट देय होगी।'
+  },
+  applicationFee: [
+    { category: 'General / OBC / EWS Male Candidates', amount: '₹100/-' },
+    { category: 'SC / ST / All Female Candidates', amount: '₹0/- (निशुल्क)' },
+    { category: 'Mode of Payment', amount: 'Online (Debit / Credit Card, Net Banking, UPI)' }
+  ],
+  importantDates: {
+    notificationDate: '15 जनवरी 2026',
+    applyStartDate: '2026-01-16',
+    applyLastDate: '2026-02-15',
+    feeLastDate: '2026-02-15',
+    examDate: 'मार्च 2026 (स्पोर्ट्स ट्रायल)',
+    admitCardDate: '2026-03-01'
+  },
+  selectionProcess: [
+    'Document Verification & Physical Standard Test (PST)',
+    'Sports Trial Test in respective disciplines',
+    'Detailed Medical Examination (DME / RME)',
+    'Final Merit List based on sports achievements & trial marks'
+  ],
+  selectionProcessHi: [
+    'दस्तावेज जांच एवं शारीरिक मापदंड परीक्षण (PST)',
+    'संबंधित खेल विधा में स्पोर्ट्स ट्रायल परीक्षा',
+    'विस्तृत चिकित्सा परीक्षण (DME/RME)',
+    'खेल उपलब्धियों एवं ट्रायल अंकों के आधार पर अंतिम चयन सूची'
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://rect.crpf.gov.in/',
+    notificationPdfUrl: 'https://rect.crpf.gov.in/',
+    officialWebsiteUrl: 'https://crpf.gov.in/'
+  },
+  directLinks: [
+    {
+      label: 'Apply Online (ऑनलाइन आवेदन फॉर्म भरें)',
+      actionText: 'Apply Online',
+      url: 'https://rect.crpf.gov.in/',
+      isPrimary: true
+    },
+    {
+      label: 'Official Notification PDF (आधिकारिक विज्ञापन डाउनलोड करें)',
+      actionText: 'Download PDF',
+      url: 'https://rect.crpf.gov.in/',
+      isPdf: true
+    },
+    {
+      label: 'CRPF Official Recruitment Portal',
+      actionText: 'Visit Portal',
+      url: 'https://rect.crpf.gov.in/'
+    },
+    {
+      label: 'Join WhatsApp Group (व्हाट्सएप ग्रुप से जुड़ें)',
+      actionText: 'Join WhatsApp',
+      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+    },
+    {
+      label: 'Join Telegram Channel (टेलीग्राम चैनल से जुड़ें)',
+      actionText: 'Join Telegram',
+      url: 'https://t.me/newrajsthanjobs'
+    }
+  ],
+  tags: [
+    '#CRPFRecruitment2026',
+    '#CRPFConstableSportsQuota',
+    '#SportsQuotaJobs',
+    '#ConstableGD2026',
+    '#RajasthanVacancy2026',
+    '#SarkariResult2026',
+    '#CRPFJobs'
+  ],
+  status: 'active',
+  createdAt: '2026-01-15',
+  updatedAt: '15 जनवरी 2026'
+};
+
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  CRPF_SPORTS_QUOTA_RECRUITMENT_2026_VACANCY,
   KALI_BAI_SCOOTY_YOJANA_2026_FULL_VACANCY,
   INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY,
   KVS_SAMVIDA_SATHI_2026_VACANCY,

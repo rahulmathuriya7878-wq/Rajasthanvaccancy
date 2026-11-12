@@ -61,54 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
-      {/* 1. Official WhatsApp & Telegram Joining Banner Widget */}
-      <div className="bg-linear-to-br from-emerald-800 via-emerald-900 to-slate-900 rounded-2xl p-4 text-white shadow-md border border-emerald-700/50">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
-            <MessageCircle className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-              ⚡ 1,85,000+ छात्र जुड़े हैं
-            </span>
-            <h3 
-              className="font-black text-amber-300 mt-1 leading-snug"
-              style={{ fontSize: '11.5pt', fontWeight: 'bold' }}
-            >
-              {isHi ? 'राजस्थान भर्ती अलर्ट सीधे व्हाट्सएप पर पाएं' : 'Get Govt Job Alerts Directly on WhatsApp'}
-            </h3>
-          </div>
-        </div>
-
-        <p className="text-slate-200 text-xs mb-3.5 leading-relaxed font-medium">
-          {isHi
-            ? 'भर्ती फॉर्म, एडमिट कार्ड, परीक्षा तिथि व रिजल्ट की ताज़ा सूचनाएं बिना किसी देरी के सीधे अपने फोन पर प्राप्त करें।'
-            : 'Get instant job alerts, admit cards, exam dates, and result updates directly on your smartphone.'}
-        </p>
-
-        <div className="grid grid-cols-2 gap-2">
-          <a
-            href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-3 rounded-xl font-bold text-xs transition shadow-xs active:scale-95"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>{isHi ? 'WhatsApp ग्रुप' : 'WhatsApp'}</span>
-          </a>
-          <a
-            href="https://t.me/newrajsthanjobs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 bg-sky-500 hover:bg-sky-600 text-white py-2 px-3 rounded-xl font-bold text-xs transition shadow-xs active:scale-95"
-          >
-            <Send className="w-4 h-4" />
-            <span>{isHi ? 'Telegram चैनल' : 'Telegram'}</span>
-          </a>
-        </div>
-      </div>
-
-      {/* 2. Trending Updates Widget */}
+      {/* 1. Trending Updates Widget */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
           <h3 
@@ -189,44 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* 4. Candidate Fast Utilities Widget */}
-      <div className="bg-slate-900 rounded-2xl p-4 text-white shadow-xs">
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-2.5 mb-3">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 
-            className="font-bold text-amber-300"
-            style={{ fontSize: '11.5pt', fontWeight: 'bold' }}
-          >
-            {isHi ? 'त्वरित सेवाएं (Quick Tools)' : 'Quick Tools'}
-          </h3>
-        </div>
-
-        <div className="space-y-2 text-xs">
-          <button
-            onClick={onOpenEligibility}
-            className="w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 border border-slate-700/60 transition flex items-center justify-between text-slate-200 font-semibold cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>{isHi ? 'योग्यता अनुसार भर्ती खोजें' : 'Eligibility Finder'}</span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
-          <button
-            onClick={onOpenSaved}
-            className="w-full text-left p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 border border-slate-700/60 transition flex items-center justify-between text-slate-200 font-semibold cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <Bookmark className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>{isHi ? 'सहेजी गई नौकरियां (Saved List)' : 'Saved Jobs List'}</span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-        </div>
-      </div>
-
-      {/* 5. Yojana Spotlight Widget */}
+      {/* 3. Yojana Spotlight Widget */}
       {schemeVacancies.length > 0 && (
         <div className="bg-amber-50/70 rounded-2xl p-4 border border-amber-200/80 shadow-xs">
           <div className="flex items-center justify-between border-b border-amber-200 pb-2.5 mb-3">
