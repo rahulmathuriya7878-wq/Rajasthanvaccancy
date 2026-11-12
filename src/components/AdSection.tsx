@@ -29,11 +29,11 @@ export interface AdSectionProps {
  * and renders a safe, layout-friendly responsive ad unit container.
  */
 export const AdSection: React.FC<AdSectionProps> = ({
-  slot = '1234567890',
-  client = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-3176571184961509',
+  slot = '3785509362',
+  client = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-8302542447035711',
   format = 'auto',
   className = '',
-  label = 'Advertisement',
+  label = 'विज्ञापन (Advertisement)',
   minHeight = '90px',
   responsive = true,
 }) => {
@@ -70,7 +70,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
 
   return (
     <div
-      className={`w-full my-3 overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50/60 p-2 sm:p-3 transition-all ${className}`}
+      className={`w-full my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`}
       style={{ minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }}
     >
       {label && (
@@ -79,7 +79,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
         </div>
       )}
 
-      <div className="flex items-center justify-center w-full overflow-hidden">
+      <div className="flex items-center justify-center w-full min-h-[90px] overflow-hidden">
         <ins
           ref={adRef}
           className="adsbygoogle"

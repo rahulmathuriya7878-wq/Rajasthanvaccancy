@@ -1,4 +1,5 @@
 import { VacancyItem, CategoryType, BoardType } from '../types';
+import { EIGHT_LATEST_VACANCIES } from './newLatestVacancies';
 
 export const INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY: VacancyItem = {
   id: 'indian-air-force-recruitment-afcat-01-2027',
@@ -3663,6 +3664,7 @@ export const CRPF_SPORTS_QUOTA_RECRUITMENT_2026_VACANCY: VacancyItem = {
 };
 
 export const INITIAL_VACANCIES: VacancyItem[] = [
+  ...EIGHT_LATEST_VACANCIES,
   CRPF_SPORTS_QUOTA_RECRUITMENT_2026_VACANCY,
   KALI_BAI_SCOOTY_YOJANA_2026_FULL_VACANCY,
   INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY,

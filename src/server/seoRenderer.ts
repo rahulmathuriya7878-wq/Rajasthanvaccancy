@@ -247,21 +247,31 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           </div>
         </section>
 
-        <section style="margin-top: 32px; padding-top: 20px; border-top: 2px dashed #cbd5e1;">
-          <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">
-            🔥 अन्य महत्वपूर्ण सरकारी भर्तियां एवं अपडेट (Related Trending Vacancies)
+        <section style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <h2 style="font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 18px;">
+            Recent Posts
           </h2>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
-            ${INITIAL_VACANCIES.filter(v => v.id !== matchedVacancy!.id).slice(0, 6).map(other => `
-              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
-                <a href="${baseUrl}/?vacancy=${other.id}" style="color: #1e40af; text-decoration: none; font-weight: bold; font-size: 14px; line-height: 1.4; display: block; margin-bottom: 6px;">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            ${INITIAL_VACANCIES.filter(v => v.id !== matchedVacancy!.id).slice(0, 8).map(other => `
+              <div>
+                <a href="${baseUrl}/?vacancy=${other.id}" style="color: #0066cc; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; font-size: 17px; line-height: 1.4; display: block;">
                   ${escapeHtml(other.titleHi || other.title)}
                 </a>
-                <span style="font-size: 12px; color: #16a34a; font-weight: bold;">कुल पद: ${escapeHtml(other.totalPosts || 'विभिन्न')}</span>
               </div>
             `).join('')}
           </div>
         </section>
+
+        <!-- Google AdSense Unit at Bottom of Post -->
+        <div style="margin-top: 24px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
+          <span style="font-size: 11px; color: #94a3b8; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">विज्ञापन (Google AdSense)</span>
+          <ins class="adsbygoogle"
+               style="display:block; min-height: 90px;"
+               data-ad-client="ca-pub-8302542447035711"
+               data-ad-slot="3785509362"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
       </main>
     `;
   } else if (matchedCategory && matchedCategory !== 'ALL') {

@@ -1846,6 +1846,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </p>
                 </div>
 
+                {/* Top In-Article Ad Section */}
+                <AdSection 
+                  slot="post-top-slot"
+                  client="ca-pub-8302542447035711"
+                  label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                  minHeight={90}
+                  className="my-4"
+                />
+
                 {/* Dynamic Reorderable Sections List */}
                 {activeSectionKeys.map((sectionKey) => {
                   const key = sectionKey === 'fee' ? 'application_fee' : sectionKey === 'salary' ? 'salary_table' : sectionKey;
@@ -3077,6 +3086,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     case 'important_links':
                       return !isSectionDeleted('important_links') && (
                         <div key="important_links" className="space-y-2 pt-2">
+                          {/* Middle Ad Section above Important Direct Links */}
+                          <AdSection 
+                            slot="post-middle-slot"
+                            client="ca-pub-8302542447035711"
+                            label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                            minHeight={90}
+                            className="my-3"
+                          />
                           <div className="flex items-center justify-between gap-2 pt-2">
                             <h2 
                               className="headlight font-bold text-slate-900"
@@ -3641,42 +3658,65 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   ) : <div />}
                 </nav>
               </footer>
-              {/* Related Job Opportunities at the bottom of the card */}
+
+              {/* Bottom Post Ad Section */}
+              <AdSection 
+                slot="post-bottom-slot"
+                client="ca-pub-8302542447035711"
+                label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                minHeight={90}
+                className="my-5"
+              />
+
+              {/* Recent Posts section at the bottom of the card matching user screenshot */}
               {recentPosts.length > 0 && (
-                <div className="mt-10 pt-6 border-t border-slate-200">
-                  <h3 className="font-bold text-slate-900 mb-4 text-base sm:text-lg flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#15803d]"></span>
-                    <span>{isHi ? 'अन्य नवीनतम सरकारी भर्तियां' : 'Other Recent Job Notifications'}</span>
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                  <h3 
+                    className="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight mb-5"
+                    style={{
+                      fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
+                      color: '#111827',
+                      fontWeight: 700
+                    }}
+                  >
+                    Recent Posts
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {recentPosts.slice(0, 4).map((rp) => (
-                      <a
-                        key={rp.id}
-                        href={`?vacancy=${rp.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          onSelectOtherVacancy(rp);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className="p-3.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50/60 hover:bg-blue-50/30 transition block group shadow-2xs"
-                      >
-                        <h4 
-                          className="post-title-link font-semibold text-xs sm:text-sm leading-snug"
-                          style={{ color: '#0066cc', textDecoration: 'underline' }}
+                  <div className="space-y-4">
+                    {recentPosts.slice(0, 8).map((rp) => (
+                      <div key={rp.id} className="block">
+                        <a
+                          href={`?vacancy=${rp.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onSelectOtherVacancy(rp);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="post-title-link text-[16.5px] sm:text-[18px] font-semibold leading-snug cursor-pointer block transition-colors"
+                          style={{
+                            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+                            color: '#0066cc',
+                            textDecoration: 'underline',
+                            textUnderlineOffset: '3.5px',
+                          }}
                         >
                           {isHi ? (rp.titleHi || rp.title) : rp.title}
-                        </h4>
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2.5">
-                          <span className="font-semibold bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700">
-                            {rp.organization}
-                          </span>
-                          <span>{formatDisplayDate(rp.updatedAt || rp.importantDates?.notificationDate || rp.createdAt)}</span>
-                        </div>
-                      </a>
+                        </a>
+                      </div>
                     ))}
                   </div>
                 </div>
               )}
+
+              {/* AdSense at the absolute bottom of the post */}
+              <div className="w-full mt-8 pt-4 border-t border-slate-200">
+                <AdSection 
+                  slot="post-very-bottom-slot"
+                  client="ca-pub-8302542447035711"
+                  label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                  minHeight={100}
+                  className="w-full"
+                />
+              </div>
             </article>
           </main>
         </div>

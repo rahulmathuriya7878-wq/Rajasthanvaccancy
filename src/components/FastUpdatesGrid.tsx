@@ -180,7 +180,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         <div className="p-4 pt-2 flex-1 flex flex-col justify-between">
           <div className="space-y-4">
             {sec.items.length > 0 ? (
-              sec.items.slice(0, 5).map((item) => (
+              sec.items.slice(0, 8).map((item) => (
                 <div 
                   key={item.id} 
                   className="group"
@@ -328,20 +328,14 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 
       {/* Center Responsive Google AdSense Ad Unit */}
       {showAds && (
-        <div className="w-full my-4 flex flex-col items-center justify-center overflow-hidden">
-          <div className="w-full max-w-4xl bg-slate-50 border border-slate-200/80 rounded-md p-2 text-center">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1 tracking-wider">
-              {isHi ? 'विज्ञापन' : 'Advertisement'}
-            </span>
-            <ins 
-              className="adsbygoogle"
-              style={{ display: 'block', minHeight: '90px' }}
-              data-ad-client="ca-pub-8302542447035711"
-              data-ad-slot="3785509362"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            />
-          </div>
+        <div className="w-full my-2 flex justify-center">
+          <AdSection 
+            slot="3785509362" 
+            client="ca-pub-8302542447035711" 
+            label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'} 
+            minHeight={100}
+            className="max-w-5xl"
+          />
         </div>
       )}
 
@@ -349,6 +343,19 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
         {row2Sections.map(renderSectionBox)}
       </div>
+
+      {/* Bottom Responsive Ad Unit */}
+      {showAds && (
+        <div className="w-full my-3 flex justify-center">
+          <AdSection 
+            slot="home-bottom-slot" 
+            client="ca-pub-8302542447035711" 
+            label={isHi ? 'विज्ञापन' : 'Advertisement'} 
+            minHeight={90}
+            className="max-w-5xl"
+          />
+        </div>
+      )}
     </div>
   );
 };
