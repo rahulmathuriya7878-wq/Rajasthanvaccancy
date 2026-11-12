@@ -12,6 +12,9 @@ import {
   CategoryArchiveView 
 } from './components/CategoryArchiveView';
 import { 
+  Sidebar 
+} from './components/Sidebar';
+import { 
   Footer 
 } from './components/Footer';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -20,14 +23,8 @@ import { ContactUs } from './components/ContactUs';
 import { AboutUs } from './components/AboutUs';
 import { Disclaimer } from './components/Disclaimer';
 import { 
-  AgeCalculatorModal 
-} from './components/AgeCalculatorModal';
-import { 
   EligibilityFinderModal 
 } from './components/EligibilityFinderModal';
-import { 
-  SSOGuideModal 
-} from './components/SSOGuideModal';
 import { 
   SavedJobsModal 
 } from './components/SavedJobsModal';
@@ -272,11 +269,7 @@ export default function App() {
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
   const [editingVacancy, setEditingVacancy] = useState<VacancyItem | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
-  const [ageCalcParams, setAgeCalcParams] = useState<{ asOnDate?: string; minAge?: number; maxAge?: number }>({});
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isEligibilityOpen, setIsEligibilityOpen] = useState(false);
-  const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
@@ -609,11 +602,6 @@ export default function App() {
     showToast(lang === 'hi' ? '🗑️ पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : '🗑️ Post deleted successfully!');
   };
 
-  const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
-    setAgeCalcParams({ asOnDate, minAge, maxAge });
-    setIsAgeCalcOpen(true);
-  };
-
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedBoard('ALL');
@@ -757,7 +745,6 @@ export default function App() {
         setLang={setLang}
         savedCount={savedIds.length}
         onOpenSaved={() => setIsSavedOpen(true)}
-        onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
         onOpenEligibility={() => setIsEligibilityOpen(true)}
         onOpenAddJob={() => {
           if (!isAdmin) {
@@ -768,7 +755,6 @@ export default function App() {
           }
         }}
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-        onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onGoHome={() => {
           setSelectedCategory('ALL');
           setSearchQuery('');
@@ -791,111 +777,132 @@ export default function App() {
         onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
       />
 
-      {/* Main Body Container */}
-      <main className="w-full max-w-7xl mx-auto px-[3%] pt-0.5 sm:pt-1 pb-8 flex-1" style={{ paddingLeft: '3%', paddingRight: '3%', paddingTop: '2px' }}>
-        {activePolicyView === 'privacy' ? (
-          <PrivacyPolicy
-            lang={lang}
-            onBack={() => setActivePolicyView(null)}
-            onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-            isAdmin={isAdmin}
-          />
-        ) : activePolicyView === 'terms' ? (
-          <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
-        ) : activePolicyView === 'contact' ? (
-          <ContactUs lang={lang} onBack={() => setActivePolicyView(null)} />
-        ) : activePolicyView === 'about' ? (
-          <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
-        ) : activePolicyView === 'disclaimer' ? (
-          <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
-        ) : selectedVacancy ? (
-          /* Full Page View with Dynamic Head Meta Tags */
-          <FullPagePostView
-            vacancy={selectedVacancy}
-            onBack={() => {
-              setSelectedVacancy(null);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            lang={lang}
-            isSaved={savedIds.includes(selectedVacancy.id)}
-            onToggleSave={handleToggleSave}
-            allVacancies={vacancies}
-            onSelectOtherVacancy={handleSelectVacancy}
-            isAdmin={isAdmin}
-            onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-            onEditVacancy={(item) => {
-              setEditingVacancy(item);
-              setIsAddJobOpen(true);
-            }}
-            onDeleteVacancy={handleDeleteVacancy}
-            onUpdateVacancy={handleUpdateVacancy}
-            isAlertSet={alertJobIds.includes(selectedVacancy.id)}
-            onToggleAlertMe={handleToggleAlertMe}
-            onSelectCategory={(cat) => {
-              setSelectedVacancy(null);
-              setSelectedCategory(cat as any);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onSearchKeyword={(keyword) => {
-              setSelectedVacancy(null);
-              setSearchQuery(keyword.replace(/^#/, ''));
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        ) : selectedCategory !== 'ALL' ? (
-          /* Category Archive View matching authentic rajasthanvacancy.com category layout */
-          <CategoryArchiveView
-            categoryKey={selectedCategory}
-            categoryTitle={getSectionTitle(selectedCategory)}
-            categoryTitleHi={getSectionTitle(selectedCategory)}
-            vacancies={filteredVacancies}
-            allVacancies={vacancies}
-            lang={lang}
-            onSelectVacancy={handleSelectVacancy}
-            onClearCategory={() => {
-              setSelectedCategory('ALL');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onSelectCategory={(catKey) => {
-              setSelectedCategory(catKey as any);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            isAdmin={isAdmin}
-            onEditVacancy={(item) => {
-              setEditingVacancy(item);
-              setIsAddJobOpen(true);
-            }}
-            onDeleteVacancy={handleDeleteVacancy}
-          />
-        ) : (
-          /* Home View: 3x2 Grid Fast Access Updates */
-          <div className="space-y-4">
-            <FastUpdatesGrid
-              vacancies={filteredVacancies}
+      {/* Main Body Container - Classic 2-Column WordPress Job Portal Structure */}
+      {/* Main Body Container - Boxed Centered 1280px Container with 70-75% Main Content & 25-30% Right Sidebar */}
+      <main className="w-full max-w-[1280px] mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          {/* Main Content Area (Left Column - 70% to 75% width) */}
+          <div className="lg:col-span-8 space-y-6">
+            {activePolicyView === 'privacy' ? (
+              <PrivacyPolicy
+                lang={lang}
+                onBack={() => setActivePolicyView(null)}
+                onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+                isAdmin={isAdmin}
+              />
+            ) : activePolicyView === 'terms' ? (
+              <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
+            ) : activePolicyView === 'contact' ? (
+              <ContactUs lang={lang} onBack={() => setActivePolicyView(null)} />
+            ) : activePolicyView === 'about' ? (
+              <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
+            ) : activePolicyView === 'disclaimer' ? (
+              <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
+            ) : selectedVacancy ? (
+              /* Full Page View with Dynamic Head Meta Tags */
+              <FullPagePostView
+                vacancy={selectedVacancy}
+                onBack={() => {
+                  setSelectedVacancy(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                lang={lang}
+                isSaved={savedIds.includes(selectedVacancy.id)}
+                onToggleSave={handleToggleSave}
+                allVacancies={vacancies}
+                onSelectOtherVacancy={handleSelectVacancy}
+                isAdmin={isAdmin}
+                onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+                onEditVacancy={(item) => {
+                  setEditingVacancy(item);
+                  setIsAddJobOpen(true);
+                }}
+                onDeleteVacancy={handleDeleteVacancy}
+                onUpdateVacancy={handleUpdateVacancy}
+                isAlertSet={alertJobIds.includes(selectedVacancy.id)}
+                onToggleAlertMe={handleToggleAlertMe}
+                onSelectCategory={(cat) => {
+                  setSelectedVacancy(null);
+                  setSelectedCategory(cat as any);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onSearchKeyword={(keyword) => {
+                  setSelectedVacancy(null);
+                  setSearchQuery(keyword.replace(/^#/, ''));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            ) : selectedCategory !== 'ALL' ? (
+              /* Category Archive View matching authentic rajasthanvacancy.com category layout */
+              <CategoryArchiveView
+                categoryKey={selectedCategory}
+                categoryTitle={getSectionTitle(selectedCategory)}
+                categoryTitleHi={getSectionTitle(selectedCategory)}
+                vacancies={filteredVacancies}
+                allVacancies={vacancies}
+                lang={lang}
+                onSelectVacancy={handleSelectVacancy}
+                onClearCategory={() => {
+                  setSelectedCategory('ALL');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onSelectCategory={(catKey) => {
+                  setSelectedCategory(catKey as any);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                isAdmin={isAdmin}
+                onEditVacancy={(item) => {
+                  setEditingVacancy(item);
+                  setIsAddJobOpen(true);
+                }}
+                onDeleteVacancy={handleDeleteVacancy}
+              />
+            ) : (
+              /* Home View: 3x2 Grid Fast Access Updates */
+              <div className="space-y-4">
+                <FastUpdatesGrid
+                  vacancies={filteredVacancies}
+                  lang={lang}
+                  onSelectVacancy={handleSelectVacancy}
+                  onFilterCategory={(cat) => setSelectedCategory(cat as any)}
+                  isAdmin={isAdmin}
+                  onEditVacancy={(item) => {
+                    setEditingVacancy(item);
+                    setIsAddJobOpen(true);
+                  }}
+                  onDeleteVacancy={handleDeleteVacancy}
+                  alertJobIds={alertJobIds}
+                  onToggleAlertMe={handleToggleAlertMe}
+                  onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - WordPress Style Sidebar (4 Cols) */}
+          <div className="lg:col-span-4 sticky top-4">
+            <Sidebar
               lang={lang}
+              allVacancies={vacancies}
               onSelectVacancy={handleSelectVacancy}
-              onFilterCategory={(cat) => setSelectedCategory(cat as any)}
-              isAdmin={isAdmin}
-              onEditVacancy={(item) => {
-                setEditingVacancy(item);
-                setIsAddJobOpen(true);
+              onSelectCategory={(catKey) => {
+                setSelectedVacancy(null);
+                setSelectedCategory(catKey);
+                setActivePolicyView(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              onDeleteVacancy={handleDeleteVacancy}
-              alertJobIds={alertJobIds}
-              onToggleAlertMe={handleToggleAlertMe}
-              onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
+              onOpenSaved={() => setIsSavedOpen(true)}
+              onOpenEligibility={() => setIsEligibilityOpen(true)}
             />
           </div>
-        )}
+        </div>
       </main>
 
       {/* Full Comprehensive Footer Component */}
       <Footer
         lang={lang}
-        onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
-        onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onSelectPolicy={(policy) => {
           setActivePolicyView(policy);
           setSelectedVacancy(null);
@@ -909,27 +916,12 @@ export default function App() {
 
       {/* Other Utility Modals */}
 
-      <AgeCalculatorModal
-        isOpen={isAgeCalcOpen}
-        onClose={() => setIsAgeCalcOpen(false)}
-        lang={lang}
-        initialCutoffDate={ageCalcParams.asOnDate}
-        initialMinAge={ageCalcParams.minAge}
-        initialMaxAge={ageCalcParams.maxAge}
-      />
-
       <EligibilityFinderModal
         isOpen={isEligibilityOpen}
         onClose={() => setIsEligibilityOpen(false)}
         vacancies={vacancies}
         lang={lang}
         onSelectVacancy={(item) => setSelectedVacancy(item)}
-      />
-
-      <SSOGuideModal
-        isOpen={isSSOGuideOpen}
-        onClose={() => setIsSSOGuideOpen(false)}
-        lang={lang}
       />
 
       <SavedJobsModal
