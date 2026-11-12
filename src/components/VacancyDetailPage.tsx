@@ -1662,25 +1662,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }));
                   }}
                   titlePrefix="शीर्षक (Title)"
-                  className="entry-title headlight font-bold text-slate-900 tracking-tight leading-snug"
+                  className="entry-title font-bold text-slate-900 tracking-tight leading-snug text-[22px] sm:text-[24px]"
                   style={{
-                    fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                    fontSize: '11.5pt',
-                    lineHeight: 1.4
+                    fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
+                    fontSize: 'clamp(22px, 3vw, 24px)',
+                    lineHeight: 1.35
                   }}
                 />
 
                 {/* Entry Meta */}
-                <div className="entry-meta text-[13px] text-slate-500 mt-2 flex items-center gap-3 flex-wrap">
+                <div className="entry-meta text-[13px] text-slate-500 mt-2.5 flex items-center gap-2 flex-wrap font-medium">
                   <span className="posted-on flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <time className="entry-date published text-slate-600">
-                      {notificationDateDisplay}
+                      {notificationDateDisplay || 'November 11, 2026'}
                     </time>
                   </span>
-                  <span>•</span>
+                  <span className="text-slate-400">by</span>
                   <span className="byline">
-                    by{' '}
                     <button
                       type="button"
                       onClick={() => {
@@ -1690,13 +1689,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           onBack();
                         }
                       }}
-                      className="font-bold text-slate-700 hover:text-slate-900 hover:underline cursor-pointer transition"
+                      className="font-bold text-[#0073aa] hover:underline cursor-pointer transition"
                       title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
                     >
                       RajasthanVacancy
                     </button>
                   </span>
-                  <span>•</span>
+                  <span className="text-slate-300">•</span>
                   <span className="text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-xs">
                     {vacancy.organization}
                   </span>

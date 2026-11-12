@@ -2,20 +2,14 @@ import React from 'react';
 import { 
   Flame, 
   Folder, 
-  ExternalLink, 
   ChevronRight, 
   MessageCircle, 
   Send, 
-  Share2, 
-  Building2, 
   Sparkles, 
   CheckCircle2,
-  Bookmark,
-  Share,
-  Globe
+  Bookmark
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
-import { AdSection } from './AdSection';
 
 interface SidebarProps {
   lang: LanguageMode;
@@ -232,50 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* 5. Sidebar Advertisement Widget */}
-      <AdSection slot="9876543210" label={isHi ? 'प्रायोजित विज्ञापन (Advertisement)' : 'Advertisement'} />
-
-      {/* 6. Social Media Sharing & Fast Links Widget */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 mb-3">
-          <Share2 className="w-4 h-4 text-[#0073aa]" />
-          <h3 
-            className="font-bold text-slate-900"
-            style={{ fontSize: '11.5pt', fontWeight: 'bold' }}
-          >
-            {isHi ? 'सोशल मीडिया शेयरिंग एवं लिंक्स' : 'Social Media & Share Links'}
-          </h3>
-        </div>
-
-        <p className="text-xs text-slate-600 mb-3 leading-relaxed">
-          {isHi 
-            ? 'नवीनतम सरकारी भर्ती, एडमिट कार्ड व परिणाम दोस्तों के साथ शेयर करें:'
-            : 'Share latest recruitment alerts with candidates and job seekers:'}
-        </p>
-
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <a
-            href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold flex items-center justify-center gap-1.5 transition"
-          >
-            <MessageCircle className="w-4 h-4 text-emerald-600" />
-            <span>WhatsApp</span>
-          </a>
-          <a
-            href="https://t.me/newrajsthanjobs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold flex items-center justify-center gap-1.5 transition"
-          >
-            <Send className="w-4 h-4 text-sky-600" />
-            <span>Telegram</span>
-          </a>
-        </div>
-      </div>
-
-      {/* 7. Yojana Spotlight Widget */}
+      {/* 5. Yojana Spotlight Widget */}
       {schemeVacancies.length > 0 && (
         <div className="bg-amber-50/70 rounded-2xl p-4 border border-amber-200/80 shadow-xs">
           <div className="flex items-center justify-between border-b border-amber-200 pb-2.5 mb-3">
