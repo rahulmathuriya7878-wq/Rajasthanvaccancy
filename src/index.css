@@ -13,40 +13,39 @@
   }
 
   body {
-    font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', 'Mangal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
-    font-size: 16px;
-    line-height: 1.7;
-    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.6;
     color: #222222;
     background-color: #ffffff;
     overflow-x: hidden;
   }
 
-  /* Main Page & Post H1 Title - 22px-24px Mobile / 28px-32px Desktop, Bold (700), Line-Height 1.3 */
+  /* Main Page & Post H1 Title - 28px to 32px Bold */
   h1, .page-title, .post-title, .h1-title {
-    font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif !important;
-    font-size: clamp(22px, 3.5vw, 32px) !important;
-    font-weight: 700 !important;
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+    font-size: clamp(28px, 4vw, 32px) !important;
+    font-weight: 800 !important;
     line-height: 1.3 !important;
-    color: #1e293b;
+    color: #1e293b !important;
     letter-spacing: -0.01em;
   }
 
-  /* Section Headings H2 / H3 - 18px-20px Mobile / 20px-24px Desktop, SemiBold (600), Line-Height 1.4 */
+  /* Section Headings H2 / H3 - 20px to 24px Bold */
   h2, h3, .section-heading, .headlight, .headline, .heading-title, .box-header {
-    font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif !important;
-    font-size: clamp(18px, 2.5vw, 24px) !important;
-    font-weight: 600 !important;
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+    font-size: clamp(20px, 3vw, 24px) !important;
+    font-weight: 700 !important;
     line-height: 1.4 !important;
-    color: #0f172a;
+    color: #0f172a !important;
   }
 
   h4, h5, h6 {
-    font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif !important;
-    font-size: clamp(16px, 2vw, 18px) !important;
-    font-weight: 600 !important;
-    color: #1e293b;
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
   }
 }
 
@@ -55,73 +54,31 @@
 .headline,
 .heading-title,
 .box-header {
-  font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif !important;
-  font-size: clamp(18px, 2.5vw, 24px) !important;
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+  font-size: clamp(20px, 3vw, 24px) !important;
   line-height: 1.4;
-  font-weight: 600;
 }
 
-/* Paragraph & Body Text (Article) - 16px Mobile / 17px-18px Desktop, line-height 1.7, weight 400 */
+/* Paragraph & Body Text - 15px to 16px with line-height 1.6 */
 p, .body-text, .post-body, .entry-content p {
-  font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif;
-  font-size: 16px;
-  line-height: 1.7;
-  font-weight: 400;
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
   color: #222222;
 }
 
 @media (min-width: 640px) {
   p, .body-text, .post-body, .entry-content p {
-    font-size: 17px;
-  }
-}
-
-@media (min-width: 1024px) {
-  p, .body-text, .post-body, .entry-content p {
-    font-size: 18px;
-  }
-}
-
-/* Box / List Links (Home) - 14px-15px Mobile / 15px-16px Desktop, line-height 1.5, weight 500 */
-.box-link, .list-link, .home-grid-link {
-  font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  font-weight: 500;
-  color: #222222;
-}
-
-@media (min-width: 640px) {
-  .box-link, .list-link, .home-grid-link {
-    font-size: 15px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .box-link, .list-link, .home-grid-link {
     font-size: 16px;
   }
 }
 
-/* Menu, Dates & Table - 13px-14px Mobile / 14px-15px Desktop, line-height 1.4, weight 400 */
-table, td, th, .table-text, .meta-text, .compact-note, .bullet-item, nav, .menu-item, .date-badge {
-  font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
-  font-weight: 400;
+/* Tables, Bullet Lists & Compact Metadata - 14px */
+table, td, th, .table-text, .meta-text, .compact-note, .bullet-item {
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  font-size: 14px !important;
+  line-height: 1.5;
   color: #333333;
-}
-
-@media (min-width: 640px) {
-  table, td, th, .table-text, .meta-text, .compact-note, .bullet-item, nav, .menu-item, .date-badge {
-    font-size: 14px;
-  }
-}
-
-@media (min-width: 1024px) {
-  table, td, th, .table-text, .meta-text, .compact-note, .bullet-item, nav, .menu-item, .date-badge {
-    font-size: 15px;
-  }
 }
 
 /* Hyperlinks & Key Action Buttons - Standard Blue #0073aa */
@@ -138,22 +95,10 @@ a.wp-link:hover, .wp-link a:hover {
 .post-body,
 .post-article,
 .entry-content {
-  font-family: 'Noto Sans Devanagari', 'Hind', 'Poppins', 'Inter', sans-serif !important;
-  font-size: 16px;
-  line-height: 1.7;
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+  font-size: 15px;
+  line-height: 1.6;
   color: #222222;
-}
-
-@media (min-width: 640px) {
-  .post-content, .post-body, .post-article, .entry-content {
-    font-size: 17px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .post-content, .post-body, .post-article, .entry-content {
-    font-size: 18px;
-  }
 }
 
 .post-content strong,

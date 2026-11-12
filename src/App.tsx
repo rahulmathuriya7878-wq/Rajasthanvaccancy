@@ -34,8 +34,11 @@ import {
 import { 
   SubscribeAlertsModal 
 } from './components/SubscribeAlertsModal';
-import { OfflineIndicator } from './components/OfflineIndicator';
+import { 
+  OfflineIndicator 
+} from './components/OfflineIndicator';
 import { UrlIndexationModal } from './components/UrlIndexationModal';
+import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
@@ -962,6 +965,10 @@ export default function App() {
       />
 
       <OfflineIndicator lang={lang} />
+
+      <FloatingSocialButtons
+        lang={lang}
+      />
     </div>
   );
 }

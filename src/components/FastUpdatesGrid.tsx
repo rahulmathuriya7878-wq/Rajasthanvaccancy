@@ -316,40 +316,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         </div>
       )}
 
-      {/* Recent Posts Section - Matching WordPress rajasthanvacancy.com/india Screenshot */}
-      <section className="bg-white rounded-md p-5 border border-slate-200 shadow-2xs mb-6">
-        <h2 
-          className="font-bold text-slate-900 text-2xl sm:text-3xl mb-4 tracking-tight"
-          style={{ fontFamily: "'Inter', 'Noto Sans Devanagari', sans-serif", color: '#0f172a' }}
-        >
-          Recent Posts
-        </h2>
-
-        <div className="space-y-3.5">
-          {sortByNewest(vacancies).slice(0, 10).map((item) => (
-            <div key={item.id} className="group">
-              <button
-                type="button"
-                onClick={() => onSelectVacancy(item)}
-                className="text-left w-full cursor-pointer block group"
-              >
-                <span 
-                  className="font-medium text-[#0073aa] hover:text-[#005177] underline underline-offset-2 leading-relaxed text-[11px] sm:text-[11pt] block transition-colors"
-                  style={{
-                    fontFamily: "'Noto Sans Devanagari', 'Hind', 'Poppins', sans-serif",
-                    fontSize: '11pt',
-                    color: '#0073aa',
-                    textDecoration: 'underline'
-                  }}
-                >
-                  {isHi ? (item.titleHi || item.title) : item.title}
-                </span>
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Row 1: Latest Jobs, Admit Card, Results (3 columns) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
         {row1Sections.map(renderSectionBox)}
