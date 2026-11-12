@@ -18,6 +18,9 @@ const CATEGORY_NAMES_HI: Record<string, string> = {
 export function getBaseOriginFromRequest(req: Request): string {
   const host = (req.get('host') || '').toLowerCase();
   
+  if (host.includes('rajasthanvacancy.online')) {
+    return 'https://rajasthanvacancy.online';
+  }
   if (host.includes('pages.dev')) {
     return `https://${req.get('host')}`;
   }
@@ -33,7 +36,7 @@ export function getBaseOriginFromRequest(req: Request): string {
   if (host && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('run.app')) {
     return `https://${req.get('host')}`;
   }
-  return 'https://rajasthanvaccancy.pages.dev';
+  return 'https://rajasthanvacancy.online';
 }
 
 function escapeHtml(val: string | number | undefined | null): string {

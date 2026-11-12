@@ -599,7 +599,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     Boolean(editablePost.postalAddress);
 
   const [copiedLink, setCopiedLink] = useState(false);
-  const [sidebarSearch, setSidebarSearch] = useState('');
 
   // Unified Integrated Dates (Notification, Apply Start, Apply Last, Fee Last, Admit Card, Exam)
   const resolvedDates = useMemo(() => resolveJobDates(editablePost), [editablePost]);
@@ -1220,20 +1219,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     };
   }, [allVacancies, vacancy]);
 
-  // Recent Posts for the right sidebar (10 items)
+  // Recent Posts for related opportunities at the bottom of the card (10 items)
   const recentPosts = useMemo(() => {
     return allVacancies.filter(v => v.id !== vacancy.id).slice(0, 10);
   }, [allVacancies, vacancy]);
-
-  // Filtered recent posts if user searches in sidebar
-  const filteredRecentPosts = useMemo(() => {
-    if (!sidebarSearch.trim()) return recentPosts;
-    const q = sidebarSearch.toLowerCase().trim();
-    return allVacancies.filter(v => 
-      (v.title && v.title.toLowerCase().includes(q)) || 
-      (v.titleHi && v.titleHi.toLowerCase().includes(q))
-    ).slice(0, 10);
-  }, [allVacancies, recentPosts, sidebarSearch]);
 
   // Documents list (tailored specifically to highest eligibility)
   const documentsList = useMemo(() => {
@@ -1434,12 +1423,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         )}
       </div>
 
-      {/* Main 2-Column WordPress GeneratePress Layout */}
-      <div className="flex flex-col lg:flex-row gap-5 items-start">
-        {/* Main Article Content Area (70% on Desktop) */}
-        <main className="w-full lg:w-[70%] min-w-0">
+      {/* Full-Width Clean Card Layout for Optimal Readability */}
+      <div className="w-full max-w-4xl mx-auto">
+        {/* Main Article Content Area */}
+        <main className="w-full min-w-0">
           <article 
-            className="bg-white rounded-lg sm:rounded-xl p-3.5 sm:p-6 border border-slate-200 shadow-2xs"
+            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 border border-slate-200 shadow-xs"
           >
               {/* Admin Actions Bar (when admin is active) */}
               {isAdmin && (
@@ -1810,21 +1799,32 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   lineHeight: 1.75
                 }}
               >
-                {/* Small Normal WhatsApp Share Bar right above संक्षिप्त विवरण */}
-                <div className="flex items-center justify-between gap-2 p-2 px-3 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs">
+                {/* Small Normal WhatsApp Alert & Join Bar right above संक्षिप्त विवरण */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 px-3.5 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs">
                   <div className="flex items-center gap-1.5 font-bold text-slate-800">
                     <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
-                    <span className="text-xs sm:text-sm">🚨 BIG अपडेट व्हाट्सएप पर शेयर करें:</span>
+                    <span className="text-xs sm:text-sm">{isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:'}</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleShareBigUpdate}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
-                    title="WhatsApp पर BIG अपडेट शेयर करें"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
-                    <span>WhatsApp शेयर</span>
-                  </button>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <a
+                      href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="आधिकारिक WhatsApp चैनल से जुड़ें"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                      <span>{isHi ? 'WhatsApp चैनल जुड़ें' : 'Join Channel'}</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleShareBigUpdate}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="WhatsApp पर BIG अपडेट शेयर करें"
+                    >
+                      <span>{isHi ? 'शेयर करें' : 'Share'}</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Opening Lead Paragraphs */}
@@ -3641,185 +3641,44 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   ) : <div />}
                 </nav>
               </footer>
+              {/* Related Job Opportunities at the bottom of the card */}
+              {recentPosts.length > 0 && (
+                <div className="mt-10 pt-6 border-t border-slate-200">
+                  <h3 className="font-bold text-slate-900 mb-4 text-base sm:text-lg flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#15803d]"></span>
+                    <span>{isHi ? 'अन्य नवीनतम सरकारी भर्तियां' : 'Other Recent Job Notifications'}</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {recentPosts.slice(0, 4).map((rp) => (
+                      <a
+                        key={rp.id}
+                        href={`?vacancy=${rp.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onSelectOtherVacancy(rp);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="p-3.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50/60 hover:bg-blue-50/30 transition block group shadow-2xs"
+                      >
+                        <h4 
+                          className="post-title-link font-semibold text-xs sm:text-sm leading-snug"
+                          style={{ color: '#0066cc', textDecoration: 'underline' }}
+                        >
+                          {isHi ? (rp.titleHi || rp.title) : rp.title}
+                        </h4>
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2.5">
+                          <span className="font-semibold bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-700">
+                            {rp.organization}
+                          </span>
+                          <span>{formatDisplayDate(rp.updatedAt || rp.importantDates?.notificationDate || rp.createdAt)}</span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </article>
           </main>
-
-          {/* Right Sidebar (30% on Desktop) */}
-          <aside className="w-full lg:w-[30%] shrink-0 space-y-5 lg:sticky lg:top-4 self-start">
-            {/* Widget 1: Search Widget */}
-            <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs">
-              <h2 
-                className="headlight font-bold text-slate-900 mb-3"
-                style={{ fontSize: '11.5pt' }}
-              >
-                Search
-              </h2>
-              <div className="relative">
-                <input
-                  type="search"
-                  value={sidebarSearch}
-                  onChange={(e) => setSidebarSearch(e.target.value)}
-                  placeholder="खोजें..."
-                  className="w-full bg-white border border-slate-300 rounded p-2 text-xs pr-8 text-slate-800 focus:outline-none focus:border-slate-500"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Widget 2: Recent Posts Widget */}
-            <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs">
-              <h2 
-                className="font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2 flex items-center gap-1.5"
-                style={{ fontSize: '11.5pt' }}
-              >
-                <span className="w-2 h-2 rounded-full bg-[#0056b3] inline-block shrink-0"></span>
-                <span>{isHi ? 'हाल ही की पोस्ट (Recent Posts)' : 'Recent Posts'}</span>
-              </h2>
-
-              <ul className="space-y-3 divide-y divide-slate-100">
-                {filteredRecentPosts.map((rp) => (
-                  <li key={rp.id} className="pt-2.5 first:pt-0">
-                    <a
-                      href={`?vacancy=${rp.id}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onSelectOtherVacancy(rp);
-                      }}
-                      className="text-left w-full group cursor-pointer block"
-                    >
-                      <h3 
-                        className="font-semibold text-[#0056b3] group-hover:text-blue-800 group-hover:underline line-clamp-2 leading-snug"
-                        style={{
-                          fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                          fontSize: '11.5pt',
-                          lineHeight: 1.45,
-                          color: '#0056b3'
-                        }}
-                      >
-                        👉 <span className="text-[#0056b3] group-hover:text-blue-800">{isHi ? (rp.titleHi || rp.title) : rp.title}</span>
-                      </h3>
-                      <p className="text-[12px] text-slate-500 mt-1 pl-4 font-medium flex items-center gap-1">
-                        <span className="inline-block w-1 h-1 rounded-full bg-slate-400"></span>
-                        <span>{formatDisplayDate(rp.updatedAt || rp.importantDates?.notificationDate || rp.createdAt)}</span>
-                      </p>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Widget 3: Official Social Channels */}
-            <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs text-center space-y-3">
-              <h2 
-                className="headlight font-bold text-slate-900"
-                style={{ fontSize: '11.5pt' }}
-              >
-                Join Social Channels
-              </h2>
-              <p className="text-xs text-slate-600">
-                प्रतिदिन सभी सरकारी भर्ती, एडमिट कार्ड एवं रिजल्ट की सबसे तेज अपडेट सीधे पाएं।
-              </p>
-              <div className="flex flex-col gap-2">
-                <a
-                  href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs"
-                >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>WhatsApp चैनल जॉइन करें</span>
-                </a>
-                <a
-                  href="https://t.me/newrajsthanjobs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2 bg-[#0088cc] hover:bg-[#0077b5] text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs"
-                >
-                  <Send className="w-4 h-4 fill-white" />
-                  <span>Telegram चैनल जॉइन करें</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Widget 4: Popular Categories Quick Links */}
-            <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs">
-              <h2 
-                className="font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2 flex items-center gap-1.5"
-                style={{ fontSize: '11.5pt' }}
-              >
-                <Folder className="w-4 h-4 text-slate-500" />
-                <span>{isHi ? 'महत्वपूर्ण श्रेणियां' : 'Top Categories'}</span>
-              </h2>
-              <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-                {[
-                  { key: 'job', label: isHi ? '💼 लेटेस्ट जॉब्स' : 'Latest Jobs' },
-                  { key: 'admit_card', label: isHi ? '🎫 एडमिट कार्ड' : 'Admit Card' },
-                  { key: 'result', label: isHi ? '🏆 रिजल्ट' : 'Result' },
-                  { key: 'answer_key', label: isHi ? '🔑 उत्तर कुंजी' : 'Answer Key' },
-                  { key: 'syllabus', label: isHi ? '📚 सिलेबस' : 'Syllabus' },
-                  { key: 'scheme', label: isHi ? '🏛️ योजनाएं' : 'Govt Schemes' },
-                ].map(cat => (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    onClick={() => {
-                      if (onSelectCategory) {
-                        onSelectCategory(cat.key);
-                      } else {
-                        onBack();
-                      }
-                    }}
-                    className="p-2 rounded bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-center transition cursor-pointer"
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Widget 5: Trending Viral Tags Cloud Widget - Hidden for normal user, visible only for admin */}
-            {isAdmin && (
-              <div className="bg-white rounded-lg p-4 sm:p-5 border border-slate-200 shadow-2xs">
-                <h2 
-                  className="font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2 flex items-center justify-between"
-                  style={{ fontSize: '11.5pt' }}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <Flame className="w-4 h-4 text-rose-600 fill-rose-600 animate-bounce" />
-                    <span>{isHi ? 'वायरल टैग्स (Admin View)' : 'Viral Tags (Admin View)'}</span>
-                  </div>
-                  <span className="text-[10px] font-extrabold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-full border border-rose-200 uppercase">
-                    {displayTags.length} {isHi ? 'टैग्स' : 'Tags'}
-                  </span>
-                </h2>
-                <div className="flex flex-wrap gap-1.5">
-                  {displayTags.map((tag, idx) => {
-                    const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleTagClick(cleanTag)}
-                        className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#0056b3] border border-slate-200 hover:border-blue-300 transition cursor-pointer flex items-center gap-1 group"
-                        title={`${cleanTag} की अन्य पोस्ट देखें`}
-                      >
-                        <Tag className="w-3 h-3 text-[#0056b3]/60 group-hover:text-[#0056b3]" />
-                        <span>{cleanTag}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* In-sidebar Ad unit */}
-            <AdSection 
-              client="ca-pub-8302542447035711"
-              slot="3785509362"
-              format="rectangle"
-              label={isHi ? 'विज्ञापन' : 'Advertisement'}
-            />
-          </aside>
         </div>
 
       {/* Modal 1: Add New Section to Post */}

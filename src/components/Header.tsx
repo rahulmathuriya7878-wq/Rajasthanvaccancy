@@ -161,31 +161,31 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Main Branding & Navigation Header */}
-      <div className="bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      {/* Main Branding & Navigation Header - Clean White Theme matching screenshot */}
+      <div className="bg-white text-slate-900 border-b border-slate-200 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
           <div className="flex items-center justify-between gap-4">
             {/* Logo & Identity */}
             <div 
               onClick={onGoHome}
-              className={`flex items-center gap-3 ${onGoHome ? 'cursor-pointer hover:opacity-90 transition' : ''}`}
+              className={`flex items-center gap-2.5 ${onGoHome ? 'cursor-pointer hover:opacity-90 transition' : ''}`}
               title="Go to Home"
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#0073aa] flex items-center justify-center text-white font-extrabold shadow-sm ring-1 ring-white/20">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-[#15803d] flex items-center justify-center text-white font-extrabold shadow-xs">
                 <div className="text-center leading-none">
-                  <span className="text-[10px] block font-mono text-amber-300 font-bold">RAJ</span>
+                  <span className="text-[9px] block font-mono text-amber-200 font-bold">RAJ</span>
                   <span className="text-xs font-black tracking-tight text-white">JOBS</span>
                 </div>
               </div>
 
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-lg sm:text-2xl font-black tracking-tight headlight flex items-center">
-                    <span className="text-amber-400 font-black">Rajasthan</span>
-                    <span className="text-white font-extrabold">Vacancy</span>
+                <div className="flex items-center gap-1">
+                  <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 flex items-center">
+                    <span>Rajasthan</span>
+                    <span className="text-[#15803d] font-black ml-1">Vacancy</span>
                   </h1>
                 </div>
-                <p className="text-[10px] sm:text-xs text-slate-300 font-medium">
+                <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
                   {isHi ? 'राजस्थान व केंद्र भर्ती, रिजल्ट एवं योजना पोर्टल' : 'Govt Jobs, Exam Alerts & Sarkari Result Portal'}
                 </p>
               </div>
@@ -193,15 +193,16 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Header Navigation Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Mobile Menu Toggle Button */}
+              {/* Mobile Menu Toggle Button matching '≡ Menu' from screenshot */}
               <button
                 onClick={() => {
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className="md:hidden p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition cursor-pointer"
+                className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-slate-800 hover:bg-slate-100 font-semibold text-xs transition cursor-pointer"
                 aria-label="Toggle Menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-4 h-4 text-slate-800" /> : <Menu className="w-4 h-4 text-slate-800" />}
+                <span>Menu</span>
               </button>
 
               {/* URL Inspection Button (Admin Only) */}
@@ -235,10 +236,10 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Mobile Navigation Dropdown Drawer with all Important Sections */}
+          {/* Mobile Navigation Dropdown Drawer with all Important Sections - Clean White Background */}
           {mobileMenuOpen && (
-            <nav className="md:hidden mt-3 pt-3 border-t border-slate-800 flex flex-col gap-1.5 text-xs font-bold text-slate-200 animate-fadeIn bg-slate-800 p-3 rounded-xl shadow-md max-h-[75vh] overflow-y-auto">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 py-1">
+            <nav className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-1.5 text-xs font-bold text-slate-800 animate-fadeIn bg-white p-3 rounded-xl shadow-lg border border-slate-200 max-h-[75vh] overflow-y-auto">
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-2 py-1">
                 {isHi ? 'वेबसाइट के मुख्य सेक्शंस' : 'Important Website Sections'}
               </div>
 
@@ -251,12 +252,12 @@ export const Header: React.FC<HeaderProps> = ({
                     onClick={() => handleSectionClick(sec)}
                     className={`text-left px-3 py-2 rounded-lg transition flex items-center justify-between cursor-pointer ${
                       isActive 
-                        ? 'bg-[#0073aa] text-white font-extrabold shadow-xs' 
-                        : 'hover:bg-slate-700/80 text-slate-200'
+                        ? 'bg-[#15803d] text-white font-extrabold shadow-xs' 
+                        : 'hover:bg-slate-100 text-slate-800 font-semibold'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4 text-amber-400" />
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#15803d]'}`} />
                       <span className="headlight">{isHi ? sec.titleHi : sec.title}</span>
                     </div>
                   </button>
@@ -302,10 +303,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar */}
+      {/* Dedicated Full-Width "Important Website Sections" Navigation Bar - Clean White Theme */}
       <nav 
         aria-label="Important Website Sections"
-        className="hidden md:block w-full bg-slate-800 border-b border-slate-700 select-none shadow-xs text-white"
+        className="hidden md:block w-full bg-white border-b border-slate-200 select-none shadow-xs text-slate-800"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-start gap-2 overflow-x-auto py-2 scrollbar-none">
@@ -316,9 +317,9 @@ export const Header: React.FC<HeaderProps> = ({
               let buttonClasses = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
 
               if (isActive) {
-                buttonClasses += 'bg-[#0073aa] text-white font-extrabold shadow-sm ring-1 ring-white/20 ';
+                buttonClasses += 'bg-[#15803d] text-white font-extrabold shadow-xs ';
               } else {
-                buttonClasses += 'text-slate-200 hover:text-white hover:bg-slate-700 active:scale-95 ';
+                buttonClasses += 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:scale-95 ';
               }
 
               return (
@@ -331,7 +332,7 @@ export const Header: React.FC<HeaderProps> = ({
                   }}
                   title={isHi ? sec.titleHi : sec.title}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-amber-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#15803d]'}`} />
                   <span className="headlight whitespace-nowrap">
                     {sec.shortTitle}
                   </span>

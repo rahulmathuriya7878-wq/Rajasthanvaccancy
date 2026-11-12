@@ -3534,7 +3534,7 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
     {
       label: 'Join WhatsApp Channel (राजस्थान भर्ती अपडेट्स)',
       actionText: 'Join Channel',
-      url: 'https://whatsapp.com/channel/0029VaA7MglAojYpS1E86t1j'
+      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
     },
     {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',

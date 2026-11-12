@@ -53,7 +53,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   onDeleteVacancy,
 }) => {
   const isHi = lang === 'hi';
-  const [sidebarSearch, setSidebarSearch] = useState('');
 
   // 10 recent posts for the authentic GeneratePress sidebar
   const recentPosts = [...allVacancies]
@@ -175,8 +174,8 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
 
                     <h2 
                       onClick={() => onSelectVacancy(item)}
-                      className="entry-title text-xl sm:text-2xl font-bold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 transition cursor-pointer headlight leading-snug mb-2"
-                      style={{ color: '#0284c7', textDecoration: 'underline' }}
+                      className="entry-title post-title-link text-xl sm:text-2xl font-bold transition cursor-pointer leading-snug mb-2"
+                      style={{ color: '#0066cc', textDecoration: 'underline' }}
                     >
                       <span>{title}</span>
                     </h2>

@@ -12,9 +12,6 @@ import {
   CategoryArchiveView 
 } from './components/CategoryArchiveView';
 import { 
-  Sidebar 
-} from './components/Sidebar';
-import { 
   Footer 
 } from './components/Footer';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
@@ -22,6 +19,7 @@ import { TermsAndConditions } from './components/TermsAndConditions';
 import { ContactUs } from './components/ContactUs';
 import { AboutUs } from './components/AboutUs';
 import { Disclaimer } from './components/Disclaimer';
+import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { 
   EligibilityFinderModal 
 } from './components/EligibilityFinderModal';
@@ -776,11 +774,9 @@ export default function App() {
         onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
       />
 
-      {/* Main Body Container - Classic 2-Column WordPress Job Portal Structure */}
-      <main className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Main Content Area (Left Column - 8 Cols) */}
-          <div className="lg:col-span-8 space-y-6">
+      {/* Main Body Container - Clean Portal Structure */}
+      <main className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
+        <div className="w-full space-y-6">
             {activePolicyView === 'privacy' ? (
               <PrivacyPolicy
                 lang={lang}
@@ -860,6 +856,11 @@ export default function App() {
             ) : (
               /* Home View: 3x2 Grid Fast Access Updates */
               <div className="space-y-4">
+                <div className="pt-1 pb-1">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Rajasthan Vacancy 2026
+                  </h1>
+                </div>
                 <FastUpdatesGrid
                   vacancies={filteredVacancies}
                   lang={lang}
@@ -877,24 +878,6 @@ export default function App() {
                 />
               </div>
             )}
-          </div>
-
-          {/* Right Column - WordPress Style Sidebar (4 Cols) */}
-          <div className="lg:col-span-4 sticky top-4">
-            <Sidebar
-              lang={lang}
-              allVacancies={vacancies}
-              onSelectVacancy={handleSelectVacancy}
-              onSelectCategory={(catKey) => {
-                setSelectedVacancy(null);
-                setSelectedCategory(catKey);
-                setActivePolicyView(null);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onOpenSaved={() => setIsSavedOpen(true)}
-              onOpenEligibility={() => setIsEligibilityOpen(true)}
-            />
-          </div>
         </div>
       </main>
 
@@ -962,6 +945,11 @@ export default function App() {
         }}
       />
 
+      <FloatingSocialButtons 
+        lang={lang} 
+        whatsappUrl="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+        telegramUrl="https://t.me/newrajsthanjobs"
+      />
       <OfflineIndicator lang={lang} />
     </div>
   );

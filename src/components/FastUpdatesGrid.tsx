@@ -142,63 +142,68 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   ];
 
   const formatPostDate = (item: VacancyItem) => {
-    return formatDisplayDate(item.updatedAt || item.createdAt || item.importantDates?.notificationDate);
+    const rawDate = item.updatedAt || item.createdAt || item.importantDates?.notificationDate;
+    if (!rawDate) return 'November 12, 2026';
+    try {
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    } catch {}
+    return rawDate;
   };
 
   const renderSectionBox = (sec: typeof row1Sections[0]) => {
     return (
       <div 
         key={sec.key}
-        className="bg-white rounded-md flex flex-col justify-between transition-shadow hover:shadow-xs"
-        style={{ border: '2px solid #b2b2be' }}
+        className="bg-white rounded-lg border border-slate-300 shadow-xs flex flex-col justify-between transition-shadow hover:shadow-sm"
       >
-        {/* Signature Green Rounded Pill Header */}
-        <div className="p-3 pb-0">
+        {/* Signature Green Rounded Header matching screenshot */}
+        <div className="p-3.5 pb-2">
           <h2 
-            className="headlight text-center font-bold text-white text-base py-1.5 px-3 select-none"
+            onClick={() => onFilterCategory && onFilterCategory(sec.categoryType)}
+            className="w-full text-center font-bold text-white text-lg sm:text-xl py-2 px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs"
             style={{ 
-              backgroundColor: '#1e953a', 
-              border: '5px solid #1e953a', 
-              borderRadius: '10px',
+              backgroundColor: '#15803d', 
+              borderRadius: '8px',
               fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-              fontSize: '12pt',
-              lineHeight: 1.35
+              fontSize: '18px',
+              lineHeight: 1.3
             }}
           >
             {sec.title}
           </h2>
         </div>
 
-        {/* List of Posts */}
-        <div className="p-4 pt-3 flex-1 flex flex-col justify-between">
-          <div className="space-y-3">
+        {/* List of Posts matching screenshot */}
+        <div className="p-4 pt-2 flex-1 flex flex-col justify-between">
+          <div className="space-y-4">
             {sec.items.length > 0 ? (
-              sec.items.slice(0, 5).map((item, idx) => (
+              sec.items.slice(0, 5).map((item) => (
                 <div 
                   key={item.id} 
-                  className={`pb-2.5 ${idx !== 4 && idx !== sec.items.length - 1 ? 'border-b border-dashed border-slate-200' : ''}`}
+                  className="group"
                 >
-                  <div className="flex items-start justify-between gap-1 group">
+                  <div className="flex items-start justify-between gap-1">
                     <button
                       type="button"
                       onClick={() => onSelectVacancy(item)}
-                      className="text-left flex-1 min-w-0 cursor-pointer block"
+                      className="text-left flex-1 min-w-0 cursor-pointer block group"
                     >
                       <h3 
-                        className="post-item font-semibold text-[#0284c7] hover:text-[#0369a1] underline underline-offset-2 line-clamp-2 leading-snug cursor-pointer transition-colors"
+                        className="post-title-link text-[16px] sm:text-[17px] font-semibold leading-snug cursor-pointer block"
                         style={{
                           fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                          fontSize: '12pt',
-                          lineHeight: 1.45,
-                          color: '#0284c7',
-                          textDecoration: 'underline'
+                          color: '#0066cc',
+                          textDecoration: 'underline',
+                          textUnderlineOffset: '3px',
                         }}
                       >
                         {isHi ? (item.titleHi || item.title) : item.title}
                       </h3>
                       <p 
-                        className="text-[13px] text-[#575760] mt-1 select-none font-medium"
-                        style={{ color: '#575760', fontSize: '13px' }}
+                        className="text-xs sm:text-[13px] text-gray-500 mt-1 select-none font-normal"
                       >
                         {formatPostDate(item)}
                       </p>
