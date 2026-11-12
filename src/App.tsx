@@ -277,7 +277,6 @@ export default function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
   const [ageCalcParams, setAgeCalcParams] = useState<{ asOnDate?: string; minAge?: number; maxAge?: number }>({});
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isEligibilityOpen, setIsEligibilityOpen] = useState(false);
   const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);

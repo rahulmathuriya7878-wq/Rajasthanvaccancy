@@ -1,7 +1,7 @@
 import type { Request } from 'express';
-import { INITIAL_VACANCIES } from '../data/mockVacancies.ts';
-import { VacancyItem, CategoryType } from '../types.ts';
-import { getJobFeaturedImage } from '../utils/thumbnailGenerator.ts';
+import { INITIAL_VACANCIES } from '../data/mockVacancies';
+import { VacancyItem, CategoryType } from '../types';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 
 const CATEGORY_NAMES_HI: Record<string, string> = {
   latest_job: 'सरकारी नौकरियां (Latest Govt Jobs)',

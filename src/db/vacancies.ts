@@ -1,5 +1,5 @@
-import { db } from './index.ts';
-import { savedVacancies } from './schema.ts';
+import { db } from './index';
+import { savedVacancies } from './schema';
 import { eq, and } from 'drizzle-orm';
 
 export async function getSavedVacanciesByUserId(userId: number) {
