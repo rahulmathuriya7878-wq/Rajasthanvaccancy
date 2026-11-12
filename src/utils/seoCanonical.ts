@@ -10,18 +10,24 @@
  * 5. Dynamically adapts to production domain (rajasthanvacancy.com or vercel.app).
  */
 
-export const DEFAULT_PRODUCTION_ORIGIN = 'https://rajasthanvaccancy.vercel.app';
+export const DEFAULT_PRODUCTION_ORIGIN = 'https://rajasthanvaccancy.pages.dev';
 
 /**
  * Detect the appropriate canonical base origin dynamically.
- * Prioritizes custom production domain (rajasthanvacancy.com) and current vercel host,
- * falling back to DEFAULT_PRODUCTION_ORIGIN for development/sandbox environments.
+ * Prioritizes Cloudflare Pages (rajasthanvaccancy.pages.dev) and custom domains.
  */
 export function getCanonicalOrigin(): string {
   if (typeof window !== 'undefined' && window.location) {
     const host = window.location.hostname.toLowerCase();
     
+    // Cloudflare Pages support
+    if (host.includes('pages.dev')) {
+      return `https://${window.location.host}`;
+    }
     // Custom domain support
+    if (host.includes('rajasthanvacancies.com')) {
+      return 'https://rajasthanvacancies.com';
+    }
     if (host.includes('rajasthanvacancy.com')) {
       return 'https://rajasthanvacancy.com';
     }

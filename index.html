@@ -32,13 +32,17 @@
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="author" content="Rajasthan Vacancy Portal" />
     <meta name="theme-color" content="#d97706" />
-    <link rel="canonical" id="primary-canonical" href="https://rajasthanvaccancy.vercel.app/" />
+    <link rel="canonical" id="primary-canonical" href="https://rajasthanvaccancy.pages.dev/" />
     <script>
       (function() {
         try {
           var host = window.location.hostname.toLowerCase();
-          var origin = 'https://rajasthanvaccancy.vercel.app';
-          if (host.indexOf('rajasthanvacancy.com') !== -1) {
+          var origin = 'https://rajasthanvaccancy.pages.dev';
+          if (host.indexOf('pages.dev') !== -1) {
+            origin = 'https://' + window.location.host;
+          } else if (host.indexOf('rajasthanvacancies.com') !== -1) {
+            origin = 'https://rajasthanvacancies.com';
+          } else if (host.indexOf('rajasthanvacancy.com') !== -1) {
             origin = 'https://rajasthanvacancy.com';
           } else if (host.indexOf('vercel.app') !== -1) {
             origin = 'https://' + window.location.host;

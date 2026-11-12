@@ -143,7 +143,7 @@ async function startServer() {
   app.get('/robots.txt', (req, res) => {
     const origin = getBaseOriginFromRequest(req);
     res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://rajasthanvacancy.com/sitemap.xml\nSitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml\n`);
+    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://rajasthanvaccancy.pages.dev/sitemap.xml\nSitemap: https://rajasthanvacancies.com/sitemap.xml\nSitemap: https://rajasthanvacancy.com/sitemap.xml\nSitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml\n`);
   });
 
   // Dynamic RSS 2.0 Feed for Google News & Search Instant Reach
