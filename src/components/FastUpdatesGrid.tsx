@@ -192,7 +192,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       className="text-left flex-1 min-w-0 cursor-pointer block group"
                     >
                       <h3 
-                        className="post-title-link text-[16px] sm:text-[17px] font-semibold leading-snug cursor-pointer block"
+                        className="post-title-link font-semibold leading-snug cursor-pointer block"
                         style={{
                           fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                           color: '#0066cc',

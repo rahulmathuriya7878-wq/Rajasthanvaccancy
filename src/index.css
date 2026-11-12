@@ -22,39 +22,48 @@
     overflow-x: hidden;
   }
 
-  /* Main Page & Post H1 Title - 28px to 32px Bold */
+  /* Main Page & Post H1 Title - Balanced 22px to 26px Bold */
   h1, .page-title, .post-title, .h1-title {
     font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-    font-size: clamp(28px, 4vw, 32px);
+    font-size: clamp(21px, 3vw, 25px);
     font-weight: 800;
-    line-height: 1.3;
+    line-height: 1.35;
     color: #1e293b;
     letter-spacing: -0.01em;
   }
 
-  /* Section Headings H2 / H3 - 20px to 24px Bold */
-  h2, h3, .section-heading, .headlight, .headline, .heading-title, .box-header {
+  /* Section Headings H2 / H3 - Balanced 18px to 21px Bold */
+  h2, .section-heading, .headlight, .headline, .heading-title, .box-header {
     font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-    font-size: clamp(20px, 3vw, 24px);
+    font-size: clamp(18px, 2.5vw, 21px);
     font-weight: 700;
+    line-height: 1.4;
+    color: #0f172a;
+  }
+
+  h3 {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 600;
     line-height: 1.4;
     color: #0f172a;
   }
 
   h4, h5, h6 {
     font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
     color: #1e293b;
   }
 }
 
-/* Authentic Job Post Title Link - Full Title & Bright Blue Link */
+/* Authentic Job Post Title Link - 12pt Font Size & Bright Blue Link */
 .post-title-link {
+  font-size: 12pt !important;
   color: #0066cc !important;
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   line-height: 1.45 !important;
   transition: color 0.15s ease-in-out;
 }
@@ -70,30 +79,16 @@
 .heading-title,
 .box-header {
   font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-  font-size: clamp(20px, 3vw, 24px);
+  font-size: clamp(18px, 2.5vw, 21px);
   line-height: 1.4;
 }
 
-/* Paragraph & Body Text - 15px to 16px with line-height 1.6 */
-p, .body-text, .post-body, .entry-content p {
+/* Paragraph & Normal Post Body Text - 12pt */
+p, .body-text, .post-body, .post-item, .entry-content p, .entry-content li {
   font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 12pt !important;
+  line-height: 1.65;
   color: #222222;
-}
-
-@media (min-width: 640px) {
-  p, .body-text, .post-body, .entry-content p {
-    font-size: 16px;
-  }
-}
-
-/* Tables, Bullet Lists & Compact Metadata - 14px */
-table, td, th, .table-text, .meta-text, .compact-note, .bullet-item {
-  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
-  font-size: 14px !important;
-  line-height: 1.5;
-  color: #333333;
 }
 
 /* Hyperlinks & Key Action Buttons - Standard Blue #0073aa */
@@ -111,8 +106,8 @@ a.wp-link:hover, .wp-link a:hover {
 .post-article,
 .entry-content {
   font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 12pt;
+  line-height: 1.65;
   color: #222222;
 }
 
@@ -124,20 +119,85 @@ a.wp-link:hover, .wp-link a:hover {
   font-weight: 700;
 }
 
-.post-content th,
-.entry-content th {
-  font-size: 14px !important;
-  font-weight: 700;
+/* 1. पोस्ट की H2 सबहेडिंग */
+.entry-content h2 {
+  font-size: 22px !important;
+  line-height: 1.3 !important;
+  font-weight: 600 !important;
   color: #0f172a;
-  background-color: #f8fafc;
-  padding: 10px 12px;
 }
 
-.post-content td,
-.entry-content td {
-  font-size: 14px !important;
-  color: #333333;
-  padding: 10px 12px;
+/* मोबाइल पर चौड़ी टेबल से पेज न टूटे इसके लिए स्क्रॉल सपोर्ट */
+.entry-content .wp-block-table,
+.entry-content .overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0;
+}
+
+/* 2. टेबल का मुख्य लेआउट और बॉर्डर */
+.entry-content table,
+.entry-content .wp-block-table table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e2e8f0 !important;
+  background-color: #ffffff;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* टेबल हेडर (TH) और डेटा सेल (TD) की पैडिंग व बॉर्डर */
+.entry-content table th,
+.entry-content table td {
+  border: 1px solid #e2e8f0 !important;
+  padding: 12px 14px !important;
+  text-align: left;
+  vertical-align: top;
+  color: #222222;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* हेडर रो को अलग और स्पष्ट दिखाने के लिए */
+.entry-content table th,
+.entry-content table thead tr {
+  background-color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+/* हर दूसरी रो में हल्का बैकग्राउंड (Zebra Striping) */
+.entry-content table tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.entry-content table tbody tr:nth-child(even),
+.entry-content table tbody tr:nth-child(even) td {
+  background-color: #f8fafc !important;
+}
+
+/* 3. पोस्ट का मेटाडेटा (तारीख और लेखक) */
+.entry-header .entry-meta,
+.entry-meta {
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+/* मोबाइल स्क्रीन (768px या उससे कम) के लिए पैडिंग और फ़ॉन्ट */
+@media (max-width: 768px) {
+  .entry-content h2 {
+    font-size: 20px !important;
+  }
+  .entry-content table,
+  .entry-content .wp-block-table table,
+  .entry-content table th,
+  .entry-content table td {
+    font-size: 14px !important;
+  }
+  .entry-content table th,
+  .entry-content table td {
+    padding: 9px 10px !important;
+  }
 }
 
 /* Mobile Table & Touch Optimization */

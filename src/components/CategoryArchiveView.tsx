@@ -174,7 +174,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
 
                     <h2 
                       onClick={() => onSelectVacancy(item)}
-                      className="entry-title post-title-link text-xl sm:text-2xl font-bold transition cursor-pointer leading-snug mb-2"
+                      className="entry-title post-title-link transition cursor-pointer leading-snug mb-2"
                       style={{ color: '#0066cc', textDecoration: 'underline' }}
                     >
                       <span>{title}</span>

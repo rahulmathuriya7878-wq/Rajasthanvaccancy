@@ -96,7 +96,7 @@ export const RecentPostsList: React.FC<RecentPostsListProps> = ({
                 className="text-left w-full cursor-pointer block group focus:outline-none"
               >
                 <h3 
-                  className="post-title-link text-[16.5px] sm:text-[18px] font-semibold leading-snug cursor-pointer block transition-colors"
+                  className="post-title-link font-semibold leading-snug cursor-pointer block transition-colors"
                   style={{
                     fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                     color: '#0066cc',
