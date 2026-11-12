@@ -2,10 +2,10 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
-import { requireAuth, AuthRequest } from './src/middleware/auth.ts';
-import { getOrCreateUser, getUserByUid } from './src/db/users.ts';
-import { getSavedVacanciesByUserId, saveVacancyItem, removeSavedVacancyItem } from './src/db/vacancies.ts';
-import { renderSeoEnhancedHtml, getBaseOriginFromRequest } from './src/server/seoRenderer.ts';
+import { requireAuth, AuthRequest } from './src/middleware/auth';
+import { getOrCreateUser, getUserByUid } from './src/db/users';
+import { getSavedVacanciesByUserId, saveVacancyItem, removeSavedVacancyItem } from './src/db/vacancies';
+import { renderSeoEnhancedHtml, getBaseOriginFromRequest } from './src/server/seoRenderer';
 
 async function startServer() {
   const app = express();
@@ -88,7 +88,7 @@ async function startServer() {
   // Automated Job Scraper / RSS Feed Parser Endpoint
   app.get('/api/vacancies/feed', async (_req, res) => {
     try {
-      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper.ts');
+      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper');
       const liveItems = await fetchLiveGovernmentJobsFromRSS();
       res.json({ success: true, count: liveItems.length, data: liveItems, fetchedAt: new Date().toISOString() });
     } catch (error: any) {
@@ -99,7 +99,7 @@ async function startServer() {
 
   app.post('/api/vacancies/sync', async (_req, res) => {
     try {
-      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper.ts');
+      const { fetchLiveGovernmentJobsFromRSS } = await import('./src/services/rssScraper');
       const liveItems = await fetchLiveGovernmentJobsFromRSS();
       res.json({ success: true, count: liveItems.length, items: liveItems, syncedAt: new Date().toISOString() });
     } catch (error: any) {
@@ -112,7 +112,7 @@ async function startServer() {
   app.get('/sitemap.xml', async (req, res) => {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
-      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       
       // Home
@@ -150,7 +150,7 @@ async function startServer() {
   app.get('/rss.xml', async (req, res) => {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
-      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
       let rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n`;
       rss += `  <title>Rajasthan Vacancy 2026 - Sarkari Job Alerts</title>\n`;
       rss += `  <link>${baseUrl}/</link>\n`;
@@ -186,7 +186,7 @@ async function startServer() {
   app.all('/api/seo/auto-index', async (_req, res) => {
     try {
       const baseUrl = 'https://rajasthanvaccancy.vercel.app';
-      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies.ts');
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
 
       const urlList = [
         `${baseUrl}/`,
@@ -342,6 +342,11 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     }
   });
 
+  // Serve compiled static files in production before fallback HTML middleware
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.resolve('dist')));
+  }
+
   // Vite dev middleware or production static files with SSR Pre-Rendering for Googlebot & Users
   let vite: any = null;
   if (process.env.NODE_ENV !== 'production') {
@@ -349,6 +354,7 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
       server: { middlewareMode: true, hmr: false },
       appType: 'custom',
     });
+    app.use(vite.middlewares);
   }
 
   // Pre-render HTML for Googlebot / Search Crawlers & Browsers
