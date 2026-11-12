@@ -344,34 +344,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
         {row2Sections.map(renderSectionBox)}
       </div>
-
-      {/* "ABOUT RAJASTHAN VACCANCY/JOBS" Section */}
-      <section className="bg-white rounded-md p-6 border border-slate-200 mt-8 shadow-xs">
-        <h2 
-          className="headlight font-bold text-slate-900 mb-3"
-          style={{ 
-            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: '14pt',
-            fontWeight: 'bold',
-            color: '#0f172a'
-          }}
-        >
-          ABOUT RAJASTHAN JOBS/VACCANCY
-        </h2>
-        <p 
-          className="post-item text-slate-700 leading-relaxed text-justify"
-          style={{ 
-            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: '12pt',
-            lineHeight: 1.7,
-            color: '#334155'
-          }}
-        >
-          {isHi 
-            ? 'राजस्थान के सभी आकांक्षी युवाओं एवं प्रतियोगी परीक्षार्थियों के लिए सबसे तेज, विश्वसनीय, सटीक एवं प्रामाणिक भर्ती सूचना मंच। राजस्थान कर्मचारी चयन बोर्ड (RSMSSB), राजस्थान लोक सेवा आयोग (RPSC), राजस्थान पुलिस, रीट (REET) तथा अन्य सभी राज्य एवं केंद्रीय प्रतियोगी परीक्षाओं के नवीनतम सरकारी जॉब अलर्ट्स, एडमिट कार्ड, सिलेबस, कट-ऑफ और परीक्षा परिणामों की पल-पल की सटीक अपडेट सबसे पहले प्राप्त करें।'
-            : 'Premier recruitment and job notification portal for Rajasthan candidates. Real-time updates on RSMSSB, RPSC, Police, REET, results, admit cards, syllabus, cut-off, and exam notifications.'}
-        </p>
-      </section>
     </div>
   );
 };
