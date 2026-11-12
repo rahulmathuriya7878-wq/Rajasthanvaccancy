@@ -52,7 +52,6 @@ import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { AdvancedFilterBar } from './components/AdvancedFilterBar';
-import { TrendingTrafficBar } from './components/TrendingTrafficBar';
 import { 
   VacancyItem, 
   BoardType, 
@@ -864,41 +863,8 @@ export default function App() {
             onDeleteVacancy={handleDeleteVacancy}
           />
         ) : (
-          /* Home View: Advanced Filter Bar & 3x2 Grid Fast Access Updates */
+          /* Home View: 3x2 Grid Fast Access Updates */
           <div className="space-y-4">
-            <TrendingTrafficBar
-              lang={lang}
-              onSearchKeyword={(keyword) => setSearchQuery(keyword)}
-              onSelectVacancyById={(id) => {
-                const found = vacancies.find(v => v.id === id);
-                if (found) handleSelectVacancy(found);
-              }}
-              onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
-              vacancies={vacancies}
-            />
-
-            <AdvancedFilterBar
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              selectedBoard={selectedBoard}
-              setSelectedBoard={setSelectedBoard}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              selectedQualification={selectedQualification}
-              setSelectedQualification={setSelectedQualification}
-              selectedLocation={selectedLocation}
-              setSelectedLocation={setSelectedLocation}
-              selectedJobType={selectedJobType}
-              setSelectedJobType={setSelectedJobType}
-              selectedSalaryRange={selectedSalaryRange}
-              setSelectedSalaryRange={setSelectedSalaryRange}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              onResetFilters={handleResetFilters}
-              totalResultsCount={filteredVacancies.length}
-              lang={lang}
-            />
-
             <FastUpdatesGrid
               vacancies={filteredVacancies}
               lang={lang}

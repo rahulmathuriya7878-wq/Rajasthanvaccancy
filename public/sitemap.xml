@@ -60,6 +60,12 @@
 
   <!-- Major Trending & High Priority Recruitment Pages -->
   <url>
+    <loc>https://rajasthanvaccancy.vercel.app/?vacancy=kalibai-scooty-yojana-2026</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://rajasthanvaccancy.vercel.app/?vacancy=indian-air-force-recruitment-afcat-01-2027</loc>
     <lastmod>2026-11-10</lastmod>
     <changefreq>hourly</changefreq>

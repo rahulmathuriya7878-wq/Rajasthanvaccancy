@@ -28,13 +28,13 @@ export const TrendingTrafficBar: React.FC<TrendingTrafficBarProps> = ({
   const isHi = lang === 'hi';
 
   const trendingKeywords = [
+    { label: 'काली बाई स्कूटी योजना 2026', id: 'kalibai-scooty-yojana-2026', isHot: true },
     { label: 'एयरफोर्स AFCAT 01/2027', id: 'indian-air-force-recruitment-afcat-01-2027', isHot: true },
     { label: 'KVS संविदा साथी 2026', id: 'kvs-samvida-sathi-recruitment-2026', isHot: true },
     { label: 'CTET 2026 एग्जाम सेंटर', id: 'ctet-2026-exam-center-news', isHot: true },
     { label: 'JEE Main 2027', id: 'jee-main-2027-session-1', isHot: false },
     { label: 'राजस्थान CET 12th', id: 'rajasthan-cet-12th-admit-card-2026', isHot: false },
     { label: 'पशु परिचर रिजल्ट', id: 'rsmssb-pashu-parichar-result-2026', isHot: false },
-    { label: 'सैनिक स्कूल चित्तौड़गढ़', id: 'sainik-school-chittorgarh-2026', isHot: false },
     { label: 'अंबेडकर DBT वाउचर', id: 'ambedkar-dbt-voucher-yojana-2026', isHot: false },
     { label: 'रेलवे ग्रुप D', id: 'railway-group-d-recruitment-2026', isHot: false }
   ];
