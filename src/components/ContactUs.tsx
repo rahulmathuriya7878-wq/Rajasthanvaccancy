@@ -54,7 +54,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ lang, onBack }) => {
             <Mail className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <strong className="block text-slate-900 font-bold">{isHi ? 'आधिकारिक ईमेल:' : 'Official Email:'}</strong>
-              <span className="font-mono text-amber-700">support@rajasthanvacancy.in</span>
+              <span className="font-mono text-amber-700">rahulmathuriya7878@gmail.com</span>
             </div>
           </div>
 

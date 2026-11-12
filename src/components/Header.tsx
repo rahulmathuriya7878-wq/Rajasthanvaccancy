@@ -219,16 +219,6 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Subscribe to Alerts Button */}
-            <button
-              onClick={onOpenSubscribe}
-              className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#1e953a] text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-[#187a2f] shadow-xs"
-              title="Subscribe to Job Alerts"
-            >
-              <Bell className="w-3.5 h-3.5 text-white animate-pulse" />
-              <span className="hidden sm:inline">{isHi ? 'अलर्ट पाएं' : 'Get Alerts'}</span>
-            </button>
-
             {/* Admin Controls */}
             {isAdmin && (
               <div className="flex items-center gap-1.5">

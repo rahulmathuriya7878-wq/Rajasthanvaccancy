@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ShieldCheck, 
   ExternalLink, 
   Building2, 
-  AlertCircle,
-  Scale,
   Globe
 } from 'lucide-react';
 import { LanguageMode, VacancyItem } from '../types';
@@ -32,7 +30,6 @@ export const Footer: React.FC<FooterProps> = ({
   isAdmin = false,
 }) => {
   const isHi = lang === 'hi';
-  const [showFullLegal, setShowFullLegal] = useState<boolean>(false);
 
   const officialLinks = [
     { name: 'WhatsApp चैनल (Official Alerts)', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
@@ -55,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Col 1: Official Portals Directory */}
           <div>
             <h4 
@@ -118,107 +115,7 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
             </ul>
           </div>
-
-          {/* Col 3: कानूनी जानकारी व डिस्क्लेमर (Legal Information & Disclaimer) */}
-          <div>
-            <h4 
-              className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
-              style={{ 
-                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
-                fontSize: '14pt', 
-                fontWeight: 'bold' 
-              }}
-            >
-              <Scale className="w-5 h-5 text-rose-600" />
-              <span>{isHi ? 'कानूनी जानकारी व डिस्क्लेमर' : 'Legal & Disclaimer Notice'}</span>
-            </h4>
-            <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-slate-600 leading-relaxed space-y-2.5" style={{ fontSize: '11pt' }}>
-              <div className="flex items-start gap-1.5 font-bold text-slate-800">
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                <span>
-                  {isHi
-                    ? 'गैर-सरकारी पोर्टल स्पष्टीकरण (Non-Affiliation Notice):'
-                    : 'Non-Government Portal Clarification:'}
-                </span>
-              </div>
-              <p>
-                {isHi
-                  ? 'RAJASTHAN JOBS/VACANCY एक गैर-सरकारी एवं निजी सूचनात्मक पोर्टल है। हम किसी भी सरकारी एजेंसी, विभाग अथवा आयोग (RSMSSB, RPSC) से आधिकारिक रूप से संबद्ध नहीं हैं।'
-                  : 'RAJASTHAN JOBS/VACANCY is an independent job aggregation and candidate informational portal. We are not affiliated with the Government of Rajasthan or any recruitment commission.'}
-              </p>
-              <p>
-                {isHi
-                  ? 'अभ्यर्थियों को सलाह दी जाती है कि आवेदन करने या शुल्क जमा करने से पूर्व संबंधित विभाग के अधिकृत राजपत्र व मूल नोटिफिकेशन का अवलोकन अवश्य करें।'
-                  : 'Candidates are strictly advised to consult the official Gazette / Notification PDFs released by respective boards before making application fee payments.'}
-              </p>
-              
-              <button
-                onClick={() => setShowFullLegal(!showFullLegal)}
-                className="w-full mt-1 py-1.5 px-3 bg-white hover:bg-slate-100 rounded-lg border border-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
-              >
-                <span>{showFullLegal ? (isHi ? 'विस्तृत विधिक नियम छुपाएं ▲' : 'Hide Full Legal Terms ▲') : (isHi ? 'विस्तृत विधिक जानकारी देखें ▼' : 'View Full Legal Details ▼')}</span>
-              </button>
-            </div>
-          </div>
         </div>
-
-        {/* Expandable Detailed Legal & Cyber Security Advisory */}
-        {showFullLegal && (
-          <div className="mb-8 bg-slate-50 rounded-2xl p-5 sm:p-6 border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-4 animate-in fade-in duration-200">
-            <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
-              <Scale className="w-5 h-5 text-slate-800" />
-              <h4 className="font-bold text-sm sm:text-base text-slate-900">
-                {isHi ? 'विस्तृत कानूनी नियम, साइबर सुरक्षा चेतावनी व दायित्व विमुक्ति' : 'Comprehensive Statutory Disclaimers & Legal Compliance'}
-              </h4>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 leading-relaxed">
-              <div className="space-y-3">
-                <div>
-                  <h5 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span>1. दायित्व की सीमा एवं सूचना की शुद्धता (Accuracy & Limitation of Liability)</span>
-                  </h5>
-                  <p className="text-slate-600">
-                    हमारा उद्देश्य केवल जनहित में विभिन्न सरकारी वेबसाइटों, दैनिक समाचार पत्रों एवं रोजगार विज्ञापनों से प्राप्त सूचनाओं को सरल हिंदी भाषा में छात्रों तक पहुँचाना है। यद्यपि हम प्रत्येक सूचना की पूर्ण प्रामाणिकता सुनिश्चित करने का भरसक प्रयास करते हैं, परंतु मानवीय भूल, टाइपिंग त्रुटि या विभाग द्वारा अंतिम समय में किए गए परिवर्तनों के लिए यह पोर्टल किसी भी प्रकार से कानूनी रूप से उत्तरदायी नहीं होगा।
-                  </p>
-                </div>
-
-                <div>
-                  <h5 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span>2. साइबर धोखाधड़ी व फर्जीवाड़े से सुरक्षा चेतावनी (Anti-Scam & Fraud Advisory)</span>
-                  </h5>
-                  <p className="text-slate-600">
-                    हमारा पोर्टल किसी भी अभ्यर्थी से प्रत्यक्ष रूप से कोई बैंक खाता नंबर, यूपीआई पिन, क्रेडिट/डेबिट कार्ड सीवीवी अथवा आवेदन शुल्क की मांग नहीं करता है। सरकारी भर्ती का शुल्क केवल संबंधित विभाग के अधिकृत पेमेंट गेटवे (जैसे राजस्थान SSO / e-Mitra / SBI e-Pay) पर ही जमा होता है। नौकरी लगवाने के नाम पर पैसे मांगने वाले किसी भी व्यक्ति या गिरोह के झांसे में न आएं।
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <h5 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span>3. कॉपीराइट, ट्रेडमार्क व उचित उपयोग (Fair Use & Intellectual Property)</span>
-                  </h5>
-                  <p className="text-slate-600">
-                    इस पोर्टल पर प्रदर्शित सरकारी विभागों, आयोगों, मंत्रालयों के लोगो, प्रतीक चिह्न एवं नाम उनके संबंधित सांविधिक निकायों की बौद्धिक संपदा हैं। इनका उपयोग भारतीय कॉपीराइट अधिनियम की धारा 52 (उचित व्यवहार/Fair Use) के अंतर्गत केवल समाचार संकलन, शैक्षणिक मार्गदर्शन एवं पहचान के उद्देश्य से किया गया है।
-                  </p>
-                </div>
-
-                <div>
-                  <h5 className="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span>4. शिकायत निवारण एवं संपर्क (Grievance Redressal & DMCA Compliance)</span>
-                  </h5>
-                  <p className="text-slate-600">
-                    यदि किसी भी संस्था, विभाग अथवा उपयोगकर्ता को पोर्टल पर उपलब्ध किसी सूचना, लिंक या सामग्री से कोई आपत्ति है, तो वे तुरंत हमारी संपर्क टीम को ईमेल द्वारा सूचित कर सकते हैं। सत्यापन के पश्चात उचित संशोधन या सामग्री को 24-48 घंटों के भीतर हटा दिया जाएगा।
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Crawlable Internal Links Section (Googlebot Crawl Directory) */}
         <div className={isAdmin ? "my-8 pt-6 border-t border-slate-200" : "sr-only"}>
