@@ -1662,25 +1662,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }));
                   }}
                   titlePrefix="शीर्षक (Title)"
-                  className="entry-title headlight font-bold text-slate-900 tracking-tight leading-snug"
+                  className="entry-title font-bold text-slate-900 tracking-tight leading-snug text-[22px] sm:text-[24px]"
                   style={{
-                    fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
-                    fontSize: '11.5pt',
-                    lineHeight: 1.4
+                    fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
+                    fontSize: 'clamp(22px, 3vw, 24px)',
+                    lineHeight: 1.35
                   }}
                 />
 
                 {/* Entry Meta */}
-                <div className="entry-meta text-[13px] text-slate-500 mt-2 flex items-center gap-3 flex-wrap">
+                <div className="entry-meta text-[13px] text-slate-500 mt-2.5 flex items-center gap-2 flex-wrap font-medium">
                   <span className="posted-on flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <time className="entry-date published text-slate-600">
-                      {notificationDateDisplay}
+                      {notificationDateDisplay || 'November 11, 2026'}
                     </time>
                   </span>
-                  <span>•</span>
+                  <span className="text-slate-400">by</span>
                   <span className="byline">
-                    by{' '}
                     <button
                       type="button"
                       onClick={() => {
@@ -1690,50 +1689,64 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           onBack();
                         }
                       }}
-                      className="font-bold text-slate-700 hover:text-slate-900 hover:underline cursor-pointer transition"
+                      className="font-bold text-[#0073aa] hover:underline cursor-pointer transition"
                       title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
                     >
                       RajasthanVacancy
                     </button>
                   </span>
-                  <span>•</span>
+                  <span className="text-slate-300">•</span>
                   <span className="text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-xs">
                     {vacancy.organization}
                   </span>
                 </div>
               </header>
 
-              {/* Featured Header Card - Exact Match to User Screenshot */}
-              <div className="mb-6 rounded-2xl border border-emerald-900/40 bg-gradient-to-br from-[#0c594d] via-[#093f36] to-[#0d222c] p-5 sm:p-6 shadow-md text-white">
-                <div className="space-y-2">
-                  <span className="inline-block bg-[#166d5b] text-[#a7f3d0] border border-[#238772] text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded">
+              {/* Featured Header Card - 100% Crystal Clear High-Contrast Dark Emerald UI */}
+              <div className="mb-6 rounded-2xl border border-[#10b981]/60 bg-gradient-to-br from-[#04392e] via-[#06483a] to-[#0a2e26] p-5 sm:p-6 shadow-xl text-white">
+                <div className="space-y-3">
+                  <span 
+                    className="inline-block bg-[#0a5243] !text-[#a7f3d0] border border-[#10b981]/70 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-2xs"
+                    style={{ color: '#a7f3d0', backgroundColor: '#0a5243' }}
+                  >
                     {editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT')}
                   </span>
-                  <EditableText
-                    as="h2"
-                    value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
-                    onChange={(val) => {
-                      setEditablePost(prev => ({
-                        ...prev,
-                        shortTitleHi: val,
-                        shortTitle: val
-                      }));
-                    }}
-                    titlePrefix="संक्षिप्त नाम"
-                    className="headlight text-lg sm:text-xl font-extrabold text-white tracking-wide"
-                    style={{ fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif" }}
-                  />
-                  <p className="text-emerald-100/90 text-xs font-normal">
+                  <div>
+                    <EditableText
+                      as="h2"
+                      value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
+                      onChange={(val) => {
+                        setEditablePost(prev => ({
+                          ...prev,
+                          shortTitleHi: val,
+                          shortTitle: val
+                        }));
+                      }}
+                      titlePrefix="संक्षिप्त नाम"
+                      className="headlight text-xl sm:text-2xl font-extrabold !text-white tracking-tight leading-snug drop-shadow-xs"
+                      style={{ color: '#ffffff', fontFamily: "'Noto Sans Devanagari', 'Hind', 'Poppins', sans-serif" }}
+                    />
+                  </div>
+                  <p 
+                    className="!text-[#6ee7b7] text-xs sm:text-sm font-semibold leading-relaxed"
+                    style={{ color: '#6ee7b7' }}
+                  >
                     {isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide'}
                   </p>
 
-                  {/* Centered Total Posts Box (Only if data exists or not flex category) */}
+                  {/* Centered Total Posts Box */}
                   {(!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
-                    <div className="bg-[#062c26]/75 border border-[#1b6f60]/60 rounded-xl p-3.5 text-center mt-4 w-full shadow-inner">
-                      <span className="text-[11px] uppercase font-bold text-[#6ee7b7] block tracking-wider">
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
                         {isHi ? 'कुल पद / सीटें' : 'Total Posts'}
                       </span>
-                      <span className="text-2xl font-black text-[#facc15] block mt-0.5 tracking-wide">
+                      <span 
+                        className="text-2xl sm:text-3xl font-black !text-[#facc15] block mt-0.5 tracking-wide drop-shadow-xs"
+                        style={{ color: '#facc15' }}
+                      >
                         <EditableText
                           value={editablePost.totalPosts || (isHi ? 'विभिन्न पद' : 'Various Posts')}
                           onChange={(val) => {
@@ -1745,7 +1758,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </div>
                   )}
 
-                  {/* Integrated Key Dates Grid (Flexible for News and Yojana) */}
+                  {/* Integrated Key Dates Grid */}
                   {!isFlexCategory && (() => {
                     const rawDates = [
                       { label: 'नोटिफिकेशन तिथि', value: notificationDateDisplay, isImportant: false },
@@ -1762,11 +1775,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     if (datesToShow.length === 0) return null;
 
                     return (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-[#1b6f60]/50 text-xs">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
                         {datesToShow.map((d, idx) => (
-                          <div key={idx} className={`bg-[#062c26]/70 rounded-lg p-2 text-center border ${d.isImportant ? 'border-amber-500/50' : 'border-[#1b6f60]/40'}`}>
-                            <span className={`text-[10px] uppercase font-bold ${d.isImportant ? 'text-amber-300' : 'text-emerald-300'} block`}>{d.label}</span>
-                            <span className={`font-bold ${d.isImportant ? 'text-[#fde047]' : 'text-white'} text-xs mt-0.5 block`}>{d.value}</span>
+                          <div 
+                            key={idx} 
+                            className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                          >
+                            <span 
+                              className={`text-[11px] uppercase font-bold block`}
+                              style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                            >
+                              {d.label}
+                            </span>
+                            <span 
+                              className={`font-extrabold text-xs sm:text-sm mt-0.5 block`}
+                              style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                            >
+                              {d.value}
+                            </span>
                           </div>
                         ))}
                       </div>

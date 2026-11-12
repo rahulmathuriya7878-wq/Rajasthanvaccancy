@@ -23,8 +23,14 @@ import { ContactUs } from './components/ContactUs';
 import { AboutUs } from './components/AboutUs';
 import { Disclaimer } from './components/Disclaimer';
 import { 
+  AgeCalculatorModal 
+} from './components/AgeCalculatorModal';
+import { 
   EligibilityFinderModal 
 } from './components/EligibilityFinderModal';
+import { 
+  SSOGuideModal 
+} from './components/SSOGuideModal';
 import { 
   SavedJobsModal 
 } from './components/SavedJobsModal';
@@ -269,7 +275,11 @@ export default function App() {
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
   const [editingVacancy, setEditingVacancy] = useState<VacancyItem | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [isAgeCalcOpen, setIsAgeCalcOpen] = useState(false);
+  const [ageCalcParams, setAgeCalcParams] = useState<{ asOnDate?: string; minAge?: number; maxAge?: number }>({});
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isEligibilityOpen, setIsEligibilityOpen] = useState(false);
+  const [isSSOGuideOpen, setIsSSOGuideOpen] = useState(false);
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
@@ -602,6 +612,11 @@ export default function App() {
     showToast(lang === 'hi' ? '🗑️ पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : '🗑️ Post deleted successfully!');
   };
 
+  const handleOpenAgeCalcWithParams = (asOnDate?: string, minAge?: number, maxAge?: number) => {
+    setAgeCalcParams({ asOnDate, minAge, maxAge });
+    setIsAgeCalcOpen(true);
+  };
+
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedBoard('ALL');
@@ -745,6 +760,7 @@ export default function App() {
         setLang={setLang}
         savedCount={savedIds.length}
         onOpenSaved={() => setIsSavedOpen(true)}
+        onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
         onOpenEligibility={() => setIsEligibilityOpen(true)}
         onOpenAddJob={() => {
           if (!isAdmin) {
@@ -755,6 +771,7 @@ export default function App() {
           }
         }}
         onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+        onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onGoHome={() => {
           setSelectedCategory('ALL');
           setSearchQuery('');
@@ -778,10 +795,9 @@ export default function App() {
       />
 
       {/* Main Body Container - Classic 2-Column WordPress Job Portal Structure */}
-      {/* Main Body Container - Boxed Centered 1280px Container with 70-75% Main Content & 25-30% Right Sidebar */}
-      <main className="w-full max-w-[1280px] mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Main Content Area (Left Column - 70% to 75% width) */}
+      <main className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Main Content Area (Left Column - 8 Cols) */}
           <div className="lg:col-span-8 space-y-6">
             {activePolicyView === 'privacy' ? (
               <PrivacyPolicy
@@ -893,6 +909,8 @@ export default function App() {
                 setActivePolicyView(null);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
+              onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
+              onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
               onOpenSaved={() => setIsSavedOpen(true)}
               onOpenEligibility={() => setIsEligibilityOpen(true)}
             />
@@ -903,6 +921,8 @@ export default function App() {
       {/* Full Comprehensive Footer Component */}
       <Footer
         lang={lang}
+        onOpenAgeCalc={() => handleOpenAgeCalcWithParams()}
+        onOpenSSOGuide={() => setIsSSOGuideOpen(true)}
         onSelectPolicy={(policy) => {
           setActivePolicyView(policy);
           setSelectedVacancy(null);
@@ -916,12 +936,27 @@ export default function App() {
 
       {/* Other Utility Modals */}
 
+      <AgeCalculatorModal
+        isOpen={isAgeCalcOpen}
+        onClose={() => setIsAgeCalcOpen(false)}
+        lang={lang}
+        initialCutoffDate={ageCalcParams.asOnDate}
+        initialMinAge={ageCalcParams.minAge}
+        initialMaxAge={ageCalcParams.maxAge}
+      />
+
       <EligibilityFinderModal
         isOpen={isEligibilityOpen}
         onClose={() => setIsEligibilityOpen(false)}
         vacancies={vacancies}
         lang={lang}
         onSelectVacancy={(item) => setSelectedVacancy(item)}
+      />
+
+      <SSOGuideModal
+        isOpen={isSSOGuideOpen}
+        onClose={() => setIsSSOGuideOpen(false)}
+        lang={lang}
       />
 
       <SavedJobsModal

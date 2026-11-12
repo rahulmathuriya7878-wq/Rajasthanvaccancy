@@ -267,5 +267,10 @@ table {
   animation: rv-pulse-glow 2.5s infinite ease-in-out;
 }
 
+/* Enforced 10pt Font Size Utility Class */
+.text-size-10pt {
+  font-size: 10pt !important;
+}
+
 
 

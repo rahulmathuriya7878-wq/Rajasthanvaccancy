@@ -22,9 +22,11 @@ interface HeaderProps {
   setLang: (lang: LanguageMode) => void;
   savedCount: number;
   onOpenSaved: () => void;
+  onOpenAgeCalc: () => void;
   onOpenEligibility: () => void;
   onOpenAddJob?: () => void;
   onOpenAdminLogin?: () => void;
+  onOpenSSOGuide: () => void;
   onGoHome?: () => void;
   latestVacancies?: VacancyItem[];
   onSelectVacancy?: (item: VacancyItem) => void;
@@ -43,9 +45,11 @@ export const Header: React.FC<HeaderProps> = ({
   setLang,
   savedCount,
   onOpenSaved,
+  onOpenAgeCalc,
   onOpenEligibility,
   onOpenAddJob,
   onOpenAdminLogin,
+  onOpenSSOGuide,
   onGoHome,
   latestVacancies = [],
   onSelectVacancy,
@@ -163,7 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Main Branding & Navigation Header */}
       <div className="bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-[1280px] mx-auto px-3 sm:px-4 lg:px-6 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* Logo & Identity */}
             <div 
@@ -180,9 +184,9 @@ export const Header: React.FC<HeaderProps> = ({
 
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h1 className="text-lg sm:text-2xl font-black tracking-tight headlight flex items-center gap-1.5">
+                  <h1 className="text-lg sm:text-2xl font-black tracking-tight headlight flex items-center">
                     <span className="text-amber-400 font-black">Rajasthan</span>
-                    <span className="text-white font-extrabold">Job/Vacancy</span>
+                    <span className="text-white font-extrabold">Vacancy</span>
                   </h1>
                 </div>
                 <p className="text-[10px] sm:text-xs text-slate-300 font-medium">
@@ -307,7 +311,7 @@ export const Header: React.FC<HeaderProps> = ({
         aria-label="Important Website Sections"
         className="hidden md:block w-full bg-slate-800 border-b border-slate-700 select-none shadow-xs text-white"
       >
-        <div className="max-w-[1280px] mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-start gap-2 overflow-x-auto py-2 scrollbar-none">
             {importantSections.map((sec) => {
               const isActive = selectedCategory === sec.key;
