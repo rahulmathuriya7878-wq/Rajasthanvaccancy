@@ -25,8 +25,8 @@ export interface AdSectionProps {
 
 /**
  * Reusable AdSection Component
- * Dynamically injects Google AdSense script into document head if needed
- * and renders a safe, layout-friendly responsive ad unit container.
+ * Safely waits for container width > 0 before pushing to adsbygoogle
+ * to prevent "TagError: adsbygoogle.push() error: No slot size for availableWidth=0".
  */
 export const AdSection: React.FC<AdSectionProps> = ({
   slot = '3785509362',
@@ -37,40 +37,79 @@ export const AdSection: React.FC<AdSectionProps> = ({
   minHeight = '90px',
   responsive = true,
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const adRef = useRef<HTMLModElement>(null);
   const isPushed = useRef<boolean>(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // 1. Inject AdSense script into document head if not present
-    const scriptId = 'google-adsense-script';
-    let scriptTag = document.getElementById(scriptId) as HTMLScriptElement | null;
+    // 1. Inject AdSense script into document head only if no adsbygoogle script exists yet
+    const existingScript = document.querySelector(
+      'script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]'
+    );
 
-    if (!scriptTag && client && client !== 'ca-pub-0000000000000000') {
-      scriptTag = document.createElement('script');
-      scriptTag.id = scriptId;
+    if (!existingScript && client && client !== 'ca-pub-0000000000000000') {
+      const scriptTag = document.createElement('script');
+      scriptTag.id = 'google-adsense-script';
       scriptTag.async = true;
       scriptTag.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`;
       scriptTag.crossOrigin = 'anonymous';
       document.head.appendChild(scriptTag);
     }
 
-    // 2. Safe push to adsbygoogle array
-    try {
-      if (adRef.current && !isPushed.current) {
+    // 2. Helper to safely push ad only when container has non-zero availableWidth
+    const tryPushAd = (): boolean => {
+      if (isPushed.current || !adRef.current || !containerRef.current) {
+        return false;
+      }
+
+      // Skip if AdSense already processed this <ins> element
+      const status = adRef.current.getAttribute('data-adsbygoogle-status');
+      const adStatus = adRef.current.getAttribute('data-ad-status');
+      if (status || adStatus) {
+        isPushed.current = true;
+        return true;
+      }
+
+      const width = containerRef.current.offsetWidth || adRef.current.offsetWidth;
+      if (width <= 0) {
+        return false;
+      }
+
+      try {
         window.adsbygoogle = window.adsbygoogle || [];
         window.adsbygoogle.push({});
         isPushed.current = true;
+        return true;
+      } catch (err) {
+        // Silence TagError if slot was already initialized or width transiently changed
+        isPushed.current = true;
+        return true;
       }
-    } catch (err) {
-      console.warn('AdSense push handled:', err);
-    }
-  }, [client]);
+    };
+
+    // Attempt push on next animation frame after layout pass
+    let rafId = window.requestAnimationFrame(() => {
+      if (!tryPushAd() && typeof ResizeObserver !== 'undefined' && containerRef.current) {
+        const observer = new ResizeObserver(() => {
+          if (tryPushAd()) {
+            observer.disconnect();
+          }
+        });
+        observer.observe(containerRef.current);
+      }
+    });
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  }, [client, slot]);
 
   return (
     <div
-      className={`w-full my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`}
+      ref={containerRef}
+      className={`w-full min-w-[250px] my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`}
       style={{ minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }}
     >
       {label && (
@@ -79,13 +118,14 @@ export const AdSection: React.FC<AdSectionProps> = ({
         </div>
       )}
 
-      <div className="flex items-center justify-center w-full min-h-[90px] overflow-hidden">
+      <div className="block w-full min-h-[90px] overflow-hidden">
         <ins
           ref={adRef}
           className="adsbygoogle"
           style={{
             display: 'block',
             width: '100%',
+            minWidth: '250px',
             minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight,
           }}
           data-ad-client={client}

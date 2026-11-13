@@ -85,11 +85,14 @@
     <script>
       // Load AdSense non-blocking after initial paint to maximize Mobile PageSpeed
       window.addEventListener('load', function() {
-        var adScript = document.createElement('script');
-        adScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3176571184961509";
-        adScript.async = true;
-        adScript.crossOrigin = "anonymous";
-        document.head.appendChild(adScript);
+        if (!document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
+          var adScript = document.createElement('script');
+          adScript.id = 'google-adsense-script';
+          adScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8302542447035711";
+          adScript.async = true;
+          adScript.crossOrigin = "anonymous";
+          document.head.appendChild(adScript);
+        }
       });
     </script>
     <meta property="og:site_name" content="Rajasthan Vacancy" />

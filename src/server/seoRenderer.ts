@@ -261,17 +261,6 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
             `).join('')}
           </div>
         </section>
-
-        <!-- Google AdSense Unit at Bottom of Post -->
-        <div style="margin-top: 24px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center;">
-          <span style="font-size: 11px; color: #94a3b8; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 6px;">विज्ञापन (Google AdSense)</span>
-          <ins class="adsbygoogle"
-               style="display:block; min-height: 90px;"
-               data-ad-client="ca-pub-8302542447035711"
-               data-ad-slot="3785509362"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-        </div>
       </main>
     `;
   } else if (matchedCategory && matchedCategory !== 'ALL') {

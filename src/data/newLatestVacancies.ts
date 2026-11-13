@@ -1,5 +1,176 @@
 import { VacancyItem } from '../types';
 
+export const CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY: VacancyItem = {
+  id: 'csir-npl-mts-recruitment-2026',
+  title: 'CSIR-NPL MTS Recruitment 2026: 10वीं पास के लिए मल्टी टास्किंग स्टाफ के 25 पदों पर भर्ती जारी, आवेदन 23 दिसंबर तक',
+  titleHi: 'CSIR-NPL MTS भर्ती 2026: 10वीं पास के लिए मल्टी टास्किंग स्टाफ (25 पद) ऑफलाइन आवेदन शुरू, अंतिम तिथि 23 दिसंबर',
+  shortTitle: 'CSIR-NPL MTS Recruitment 2026',
+  shortTitleHi: 'CSIR-NPL MTS भर्ती 2026',
+  organization: 'Central Govt',
+  department: 'CSIR – National Physical Laboratory (CSIR-NPL), New Delhi',
+  departmentHi: 'सीएसआईआर - राष्ट्रीय भौतिक प्रयोगशाला (CSIR-NPL), नई दिल्ली',
+  advtNo: 'Rectt./05/2026',
+  category: 'latest_job',
+  tags: [
+    'csir npl mts recruitment 2026',
+    'csir npl mts bharti 2026',
+    'csir npl vacancy 2026',
+    '10th pass govt job',
+    'mts offline form 2026',
+    'central govt job'
+  ],
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 18500,
+  savesCount: 4650,
+  totalPosts: '25 पद',
+  postName: 'Multi-Tasking Staff (MTS) - Group C',
+  postNameHi: 'मल्टी टास्किंग स्टाफ (MTS) - ग्रुप C',
+  qualification: ['10th'],
+  qualificationDetails: 'Matriculation (10th Class / SSC) Pass or equivalent from a recognized Board / Institution.',
+  qualificationDetailsHi: 'मान्यता प्राप्त बोर्ड/संस्थान से 10वीं कक्षा (मैट्रिकुलेशन) अथवा समकक्ष परीक्षा उत्तीर्ण।',
+  briefSummary: 'CSIR – National Physical Laboratory (CSIR-NPL), New Delhi has invited offline applications for 25 Multi-Tasking Staff (MTS) posts under Advt. No. Rectt./05/2026. 10th pass candidates can submit their offline application form by 23 December 2026.',
+  briefSummaryHi: 'सीएसआईआर - राष्ट्रीय भौतिक प्रयोगशाला (CSIR-NPL), नई दिल्ली द्वारा विज्ञापन संख्या Rectt./05/2026 के अंतर्गत मल्टी टास्किंग स्टाफ (MTS) के 25 रिक्त पदों पर सीधी भर्ती का आधिकारिक नोटिफिकेशन जारी किया गया है। मान्यता प्राप्त बोर्ड से 10वीं कक्षा पास योग्य पुरुष एवं महिला अभ्यर्थी निर्धारित प्रारूप में अपना ऑफलाइन आवेदन पत्र 23 दिसंबर 2026 तक डाक द्वारा भेज सकते हैं। चयनित उम्मीदवारों को 7वें वेतन आयोग पे लेवल-1 (₹18,000 – ₹56,900/-, कुल लगभग ₹41,040/- प्रतिमाह भत्तों सहित) वेतनमान प्राप्त होगा।',
+  description: 'Complete notification, eligibility criteria, age limit, application fee, demand draft details, selection process, postal address, and official PDF links for CSIR-NPL MTS Recruitment 2026.',
+  descriptionHi: 'प्रिय अभ्यर्थियों,\n\nसीएसआईआर - राष्ट्रीय भौतिक प्रयोगशाला (CSIR – National Physical Laboratory, New Delhi) ने मल्टी टास्किंग स्टाफ (MTS) के कुल 25 पदों पर भर्ती हेतु आधिकारिक विज्ञापन (Advt. No. Rectt./05/2026) जारी किया है।\n\n📌 भर्ती के मुख्य बिंदु:\n• विभाग का नाम: CSIR - राष्ट्रीय भौतिक प्रयोगशाला (NPL), नई दिल्ली\n• पद का नाम: मल्टी टास्किंग स्टाफ (MTS)\n• कुल पद: 25 पद (अनारक्षित, ईडब्ल्यूएस, ओबीसी, एससी व एसटी वर्गवार)\n• शैक्षणिक योग्यता: मान्यता प्राप्त बोर्ड से 10वीं (मैट्रिकुलेशन) पास\n• आयु सीमा: 18 से 25 वर्ष (गणना 23 दिसंबर 2026 के अनुसार; आरक्षित वर्ग को सरकारी नियमानुसार छूट)\n• वेतनमान: पे मैट्रिक्स लेवल-1 (₹18,000 – ₹56,900/-, प्रारंभिक कुल वेतन लगभग ₹41,040/- प्रति माह)\n• आवेदन मोड: केवल ऑफलाइन (डाक द्वारा)\n• अंतिम तिथि: 23 दिसंबर 2026\n\n💳 आवेदन शुल्क व डिमांड ड्राफ्ट (DD) नियम:\n• General / OBC / EWS वर्ग: ₹500/-\n• SC / ST / PwBD / महिला / तृतीय लिंग: ₹0/- (निःशुल्क)\n• शुल्क का भुगतान "The Director, National Physical Laboratory" के पक्ष में नई दिल्ली (New Delhi) में देय डिमांड ड्राफ्ट (DD) अथवा पे ऑर्डर के माध्यम से करना होगा।\n\n🎯 चयन प्रक्रिया (Selection Process):\n1. प्राप्त ऑफलाइन आवेदन पत्रों की स्क्रीनिंग एवं शॉर्टलिस्टिंग\n2. लिखित परीक्षा (Competitive Written Exam - CBT / OMR)\n3. दस्तावेज सत्यापन (Document Verification) एवं अंतिम मेरिट सूची',
+  jobLocation: 'New Delhi (CSIR-NPL Campus)',
+  salary: 'Level-1 (₹18,000 – ₹56,900/- | Approx. ₹41,040/- PM)',
+  salaryHi: 'पे मैट्रिक्स लेवल-1 (₹18,000 से ₹56,900/- प्रति माह | भत्तों सहित कुल लगभग ₹41,040/-)',
+  applicationMode: 'Offline (पंजीकृत / स्पीड पोस्ट द्वारा)',
+  ageLimit: {
+    min: 18,
+    max: 25,
+    asOnDate: '2026-12-23',
+    relaxationNotes: 'Age 18 to 25 years as on 23 December 2026. Upper age relaxation: 5 years for SC/ST, 3 years for OBC, and as per Central Govt rules for PwBD & Ex-Servicemen.',
+    relaxationNotesHi: 'न्यूनतम 18 वर्ष एवं अधिकतम 25 वर्ष (आयु गणना 23 दिसंबर 2026 के आधार पर)। केंद्र सरकार के नियमानुसार SC/ST को 5 वर्ष, OBC को 3 वर्ष तथा PwBD/पूर्व सैनिकों को अतिरिक्त छूट देय होगी।'
+  },
+  applicationFee: [
+    { category: 'General / OBC / EWS वर्ग', amount: '₹500/-' },
+    { category: 'SC / ST / PwBD / महिला / तृतीय लिंग', amount: '₹0/- (निःशुल्क)' },
+    { category: 'शुल्क भुगतान माध्यम (Payment Mode)', amount: 'Demand Draft (DD) in favor of "The Director, National Physical Laboratory" payable at New Delhi' }
+  ],
+  importantDates: {
+    notificationDate: '2026-11-13',
+    applyStartDate: '2026-11-13',
+    applyLastDate: '2026-12-23',
+    feeLastDate: '2026-12-23',
+    admitCardDate: 'शीघ्र घोषित (TBA)',
+    examDate: 'शीघ्र घोषित (TBA)'
+  },
+  postalAddress: 'Senior Controller of Administration, CSIR-National Physical Laboratory, Dr. K.S. Krishnan Marg, New Delhi - 110012',
+  postalAddressHi: 'Senior Controller of Administration, CSIR-National Physical Laboratory, Dr. K.S. Krishnan Marg, New Delhi - 110012',
+  envelopeNoteHi: 'APPLICATION FOR THE POST OF MULTI-TASKING STAFF (MTS) - ADVT. NO. RECTT./05/2026',
+  postBreakdown: [
+    {
+      postName: 'Multi-Tasking Staff (MTS) - Advt. No. Rectt./05/2026',
+      postNameHi: 'मल्टी टास्किंग स्टाफ (MTS)',
+      categoryOrSubjectHi: 'ग्रुप-सी (नॉन-टेक्निकल / प्रशासनिक एवं प्रयोगशाला सहायता)',
+      postsCount: '25 पद',
+      qualification: '10th Pass (Matriculation) from recognized board',
+      qualificationHi: 'मान्यता प्राप्त बोर्ड से 10वीं (मैट्रिकुलेशन) पास',
+      payLevel: 'Level-1 (₹18,000 – ₹56,900/-)'
+    }
+  ],
+  latestNews: [
+    {
+      id: 'csir-npl-news-1',
+      date: '13 नवंबर 2026',
+      badge: 'ऑफलाइन आवेदन शुरू',
+      headline: 'CSIR-NPL नई दिल्ली द्वारा MTS के 25 पदों पर भर्ती नोटिफिकेशन जारी',
+      details: '10वीं पास अभ्यर्थी निर्धारित आवेदन प्रारूप डाउनलोड कर 23 दिसंबर 2026 तक स्पीड पोस्ट अथवा पंजीकृत डाक से नई दिल्ली पते पर आवेदन भेज सकते हैं।',
+      isHighlighted: true
+    },
+    {
+      id: 'csir-npl-news-2',
+      date: '13 नवंबर 2026',
+      badge: 'आवेदन शुल्क / DD',
+      headline: 'सामान्य, ओबीसी व ईडब्ल्यूएस के लिए ₹500/- का डिमांड ड्राफ्ट (DD) आवश्यक',
+      details: 'SC, ST, दिव्यांग एवं सभी महिला अभ्यर्थियों के लिए आवेदन पूर्णतः निःशुल्क रखा गया है।',
+      isHighlighted: false
+    }
+  ],
+  selectionProcess: [
+    'Screening & Shortlisting of Offline Applications',
+    'Competitive Written Examination (CBT / OMR Based)',
+    'Document Verification (DV) & Medical Examination',
+    'Final Merit List'
+  ],
+  selectionProcessHi: [
+    'प्राप्त ऑफलाइन आवेदन पत्रों की स्क्रीनिंग एवं शॉर्टलिस्टिंग',
+    'प्रतियोगी लिखित परीक्षा (Competitive Written Examination)',
+    'मूल दस्तावेज सत्यापन (Document Verification)',
+    'अंतिम मेरिट सूची एवं नियुक्ति'
+  ],
+  requiredDocumentsHi: [
+    '10वीं (मैट्रिकुलेशन) कक्षा की अंकतालिका एवं प्रमाण पत्र (शैक्षणिक योग्यता व जन्मतिथि हेतु)',
+    'निर्धारित ₹500/- का मूल डिमांड ड्राफ्ट (DD) - "The Director, National Physical Laboratory" के नाम नई दिल्ली में देय (केवल Gen/OBC/EWS हेतु)',
+    'जाति प्रमाण पत्र / EWS प्रमाण पत्र (केंद्र सरकार के निर्धारित प्रारूप में, यदि लागू हो)',
+    'मूल निवास प्रमाण पत्र (Domicile Certificate) एवं आधार कार्ड की स्वप्रमाणित प्रति',
+    'दिव्यांग / पूर्व सैनिक प्रमाण पत्र (यदि लागू हो)',
+    'स्वयं के पते वाला एवं नवीनतम पासपोर्ट साइज रंगीन फोटो (आवेदन फॉर्म पर चिपकाएं व अतिरिक्त प्रति संलग्न करें)'
+  ],
+  directLinks: [
+    {
+      label: 'CSIR-NPL MTS Offline Form & Notification PDF (नोटिफिकेशन व फॉर्म PDF)',
+      actionText: 'Download PDF',
+      url: 'https://www.nplindia.in/',
+      isPdf: true,
+      isPrimary: true
+    },
+    {
+      label: 'CSIR-NPL Official Website (आधिकारिक वेबसाइट)',
+      actionText: 'Official Portal',
+      url: 'https://www.nplindia.in/'
+    },
+    {
+      label: 'Join Official WhatsApp Channel (राजस्थान भर्ती अपडेट)',
+      actionText: 'Join WhatsApp',
+      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+    },
+    {
+      label: 'Join Telegram Channel (New Rajasthan Jobs)',
+      actionText: 'Join Telegram',
+      url: 'https://t.me/newrajsthanjobs'
+    }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://www.nplindia.in/',
+    notificationPdfUrl: 'https://www.nplindia.in/',
+    officialWebsiteUrl: 'https://www.nplindia.in/'
+  },
+  faqs: [
+    {
+      q: 'What is the last date to apply for CSIR-NPL MTS Recruitment 2026?',
+      qHi: 'CSIR-NPL MTS भर्ती 2026 के लिए आवेदन करने की अंतिम तिथि क्या है?',
+      a: 'The last date for receipt of offline applications is 23 December 2026.',
+      aHi: 'ऑफलाइन आवेदन पत्र प्राप्त होने की अंतिम तिथि 23 दिसंबर 2026 निर्धारित की गई है।'
+    },
+    {
+      q: 'How many vacancies are available in CSIR-NPL MTS Recruitment 2026?',
+      qHi: 'CSIR-NPL MTS भर्ती 2026 में कुल कितने पद हैं?',
+      a: 'A total of 25 Multi-Tasking Staff (MTS) vacancies have been released under Advt. No. Rectt./05/2026.',
+      aHi: 'विज्ञापन संख्या Rectt./05/2026 के अंतर्गत मल्टी टास्किंग स्टाफ (MTS) के कुल 25 पदों पर भर्ती निकाली गई है।'
+    },
+    {
+      q: 'What is the educational qualification and age limit for CSIR-NPL MTS?',
+      qHi: 'CSIR-NPL MTS के लिए शैक्षणिक योग्यता और आयु सीमा क्या है?',
+      a: 'Candidates must have passed 10th class (Matriculation) and should be aged between 18 and 25 years as on 23 December 2026.',
+      aHi: 'अभ्यर्थी मान्यता प्राप्त बोर्ड से 10वीं पास होना चाहिए तथा 23 दिसंबर 2026 को आयु 18 से 25 वर्ष के बीच होनी चाहिए (आरक्षित वर्गों को नियमानुसार छूट मिलेगी)।'
+    },
+    {
+      q: 'What is the application fee and payment mode for CSIR-NPL MTS 2026?',
+      qHi: 'CSIR-NPL MTS भर्ती 2026 में आवेदन शुल्क और भुगतान का माध्यम क्या है?',
+      a: 'General, OBC, and EWS candidates have to pay ₹500 via Demand Draft drawn in favor of "The Director, National Physical Laboratory" payable at New Delhi. SC/ST/PwBD/Women candidates are exempted from fee.',
+      aHi: 'General, OBC और EWS उम्मीदवारों को "The Director, National Physical Laboratory" के पक्ष में नई दिल्ली में देय ₹500/- का डिमांड ड्राफ्ट (DD) संलग्न करना होगा। SC/ST/PwBD/महिला अभ्यर्थियों के लिए आवेदन निःशुल्क है।'
+    }
+  ],
+  status: 'active',
+  createdAt: '2026-11-13',
+  updatedAt: '2026-11-13'
+};
+
 export const BSF_SI_LDCE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   id: 'bsf-si-ldce-recruitment-2026',
   title: 'BSF SI LDCE Recruitment 2026: सब इंस्पेक्टर के 1167 पदों पर भर्ती का नोटिफिकेशन जारी, आवेदन शुरू',
@@ -653,6 +824,7 @@ export const SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = {
 };
 
 export const EIGHT_LATEST_VACANCIES: VacancyItem[] = [
+  CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY,
   BSF_SI_LDCE_RECRUITMENT_2026_VACANCY,
   RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY,
   DSSSB_SWEEPER_CHOWKIDAR_RECRUITMENT_2026_VACANCY,
