@@ -1,6 +1,26 @@
 import { VacancyItem } from '../types';
-import { buildCanonicalUrl } from './seoCanonical';
 import { resolveJobDates } from './dateUtils';
+
+export const SHARE_BASE_URL = 'https://www.rajasthanvacancy.online';
+
+export function getVacancyShareUrl(vacancyId?: string): string {
+  if (!vacancyId) return `${SHARE_BASE_URL}/`;
+  const cleanId = vacancyId.replace(/^\/+|\/+$/g, '').trim();
+  return cleanId ? `${SHARE_BASE_URL}/?vacancy=${encodeURIComponent(cleanId)}` : `${SHARE_BASE_URL}/`;
+}
+
+export function getSocialShareLinks(url: string, title: string, whatsappMessage?: string) {
+  const finalUrl = url || `${SHARE_BASE_URL}/`;
+  const waText = whatsappMessage || `${title}\n\n👇 पूरी जानकारी यहाँ देखें:\n${finalUrl}`;
+  return {
+    url: finalUrl,
+    whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(finalUrl)}&text=${encodeURIComponent(title)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(finalUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(finalUrl)}&text=${encodeURIComponent(title)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(finalUrl)}`,
+  };
+}
 
 /**
  * Format date string into Hindi readable date e.g. "27 अक्टूबर 2026" or "25 नवंबर 2026"
@@ -30,21 +50,13 @@ export function formatHindiDateString(dateStr?: string): string {
  * formatted with WhatsApp friendly bolding and emojis.
  * 
  * Standard Format across all posts:
- * 🚨 *BIG अपडेट* 🚨
- * 
- * 📋 *भर्ती का नाम:* [भर्ती का नाम]
- * 🔢 *कुल पद:* [कुल पद]
- * 💳 *आवेदन की प्रारंभ तिथि:* [तारीख]
- * ⏳ *आवेदन की अंतिम तिथि:* [तारीख]
- * 
- * 👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*
- * https://rajasthanvaccancy.vercel.app/?vacancy=[post-slug]
+ * https://www.rajasthanvacancy.online/?vacancy=[post-slug]
  */
 export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
   const cleanId = (item.id || '').replace(/^\//, '').replace(/\/$/, '');
   const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app')
     ? customUrl
-    : `https://rajasthanvaccancy.vercel.app/?vacancy=${cleanId}`;
+    : getVacancyShareUrl(cleanId);
 
   const postTitle = (item.titleHi || item.title || item.shortTitleHi || item.postNameHi || 'सरकारी भर्ती')
     .replace(/:\s*Notification Released.*$/i, '')
@@ -70,7 +82,7 @@ export function generateSectionShareText(
   customUrl?: string
 ): string {
   const cleanId = (item.id || '').replace(/^\//, '').replace(/\/$/, '');
-  const canonicalUrl = buildCanonicalUrl({ vacancyId: cleanId });
+  const canonicalUrl = getVacancyShareUrl(cleanId);
   const shareUrl = customUrl && !customUrl.includes('localhost') && !customUrl.includes('.run.app') 
     ? customUrl 
     : canonicalUrl;

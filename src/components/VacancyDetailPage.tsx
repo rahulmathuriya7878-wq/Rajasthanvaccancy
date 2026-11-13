@@ -24,14 +24,15 @@ import {
   ExternalLink,
   Tag,
   Flame,
-  Hash
+  Hash,
+  Share2
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
-import { generateHindiShareText } from '../utils/shareUtils';
+import { generateHindiShareText, getVacancyShareUrl, getSocialShareLinks } from '../utils/shareUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -1396,7 +1397,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         {isAdmin && (
           <div className="flex items-center gap-2 shrink-0">
             <a
-              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent('https://rajasthanvaccancy.vercel.app/')}&item_url=${encodeURIComponent(`https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`)}`}
+              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent('https://www.rajasthanvacancy.online/')}&item_url=${encodeURIComponent(getVacancyShareUrl(editablePost.id))}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-[11px] transition"
@@ -1409,7 +1410,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             <button
               type="button"
               onClick={() => {
-                navigator.clipboard.writeText(`https://rajasthanvaccancy.vercel.app/?vacancy=${editablePost.id}`);
+                navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
                 setCopiedLink(true);
                 setTimeout(() => setCopiedLink(false), 2000);
               }}
@@ -1424,11 +1425,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       </div>
 
       {/* Full-Width Clean Card Layout for Optimal Readability */}
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full max-w-4xl mx-auto min-w-0">
         {/* Main Article Content Area */}
         <main className="w-full min-w-0">
           <article 
-            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 border border-slate-200 shadow-xs"
+            className="job-detail-card bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-8 border border-slate-200 shadow-xs min-w-0 max-w-full overflow-x-hidden"
           >
               {/* Admin Actions Bar (when admin is active) */}
               {isAdmin && (
@@ -1692,10 +1693,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </header>
 
               {/* Featured Header Card - 100% Crystal Clear High-Contrast Dark Emerald UI */}
-              <div className="mb-6 rounded-2xl border border-[#10b981]/60 bg-gradient-to-br from-[#04392e] via-[#06483a] to-[#0a2e26] p-5 sm:p-6 shadow-xl text-white">
-                <div className="space-y-3">
+              <div className="job-hero-card mb-6 rounded-xl sm:rounded-2xl border border-[#10b981]/60 bg-gradient-to-br from-[#04392e] via-[#06483a] to-[#0a2e26] p-3.5 sm:p-6 shadow-xl text-white min-w-0 max-w-full overflow-hidden">
+                <div className="space-y-3 min-w-0">
                   <span 
-                    className="inline-block bg-[#0a5243] !text-[#a7f3d0] border border-[#10b981]/70 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-2xs"
+                    className="inline-block max-w-full break-words bg-[#0a5243] !text-[#a7f3d0] border border-[#10b981]/70 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-2xs"
                     style={{ color: '#a7f3d0', backgroundColor: '#0a5243' }}
                   >
                     {editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT')}
@@ -1800,12 +1801,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 }}
               >
                 {/* Small Normal WhatsApp Alert & Join Bar right above संक्षिप्त विवरण */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 px-3.5 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 sm:px-3.5 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs min-w-0">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800 min-w-0">
                     <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
-                    <span className="text-xs sm:text-sm">{isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:'}</span>
+                    <span className="text-xs sm:text-sm break-words">{isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:'}</span>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
                     <a
                       href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
                       target="_blank"
@@ -1816,13 +1817,28 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
                       <span>{isHi ? 'WhatsApp चैनल जुड़ें' : 'Join Channel'}</span>
                     </a>
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="WhatsApp पर शेयर करें (www.rajasthanvacancy.online)"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-[#15803d]" />
+                      <span>{isHi ? 'शेयर करें' : 'Share'}</span>
+                    </a>
                     <button
                       type="button"
-                      onClick={handleShareBigUpdate}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
-                      title="WhatsApp पर BIG अपडेट शेयर करें"
+                      onClick={() => {
+                        navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer shrink-0"
+                      title="पोस्ट का शेयर लिंक कॉपी करें"
                     >
-                      <span>{isHi ? 'शेयर करें' : 'Share'}</span>
+                      {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedLink ? (isHi ? 'कॉपी हुआ' : 'Copied') : (isHi ? 'लिंक कॉपी' : 'Copy Link')}</span>
                     </button>
                   </div>
                 </div>
@@ -2009,15 +2025,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   <span>+ नई रो</span>
                                 </button>
                               )}
-                              <button
-                                type="button"
-                                onClick={handleShareBigUpdate}
+                              <a
+                                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95"
                                 title="WhatsApp पर संक्षिप्त विवरण शेयर करें"
                               >
                                 <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
                                 <span>शेयर करें</span>
-                              </button>
+                              </a>
                               {renderSectionShareButton('overview', `${shortJobName} का संक्षिप्त विवरण`)}
                               {renderAdminSectionControls('overview', 'संक्षिप्त विवरण')}
                             </div>
@@ -2865,12 +2882,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               {renderAdminSectionControls('postal_address', 'आवेदन भेजने का पता')}
                             </div>
                           </div>
-                          <div className="p-4 rounded-md border border-slate-300 bg-white space-y-2.5">
+                          <div className="p-3 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5 min-w-0 overflow-hidden">
                             <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                               अभ्यर्थी पूर्ण रूप से भरे हुए ऑफलाइन आवेदन फॉर्म को सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ नीचे दिए गए आधिकारिक पते पर पंजीकृत डाक (Registered Post) अथवा स्पीड पोस्ट (Speed Post) द्वारा भेजें:
                             </p>
-                            <div className="p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed" style={{ fontSize: '12pt' }}>
-                              <p className="font-mono text-slate-900 select-all">
+                            <div className="p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed min-w-0 overflow-hidden" style={{ fontSize: '12pt' }}>
+                              <p className="font-mono text-slate-900 select-all break-words">
                                 <EditableText
                                   value={editablePost.postalAddressHi || editablePost.postalAddress || 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011'}
                                   onChange={(val) => setEditablePost(prev => ({ ...prev, postalAddressHi: val, postalAddress: val }))}
@@ -2878,11 +2895,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 />
                               </p>
                             </div>
-                            <div className="text-slate-700 space-y-1" style={{ fontSize: '12pt' }}>
+                            <div className="text-slate-700 space-y-1 min-w-0" style={{ fontSize: '12pt' }}>
                               <p>
                                 <strong>लिफाफे के ऊपर क्या लिखें (Envelope Superscription):</strong>
                               </p>
-                              <p className="p-2 bg-slate-50 border border-slate-200 rounded font-mono text-slate-900 font-semibold select-all">
+                              <p className="p-2 bg-slate-50 border border-slate-200 rounded font-mono text-slate-900 font-semibold select-all break-words">
                                 <EditableText
                                   value={editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
                                   onChange={(val) => setEditablePost(prev => ({ ...prev, envelopeNoteHi: val }))}
@@ -3610,6 +3627,71 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     })}
                   </div>
                 )}
+
+                {/* Social Share Links Bar (https://www.rajasthanvacancy.online/) */}
+                {(() => {
+                  const shareUrl = getVacancyShareUrl(editablePost.id);
+                  const links = getSocialShareLinks(shareUrl, postTitle, generateHindiShareText(editablePost));
+                  return (
+                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                          <Share2 className="w-4 h-4 text-[#15803d]" />
+                          <span>{isHi ? 'इस भर्ती को दोस्तों के साथ शेयर करें (Share Post):' : 'Share This Recruitment Post:'}</span>
+                        </div>
+                        <span className="text-xs text-slate-500 font-mono truncate">{shareUrl}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <a
+                          href={links.whatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition shadow-2xs"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                          <span>WhatsApp</span>
+                        </a>
+                        <a
+                          href={links.telegram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs transition shadow-2xs"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Telegram</span>
+                        </a>
+                        <a
+                          href={links.facebook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#1465d1] text-white font-bold text-xs transition shadow-2xs"
+                        >
+                          <span>Facebook</span>
+                        </a>
+                        <a
+                          href={links.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs"
+                        >
+                          <span>X / Twitter</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(shareUrl);
+                            setCopiedLink(true);
+                            setTimeout(() => setCopiedLink(false), 2000);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs transition cursor-pointer shadow-2xs"
+                        >
+                          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedLink ? (isHi ? 'लिंक कॉपी हुआ ✓' : 'Link Copied ✓') : (isHi ? 'लिंक कॉपी करें' : 'Copy Link')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Post Navigation: Previous & Next Post Links */}
                 <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">

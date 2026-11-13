@@ -93,6 +93,7 @@ export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
     { name: isHi ? 'नियम व शर्तें (Terms & Conditions)' : 'Terms & Conditions', path: '/?policy=terms', type: 'policy' },
     { name: isHi ? 'डिस्क्लेमर (Disclaimer)' : 'Disclaimer', path: '/?policy=disclaimer', type: 'policy' },
     { name: isHi ? 'संपर्क करें (Contact Us)' : 'Contact Us', path: '/?policy=contact', type: 'policy' },
+    { name: isHi ? 'साइटमैप (HTML Sitemap)' : 'HTML Sitemap', path: '/?policy=sitemap', type: 'sitemap' },
     { name: isHi ? 'साइटमैप एक्सएमएल (XML Sitemap)' : 'XML Sitemap', path: '/sitemap.xml', type: 'sitemap' },
     { name: isHi ? 'रोबोट्स टेक्स्ट (Robots.txt)' : 'Robots.txt', path: '/robots.txt', type: 'robots' },
   ];

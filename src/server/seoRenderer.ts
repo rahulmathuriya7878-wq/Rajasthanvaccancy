@@ -57,7 +57,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
 
   // 1. Identify target vacancy if requested via query or clean slug path
   let targetVacancyId = queryVacancy;
-  if (!targetVacancyId && urlPath && !urlPath.includes('.') && !urlPath.startsWith('api') && urlPath !== 'sitemap.xml' && urlPath !== 'robots.txt') {
+  if (!targetVacancyId && urlPath && !urlPath.includes('.') && !urlPath.startsWith('api') && urlPath !== 'sitemap' && urlPath !== 'sitemap.xml' && urlPath !== 'sitemap_index.xml' && urlPath !== 'robots.txt') {
     targetVacancyId = urlPath;
   }
 
@@ -298,7 +298,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   } else {
     // Homepage
     canonicalUrl = `${baseUrl}/`;
-    const topJobs = INITIAL_VACANCIES.slice(0, 10);
+    const topJobs = INITIAL_VACANCIES.slice(0, 100);
     ssrBodyContent = `
       <main class="ssr-seo-home" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', sans-serif;">
         <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 12px; text-align: center;">

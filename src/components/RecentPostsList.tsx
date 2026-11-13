@@ -23,7 +23,7 @@ export const RecentPostsList: React.FC<RecentPostsListProps> = ({
   onDeleteVacancy,
   alertJobIds = [],
   onToggleAlertMe,
-  maxPosts = 8,
+  maxPosts = 100,
 }) => {
   const isHi = lang === 'hi';
 

@@ -157,13 +157,13 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     return (
       <div 
         key={sec.key}
-        className="bg-white rounded-lg border border-slate-300 shadow-xs flex flex-col justify-between transition-shadow hover:shadow-sm"
+        className="job-section-card bg-white rounded-lg border border-slate-300 shadow-xs flex flex-col justify-between transition-shadow hover:shadow-sm min-w-0 max-w-full overflow-hidden"
       >
         {/* Signature Green Rounded Header matching screenshot */}
-        <div className="p-3.5 pb-2">
+        <div className="job-section-card-header p-3 sm:p-3.5 pb-2">
           <h2 
             onClick={() => onFilterCategory && onFilterCategory(sec.categoryType)}
-            className="w-full text-center font-bold text-white text-lg sm:text-xl py-2 px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs"
+            className="w-full text-center font-bold text-white text-lg sm:text-xl py-2 px-3 sm:px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs"
             style={{ 
               backgroundColor: '#15803d', 
               borderRadius: '8px',
@@ -177,22 +177,22 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         </div>
 
         {/* List of Posts matching screenshot */}
-        <div className="p-4 pt-2 flex-1 flex flex-col justify-between">
-          <div className="space-y-4">
+        <div className="job-section-card-body p-3 sm:p-4 pt-2 flex-1 flex flex-col justify-between min-w-0">
+          <div className="space-y-3.5 sm:space-y-4 min-w-0">
             {sec.items.length > 0 ? (
-              sec.items.slice(0, 8).map((item) => (
+              sec.items.slice(0, 100).map((item) => (
                 <div 
                   key={item.id} 
-                  className="group"
+                  className="group min-w-0"
                 >
-                  <div className="flex items-start justify-between gap-1">
+                  <div className="flex items-start justify-between gap-1.5 min-w-0">
                     <button
                       type="button"
                       onClick={() => onSelectVacancy(item)}
                       className="text-left flex-1 min-w-0 cursor-pointer block group"
                     >
                       <h3 
-                        className="post-title-link font-semibold leading-snug cursor-pointer block"
+                        className="post-title-link font-semibold leading-snug cursor-pointer block break-words"
                         style={{
                           fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
                           color: '#0066cc',
@@ -322,7 +322,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       )}
 
       {/* Row 1: Latest Jobs, Admit Card, Results (3 columns) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch min-w-0">
         {row1Sections.map(renderSectionBox)}
       </div>
 
@@ -340,7 +340,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       )}
 
       {/* Row 2: Exam Date, Latest News, Sarkari Yojana (3 columns) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch min-w-0">
         {row2Sections.map(renderSectionBox)}
       </div>
 

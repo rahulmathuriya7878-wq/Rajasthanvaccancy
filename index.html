@@ -57,7 +57,7 @@
           var canonicalUrl = origin + '/';
 
           var params = new URLSearchParams(search);
-          var vacancyId = params.get('vacancy') || (pathname && pathname.indexOf('.') === -1 ? pathname : null);
+          var vacancyId = params.get('vacancy') || (pathname && pathname.toLowerCase() !== 'sitemap' && pathname.indexOf('.') === -1 ? pathname : null);
           var category = params.get('category');
 
           if (vacancyId) {

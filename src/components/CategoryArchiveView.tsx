@@ -138,7 +138,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 return (
                   <article 
                     key={item.id}
-                    className="inside-article bg-white p-3 sm:p-5 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all"
+                    className="inside-article job-archive-card bg-white p-3.5 sm:p-5 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all min-w-0 max-w-full overflow-hidden"
                   >
                     <header className="entry-header mb-3">
                       {isAdmin && (

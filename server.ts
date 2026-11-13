@@ -113,21 +113,30 @@ async function startServer() {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const todayIso = new Date().toISOString().split('T')[0];
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       
       // Home
-      xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
 
       // Categories (clean query parameters, NO hashes/anchors!)
       const categories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'exam_date', 'syllabus', 'news'];
       categories.forEach(cat => {
-        xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
       });
 
-      // Vacancies (All 42+ Posts indexed)
+      // Portal Info & HTML Sitemap Pages
+      const policyPages = ['sitemap', 'about', 'contact', 'privacy', 'terms', 'disclaimer'];
+      policyPages.forEach(p => {
+        xml += `  <url>\n    <loc>${baseUrl}/?policy=${p}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${p === 'sitemap' ? '0.9' : '0.7'}</priority>\n  </url>\n`;
+      });
+
+      // Vacancies (All Active Posts indexed with valid ISO lastmod)
       INITIAL_VACANCIES.forEach(v => {
-        const priority = (v.isTrending || v.isHot || v.id === 'kvs-samvida-sathi-recruitment-2026' || v.id === 'jee-main-2027-session-1') ? '1.0' : '0.9';
-        xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${v.createdAt || new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
+        const rawDate = v.createdAt || '';
+        const validLastmod = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : todayIso;
+        const priority = (v.isTrending || v.isHot || v.id === 'csir-npl-mts-recruitment-2026' || v.id === 'kvs-samvida-sathi-recruitment-2026' || v.id === 'jee-main-2027-session-1') ? '1.0' : '0.9';
+        xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${validLastmod}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
       });
 
       xml += `</urlset>`;
@@ -137,6 +146,15 @@ async function startServer() {
       console.error('Failed to generate sitemap:', error);
       res.status(500).send('Error generating sitemap');
     }
+  });
+
+  // XML Sitemap Index endpoint for Search Console compatibility
+  app.get('/sitemap_index.xml', (req, res) => {
+    const baseUrl = getBaseOriginFromRequest(req);
+    const todayIso = new Date().toISOString().split('T')[0];
+    const indexXml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap>\n    <loc>${baseUrl}/sitemap.xml</loc>\n    <lastmod>${todayIso}</lastmod>\n  </sitemap>\n</sitemapindex>`;
+    res.header('Content-Type', 'application/xml; charset=utf-8');
+    res.send(indexXml);
   });
 
   // Robots.txt with Multi-Bot Allow & Sitemap Directives
@@ -158,13 +176,13 @@ async function startServer() {
       rss += `  <language>hi-IN</language>\n`;
       rss += `  <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />\n`;
 
-      INITIAL_VACANCIES.slice(0, 30).forEach(v => {
+      INITIAL_VACANCIES.slice(0, 100).forEach(v => {
         rss += `  <item>\n`;
         rss += `    <title><![CDATA[${v.titleHi || v.title}]]></title>\n`;
         rss += `    <link>${baseUrl}/?vacancy=${v.id}</link>\n`;
         rss += `    <guid isPermaLink="true">${baseUrl}/?vacancy=${v.id}</guid>\n`;
         rss += `    <description><![CDATA[${v.briefSummaryHi || v.descriptionHi || v.title}]]></description>\n`;
-        rss += `    <pubDate>${new Date(v.createdAt || '2026-10-25').toUTCString()}</pubDate>\n`;
+        rss += `    <pubDate>${new Date(v.createdAt || '2026-11-13').toUTCString()}</pubDate>\n`;
         rss += `  </item>\n`;
       });
 

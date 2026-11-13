@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldCheck, 
   ExternalLink, 
   Building2, 
-  Globe
+  Globe,
+  Share2,
+  MessageCircle,
+  Send,
+  Copy,
+  Check
 } from 'lucide-react';
 import { LanguageMode, VacancyItem } from '../types';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
+import { SHARE_BASE_URL, getSocialShareLinks } from '../utils/shareUtils';
 
 interface FooterProps {
   lang: LanguageMode;
-  onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer') => void;
+  onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap') => void;
   onOpenAdminLogin?: () => void;
   onOpenUrlIndexation?: () => void;
   onSelectVacancy?: (item: VacancyItem) => void;
@@ -26,11 +32,18 @@ export const Footer: React.FC<FooterProps> = ({
   isAdmin = false,
 }) => {
   const isHi = lang === 'hi';
+  const [copiedPortalLink, setCopiedPortalLink] = useState(false);
+
+  const portalShareUrl = `${SHARE_BASE_URL}/`;
+  const portalShareTitle = isHi
+    ? 'Rajasthan Vacancy 2026 - सभी सरकारी भर्तियां, एडमिट कार्ड, रिजल्ट व सरकारी योजनाएं एक ही जगह देखें'
+    : 'Rajasthan Vacancy 2026 - Latest Govt Jobs, Admit Cards & Sarkari Results';
+  const portalShareLinks = getSocialShareLinks(portalShareUrl, portalShareTitle);
 
   const officialLinks = [
     { name: 'WhatsApp चैनल (Official Alerts)', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
     { name: 'Telegram चैनल (Official Channel)', url: 'https://t.me/newrajsthanjobs' },
-    { name: 'राजस्थान वैकेंसी (Home Portal)', url: 'https://rajasthanvaccancy.vercel.app/' },
+    { name: 'राजस्थान वैकेंसी (www.rajasthanvacancy.online)', url: 'https://www.rajasthanvacancy.online/' },
     { name: 'RSMSSB (कर्मचारी चयन बोर्ड)', url: 'https://rsmssb.rajasthan.gov.in' },
     { name: 'RPSC (राजस्थान लोक सेवा आयोग)', url: 'https://rpsc.rajasthan.gov.in' },
     { name: 'Rajasthan SSO Portal (sso.rajasthan.gov.in)', url: 'https://sso.rajasthan.gov.in' },
@@ -125,6 +138,66 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
         </div>
 
+        {/* Portal Share Links Strip (https://www.rajasthanvacancy.online/) */}
+        <div className="my-6 p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
+            <Share2 className="w-4 h-4 text-[#15803d] shrink-0" />
+            <span>
+              {isHi
+                ? 'पोर्टल शेयर करें (Share Website): https://www.rajasthanvacancy.online/'
+                : 'Share Website: https://www.rajasthanvacancy.online/'}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={portalShareLinks.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition"
+            >
+              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+              <span>WhatsApp</span>
+            </a>
+            <a
+              href={portalShareLinks.telegram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs transition"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Telegram</span>
+            </a>
+            <a
+              href={portalShareLinks.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#1465d1] text-white font-bold text-xs transition"
+            >
+              <span>Facebook</span>
+            </a>
+            <a
+              href={portalShareLinks.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition"
+            >
+              <span>X / Twitter</span>
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(portalShareUrl);
+                setCopiedPortalLink(true);
+                setTimeout(() => setCopiedPortalLink(false), 2000);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs transition cursor-pointer"
+            >
+              {copiedPortalLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedPortalLink ? (isHi ? 'लिंक कॉपी ✓' : 'Copied ✓') : (isHi ? 'Copy Link' : 'Copy Link')}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Bottom copyright */}
         <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500" style={{ fontSize: '12pt' }}>
           <div>
@@ -136,6 +209,16 @@ export const Footer: React.FC<FooterProps> = ({
                 <Globe className="w-3.5 h-3.5" />
                 <span>{isHi ? 'URL Indexation' : 'URL Indexation'}</span>
               </button>
+            )}
+            {isAdmin && (
+              <>
+                <button onClick={() => onSelectPolicy('sitemap')} className="hover:text-amber-600 transition cursor-pointer font-semibold text-slate-700">
+                  {isHi ? 'साइटमैप (Sitemap)' : 'Sitemap'}
+                </button>
+                <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 transition">
+                  XML Sitemap
+                </a>
+              </>
             )}
             <button onClick={() => onSelectPolicy('privacy')} className="hover:text-amber-600 transition cursor-pointer">
               {isHi ? 'गोपनीयता नीति' : 'Privacy Policy'}

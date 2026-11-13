@@ -19,6 +19,7 @@ import { TermsAndConditions } from './components/TermsAndConditions';
 import { ContactUs } from './components/ContactUs';
 import { AboutUs } from './components/AboutUs';
 import { Disclaimer } from './components/Disclaimer';
+import { SitemapPage } from './components/SitemapPage';
 import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { 
   EligibilityFinderModal 
@@ -270,7 +271,7 @@ export default function App() {
   const [isSavedOpen, setIsSavedOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
-  const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | null>(null);
+  const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap' | null>(null);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(() => {
     try {
       return !localStorage.getItem('raj_alert_subscribed_v1');
@@ -284,12 +285,20 @@ export default function App() {
     try {
       const params = new URLSearchParams(window.location.search);
       const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '');
-      const vacancyParam = params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
+      const policyParam = params.get('policy');
+      const isSitemapPath = cleanPath.toLowerCase() === 'sitemap';
+      const vacancyParam = params.get('vacancy') || (!isSitemapPath && cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
       const categoryParam = params.get('category');
       const toolParam = params.get('tool') || params.get('indexation');
 
       if (toolParam === 'indexation' || toolParam === '1' || toolParam === 'true') {
         setIsUrlIndexationOpen(true);
+      }
+
+      if (isSitemapPath || policyParam === 'sitemap') {
+        setActivePolicyView('sitemap');
+      } else if (policyParam === 'privacy' || policyParam === 'terms' || policyParam === 'contact' || policyParam === 'about' || policyParam === 'disclaimer') {
+        setActivePolicyView(policyParam);
       }
 
       if (vacancyParam) {
@@ -304,11 +313,13 @@ export default function App() {
         }
         if (found) {
           setSelectedVacancy(found);
+          setActivePolicyView(null);
         }
       }
 
       if (categoryParam && categoryParam !== 'ALL') {
         setSelectedCategory(categoryParam as CategoryType);
+        setActivePolicyView(null);
       }
     } catch (e) {
       console.error('Error parsing URL params for SEO', e);
@@ -325,10 +336,11 @@ export default function App() {
       const isHi = lang === 'hi';
 
       if (selectedVacancy) {
-        if (currentVacancyId !== selectedVacancy.id || url.pathname !== '/') {
+        if (currentVacancyId !== selectedVacancy.id || url.pathname !== '/' || url.searchParams.has('policy')) {
           url.pathname = '/';
           url.searchParams.set('vacancy', selectedVacancy.id);
           url.searchParams.delete('category');
+          url.searchParams.delete('policy');
           window.history.replaceState({ vacancyId: selectedVacancy.id }, '', url.toString());
         }
         const titleText = `${isHi ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
@@ -434,11 +446,30 @@ export default function App() {
         const jobScript = document.getElementById('dynamic-job-schema-ld');
         if (jobScript) jobScript.remove();
 
-      } else {
-        if (currentVacancyId || url.searchParams.has('category') || url.pathname !== '/') {
+      } else if (activePolicyView) {
+        if (url.searchParams.get('policy') !== activePolicyView || url.pathname !== '/') {
           url.pathname = '/';
           url.searchParams.delete('vacancy');
           url.searchParams.delete('category');
+          url.searchParams.set('policy', activePolicyView);
+          window.history.replaceState({ policy: activePolicyView }, '', url.toString());
+        }
+        const policyTitles: Record<string, string> = {
+          sitemap: 'Sitemap - Rajasthan Vacancy 2026',
+          privacy: 'Privacy Policy - Rajasthan Vacancy 2026',
+          terms: 'Terms & Conditions - Rajasthan Vacancy 2026',
+          contact: 'Contact Us - Rajasthan Vacancy 2026',
+          about: 'About Us - Rajasthan Vacancy 2026',
+          disclaimer: 'Disclaimer - Rajasthan Vacancy 2026',
+        };
+        document.title = policyTitles[activePolicyView] || 'Rajasthan Vacancy 2026';
+        applyCanonicalTag(`${origin}/?policy=${activePolicyView}`);
+      } else {
+        if (currentVacancyId || url.searchParams.has('category') || url.searchParams.has('policy') || url.pathname !== '/') {
+          url.pathname = '/';
+          url.searchParams.delete('vacancy');
+          url.searchParams.delete('category');
+          url.searchParams.delete('policy');
           window.history.replaceState({ vacancyId: null, category: null }, '', url.toString());
         }
         document.title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';
@@ -467,7 +498,7 @@ export default function App() {
     } catch (e) {
       console.error('Error updating URL params and SEO titles', e);
     }
-  }, [selectedVacancy, selectedCategory, lang]);
+  }, [selectedVacancy, selectedCategory, activePolicyView, lang]);
 
   // Handle browser Back/Forward button
   useEffect(() => {
@@ -537,6 +568,7 @@ export default function App() {
     setVacancies(prev =>
       prev.map(v => v.id === item.id ? { ...v, clicksCount: (v.clicksCount || 0) + 1 } : v)
     );
+    setActivePolicyView(null);
     setSelectedVacancy(item);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -792,6 +824,24 @@ export default function App() {
               <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
             ) : activePolicyView === 'disclaimer' ? (
               <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
+            ) : activePolicyView === 'sitemap' ? (
+              <SitemapPage
+                lang={lang}
+                vacancies={vacancies}
+                onBack={() => setActivePolicyView(null)}
+                onSelectVacancy={handleSelectVacancy}
+                onSelectCategory={(cat) => {
+                  setActivePolicyView(null);
+                  setSelectedVacancy(null);
+                  setSelectedCategory(cat);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onSelectPolicy={(policy) => {
+                  setActivePolicyView(policy);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                isAdmin={isAdmin}
+              />
             ) : selectedVacancy ? (
               /* Full Page View with Dynamic Head Meta Tags */
               <FullPagePostView
