@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main Home Portal -->
   <url>
-    <loc>https://rajasthanvacancy.online/</loc>
+    <loc>https://www.rajasthanvacancy.online/</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
@@ -10,49 +10,49 @@
 
   <!-- Category Sections -->
   <url>
-    <loc>https://rajasthanvacancy.online/?category=latest_job</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=latest_job</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=admit_card</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=admit_card</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=result</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=result</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=answer_key</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=answer_key</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=scheme</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=scheme</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=exam_date</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=exam_date</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=syllabus</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=syllabus</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?category=news</loc>
+    <loc>https://www.rajasthanvacancy.online/?category=news</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
@@ -60,297 +60,375 @@
 
   <!-- HTML Sitemap & Portal Info Pages -->
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=sitemap</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=sitemap</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=about</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=about</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=contact</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=contact</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=privacy</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=privacy</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=terms</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=terms</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?policy=disclaimer</loc>
+    <loc>https://www.rajasthanvacancy.online/?policy=disclaimer</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- Active Vacancies & Yojana Posts (43 URLs) -->
+  <!-- Vacancy & News Posts (56 Active URLs) -->
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=csir-npl-mts-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=csir-npl-mts-recruitment-2026</loc>
     <lastmod>2026-11-13</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=bsf-si-ldce-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=bsf-si-ldce-recruitment-2026</loc>
     <lastmod>2026-11-12</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rrc-nr-apprentice-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rrc-nr-apprentice-recruitment-2026</loc>
     <lastmod>2026-11-12</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=dsssb-sweeper-chowkidar-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=dsssb-sweeper-chowkidar-recruitment-2026</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=indian-army-tes-57-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=indian-army-tes-57-recruitment-2026</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ibps-so-specialist-officer-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ibps-so-specialist-officer-recruitment-2026</loc>
     <lastmod>2026-11-10</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-police-constable-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-police-constable-recruitment-2026</loc>
     <lastmod>2026-11-10</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-high-court-system-assistant-clerk-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-high-court-system-assistant-clerk-2026</loc>
     <lastmod>2026-11-09</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ssc-gd-constable-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ssc-gd-constable-recruitment-2026</loc>
     <lastmod>2026-11-08</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=crpf-sports-quota-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rpsc-protection-officer-admit-card-2026</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-teaching-associate-admit-card-2026</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ibps-rrb-officer-scale-1-admit-card-2026</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ssc-cgl-tier-1-result-2026</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-junior-instructor-result-2026</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ibps-po-mains-result-scorecard-2026</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rpsc-ras-prelims-exam-date-2026</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ssc-chsl-tier-1-exam-date-2026</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=upsc-ifs-mains-exam-schedule-2026</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-revised-exam-calendar-2026-27-news</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-sjed-scholarship-last-date-news-2026</loc>
+    <lastmod>2026-11-12</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=cm-higher-education-scholarship-yojana-2026</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=devnarayan-chhatra-scooty-yojana-2026</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=crpf-sports-quota-recruitment-2026</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=kalibai-scooty-yojana-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=kalibai-scooty-yojana-2026</loc>
     <lastmod>2026-02-01</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=indian-air-force-recruitment-afcat-01-2027</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=indian-air-force-recruitment-afcat-01-2027</loc>
     <lastmod>2026-11-10</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=kvs-samvida-sathi-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=kvs-samvida-sathi-recruitment-2026</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ctet-2026-exam-center-news</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ctet-2026-exam-center-news</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=nta-exam-calendar-2026-27</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=nta-exam-calendar-2026-27</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=pm-internship-scheme-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=pm-internship-scheme-2026</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=jee-main-2027-session-1</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=jee-main-2027-session-1</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=upessc-uttar-pradesh-trained-graduate-teacher-tgt-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=upessc-uttar-pradesh-trained-graduate-teacher-tgt-2026</loc>
     <lastmod>2026-10-25</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rashtriya-military-school-dholpur-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rashtriya-military-school-dholpur-recruitment-2026</loc>
     <lastmod>2026-10-25</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=railway-group-d-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=railway-group-d-recruitment-2026</loc>
     <lastmod>2026-02-01</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=indian-air-force-hindi-typist-recruitment-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=indian-air-force-hindi-typist-recruitment-2026</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=pm-viksit-bharat-rojgar-yojana-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=pm-viksit-bharat-rojgar-yojana-2026</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ambedkar-dbt-voucher-yojana-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ambedkar-dbt-voucher-yojana-2026</loc>
     <lastmod>2026-01-10</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=pm-awas-yojana-urban-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=pm-awas-yojana-urban-2026</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=mukhyamantri-ayushman-arogya-yojana-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=mukhyamantri-ayushman-arogya-yojana-2026</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=kali-bai-scooty-yojana-2026-list</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=kali-bai-scooty-yojana-2026-list</loc>
     <lastmod>2026-10-16</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=sainik-school-chittorgarh-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=sainik-school-chittorgarh-2026</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ugc-net-2026-dec</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ugc-net-2026-dec</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-cet-12th-level-admit-card-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-cet-12th-level-admit-card-2026</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ugc-net-december-admit-card-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ugc-net-december-admit-card-2026</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rpsc-2nd-grade-teacher-admit-card-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rpsc-2nd-grade-teacher-admit-card-2026</loc>
     <lastmod>2026-10-18</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-cet-graduation-level-result-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-cet-graduation-level-result-2026</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rsmssb-pashu-parichar-result-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-pashu-parichar-result-2026</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-cet-12th-level-exam-date-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-cet-12th-level-exam-date-2026</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=ugc-net-december-exam-dates-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=ugc-net-december-exam-dates-2026</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rsmssb-vanpal-vanrakshak-exam-date-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-vanpal-vanrakshak-exam-date-2026</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-gram-panchayat-chunav-2026-news</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-gram-panchayat-chunav-2026-news</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rrc-nwr-railway-apprentice-news-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rrc-nwr-railway-apprentice-news-2026</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-free-tablet-yojana-2026-news</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-free-tablet-yojana-2026-news</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rsmssb-cet-12th-answer-key-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rsmssb-cet-12th-answer-key-2026</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-police-constable-answer-key-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-police-constable-answer-key-2026</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-patwari-syllabus-2026-pdf</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-patwari-syllabus-2026-pdf</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rajasthanvacancy.online/?vacancy=rajasthan-police-si-syllabus-2026</loc>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rajasthan-police-si-syllabus-2026</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>

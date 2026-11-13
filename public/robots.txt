@@ -14,5 +14,4 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://rajasthanvacancy.online/sitemap.xml
-Sitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml
+Sitemap: https://www.rajasthanvacancy.online/sitemap.xml

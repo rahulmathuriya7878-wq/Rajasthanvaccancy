@@ -161,7 +161,7 @@ async function startServer() {
   app.get('/robots.txt', (req, res) => {
     const origin = getBaseOriginFromRequest(req);
     res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://rajasthanvacancy.online/sitemap.xml\nSitemap: https://rajasthanvaccancy.pages.dev/sitemap.xml\nSitemap: https://rajasthanvacancies.com/sitemap.xml\nSitemap: https://rajasthanvacancy.com/sitemap.xml\nSitemap: https://rajasthanvaccancy.vercel.app/sitemap.xml\n`);
+    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://www.rajasthanvacancy.online/sitemap.xml\n`);
   });
 
   // Dynamic RSS 2.0 Feed for Google News & Search Instant Reach
@@ -203,7 +203,7 @@ async function startServer() {
   // Automated Search Engine Auto-Index Endpoint (Google Ping + Bing + IndexNow Protocol)
   app.all('/api/seo/auto-index', async (_req, res) => {
     try {
-      const baseUrl = 'https://rajasthanvaccancy.vercel.app';
+      const baseUrl = 'https://www.rajasthanvacancy.online';
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
 
       const urlList = [
@@ -242,7 +242,7 @@ async function startServer() {
       // 3. IndexNow Fast Crawl Protocol (Bing, Yandex, Seznam, Naver)
       try {
         const indexNowPayload = {
-          host: 'rajasthanvaccancy.vercel.app',
+          host: 'www.rajasthanvacancy.online',
           key: 'rajasthanvacancyindexnow2026',
           keyLocation: `${baseUrl}/rajasthanvacancyindexnow2026.txt`,
           urlList: urlList

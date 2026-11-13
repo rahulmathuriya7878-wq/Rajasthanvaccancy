@@ -10,11 +10,11 @@
  * 5. Dynamically adapts to production domain (rajasthanvacancy.com or vercel.app).
  */
 
-export const DEFAULT_PRODUCTION_ORIGIN = 'https://rajasthanvacancy.online';
+export const DEFAULT_PRODUCTION_ORIGIN = 'https://www.rajasthanvacancy.online';
 
 /**
  * Detect the appropriate canonical base origin dynamically.
- * Prioritizes custom production domain (rajasthanvacancy.online) and cloud hosts.
+ * Prioritizes custom production domain (www.rajasthanvacancy.online) and cloud hosts.
  */
 export function getCanonicalOrigin(): string {
   if (typeof window !== 'undefined' && window.location) {
@@ -22,7 +22,7 @@ export function getCanonicalOrigin(): string {
     
     // Primary custom domain support
     if (host.includes('rajasthanvacancy.online')) {
-      return 'https://rajasthanvacancy.online';
+      return 'https://www.rajasthanvacancy.online';
     }
     // Cloudflare Pages support
     if (host.includes('pages.dev')) {

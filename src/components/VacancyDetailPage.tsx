@@ -81,7 +81,7 @@ export const normalizePost = (v: VacancyItem): any => {
           label: 'Official Website',
           actionText: 'Click Here',
           type: 'official',
-          url: v.officialLinks?.officialWebsiteUrl || 'https://rajasthanvaccancy.vercel.app/'
+          url: v.officialLinks?.officialWebsiteUrl || 'https://www.rajasthanvacancy.online/'
         }
       ];
 
@@ -533,7 +533,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         label: 'New Important Link / नया लिंक',
         actionText: 'Click Here',
         type: 'official',
-        url: 'https://rajasthanvaccancy.vercel.app/'
+        url: 'https://www.rajasthanvacancy.online/'
       });
       return { ...prev, directLinks: list };
     });

@@ -19,7 +19,7 @@ export function getBaseOriginFromRequest(req: Request): string {
   const host = (req.get('host') || '').toLowerCase();
   
   if (host.includes('rajasthanvacancy.online')) {
-    return 'https://rajasthanvacancy.online';
+    return 'https://www.rajasthanvacancy.online';
   }
   if (host.includes('pages.dev')) {
     return `https://${req.get('host')}`;
@@ -36,7 +36,7 @@ export function getBaseOriginFromRequest(req: Request): string {
   if (host && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('run.app')) {
     return `https://${req.get('host')}`;
   }
-  return 'https://rajasthanvacancy.online';
+  return 'https://www.rajasthanvacancy.online';
 }
 
 function escapeHtml(val: string | number | undefined | null): string {

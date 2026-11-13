@@ -39,7 +39,7 @@ export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
   if (!isOpen) return null;
 
   const isHi = lang === 'hi';
-  const BASE_URL = 'https://rajasthanvaccancy.vercel.app';
+  const BASE_URL = 'https://www.rajasthanvacancy.online';
   
   const [filterType, setFilterType] = useState<'all' | 'jobs' | 'categories' | 'tools'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -376,7 +376,7 @@ export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
                     type="text"
                     value={activeInspectUrl}
                     onChange={(e) => setActiveInspectUrl(e.target.value)}
-                    placeholder="https://rajasthanvaccancy.vercel.app/?vacancy=..."
+                    placeholder="https://www.rajasthanvacancy.online/?vacancy=..."
                     className="w-full pl-9 pr-3 py-2 text-xs font-mono bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-500 shadow-2xs"
                   />
                 </div>
@@ -627,7 +627,7 @@ export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
             </div>
 
             <a
-              href="https://search.google.com/search-console/sitemaps?resource_id=https://rajasthanvaccancy.vercel.app/"
+              href="https://search.google.com/search-console/sitemaps?resource_id=https://www.rajasthanvacancy.online/"
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition cursor-pointer"
