@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { LanguageMode, VacancyItem } from '../types';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
+import { filterActivePostsWithinDays } from '../utils/dateUtils';
 
 interface FooterProps {
   lang: LanguageMode;
@@ -102,7 +103,7 @@ export const Footer: React.FC<FooterProps> = ({
                 : 'Direct crawlable hyperlinks for candidates and search engine indexing:'}
             </p>
             <div className="flex flex-wrap gap-2 text-xs">
-              {INITIAL_VACANCIES.map((vac) => {
+              {filterActivePostsWithinDays(INITIAL_VACANCIES).map((vac) => {
                 const postTitle = isHi ? (vac.titleHi || vac.title) : vac.title;
                 return (
                   <a

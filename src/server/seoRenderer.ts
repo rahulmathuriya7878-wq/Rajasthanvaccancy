@@ -2,7 +2,7 @@ import type { Request } from 'express';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import { VacancyItem } from '../types';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
-import { compareVacanciesNewestFirst, resolveJobSchemaDates } from '../utils/dateUtils';
+import { compareVacanciesNewestFirst, filterActivePostsWithinDays, resolveJobSchemaDates } from '../utils/dateUtils';
 import { buildBreadcrumbSchema, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 
 const CATEGORY_NAMES_HI: Record<string, string> = {
@@ -165,9 +165,11 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     targetVacancyId = urlPath;
   }
 
+  const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
+
   let matchedVacancy: VacancyItem | undefined;
   if (targetVacancyId) {
-    matchedVacancy = INITIAL_VACANCIES.find(
+    matchedVacancy = activeVacancies.find(
       (v) => v.id.toLowerCase() === targetVacancyId!.toLowerCase()
     );
   }
@@ -187,7 +189,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   );
   let ssrBodyContent = '';
 
-  const sortedVacancies = [...INITIAL_VACANCIES].sort(compareVacanciesNewestFirst);
+  const sortedVacancies = [...activeVacancies].sort(compareVacanciesNewestFirst);
 
   if (matchedVacancy) {
     const postTitle = matchedVacancy.titleHi || matchedVacancy.title;

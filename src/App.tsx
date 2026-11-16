@@ -37,7 +37,12 @@ import { useDynamicBreadcrumbSchema } from './hooks/useDynamicBreadcrumbSchema';
 import { useDynamicJobSchema } from './hooks/useDynamicJobSchema';
 import { useDynamicFaqSchema } from './hooks/useDynamicFaqSchema';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
-import { compareVacanciesNewestFirst } from './utils/dateUtils';
+import {
+  AUTO_DELETE_MAX_AGE_DAYS,
+  compareVacanciesNewestFirst,
+  filterActivePostsWithinDays,
+  isPostOlderThanDays,
+} from './utils/dateUtils';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { 
@@ -109,10 +114,13 @@ export default function App() {
       if (storedDel) initialDeleted = JSON.parse(storedDel);
     } catch (e) {}
 
-    let filteredLoaded = loaded.filter(v => !initialDeleted.includes(v.id) && v.id !== 'ugc-net-2026-june');
+    let filteredLoaded = filterActivePostsWithinDays(
+      loaded.filter(v => !initialDeleted.includes(v.id) && v.id !== 'ugc-net-2026-june'),
+      AUTO_DELETE_MAX_AGE_DAYS
+    );
     
     INITIAL_VACANCIES.forEach(initItem => {
-      if (!initialDeleted.includes(initItem.id)) {
+      if (!initialDeleted.includes(initItem.id) && !isPostOlderThanDays(initItem, AUTO_DELETE_MAX_AGE_DAYS)) {
         const exists = filteredLoaded.some(v => v.id === initItem.id);
         if (!exists) {
           filteredLoaded = [initItem, ...filteredLoaded];
@@ -121,21 +129,54 @@ export default function App() {
     });
 
     // Merge handwritten notes and updated human guidance for base items
-    return filteredLoaded.map(item => {
-      const initMatch = INITIAL_VACANCIES.find(init => init.id === item.id);
-      if (initMatch) {
-        return {
-          ...initMatch,
-          ...item,
-          officialLinks: initMatch.officialLinks || item.officialLinks,
-          handwrittenNotes: item.handwrittenNotes || initMatch.handwrittenNotes,
-          briefSummaryHi: (item.briefSummaryHi && item.briefSummaryHi.length > 30) ? item.briefSummaryHi : initMatch.briefSummaryHi,
-          descriptionHi: initMatch.descriptionHi || item.descriptionHi,
-        };
-      }
-      return item;
-    });
+    return filterActivePostsWithinDays(
+      filteredLoaded.map(item => {
+        const initMatch = INITIAL_VACANCIES.find(init => init.id === item.id);
+        if (initMatch) {
+          return {
+            ...initMatch,
+            ...item,
+            officialLinks: initMatch.officialLinks || item.officialLinks,
+            handwrittenNotes: item.handwrittenNotes || initMatch.handwrittenNotes,
+            briefSummaryHi: (item.briefSummaryHi && item.briefSummaryHi.length > 30) ? item.briefSummaryHi : initMatch.briefSummaryHi,
+            descriptionHi: initMatch.descriptionHi || item.descriptionHi,
+          };
+        }
+        return item;
+      }),
+      AUTO_DELETE_MAX_AGE_DAYS
+    );
   });
+
+  // Automatically purge any post that becomes older than 60 days while app is running
+  useEffect(() => {
+    const purgeExpiredPosts = () => {
+      const nowMs = Date.now();
+      setVacancies(prev => {
+        const expiredIds = prev
+          .filter(v => isPostOlderThanDays(v, AUTO_DELETE_MAX_AGE_DAYS, nowMs))
+          .map(v => v.id);
+        if (expiredIds.length === 0) return prev;
+
+        setAlertJobIds(prevAlerts => prevAlerts.filter(id => !expiredIds.includes(id)));
+        return prev.filter(v => !expiredIds.includes(v.id));
+      });
+    };
+
+    purgeExpiredPosts();
+    const intervalId = window.setInterval(purgeExpiredPosts, 30 * 60 * 1000);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        purgeExpiredPosts();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_VACANCIES, JSON.stringify(vacancies));

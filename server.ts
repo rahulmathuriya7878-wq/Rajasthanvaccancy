@@ -148,6 +148,8 @@ async function startServer() {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const { filterActivePostsWithinDays } = await import('./src/utils/dateUtils');
+      const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
       const todayIso = new Date().toISOString().split('T')[0];
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       
@@ -166,8 +168,8 @@ async function startServer() {
         xml += `  <url>\n    <loc>${baseUrl}/?policy=${p}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
       });
 
-      // Vacancies (All Active Posts indexed with valid ISO lastmod)
-      INITIAL_VACANCIES.forEach(v => {
+      // Vacancies (All Active Posts within 60 days indexed with valid ISO lastmod)
+      activeVacancies.forEach(v => {
         const rawDate = v.createdAt || '';
         const validLastmod = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : todayIso;
         const priority = (v.isTrending || v.isHot || v.id === 'csir-npl-mts-recruitment-2026' || v.id === 'kvs-samvida-sathi-recruitment-2026' || v.id === 'jee-main-2027-session-1') ? '1.0' : '0.9';
@@ -208,7 +210,8 @@ async function startServer() {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
-      const { toIso8601DateString } = await import('./src/utils/dateUtils');
+      const { toIso8601DateString, filterActivePostsWithinDays } = await import('./src/utils/dateUtils');
+      const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
       let rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n`;
       rss += `  <title>Rajasthan Vacancy 2026 - Sarkari Job Alerts</title>\n`;
       rss += `  <link>${baseUrl}/</link>\n`;
@@ -216,7 +219,7 @@ async function startServer() {
       rss += `  <language>hi-IN</language>\n`;
       rss += `  <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />\n`;
 
-      INITIAL_VACANCIES.slice(0, 100).forEach(v => {
+      activeVacancies.slice(0, 100).forEach(v => {
         const safeIso = toIso8601DateString(v.createdAt || v.updatedAt, '2026-11-13');
         rss += `  <item>\n`;
         rss += `    <title><![CDATA[${v.titleHi || v.title}]]></title>\n`;
@@ -253,6 +256,8 @@ async function startServer() {
     try {
       const baseUrl = 'https://www.rajasthanvacancy.online';
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const { filterActivePostsWithinDays } = await import('./src/utils/dateUtils');
+      const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
 
       const customUrls = Array.isArray(req.body?.urls)
         ? req.body.urls.filter((u: unknown): u is string => typeof u === 'string' && u.startsWith('http'))
@@ -275,7 +280,7 @@ async function startServer() {
             `${baseUrl}/?policy=privacy`,
             `${baseUrl}/?policy=terms`,
             `${baseUrl}/?policy=disclaimer`,
-            ...INITIAL_VACANCIES.map(v => `${baseUrl}/?vacancy=${v.id}`)
+            ...activeVacancies.map(v => `${baseUrl}/?vacancy=${v.id}`)
           ];
 
       const pings: Array<{ service: string; status: string; detail?: string }> = [];
@@ -365,9 +370,11 @@ async function startServer() {
       const hasBreadcrumb = bodyText.includes('"@type": "BreadcrumbList"') || bodyText.includes('"@type":"BreadcrumbList"');
 
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const { filterActivePostsWithinDays } = await import('./src/utils/dateUtils');
+      const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
       const vacancyParam = parsed.searchParams.get('vacancy');
       const matchedVacancy = vacancyParam
-        ? INITIAL_VACANCIES.find(v => v.id.toLowerCase() === vacancyParam.toLowerCase())
+        ? activeVacancies.find(v => v.id.toLowerCase() === vacancyParam.toLowerCase())
         : null;
 
       const detectedSchemas = [

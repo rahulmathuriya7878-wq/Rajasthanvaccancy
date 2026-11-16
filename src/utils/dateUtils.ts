@@ -394,3 +394,67 @@ export const formatDateDDMMYYYY = (dateVal?: string | null, fallback = 'शी�
 
   return trimmed;
 };
+
+export const AUTO_DELETE_MAX_AGE_DAYS = 60;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export interface ExpirablePostLike {
+  addedAtMs?: number;
+  updatedAt?: string;
+  createdAt?: string;
+  importantDates?: any;
+}
+
+/**
+ * Resolves the effective publish/update timestamp (UTC epoch ms) for a post.
+ */
+export const getPostPublishedTimestamp = (v?: ExpirablePostLike | null): number => {
+  if (!v) return 0;
+  if (typeof v.addedAtMs === 'number' && Number.isFinite(v.addedAtMs) && v.addedAtMs > 0) {
+    return v.addedAtMs;
+  }
+  const primaryTs = Math.max(
+    parseVacancyTimestamp(v.updatedAt),
+    parseVacancyTimestamp(v.createdAt)
+  );
+  if (primaryTs > 0) return primaryTs;
+  return parseVacancyTimestamp(v.importantDates?.notificationDate);
+};
+
+/**
+ * Returns true when a post is strictly older than `maxAgeDays` (default 60 days)
+ * and should be automatically deleted from active listings, sitemaps, and feeds.
+ */
+export const isPostOlderThanDays = (
+  v?: ExpirablePostLike | null,
+  maxAgeDays = AUTO_DELETE_MAX_AGE_DAYS,
+  referenceNowMs = Date.now()
+): boolean => {
+  if (!v) return false;
+  const postTs = getPostPublishedTimestamp(v);
+  if (!postTs || postTs === Number.MAX_SAFE_INTEGER) return false;
+
+  if (typeof v.addedAtMs === 'number' && Number.isFinite(v.addedAtMs) && v.addedAtMs > 0) {
+    return referenceNowMs - v.addedAtMs > maxAgeDays * DAY_MS;
+  }
+
+  const refDate = new Date(referenceNowMs);
+  const todayUtcMidnight = Date.UTC(
+    refDate.getUTCFullYear(),
+    refDate.getUTCMonth(),
+    refDate.getUTCDate()
+  );
+  const cutoffUtcMidnight = todayUtcMidnight - maxAgeDays * DAY_MS;
+  return postTs < cutoffUtcMidnight;
+};
+
+/**
+ * Filters out posts older than `maxAgeDays` (default 60 days).
+ */
+export const filterActivePostsWithinDays = <T extends ExpirablePostLike>(
+  items: T[],
+  maxAgeDays = AUTO_DELETE_MAX_AGE_DAYS,
+  referenceNowMs = Date.now()
+): T[] => {
+  return items.filter((item) => !isPostOlderThanDays(item, maxAgeDays, referenceNowMs));
+};
