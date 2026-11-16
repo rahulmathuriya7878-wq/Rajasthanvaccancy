@@ -1,4 +1,4 @@
-import { VacancyItem, CategoryType } from '../types';
+import { VacancyItem } from '../types';
 
 export interface ThumbnailOptions {
   title: string;

@@ -78,9 +78,6 @@ export default defineConfig(() => {
             if (id.includes('node_modules/firebase') || id.includes('@firebase')) {
               return 'vendor-firebase';
             }
-            if (id.includes('node_modules/recharts')) {
-              return 'vendor-recharts';
-            }
             if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
               return 'vendor-react';
             }

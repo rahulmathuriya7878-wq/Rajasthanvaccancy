@@ -1855,7 +1855,7 @@ export const RRB_STATION_MASTER_2026_VACANCY: VacancyItem = {
   createdAt: '2026-10-21'
 };
 
-export const generateQuickViralTags = (title: string, titleHi: string, category: CategoryType, org: BoardType): string[] => {
+export const generateQuickViralTags = (title: string, titleHi: string, category: CategoryType): string[] => {
   const tags: string[] = ['#RajasthanVacancy2026', '#SarkariResult2026', '#GovtJobsAlert', '#SarkariBharti'];
   const t = (title + ' ' + titleHi).toLowerCase();
   
@@ -1948,7 +1948,7 @@ const createQuickVacancy = (
   jobLocation: 'सम्पूर्ण राजस्थान',
   selectionProcess: ['Written Examination', 'Document Verification'],
   selectionProcessHi: ['लिखित परीक्षा', 'दस्तावेज सत्यापन'],
-  tags: overrides.tags || generateQuickViralTags(title, titleHi, category, organization),
+  tags: overrides.tags || generateQuickViralTags(title, titleHi, category),
   officialLinks: {
     officialWebsiteUrl: 'https://rajasthan.gov.in',
     applyOnlineUrl: 'https://sso.rajasthan.gov.in',

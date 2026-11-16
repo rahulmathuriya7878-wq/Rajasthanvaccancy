@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, X, CheckCircle2, Sparkles, ShieldCheck } from 'lucide-react';
+import { Bell, X, CheckCircle2 } from 'lucide-react';
 import { LanguageMode } from '../types';
 
 interface SubscribeAlertsModalProps {

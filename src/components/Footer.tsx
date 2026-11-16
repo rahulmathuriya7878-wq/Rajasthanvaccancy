@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  ShieldCheck, 
   ExternalLink, 
   Building2, 
   Globe,
@@ -17,7 +16,6 @@ import { SHARE_BASE_URL, getSocialShareLinks } from '../utils/shareUtils';
 interface FooterProps {
   lang: LanguageMode;
   onSelectPolicy: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap') => void;
-  onOpenAdminLogin?: () => void;
   onOpenUrlIndexation?: () => void;
   onSelectVacancy?: (item: VacancyItem) => void;
   isAdmin?: boolean;
@@ -26,7 +24,6 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   lang,
   onSelectPolicy,
-  onOpenAdminLogin,
   onOpenUrlIndexation,
   onSelectVacancy,
   isAdmin = false,

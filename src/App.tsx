@@ -22,12 +22,6 @@ import { Disclaimer } from './components/Disclaimer';
 import { SitemapPage } from './components/SitemapPage';
 import { FloatingSocialButtons } from './components/FloatingSocialButtons';
 import { 
-  EligibilityFinderModal 
-} from './components/EligibilityFinderModal';
-import { 
-  SavedJobsModal 
-} from './components/SavedJobsModal';
-import { 
   AdminLoginModal 
 } from './components/AdminLoginModal';
 import { 
@@ -38,7 +32,6 @@ import {
 } from './components/OfflineIndicator';
 import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { useAuth } from './context/AuthContext';
-import { generateHindiShareText } from './utils/shareUtils';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 import { compareVacanciesNewestFirst } from './utils/dateUtils';
@@ -46,9 +39,7 @@ import { compareVacanciesNewestFirst } from './utils/dateUtils';
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { 
   VacancyItem, 
-  BoardType, 
   CategoryType, 
-  QualificationType, 
   JobStatusType, 
   LanguageMode 
 } from './types';
@@ -56,8 +47,6 @@ import {
 import { CheckCircle2 } from 'lucide-react';
 
 const STORAGE_KEY_VACANCIES = 'raj_vacancies_v28';
-const STORAGE_KEY_SAVED = 'raj_saved_ids_v3';
-const STORAGE_KEY_LANG = 'raj_lang_pref_v2';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clean up legacy cached storage versions
@@ -65,8 +54,8 @@ try {
   if (typeof window !== 'undefined' && window.localStorage) {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && (key.startsWith('raj_vacancies_v') && key !== STORAGE_KEY_VACANCIES) || 
-          (key && key.startsWith('raj_saved_ids_v') && key !== STORAGE_KEY_SAVED)) {
+      if (key && ((key.startsWith('raj_vacancies_v') && key !== STORAGE_KEY_VACANCIES) || 
+          key.startsWith('raj_saved_ids_v'))) {
         localStorage.removeItem(key);
       }
     }
@@ -76,7 +65,7 @@ try {
 export default function App() {
   const { isAdmin } = useAuth();
   // Default language set to Hindi
-  const [lang, setLang] = useState<LanguageMode>('hi');
+  const [lang] = useState<LanguageMode>('hi');
 
   // Track deleted post IDs so deleted posts remain deleted permanently
   const [deletedIds, setDeletedIds] = useState<string[]>(() => {
@@ -153,23 +142,6 @@ export default function App() {
     } catch (e) {}
   }, [vacancies]);
 
-  // Saved / Bookmarked IDs
-  const [savedIds, setSavedIds] = useState<string[]>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY_SAVED);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (e) {
-      console.error('Failed to load saved IDs', e);
-    }
-    return [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_SAVED, JSON.stringify(savedIds));
-  }, [savedIds]);
-
   // Tracked Alert Job IDs
   const [alertJobIds, setAlertJobIds] = useState<string[]>(() => {
     try {
@@ -185,7 +157,7 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY_ALERT_JOBS, JSON.stringify(alertJobIds));
   }, [alertJobIds]);
 
-  // Toggle 'Alert Me' for specific post (Requests browser Notification & saves to favorites)
+  // Toggle 'Alert Me' for specific post (Requests browser Notification)
   const handleToggleAlertMe = (id: string) => {
     const targetJob = vacancies.find(v => v.id === id);
     const isCurrentlySet = alertJobIds.includes(id);
@@ -195,11 +167,6 @@ export default function App() {
       showToast(lang === 'hi' ? 'जॉब अलर्ट हटा दिया गया' : 'Job alert removed');
     } else {
       setAlertJobIds(prev => [...prev, id]);
-
-      // Automatically save to favorites list
-      if (!savedIds.includes(id)) {
-        setSavedIds(prev => [...prev, id]);
-      }
 
       // Request browser notification permission if available
       if (typeof window !== 'undefined' && 'Notification' in window) {
@@ -220,8 +187,8 @@ export default function App() {
 
       showToast(
         lang === 'hi' 
-          ? '🔔 अलर्ट सक्रिय! पसंदीदा सूची में सहेजी गई तथा फॉर्म शुरू होते ही नोटिफिकेशन मिलेगा।' 
-          : '🔔 Alert active! Saved to favorites & you will be notified when applications open.'
+          ? '🔔 अलर्ट सक्रिय! फॉर्म शुरू होते ही आपको नोटिफिकेशन मिल जाएगा।' 
+          : '🔔 Alert active! You will be notified when applications open.'
       );
     }
   };
@@ -255,22 +222,11 @@ export default function App() {
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBoard, setSelectedBoard] = useState<BoardType | 'ALL'>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'ALL'>('ALL');
-  const [selectedQualification, setSelectedQualification] = useState<QualificationType | 'ALL'>('ALL');
-  const [selectedStatus, setSelectedStatus] = useState<JobStatusType | 'ALL'>('ALL');
-  const [selectedLocation, setSelectedLocation] = useState<string>('ALL');
-  const [selectedJobType, setSelectedJobType] = useState<string>('ALL');
-  const [selectedSalaryRange, setSelectedSalaryRange] = useState<string>('ALL');
-  const [sortBy, setSortBy] = useState<'latest' | 'deadline' | 'posts'>('latest');
 
   // Modals & Selection
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
-  const [editingVacancy, setEditingVacancy] = useState<VacancyItem | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [isEligibilityOpen, setIsEligibilityOpen] = useState(false);
-  const [isSavedOpen, setIsSavedOpen] = useState(false);
-  const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
   const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap' | null>(null);
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(() => {
@@ -578,30 +534,6 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const handleToggleSave = (id: string) => {
-    const isAlreadySaved = savedIds.includes(id);
-    if (isAlreadySaved) {
-      setSavedIds(savedIds.filter(i => i !== id));
-      showToast(lang === 'hi' ? 'भर्ती को सुरक्षित सूची से हटाया गया' : 'Removed from saved jobs');
-    } else {
-      setSavedIds([...savedIds, id]);
-      showToast(lang === 'hi' ? 'भर्ती को सुरक्षित सूची में जोड़ा गया ★' : 'Notification saved successfully ★');
-    }
-
-    setVacancies(prev =>
-      prev.map(v => {
-        if (v.id === id) {
-          const currentSaves = v.savesCount || 0;
-          return {
-            ...v,
-            savesCount: isAlreadySaved ? Math.max(0, currentSaves - 1) : currentSaves + 1
-          };
-        }
-        return v;
-      })
-    );
-  };
-
   const handleSelectVacancy = (item: VacancyItem) => {
     // Increment clicks count dynamically
     setVacancies(prev =>
@@ -610,52 +542,6 @@ export default function App() {
     setActivePolicyView(null);
     setSelectedVacancy(item);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleShareVacancy = (item: VacancyItem) => {
-    const titleHi = item.titleHi || item.title;
-    const text = generateHindiShareText(item);
-
-    if (navigator.share) {
-      navigator.share({
-        title: titleHi,
-        text: text,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      showToast(lang === 'hi' ? 'महत्वपूर्ण जानकारी एवं लिंक कॉपी हो गया!' : 'Details copied to clipboard!');
-    }
-  };
-
-  const handleAddVacancy = (newJob: VacancyItem) => {
-    // Reset active search & category filter so new post is immediately visible on homepage
-    setSearchQuery('');
-    setSelectedCategory('ALL');
-
-    const formattedJob: VacancyItem = {
-      ...newJob,
-      addedAtMs: Date.now(),
-      isNew: true,
-      isHot: newJob.isHot ?? true,
-      createdAt: newJob.createdAt || new Date().toISOString().split('T')[0],
-      updatedAt: newJob.updatedAt || 'अभी-अभी (Just Now)',
-      status: newJob.status || 'active'
-    };
-
-    setVacancies(prev => [formattedJob, ...prev.filter(v => v.id !== formattedJob.id)]);
-    setSelectedVacancy(formattedJob);
-
-    // Background Auto-Index ping for new post
-    fetch('/api/seo/auto-index', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ urls: [`${getCanonicalOrigin()}/?vacancy=${encodeURIComponent(formattedJob.id)}`] })
-    }).catch(() => {});
-    if (formattedJob.category === 'scheme' || formattedJob.organization === 'Sarkari Yojana') {
-      showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक जोड़ी गई व तुरंत होमपेज पर लाइव!' : 'Scheme alert posted & live on homepage!');
-    } else {
-      showToast(lang === 'hi' ? 'सरकारी भर्ती सफलतापूर्वक जोड़ी गई व तुरंत होमपेज पर लाइव!' : 'Govt job alert posted & live on homepage!');
-    }
   };
 
   const handleUpdateVacancy = (updatedJob: VacancyItem) => {
@@ -668,7 +554,6 @@ export default function App() {
       body: JSON.stringify({ urls: [`${getCanonicalOrigin()}/?vacancy=${encodeURIComponent(updatedJob.id)}`] })
     }).catch(() => {});
     showToast(lang === 'hi' ? 'पोस्ट विवरण सफलतापूर्वक अपडेट कर दिया गया!' : 'Post details updated successfully!');
-    setEditingVacancy(null);
   };
 
   const handleDeleteVacancy = (id: string) => {
@@ -679,17 +564,6 @@ export default function App() {
     setVacancies(prev => prev.filter(v => v.id !== id));
     setSelectedVacancy(null);
     showToast(lang === 'hi' ? '🗑️ पोस्ट सफलतापूर्वक डिलीट कर दी गई!' : '🗑️ Post deleted successfully!');
-  };
-
-  const handleResetFilters = () => {
-    setSearchQuery('');
-    setSelectedBoard('ALL');
-    setSelectedCategory('ALL');
-    setSelectedQualification('ALL');
-    setSelectedStatus('ALL');
-    setSelectedLocation('ALL');
-    setSelectedJobType('ALL');
-    setSelectedSalaryRange('ALL');
   };
 
   // Filtered and Sorted vacancies
@@ -709,12 +583,7 @@ export default function App() {
         }
       }
 
-      // 2. Board
-      if (selectedBoard !== 'ALL' && item.organization !== selectedBoard) {
-        return false;
-      }
-
-      // 3. Category
+      // 2. Category
       if (selectedCategory !== 'ALL') {
         if (item.category === selectedCategory) {
           // direct match
@@ -739,58 +608,9 @@ export default function App() {
         }
       }
 
-      // 4. Qualification
-      if (selectedQualification !== 'ALL') {
-        if (!item.qualification.includes(selectedQualification)) {
-          return false;
-        }
-      }
-
-      // 5. Status
-      if (selectedStatus !== 'ALL' && item.status !== selectedStatus) {
-        return false;
-      }
-
-      // 6. Location
-      if (selectedLocation !== 'ALL') {
-        const locStr = ((item.jobLocation || '') + ' ' + (item.department || '') + ' ' + (item.titleHi || '')).toLowerCase();
-        if (!locStr.includes(selectedLocation.toLowerCase())) {
-          return false;
-        }
-      }
-
-      // 7. Job Type
-      if (selectedJobType !== 'ALL') {
-        const descStr = ((item.descriptionHi || '') + ' ' + (item.description || '') + ' ' + (item.briefSummaryHi || '')).toLowerCase();
-        if (selectedJobType === 'contract' && !descStr.includes('संविदा') && !descStr.includes('contract')) return false;
-        if (selectedJobType === 'regular' && (descStr.includes('संविदा') || descStr.includes('contract'))) return false;
-        if (selectedJobType === 'scheme' && item.category !== 'scheme') return false;
-      }
-
-      // 8. Salary Range
-      if (selectedSalaryRange !== 'ALL') {
-        const salStr = ((item.salary || '') + ' ' + (item.salaryHi || '')).toLowerCase();
-        if (selectedSalaryRange === '20k' && !salStr.includes('19,900') && !salStr.includes('20,000') && !salStr.includes('level-2') && !salStr.includes('level-4') && !salStr.includes('level-7')) return false;
-        if (selectedSalaryRange === '40k' && !salStr.includes('44,900') && !salStr.includes('level-7') && !salStr.includes('30,000')) return false;
-        if (selectedSalaryRange === 'contract' && !salStr.includes('मानदेय') && !salStr.includes('contract')) return false;
-      }
-
       return true;
-    }).sort((a, b) => {
-      if (sortBy === 'deadline') {
-        const dateA = a.importantDates.applyLastDate || '9999-99-99';
-        const dateB = b.importantDates.applyLastDate || '9999-99-99';
-        return dateA.localeCompare(dateB);
-      }
-      if (sortBy === 'posts') {
-        const postsA = typeof a.totalPosts === 'number' ? a.totalPosts : 0;
-        const postsB = typeof b.totalPosts === 'number' ? b.totalPosts : 0;
-        return postsB - postsA;
-      }
-      // default: latest (newest / newly added post always appears first)
-      return compareVacanciesNewestFirst(a, b);
-    });
-  }, [vacancies, searchQuery, selectedBoard, selectedCategory, selectedQualification, selectedStatus, selectedLocation, selectedJobType, selectedSalaryRange, sortBy]);
+    }).sort(compareVacanciesNewestFirst);
+  }, [vacancies, searchQuery, selectedCategory]);
 
   const isHi = lang === 'hi';
 
@@ -821,19 +641,6 @@ export default function App() {
       {/* Main Header */}
       <Header
         lang={lang}
-        setLang={setLang}
-        savedCount={savedIds.length}
-        onOpenSaved={() => setIsSavedOpen(true)}
-        onOpenEligibility={() => setIsEligibilityOpen(true)}
-        onOpenAddJob={() => {
-          if (!isAdmin) {
-            setIsAdminLoginOpen(true);
-          } else {
-            setEditingVacancy(null);
-            setIsAddJobOpen(true);
-          }
-        }}
-        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onGoHome={() => {
           setSelectedCategory('ALL');
           setSearchQuery('');
@@ -843,8 +650,6 @@ export default function App() {
         }}
         latestVacancies={vacancies}
         onSelectVacancy={handleSelectVacancy}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
         selectedCategory={selectedCategory}
         onSelectCategory={(cat) => {
           setSelectedCategory(cat as any);
@@ -852,7 +657,6 @@ export default function App() {
           setActivePolicyView(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenSubscribe={() => setIsSubscribeModalOpen(true)}
         onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
       />
 
@@ -864,7 +668,6 @@ export default function App() {
                 lang={lang}
                 onBack={() => setActivePolicyView(null)}
                 onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-                isAdmin={isAdmin}
               />
             ) : activePolicyView === 'terms' ? (
               <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
@@ -901,20 +704,11 @@ export default function App() {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 lang={lang}
-                isSaved={savedIds.includes(selectedVacancy.id)}
-                onToggleSave={handleToggleSave}
                 allVacancies={vacancies}
                 onSelectOtherVacancy={handleSelectVacancy}
                 isAdmin={isAdmin}
-                onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-                onEditVacancy={(item) => {
-                  setEditingVacancy(item);
-                  setIsAddJobOpen(true);
-                }}
                 onDeleteVacancy={handleDeleteVacancy}
                 onUpdateVacancy={handleUpdateVacancy}
-                isAlertSet={alertJobIds.includes(selectedVacancy.id)}
-                onToggleAlertMe={handleToggleAlertMe}
                 onSelectCategory={(cat) => {
                   setSelectedVacancy(null);
                   setSelectedCategory(cat as any);
@@ -947,10 +741,6 @@ export default function App() {
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 isAdmin={isAdmin}
-                onEditVacancy={(item) => {
-                  setEditingVacancy(item);
-                  setIsAddJobOpen(true);
-                }}
                 onDeleteVacancy={handleDeleteVacancy}
               />
             ) : (
@@ -967,10 +757,6 @@ export default function App() {
                   onSelectVacancy={handleSelectVacancy}
                   onFilterCategory={(cat) => setSelectedCategory(cat as any)}
                   isAdmin={isAdmin}
-                  onEditVacancy={(item) => {
-                    setEditingVacancy(item);
-                    setIsAddJobOpen(true);
-                  }}
                   onDeleteVacancy={handleDeleteVacancy}
                   alertJobIds={alertJobIds}
                   onToggleAlertMe={handleToggleAlertMe}
@@ -989,38 +775,12 @@ export default function App() {
           setSelectedVacancy(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
         onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
         onSelectVacancy={handleSelectVacancy}
         isAdmin={isAdmin}
       />
 
-      {/* Other Utility Modals */}
-
-      <EligibilityFinderModal
-        isOpen={isEligibilityOpen}
-        onClose={() => setIsEligibilityOpen(false)}
-        vacancies={vacancies}
-        lang={lang}
-        onSelectVacancy={(item) => setSelectedVacancy(item)}
-      />
-
-      <SavedJobsModal
-        isOpen={isSavedOpen}
-        onClose={() => setIsSavedOpen(false)}
-        savedIds={savedIds}
-        vacancies={vacancies}
-        lang={lang}
-        onRemoveSave={handleToggleSave}
-        onSelectVacancy={(item) => setSelectedVacancy(item)}
-        onClearAll={() => {
-          setSavedIds([]);
-          showToast(lang === 'hi' ? 'सभी सुरक्षित सूचनाएं हटा दी गईं' : 'All saved notifications cleared');
-        }}
-      />
-
-
-
+      {/* Utility Modals */}
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}
@@ -1038,11 +798,6 @@ export default function App() {
         onClose={() => setIsUrlIndexationOpen(false)}
         lang={lang}
         vacancies={vacancies}
-        onSelectVacancy={(item) => {
-          setSelectedVacancy(item);
-          setIsUrlIndexationOpen(false);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
       />
 
       <FloatingSocialButtons 

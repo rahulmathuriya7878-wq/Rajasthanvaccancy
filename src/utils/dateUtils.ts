@@ -50,30 +50,6 @@ export const formatDisplayDate = (dateVal?: string | null, fallback = 'शीघ
   return trimmed;
 };
 
-/**
- * Returns a valid ISO 8601 date string for Google URL indexing and JobPosting Schema (datePosted / validThrough).
- */
-export const getIsoDate = (dateVal?: string | null, defaultIso = '2026-10-24T07:00:00+00:00'): string => {
-  if (!dateVal || typeof dateVal !== 'string') return defaultIso;
-  const trimmed = dateVal.trim();
-  if (!trimmed || trimmed === 'TBA' || trimmed === '0000-00-00') return defaultIso;
-
-  try {
-    const parsed = new Date(trimmed);
-    if (!isNaN(parsed.getTime())) {
-      return parsed.toISOString();
-    }
-  } catch (e) {
-    // fallback
-  }
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-    return `${trimmed}T07:00:00+00:00`;
-  }
-
-  return defaultIso;
-};
-
 export interface IntegratedJobDates {
   notificationDate: string;
   applyStartDate: string;

@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ArrowLeft, 
   ChevronRight, 
-  Calendar, 
-  Building2, 
-  Award, 
   Search, 
   ExternalLink,
   Tag,
-  Clock,
-  Sparkles,
-  Share2,
-  Edit3,
   Trash2,
   ShieldCheck
 } from 'lucide-react';
@@ -32,7 +25,6 @@ interface CategoryArchiveViewProps {
   searchQuery?: string;
   setSearchQuery?: (q: string) => void;
   isAdmin?: boolean;
-  onEditVacancy?: (item: VacancyItem) => void;
   onDeleteVacancy?: (id: string) => void;
 }
 
@@ -49,7 +41,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   searchQuery = '',
   setSearchQuery,
   isAdmin = false,
-  onEditVacancy,
   onDeleteVacancy,
 }) => {
   const isHi = lang === 'hi';
@@ -144,16 +135,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                             <span>एडमिन कंट्रोल्स</span>
                           </span>
                           <div className="flex items-center gap-2">
-                            {onEditVacancy && (
-                              <button
-                                type="button"
-                                onClick={() => onEditVacancy(item)}
-                                className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded flex items-center gap-1 transition"
-                              >
-                                <Edit3 className="w-3 h-3" />
-                                <span>संशोधित करें</span>
-                              </button>
-                            )}
                             {onDeleteVacancy && (
                               <button
                                 type="button"

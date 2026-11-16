@@ -1,5 +1,5 @@
 import Parser from 'rss-parser';
-import { VacancyItem, BoardType, CategoryType, QualificationType } from '../types.ts';
+import { VacancyItem, BoardType, CategoryType } from '../types.ts';
 
 const parser = new Parser({
   headers: {

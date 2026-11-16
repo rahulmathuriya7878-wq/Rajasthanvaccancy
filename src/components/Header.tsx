@@ -1,8 +1,6 @@
 import React from 'react';
 import { 
-  Bell, 
   ShieldCheck,
-  PlusCircle,
   Search,
   X,
   Menu,
@@ -20,44 +18,24 @@ import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface HeaderProps {
   lang: LanguageMode;
-  setLang: (lang: LanguageMode) => void;
-  savedCount: number;
-  onOpenSaved: () => void;
-  onOpenEligibility: () => void;
-  onOpenAddJob?: () => void;
-  onOpenAdminLogin?: () => void;
   onGoHome?: () => void;
   latestVacancies?: VacancyItem[];
   onSelectVacancy?: (item: VacancyItem) => void;
-  searchQuery?: string;
-  setSearchQuery?: (q: string) => void;
   onSelectCategory?: (category: string) => void;
   selectedCategory?: string;
-  onSyncRSS?: () => void;
-  isSyncing?: boolean;
-  onOpenSubscribe?: () => void;
   onOpenUrlIndexation?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   lang,
-  setLang,
-  savedCount,
-  onOpenSaved,
-  onOpenEligibility,
-  onOpenAddJob,
-  onOpenAdminLogin,
   onGoHome,
   latestVacancies = [],
   onSelectVacancy,
-  searchQuery = '',
-  setSearchQuery,
   onSelectCategory,
   selectedCategory = 'ALL',
-  onOpenSubscribe,
   onOpenUrlIndexation,
 }) => {
-  const { user, isAdmin, logout, toggleAdminMode } = useAuth();
+  const { isAdmin, toggleAdminMode } = useAuth();
   const isHi = lang === 'hi';
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LanguageMode } from '../types';
-import { Mail, ArrowLeft, Send, MapPin, Phone, Clock, MessageSquare } from 'lucide-react';
+import { Mail, ArrowLeft, Send, MapPin, Clock } from 'lucide-react';
 
 interface ContactUsProps {
   lang: LanguageMode;

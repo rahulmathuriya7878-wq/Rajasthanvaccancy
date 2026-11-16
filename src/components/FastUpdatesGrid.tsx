@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  ChevronRight, 
-  ExternalLink,
   Bell,
-  Sparkles,
-  Calendar,
-  Edit3,
   Trash2,
   Search
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
 
-import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface FastUpdatesGridProps {
   vacancies: VacancyItem[];
@@ -20,7 +15,6 @@ interface FastUpdatesGridProps {
   onSelectVacancy: (item: VacancyItem) => void;
   onFilterCategory?: (category: CategoryType) => void;
   isAdmin?: boolean;
-  onEditVacancy?: (item: VacancyItem) => void;
   onDeleteVacancy?: (id: string) => void;
   alertJobIds?: string[];
   onToggleAlertMe?: (id: string) => void;
@@ -34,7 +28,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onSelectVacancy,
   onFilterCategory,
   isAdmin = false,
-  onEditVacancy,
   onDeleteVacancy,
   alertJobIds = [],
   onToggleAlertMe,
@@ -205,35 +198,20 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       </p>
                     </button>
 
-                    {/* Admin Actions (Edit / Delete) for logged-in Admin */}
-                    {isAdmin && (
+                    {/* Admin Actions (Delete) for logged-in Admin */}
+                    {isAdmin && onDeleteVacancy && (
                       <div className="flex items-center gap-1 shrink-0 ml-1">
-                        {onEditVacancy && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onEditVacancy(item);
-                            }}
-                            className="p-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 transition"
-                            title={isHi ? 'पोस्ट एडिट करें' : 'Edit Post'}
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        {onDeleteVacancy && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeleteVacancy(item.id);
-                            }}
-                            className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 transition"
-                            title={isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteVacancy(item.id);
+                          }}
+                          className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 transition"
+                          title={isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     )}
 
@@ -327,7 +305,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         <div className="w-full my-2 flex justify-center">
           <AdSection 
             slot="3785509362" 
-            client="ca-pub-8302542447035711" 
+            client="ca-pub-3176571184961509" 
             label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'} 
             minHeight={100}
             className="max-w-5xl"
@@ -345,7 +323,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
         <div className="w-full my-3 flex justify-center">
           <AdSection 
             slot="home-bottom-slot" 
-            client="ca-pub-8302542447035711" 
+            client="ca-pub-3176571184961509" 
             label={isHi ? 'विज्ञापन' : 'Advertisement'} 
             minHeight={90}
             className="max-w-5xl"

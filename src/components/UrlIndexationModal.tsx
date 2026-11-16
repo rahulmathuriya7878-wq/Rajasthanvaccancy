@@ -6,15 +6,12 @@ import {
   Copy, 
   Search, 
   Globe, 
-  AlertTriangle,
   Send,
   FileText,
   Zap,
   RotateCw,
   Clock,
   Sparkles,
-  ShieldCheck,
-  Check,
   Compass,
   TrendingUp,
   Flame
@@ -26,15 +23,13 @@ interface UrlIndexationModalProps {
   onClose: () => void;
   lang: LanguageMode;
   vacancies: VacancyItem[];
-  onSelectVacancy?: (item: VacancyItem) => void;
 }
 
 export const UrlIndexationModal: React.FC<UrlIndexationModalProps> = ({
   isOpen,
   onClose,
   lang,
-  vacancies,
-  onSelectVacancy
+  vacancies
 }) => {
   if (!isOpen) return null;
 

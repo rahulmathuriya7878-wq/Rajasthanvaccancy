@@ -1,6 +1,6 @@
 import React from 'react';
 import { LanguageMode } from '../types';
-import { Info, ArrowLeft, Target, Users, Award, Sparkles } from 'lucide-react';
+import { Info, ArrowLeft, Target, Users, Award } from 'lucide-react';
 
 interface AboutUsProps {
   lang: LanguageMode;

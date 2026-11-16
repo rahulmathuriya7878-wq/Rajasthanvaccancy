@@ -6,10 +6,9 @@ interface PrivacyPolicyProps {
   lang: LanguageMode;
   onBack: () => void;
   onOpenAdminLogin?: () => void;
-  isAdmin?: boolean;
 }
 
-export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOpenAdminLogin, isAdmin }) => {
+export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOpenAdminLogin }) => {
   const isHi = lang === 'hi';
 
   return (

@@ -24,7 +24,6 @@ import {
   ExternalLink,
   Tag,
   Flame,
-  Hash,
   Share2
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
@@ -38,17 +37,11 @@ interface VacancyDetailPageProps {
   vacancy: VacancyItem;
   onBack: () => void;
   lang: LanguageMode;
-  isSaved: boolean;
-  onToggleSave: (id: string) => void;
   allVacancies: VacancyItem[];
   onSelectOtherVacancy: (item: VacancyItem) => void;
-  onEditVacancy?: (vacancy: VacancyItem) => void;
   onDeleteVacancy?: (id: string) => void;
   onUpdateVacancy?: (updatedJob: VacancyItem) => void;
   isAdmin?: boolean;
-  onOpenAdminLogin?: () => void;
-  isAlertSet?: boolean;
-  onToggleAlertMe?: (id: string) => void;
   onSelectCategory?: (category: string) => void;
   onSearchKeyword?: (keyword: string) => void;
 }
@@ -339,16 +332,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   vacancy,
   onBack,
   lang,
-  isSaved,
-  onToggleSave,
   allVacancies,
   onSelectOtherVacancy,
-  onEditVacancy,
   onDeleteVacancy,
   onUpdateVacancy,
   isAdmin = false,
-  isAlertSet = false,
-  onToggleAlertMe,
   onSelectCategory,
   onSearchKeyword,
 }) => {
@@ -607,7 +595,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const notificationDateDisplay = formatDisplayDate(resolvedDates.notificationDate);
   const applyStartDateDisplay = formatDisplayDate(resolvedDates.applyStartDate);
   const applyLastDateDisplay = formatDisplayDate(resolvedDates.applyLastDate);
-  const feeLastDateDisplay = formatDisplayDate(resolvedDates.feeLastDate);
   const admitCardDateDisplay = formatDisplayDate(resolvedDates.admitCardDate);
   const examDateDisplay = formatDisplayDate(resolvedDates.examDate);
 
@@ -668,12 +655,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         importantDates: updatedList
       };
     });
-  };
-
-  const handleShareBigUpdate = () => {
-    const shareText = generateHindiShareText(editablePost);
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Section Management State for Admin
@@ -843,18 +824,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </button>
             )}
           </>
-        )}
-
-        {isAdmin && onEditVacancy && (
-          <button
-            type="button"
-            onClick={() => onEditVacancy(currentVacancy)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 transition cursor-pointer"
-            title={`डायरेक्ट पोस्ट एडिटर में ${label} अपडेट करें`}
-          >
-            <Edit3 className="w-3 h-3 text-sky-600" />
-            <span>एडिट करें</span>
-          </button>
         )}
 
         {isAdmin && (
@@ -1101,7 +1070,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const keywordsStr = activeTagsList.join(', ');
 
     let metaKeywords = document.querySelector('meta[name="keywords"]');
-    const origKeywords = metaKeywords?.getAttribute('content') || '';
     if (!metaKeywords) {
       metaKeywords = document.createElement('meta');
       metaKeywords.setAttribute('name', 'keywords');
@@ -1868,7 +1836,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 {/* Top In-Article Ad Section */}
                 <AdSection 
                   slot="post-top-slot"
-                  client="ca-pub-8302542447035711"
+                  client="ca-pub-3176571184961509"
                   label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
                   minHeight={90}
                   className="my-4"
@@ -3109,7 +3077,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           {/* Middle Ad Section above Important Direct Links */}
                           <AdSection 
                             slot="post-middle-slot"
-                            client="ca-pub-8302542447035711"
+                            client="ca-pub-3176571184961509"
                             label={isHi ? 'विज्ञापन' : 'Advertisement'}
                             minHeight={90}
                             className="my-3"
@@ -3747,7 +3715,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               {/* Bottom Post Ad Section */}
               <AdSection 
                 slot="post-bottom-slot"
-                client="ca-pub-8302542447035711"
+                client="ca-pub-3176571184961509"
                 label={isHi ? 'विज्ञापन' : 'Advertisement'}
                 minHeight={90}
                 className="my-5"
@@ -3796,7 +3764,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               <div className="w-full mt-[20px] border-t border-slate-200">
                 <AdSection 
                   slot="post-very-bottom-slot"
-                  client="ca-pub-8302542447035711"
+                  client="ca-pub-3176571184961509"
                   label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
                   minHeight={250}
                   className="w-full mt-[20px] mb-0"

@@ -109,24 +109,15 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
   }, [vacancy, lang]);
 }
 
-// Backwards compatibility alias
-export const useFullPagePostMeta = useDocumentHeadMeta;
-
 interface FullPagePostViewProps {
   vacancy: VacancyItem;
   onBack: () => void;
   lang: LanguageMode;
-  isSaved: boolean;
-  onToggleSave: (id: string) => void;
   allVacancies: VacancyItem[];
   onSelectOtherVacancy: (item: VacancyItem) => void;
-  onEditVacancy?: (vacancy: VacancyItem) => void;
   onDeleteVacancy?: (id: string) => void;
   onUpdateVacancy?: (updatedJob: VacancyItem) => void;
   isAdmin?: boolean;
-  onOpenAdminLogin?: () => void;
-  isAlertSet?: boolean;
-  onToggleAlertMe?: (id: string) => void;
   onSelectCategory?: (category: string) => void;
   onSearchKeyword?: (keyword: string) => void;
 }
