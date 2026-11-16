@@ -661,6 +661,14 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     /<link\b[^>]*rel=["']?canonical["']?[^>]*>/i,
     `<link rel="canonical" id="primary-canonical" href="${canonicalUrl}" />`
   );
+  modifiedHtml = modifiedHtml.replace(
+    /<link\b[^>]*rel=["']?sitemap["']?[^>]*>/i,
+    `<link rel="sitemap" type="application/xml" title="Sitemap" href="${baseUrl}/sitemap.xml" />`
+  );
+  modifiedHtml = modifiedHtml.replace(
+    /<link\b[^>]*type=["']?application\/rss\+xml["']?[^>]*>/i,
+    `<link rel="alternate" type="application/rss+xml" title="Rajasthan Vacancy 2026 RSS Feed" href="${baseUrl}/rss.xml" />`
+  );
 
   // Replace OpenGraph & Twitter Tags
   modifiedHtml = modifiedHtml.replace(

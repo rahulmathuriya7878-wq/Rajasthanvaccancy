@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
+import { AdSlotWrapper } from './AdSlotWrapper';
 
 import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
@@ -314,13 +315,20 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       {/* Center Responsive Google AdSense Ad Unit */}
       {showAds && (
         <div className="w-full my-2 flex justify-center">
-          <AdSection 
-            slot="3785509362" 
-            client="ca-pub-3176571184961509" 
-            label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'} 
-            minHeight={100}
+          <AdSlotWrapper
+            height={140}
             className="max-w-5xl"
-          />
+            ariaLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+            skeletonLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+          >
+            <AdSection 
+              slot="3785509362" 
+              client="ca-pub-3176571184961509" 
+              label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'} 
+              minHeight={100}
+              embedded
+            />
+          </AdSlotWrapper>
         </div>
       )}
 
@@ -332,13 +340,20 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       {/* Bottom Responsive Ad Unit */}
       {showAds && (
         <div className="w-full my-3 flex justify-center">
-          <AdSection 
-            slot="home-bottom-slot" 
-            client="ca-pub-3176571184961509" 
-            label={isHi ? 'विज्ञापन' : 'Advertisement'} 
-            minHeight={90}
+          <AdSlotWrapper
+            height={130}
             className="max-w-5xl"
-          />
+            ariaLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+            skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+          >
+            <AdSection 
+              slot="home-bottom-slot" 
+              client="ca-pub-3176571184961509" 
+              label={isHi ? 'विज्ञापन' : 'Advertisement'} 
+              minHeight={90}
+              embedded
+            />
+          </AdSlotWrapper>
         </div>
       )}
     </div>

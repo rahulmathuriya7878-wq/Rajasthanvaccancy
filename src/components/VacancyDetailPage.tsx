@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
+import { AdSlotWrapper } from './AdSlotWrapper';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
@@ -1730,13 +1731,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 </div>
 
                 {/* Top In-Article Ad Section */}
-                <AdSection 
-                  slot="post-top-slot"
-                  client="ca-pub-3176571184961509"
-                  label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
-                  minHeight={90}
+                <AdSlotWrapper
+                  height={130}
                   className="my-4"
-                />
+                  ariaLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                  skeletonLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                >
+                  <AdSection 
+                    slot="post-top-slot"
+                    client="ca-pub-3176571184961509"
+                    label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                    minHeight={90}
+                    embedded
+                  />
+                </AdSlotWrapper>
 
                 {/* Dynamic Reorderable Sections List */}
                 {activeSectionKeys.map((sectionKey) => {
@@ -2971,13 +2979,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return !isSectionDeleted('important_links') && (
                         <div key="important_links" className="space-y-2 pt-2">
                           {/* Middle Ad Section above Important Direct Links */}
-                          <AdSection 
-                            slot="post-middle-slot"
-                            client="ca-pub-3176571184961509"
-                            label={isHi ? 'विज्ञापन' : 'Advertisement'}
-                            minHeight={90}
+                          <AdSlotWrapper
+                            height={130}
                             className="my-3"
-                          />
+                            ariaLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                            skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                          >
+                            <AdSection 
+                              slot="post-middle-slot"
+                              client="ca-pub-3176571184961509"
+                              label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                              minHeight={90}
+                              embedded
+                            />
+                          </AdSlotWrapper>
                           <div className="flex items-center justify-between gap-2 pt-2">
                             <h2 
                               className="headlight font-bold text-slate-900"
@@ -3618,13 +3633,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               </footer>
 
               {/* Bottom Post Ad Section */}
-              <AdSection 
-                slot="post-bottom-slot"
-                client="ca-pub-3176571184961509"
-                label={isHi ? 'विज्ञापन' : 'Advertisement'}
-                minHeight={90}
+              <AdSlotWrapper
+                height={130}
                 className="my-5"
-              />
+                ariaLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+              >
+                <AdSection 
+                  slot="post-bottom-slot"
+                  client="ca-pub-3176571184961509"
+                  label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                  minHeight={90}
+                  embedded
+                />
+              </AdSlotWrapper>
 
               {/* Recent Posts section at the bottom of the card matching user screenshot */}
               {recentPosts.length > 0 && (
@@ -3666,15 +3688,21 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               )}
 
               {/* AdSense at the absolute bottom of the post */}
-              <div className="w-full mt-[20px] border-t border-slate-200">
-                <AdSection 
-                  slot="post-very-bottom-slot"
-                  client="ca-pub-3176571184961509"
-                  label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
-                  minHeight={250}
-                  className="w-full mt-[20px] mb-0"
-                  style={{ marginTop: '20px', minHeight: '250px' }}
-                />
+              <div className="w-full mt-[20px] pt-[20px] border-t border-slate-200">
+                <AdSlotWrapper
+                  height={290}
+                  className="w-full mb-0"
+                  ariaLabel={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                  skeletonLabel={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                >
+                  <AdSection 
+                    slot="post-very-bottom-slot"
+                    client="ca-pub-3176571184961509"
+                    label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                    minHeight={250}
+                    embedded
+                  />
+                </AdSlotWrapper>
               </div>
             </article>
           </main>

@@ -23,6 +23,8 @@ export interface AdSectionProps {
   responsive?: boolean;
   /** Optional inline styles for the outer ad container */
   style?: React.CSSProperties;
+  /** Set true when rendered inside AdSlotWrapper so outer border/margin/bg are handled by the fixed-height wrapper */
+  embedded?: boolean;
 }
 
 /**
@@ -39,6 +41,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
   minHeight = '90px',
   responsive = true,
   style,
+  embedded = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const adRef = useRef<HTMLModElement>(null);
@@ -120,10 +123,14 @@ export const AdSection: React.FC<AdSectionProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full min-w-[250px] my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`}
+      className={
+        embedded
+          ? `w-full min-w-[250px] h-full overflow-hidden px-2.5 py-2 text-center flex flex-col justify-center ${className}`
+          : `w-full min-w-[250px] my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`
+      }
       style={{ minHeight: resolvedMinHeight, ...style }}
     >
-      {label && (
+      {label && !embedded && (
         <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-1 select-none">
           {label}
         </div>
@@ -140,7 +147,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
             display: 'block',
             width: '100%',
             minWidth: '250px',
-            minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight,
+            minHeight: resolvedMinHeight,
           }}
           data-ad-client={client}
           data-ad-slot={slot}
