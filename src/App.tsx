@@ -33,6 +33,7 @@ import {
 import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { useAuth } from './context/AuthContext';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
+import { useDynamicBreadcrumbSchema } from './hooks/useDynamicBreadcrumbSchema';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 import { compareVacanciesNewestFirst } from './utils/dateUtils';
 
@@ -283,6 +284,14 @@ export default function App() {
     }
   }, []);
 
+  // Keep <script id="dynamic-breadcrumb-schema-ld"> synced with navigation hierarchy (Home > Category > Job)
+  useDynamicBreadcrumbSchema({
+    lang,
+    selectedCategory,
+    selectedVacancy,
+    activePolicyView,
+  });
+
   // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy or selectedCategory changes
   useEffect(() => {
     try {
@@ -500,16 +509,25 @@ export default function App() {
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
       const cleanPath = window.location.pathname.replace(/^\/|\/$/g, '');
+      const policyParam = params.get('policy');
+      const categoryParam = params.get('category');
       const vacancyId = params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
       if (vacancyId) {
         const found = vacancies.find(v => v.id === vacancyId || v.id.toLowerCase() === vacancyId.toLowerCase());
-        if (found) {
-          setSelectedVacancy(found);
-        } else {
-          setSelectedVacancy(null);
-        }
+        setSelectedVacancy(found || null);
+        setActivePolicyView(null);
+      } else if (categoryParam && categoryParam !== 'ALL') {
+        setSelectedVacancy(null);
+        setActivePolicyView(null);
+        setSelectedCategory(categoryParam as CategoryType);
+      } else if (policyParam === 'privacy' || policyParam === 'terms' || policyParam === 'contact' || policyParam === 'about' || policyParam === 'disclaimer' || policyParam === 'sitemap') {
+        setSelectedVacancy(null);
+        setSelectedCategory('ALL');
+        setActivePolicyView(policyParam);
       } else {
         setSelectedVacancy(null);
+        setSelectedCategory('ALL');
+        setActivePolicyView(null);
       }
     };
 

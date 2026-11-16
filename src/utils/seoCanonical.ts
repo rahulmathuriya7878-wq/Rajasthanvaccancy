@@ -41,7 +41,7 @@ export function getCanonicalOrigin(): string {
     }
     // Any live production domain that is not localhost or cloud development preview
     if (host !== 'localhost' && !host.includes('run.app') && !host.includes('127.0.0.1')) {
-      return window.location.origin;
+      return `https://${window.location.host}`;
     }
   }
   return DEFAULT_PRODUCTION_ORIGIN;
@@ -122,3 +122,148 @@ export function applyCanonicalTag(canonicalUrl: string): void {
     console.warn('Failed to apply canonical tag', err);
   }
 }
+
+export interface BreadcrumbTrailInput {
+  origin?: string;
+  lang?: 'hi' | 'en';
+  categoryKey?: string | null;
+  categoryLabel?: string | null;
+  vacancyId?: string | null;
+  vacancyTitle?: string | null;
+  policyKey?: string | null;
+  policyLabel?: string | null;
+}
+
+export function getBreadcrumbCategoryLabel(categoryKey: string, lang: 'hi' | 'en' = 'hi'): string {
+  const map: Record<string, { hi: string; en: string }> = {
+    latest_job: { hi: 'सरकारी नौकरियां (Latest Jobs)', en: 'Latest Jobs' },
+    ugc_net: { hi: 'सरकारी नौकरियां (Latest Jobs)', en: 'Latest Jobs' },
+    admit_card: { hi: 'प्रवेश पत्र (Admit Card)', en: 'Admit Cards' },
+    result: { hi: 'परीक्षा परिणाम (Result)', en: 'Results' },
+    answer_key: { hi: 'उत्तर कुंजी (Answer Key)', en: 'Answer Key' },
+    scheme: { hi: 'सरकारी योजनाएं (Sarkari Yojana)', en: 'Sarkari Yojana' },
+    news: { hi: 'लेटेस्ट न्यूज़ (Latest News)', en: 'Latest News' },
+    exam_date: { hi: 'परीक्षा तिथियां (Exam Dates)', en: 'Exam Dates' },
+    syllabus: { hi: 'पाठ्यक्रम (Syllabus)', en: 'Syllabus' },
+    upcoming: { hi: 'आगामी भर्तियां (Upcoming)', en: 'Upcoming Vacancies' },
+  };
+  const entry = map[categoryKey];
+  if (entry) return lang === 'hi' ? entry.hi : entry.en;
+  return lang === 'hi' ? 'सरकारी भर्तियां (Latest Jobs)' : 'Latest Jobs';
+}
+
+export function normalizeBreadcrumbCategoryKey(categoryKey?: string | null): string {
+  if (!categoryKey || categoryKey === 'ALL' || categoryKey === 'job' || categoryKey === 'ugc_net') {
+    return 'latest_job';
+  }
+  return categoryKey;
+}
+
+/**
+ * Builds a valid Schema.org BreadcrumbList JSON-LD object matching the current navigation hierarchy:
+ * - Home: [Home]
+ * - Category: [Home, Category]
+ * - Job Post: [Home, Category, Job]
+ * - Policy Page: [Home, Policy]
+ */
+export function buildBreadcrumbSchema(input: BreadcrumbTrailInput = {}) {
+  const origin = (input.origin || getCanonicalOrigin()).replace(/\/+$/, '');
+  const lang = input.lang || 'hi';
+  const homeName = lang === 'hi' ? 'मुख्य पृष्ठ (Home)' : 'Home';
+  const homeUrl = `${origin}/`;
+
+  const items: Array<{
+    '@type': 'ListItem';
+    position: number;
+    name: string;
+    item: string;
+  }> = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: homeName,
+      item: homeUrl,
+    },
+  ];
+
+  let pageCanonical = homeUrl;
+
+  if (input.vacancyId) {
+    const cleanCat = normalizeBreadcrumbCategoryKey(input.categoryKey);
+    const catLabel = input.categoryLabel || getBreadcrumbCategoryLabel(cleanCat, lang);
+    const catUrl = `${origin}/?category=${encodeURIComponent(cleanCat)}`;
+    const jobUrl = `${origin}/?vacancy=${encodeURIComponent(input.vacancyId)}`;
+
+    items.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: catLabel,
+      item: catUrl,
+    });
+    items.push({
+      '@type': 'ListItem',
+      position: 3,
+      name: input.vacancyTitle || input.vacancyId,
+      item: jobUrl,
+    });
+    pageCanonical = jobUrl;
+  } else if (input.categoryKey && input.categoryKey !== 'ALL') {
+    const cleanCat = normalizeBreadcrumbCategoryKey(input.categoryKey);
+    const catLabel = input.categoryLabel || getBreadcrumbCategoryLabel(cleanCat, lang);
+    const catUrl = `${origin}/?category=${encodeURIComponent(cleanCat)}`;
+
+    items.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: catLabel,
+      item: catUrl,
+    });
+    pageCanonical = catUrl;
+  } else if (input.policyKey) {
+    const policyUrl = `${origin}/?policy=${encodeURIComponent(input.policyKey)}`;
+    items.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: input.policyLabel || input.policyKey,
+      item: policyUrl,
+    });
+    pageCanonical = policyUrl;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': `${pageCanonical}#breadcrumb`,
+    itemListElement: items,
+  };
+}
+
+/**
+ * Updates or injects <script id="dynamic-breadcrumb-schema-ld" type="application/ld+json">
+ * in document <head> so Search Bots & Rich Results see the live breadcrumb hierarchy.
+ */
+export function applyBreadcrumbSchema(input: BreadcrumbTrailInput = {}): void {
+  if (typeof document === 'undefined') return;
+  try {
+    // Ensure we never leave duplicate standalone BreadcrumbList scripts in <head>
+    const ldScripts = document.querySelectorAll('script[type="application/ld+json"]');
+    ldScripts.forEach((scriptEl) => {
+      if (scriptEl.id !== 'dynamic-breadcrumb-schema-ld' && scriptEl.textContent?.includes('"BreadcrumbList"') && !scriptEl.textContent?.includes('"@graph"')) {
+        scriptEl.remove();
+      }
+    });
+
+    let breadcrumbScript = document.getElementById('dynamic-breadcrumb-schema-ld') as HTMLScriptElement | null;
+    if (!breadcrumbScript) {
+      breadcrumbScript = document.createElement('script');
+      breadcrumbScript.id = 'dynamic-breadcrumb-schema-ld';
+      breadcrumbScript.type = 'application/ld+json';
+      document.head.appendChild(breadcrumbScript);
+    }
+    const schema = buildBreadcrumbSchema(input);
+    breadcrumbScript.textContent = JSON.stringify(schema, null, 2);
+  } catch (err) {
+    console.warn('Failed to apply dynamic BreadcrumbList JSON-LD', err);
+  }
+}
+

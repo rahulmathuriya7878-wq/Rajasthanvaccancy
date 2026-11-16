@@ -37,6 +37,10 @@
       (function() {
         try {
           var host = window.location.hostname.toLowerCase();
+          if (window.location.protocol === 'http:' && host.indexOf('rajasthanvacancy.online') !== -1) {
+            window.location.replace('https://www.rajasthanvacancy.online' + window.location.pathname + window.location.search + window.location.hash);
+            return;
+          }
           var origin = 'https://www.rajasthanvacancy.online';
           if (host.indexOf('rajasthanvacancy.online') !== -1) {
             origin = 'https://www.rajasthanvacancy.online';
@@ -48,8 +52,8 @@
             origin = 'https://rajasthanvacancy.com';
           } else if (host.indexOf('vercel.app') !== -1) {
             origin = 'https://' + window.location.host;
-          } else if (host !== 'localhost' && host.indexOf('run.app') === -1) {
-            origin = window.location.origin;
+          } else if (host !== 'localhost' && host !== '127.0.0.1' && host.indexOf('run.app') === -1) {
+            origin = 'https://' + window.location.host;
           }
 
           var search = window.location.search || '';
@@ -111,7 +115,7 @@
     <meta name="twitter:title" content="Rajasthan Vacancy 2026 - Govt Job Notifications & Sarkari Results" />
     <meta name="twitter:description" content="Rajasthan & Central Govt job alerts: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Admit Card, Answer Key & Sarkari Result." />
     <meta name="twitter:image" content="https://www.rajasthanvacancy.online/og-preview.png" />
-    <!-- Primary Schema.org Structured Data (WebSite, SearchAction, Breadcrumbs, WebApplication) -->
+    <!-- Primary Schema.org Structured Data (WebSite, WebApplication) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -133,16 +137,6 @@
           }
         },
         {
-          "@type": "BreadcrumbList",
-          "@id": "https://www.rajasthanvacancy.online/#breadcrumb",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "मुख्य पृष्ठ (Home)", "item": "https://www.rajasthanvacancy.online/" },
-            { "@type": "ListItem", "position": 2, "name": "सरकारी भर्तियां (Govt Jobs)", "item": "https://www.rajasthanvacancy.online/?category=latest_job" },
-            { "@type": "ListItem", "position": 3, "name": "प्रवेश पत्र (Admit Card)", "item": "https://www.rajasthanvacancy.online/?category=admit_card" },
-            { "@type": "ListItem", "position": 4, "name": "रिजल्ट (Result)", "item": "https://www.rajasthanvacancy.online/?category=result" }
-          ]
-        },
-        {
           "@type": "WebApplication",
           "@id": "https://www.rajasthanvacancy.online/#application",
           "name": "Rajasthan Vacancy Portal",
@@ -153,6 +147,23 @@
             "price": "0",
             "priceCurrency": "INR"
           }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Dynamic Schema.org BreadcrumbList (JSON-LD) updated by SSR and React navigation state -->
+    <script id="dynamic-breadcrumb-schema-ld" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": "https://www.rajasthanvacancy.online/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "मुख्य पृष्ठ (Home)",
+          "item": "https://www.rajasthanvacancy.online/"
         }
       ]
     }

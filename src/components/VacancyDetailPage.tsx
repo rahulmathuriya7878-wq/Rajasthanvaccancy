@@ -1327,21 +1327,25 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       <div className="bg-white rounded-lg border border-slate-200 px-3 sm:px-4 py-2.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
         {/* Breadcrumb Trail */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 flex-wrap text-slate-600 font-medium">
-          <button
-            type="button"
-            onClick={onBack}
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              onBack();
+            }}
             className="flex items-center gap-1 text-slate-700 hover:text-[#0056b3] transition cursor-pointer font-bold"
             title="मुख्य पृष्ठ"
           >
             <Home className="w-3.5 h-3.5 text-slate-500" />
             <span>Home</span>
-          </button>
+          </a>
           <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
-          <button
-            type="button"
-            onClick={() => {
+          <a
+            href={`/?category=${encodeURIComponent(editablePost.category || 'latest_job')}`}
+            onClick={(e) => {
+              e.preventDefault();
               if (onSelectCategory) {
-                onSelectCategory(editablePost.category || 'job');
+                onSelectCategory(editablePost.category || 'latest_job');
               } else {
                 onBack();
               }
@@ -1356,8 +1360,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               ? (isHi ? 'उत्तर कुंजी' : 'Answer Key')
               : editablePost.category === 'syllabus'
               ? (isHi ? 'सिलेबस' : 'Syllabus')
+              : editablePost.category === 'scheme'
+              ? (isHi ? 'सरकारी योजना' : 'Sarkari Yojana')
+              : editablePost.category === 'news'
+              ? (isHi ? 'लेटेस्ट न्यूज़' : 'Latest News')
+              : editablePost.category === 'exam_date'
+              ? (isHi ? 'परीक्षा तिथि' : 'Exam Dates')
               : (isHi ? 'लेटेस्ट जॉब्स' : 'Latest Jobs')}
-          </button>
+          </a>
           <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
           <span className="text-slate-900 font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md">
             {editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
@@ -1641,9 +1651,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </span>
                   <span className="text-slate-400">by</span>
                   <span className="byline">
-                    <button
-                      type="button"
-                      onClick={() => {
+                    <a
+                      href="/?category=news"
+                      onClick={(e) => {
+                        e.preventDefault();
                         if (onSelectCategory) {
                           onSelectCategory('news');
                         } else {
@@ -1654,7 +1665,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
                     >
                       RajasthanVacancy
-                    </button>
+                    </a>
                   </span>
                   <span className="text-slate-300">•</span>
                   <span className="text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-xs">
@@ -3547,32 +3558,41 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <div className="flex items-center gap-2 mb-3 flex-wrap text-xs font-semibold">
                   <Folder className="w-4 h-4 text-[#0056b3]" />
                   <span className="text-slate-700 font-bold">Categories:</span>
-                  <button
-                    type="button"
-                    onClick={() => onSelectCategory ? onSelectCategory('job') : undefined}
+                  <a
+                    href="/?category=latest_job"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.('latest_job');
+                    }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
                   >
                     Latest Job
-                  </button>
+                  </a>
                   <span className="text-slate-400">,</span>
-                  <button
-                    type="button"
-                    onClick={() => onSelectCategory ? onSelectCategory('news') : undefined}
+                  <a
+                    href="/?category=news"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.('news');
+                    }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
                   >
                     Latest News
-                  </button>
+                  </a>
                   <span className="text-slate-400">,</span>
-                  <button
-                    type="button"
-                    onClick={() => onSelectCategory ? onSelectCategory(vacancy.category || 'job') : undefined}
+                  <a
+                    href={`/?category=${encodeURIComponent(vacancy.category || 'latest_job')}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.(vacancy.category || 'latest_job');
+                    }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
                   >
                     {vacancy.organization || 'RSMSSB'}
-                  </button>
+                  </a>
                 </div>
 
                 {/* Tags Metadata Line - Only visible for admin, hidden for normal user */}
@@ -3668,7 +3688,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
                   {prevPost ? (
                     <a
-                      href={`?vacancy=${prevPost.id}`}
+                      href={`/?vacancy=${prevPost.id}`}
                       onClick={(e) => {
                         e.preventDefault();
                         onSelectOtherVacancy(prevPost);
@@ -3690,7 +3710,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                   {nextPost ? (
                     <a
-                      href={`?vacancy=${nextPost.id}`}
+                      href={`/?vacancy=${nextPost.id}`}
                       onClick={(e) => {
                         e.preventDefault();
                         onSelectOtherVacancy(nextPost);
@@ -3738,7 +3758,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     {recentPosts.slice(0, 8).map((rp) => (
                       <div key={rp.id} className="block">
                         <a
-                          href={`?vacancy=${rp.id}`}
+                          href={`/?vacancy=${rp.id}`}
                           onClick={(e) => {
                             e.preventDefault();
                             onSelectOtherVacancy(rp);

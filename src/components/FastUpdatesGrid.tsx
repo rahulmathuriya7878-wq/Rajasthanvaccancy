@@ -150,11 +150,18 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       >
         {/* Signature Green Rounded Header matching screenshot */}
         <div className="job-section-card-header p-3 sm:p-3.5 pb-2">
-          <h2 
-            onClick={() => onFilterCategory && onFilterCategory(sec.categoryType)}
-            className="w-full text-center font-bold text-white text-lg sm:text-xl py-2 px-3 sm:px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs"
+          <a
+            href={`/?category=${encodeURIComponent(sec.categoryType)}`}
+            onClick={(e) => {
+              if (onFilterCategory) {
+                e.preventDefault();
+                onFilterCategory(sec.categoryType);
+              }
+            }}
+            className="no-link-color block w-full text-center font-bold !text-white text-lg sm:text-xl py-2 px-3 sm:px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs no-underline tracking-wide"
             style={{ 
-              backgroundColor: '#15803d', 
+              backgroundColor: '#15803d',
+              color: '#ffffff',
               borderRadius: '8px',
               fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
               fontSize: '18px',
@@ -162,7 +169,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
             }}
           >
             {sec.title}
-          </h2>
+          </a>
         </div>
 
         {/* List of Posts matching screenshot */}
@@ -175,10 +182,13 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                   className="group min-w-0"
                 >
                   <div className="flex items-start justify-between gap-1.5 min-w-0">
-                    <button
-                      type="button"
-                      onClick={() => onSelectVacancy(item)}
-                      className="text-left flex-1 min-w-0 cursor-pointer block group"
+                    <a
+                      href={`/?vacancy=${encodeURIComponent(item.id)}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectVacancy(item);
+                      }}
+                      className="text-left flex-1 min-w-0 cursor-pointer block group no-underline"
                     >
                       <h3 
                         className="post-title-link font-semibold leading-snug cursor-pointer block break-words"
@@ -196,7 +206,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       >
                         {formatPostDate(item)}
                       </p>
-                    </button>
+                    </a>
 
                     {/* Admin Actions (Delete) for logged-in Admin */}
                     {isAdmin && onDeleteVacancy && (
@@ -243,9 +253,10 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 
           {/* View More Link at Bottom Right */}
           <div className="text-right pt-3 mt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => {
+            <a
+              href={`/?category=${encodeURIComponent(sec.categoryType)}`}
+              onClick={(e) => {
+                e.preventDefault();
                 if (onFilterCategory) {
                   onFilterCategory(sec.categoryType);
                 } else if (sec.items.length > 0) {
@@ -256,7 +267,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
               style={{ color: '#c90000' }}
             >
               <span>View More..</span>
-            </button>
+            </a>
           </div>
         </div>
       </div>

@@ -97,13 +97,20 @@ p, .body-text, .post-body, .post-item, .entry-content p, .entry-content li {
   color: #222222;
 }
 
-/* Hyperlinks & Key Action Buttons - Standard Blue #0073aa */
-a.wp-link, .wp-link a, a:not(.no-link-color) {
-  color: #0073aa;
-}
-a.wp-link:hover, .wp-link a:hover {
-  color: #005177;
-  text-decoration: underline;
+@layer base {
+  /* Hyperlinks - Zero-specificity base color so Tailwind utilities (text-white, etc.) always take precedence */
+  :where(a:not(.no-link-color)) {
+    color: #0073aa;
+  }
+  a.wp-link,
+  .wp-link a {
+    color: #0073aa;
+  }
+  a.wp-link:hover,
+  .wp-link a:hover {
+    color: #005177;
+    text-decoration: underline;
+  }
 }
 
 /* Post Content & Body Formatting Rules */

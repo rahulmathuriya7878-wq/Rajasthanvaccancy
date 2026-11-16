@@ -11,14 +11,35 @@ async function startServer() {
   const app = express();
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
+  app.set('trust proxy', true);
   app.use(express.json());
 
-  // Enforce single canonical host (www.rajasthanvacancy.online) and clean root URL (/index.html -> /)
+  // Enforce HTTPS (when explicitly HTTP at the edge proxy), single canonical host (www.rajasthanvacancy.online), HSTS, and clean root URL (/index.html -> /)
   app.use((req, res, next) => {
     const rawHost = (req.get('host') || '').toLowerCase();
-    if (rawHost === 'rajasthanvacancy.online') {
-      return res.redirect(301, `https://www.rajasthanvacancy.online${req.originalUrl}`);
+    const hostname = rawHost.split(':')[0];
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+    const rawForwardedProto = (req.get('x-forwarded-proto') || '').split(',')[0].trim().toLowerCase();
+    const cfVisitor = (req.get('cf-visitor') || '').toLowerCase();
+    const isHttpsAtEdge = rawForwardedProto === 'https' || cfVisitor.includes('"https"') || req.get('x-forwarded-ssl') === 'on' || req.secure;
+    const isExplicitHttpAtEdge = rawForwardedProto === 'http' && !cfVisitor.includes('"https"');
+
+    if (!isLocalHost && (isExplicitHttpAtEdge || hostname === 'rajasthanvacancy.online')) {
+      const targetHost = hostname.includes('rajasthanvacancy.online')
+        ? 'www.rajasthanvacancy.online'
+        : req.get('host');
+      const targetPath = req.path === '/index.html'
+        ? `/${req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : ''}`
+        : req.originalUrl;
+      return res.redirect(301, `https://${targetHost}${targetPath}`);
     }
+
+    if (!isLocalHost && isHttpsAtEdge) {
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    }
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
     if (req.path === '/index.html') {
       const qIdx = req.originalUrl.indexOf('?');
       const qs = qIdx !== -1 ? req.originalUrl.slice(qIdx) : '';
@@ -505,12 +526,6 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
       next(e);
     }
   });
-
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('dist', { index: false }));
-  } else if (vite) {
-    app.use(vite.middlewares);
-  }
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running at http://0.0.0.0:${PORT}`);

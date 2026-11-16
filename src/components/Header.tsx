@@ -106,9 +106,15 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="animate-marquee inline-flex items-center gap-6" style={{ animationDuration: '200s', animation: 'marquee 200s linear infinite' }}>
               {displayItems.length > 0 ? (
                 displayItems.map((item, idx) => (
-                  <button
+                  <a
                     key={`${item.id}-${idx}`}
-                    onClick={() => onSelectVacancy && onSelectVacancy(item)}
+                    href={`/?vacancy=${encodeURIComponent(item.id)}`}
+                    onClick={(e) => {
+                      if (onSelectVacancy) {
+                        e.preventDefault();
+                        onSelectVacancy(item);
+                      }
+                    }}
                     className="inline-flex items-center gap-2 hover:text-[#1e953a] transition text-xs font-semibold cursor-pointer group/item text-left"
                     title={isHi ? item.titleHi : item.title}
                   >
@@ -124,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </span>
                     )}
                     <span className="text-slate-300 font-mono select-none mx-2">•</span>
-                  </button>
+                  </a>
                 ))
               ) : (
                 <span className="text-xs text-slate-500">
@@ -222,12 +228,16 @@ export const Header: React.FC<HeaderProps> = ({
                 const isActive = selectedCategory === sec.key;
                 const Icon = sec.icon;
                 return (
-                  <button
+                  <a
                     key={sec.key}
-                    onClick={() => handleSectionClick(sec)}
-                    className={`text-left px-3 py-2 rounded-lg transition flex items-center justify-between cursor-pointer ${
+                    href={`/?category=${encodeURIComponent(sec.key)}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSectionClick(sec);
+                    }}
+                    className={`no-link-color text-left px-3 py-2 rounded-lg transition flex items-center justify-between cursor-pointer ${
                       isActive 
-                        ? 'bg-[#15803d] text-white font-extrabold shadow-xs' 
+                        ? 'bg-[#15803d] !text-white font-extrabold shadow-xs' 
                         : 'hover:bg-slate-100 text-slate-800 font-semibold'
                     }`}
                   >
@@ -235,7 +245,7 @@ export const Header: React.FC<HeaderProps> = ({
                       <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#15803d]'}`} />
                       <span className="headlight">{isHi ? sec.titleHi : sec.title}</span>
                     </div>
-                  </button>
+                  </a>
                 );
               })}
 
@@ -263,7 +273,7 @@ export const Header: React.FC<HeaderProps> = ({
                 href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 px-3 py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+                className="no-link-color mt-2 px-3 py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] !text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 fill-white" />
@@ -289,18 +299,22 @@ export const Header: React.FC<HeaderProps> = ({
               const isActive = selectedCategory === sec.key;
               const Icon = sec.icon;
 
-              let buttonClasses = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
+              let buttonClasses = 'no-link-color px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ';
 
               if (isActive) {
-                buttonClasses += 'bg-[#15803d] text-white font-extrabold shadow-xs ';
+                buttonClasses += 'bg-[#15803d] !text-white font-extrabold shadow-xs ';
               } else {
                 buttonClasses += 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:scale-95 ';
               }
 
               return (
-                <button
+                <a
                   key={sec.key}
-                  onClick={() => handleSectionClick(sec)}
+                  href={`/?category=${encodeURIComponent(sec.key)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSectionClick(sec);
+                  }}
                   className={buttonClasses}
                   style={{
                     fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif"
@@ -311,7 +325,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="headlight whitespace-nowrap">
                     {sec.shortTitle}
                   </span>
-                </button>
+                </a>
               );
             })}
           </div>

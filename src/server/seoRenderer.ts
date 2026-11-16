@@ -3,6 +3,7 @@ import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import { VacancyItem } from '../types';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 import { parseVacancyTimestamp, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { buildBreadcrumbSchema, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 
 const CATEGORY_NAMES_HI: Record<string, string> = {
   latest_job: 'सरकारी नौकरियां (Latest Govt Jobs)',
@@ -26,7 +27,7 @@ const POLICY_SEO_META: Record<
       'Rajasthan Vacancy (www.rajasthanvacancy.online) के बारे में जानें: राजस्थान एवं केंद्र सरकार की सभी भर्तियों, एडमिट कार्ड, रिजल्ट व सरकारी योजनाओं की सटीक जानकारी।',
     heading: 'हमारे बारे में (About Rajasthan Vacancy)',
     bodyHtml:
-      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) राजस्थान एवं भारत सरकार की नवीनतम सरकारी भर्तियों (RSMSSB, RPSC, Rajasthan Police, SSC, Railway, UPSC), प्रवेश पत्र, परीक्षा तिथियां, उत्तर कुंजी, रिजल्ट एवं जनकल्याणकारी योजनाओं की त्वरित और प्रमाणित जानकारी प्रदान करने वाला समर्पित पोर्टल है।</p><p>हमारा उद्देश्य प्रत्येक अभ्यर्थी तक सरल हिंदी एवं अंग्रेजी भाषा में आधिकारिक नोटिफिकेशन पर आधारित सही जानकारी समय पर पहुँचाना है।</p>',
+      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) राजस्थान एवं भारत सरकार की नवीनतम सरकारी भर्तियों (RSMSSB, RPSC, Rajasthan Police, SSC, Railway, UPSC), प्रवेश पत्र, परीक्षा तिथियां, उत्तर कुंजी, रिजल्ट एवं जनकल्याणकारी योजनाओं की त्वरित और प्रमाणित जानकारी प्रदान करने वाला समर्पित पोर्टल है।</p><p>हमारा उद्देश्य प्रत्येक अभ्यर्थी तक सरल हिंदी एवं अंग्रेजी भाषा में आधिकारिक नोटिफिकेशन पर आधारित सही जानकारी समय पर पहुँचाना है। हम प्रत्येक अधिसूचना में शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया, महत्वपूर्ण तिथियां तथा आधिकारिक आवेदन व PDF डाउनलोड लिंक एक ही स्थान पर स्पष्ट रूप से प्रस्तुत करते हैं।</p><p>चाहे आप राजस्थान पुलिस कांस्टेबल, पटवारी, रीट (REET), पशु परिचर, सीईटी (CET), ग्राम विकास अधिकारी (VDO), एसएससी (SSC) या रेलवे (RRB) परीक्षा की तैयारी कर रहे हों, हमारा पोर्टल नियमित रूप से विभागीय अपडेट्स प्रकाशित करता है।</p>',
   },
   contact: {
     title: 'Contact Us (संपर्क करें) - Rajasthan Vacancy 2026',
@@ -34,7 +35,7 @@ const POLICY_SEO_META: Record<
       'Rajasthan Vacancy टीम से संपर्क करें: किसी भर्ती अपडेट, त्रुटि सुधार या सुझाव के लिए आधिकारिक ईमेल व सहायता माध्यम।',
     heading: 'संपर्क करें (Contact Us)',
     bodyHtml:
-      '<p>किसी भी सरकारी भर्ती अधिसूचना, एडमिट कार्ड, परीक्षा तिथि अथवा वेबसाइट से जुड़े सुझाव व सुधार के लिए आप हमारी संपादकीय टीम से संपर्क कर सकते हैं।</p><p><strong>आधिकारिक पोर्टल:</strong> https://www.rajasthanvacancy.online/<br/><strong>सहायता समय:</strong> सोमवार से शनिवार, सुबह 10:00 बजे से शाम 6:00 बजे तक।</p>',
+      '<p>किसी भी सरकारी भर्ती अधिसूचना, एडमिट कार्ड, परीक्षा तिथि, उत्तर कुंजी अथवा वेबसाइट से जुड़े सुझाव, त्रुटि सुधार या विज्ञापन संबंधी पूछताछ के लिए आप हमारी संपादकीय टीम से संपर्क कर सकते हैं।</p><p><strong>आधिकारिक पोर्टल:</strong> https://www.rajasthanvacancy.online/<br/><strong>आधिकारिक संपर्क ईमेल:</strong> contact@rajasthanvacancy.online<br/><strong>सहायता समय:</strong> सोमवार से शनिवार, सुबह 10:00 बजे से शाम 6:00 बजे तक (IST)।</p><p>यदि किसी भर्ती पोस्ट में तिथि, लिंक या पात्रता विवरण में संशोधन आवश्यक हो, तो कृपया संबंधित पोस्ट का URL व आधिकारिक विज्ञप्ति संदर्भ साझा करें। हमारी टीम 24 से 48 कार्य घंटों के भीतर समीक्षा कर अपडेट करती है।</p>',
   },
   privacy: {
     title: 'Privacy Policy (गोपनीयता नीति) - Rajasthan Vacancy 2026',
@@ -42,7 +43,7 @@ const POLICY_SEO_META: Record<
       'Rajasthan Vacancy गोपनीयता नीति: उपयोगकर्ता की गोपनीयता, ब्राउज़र स्टोरेज, कुकीज़ तथा Google AdSense विज्ञापन मानकों की पूरी जानकारी।',
     heading: 'गोपनीयता नीति (Privacy Policy)',
     bodyHtml:
-      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) अपने आगंतुकों की गोपनीयता का पूर्ण सम्मान करता है। पोर्टल पर आपकी पसंदीदा भर्तियां व भाषा वरीयता आपके ब्राउज़र में सुरक्षित रहती हैं।</p><p>तृतीय-पक्ष विज्ञापन नेटवर्क (जैसे Google AdSense) प्रासंगिक विज्ञापन प्रदर्शित करने के लिए मानक कुकीज़ का उपयोग कर सकते हैं। पोर्टल किसी भी सरकारी आवेदन हेतु शुल्क या निजी दस्तावेज एकत्र नहीं करता है।</p>',
+      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) अपने सभी आगंतुकों की गोपनीयता का पूर्ण सम्मान करता है। पोर्टल पर आपकी पसंदीदा भर्तियां, अलर्ट प्राथमिकताएं एवं भाषा चयन केवल आपके स्थानीय ब्राउज़र स्टोरेज में सुरक्षित रहते हैं।</p><p>हम किसी भी सरकारी आवेदन हेतु शुल्क, बैंक विवरण, आधार संख्या या निजी दस्तावेज एकत्र नहीं करते हैं। ऑनलाइन आवेदन सदैव संबंधित सरकारी विभाग के आधिकारिक पोर्टल (जैसे sso.rajasthan.gov.in, rpsc.rajasthan.gov.in, rsmssb.rajasthan.gov.in) पर ही किए जाते हैं।</p><p>वेबसाइट पर निःशुल्क सेवा संचालन हेतु Google AdSense सहित तृतीय-पक्ष विज्ञापन नेटवर्क मानक कुकीज़ (जैसे DoubleClick DART कुकी) का उपयोग कर सकते हैं। उपयोगकर्ता अपनी Google Ads Settings या ब्राउज़र सेटिंग्स के माध्यम से व्यक्तिगत विज्ञापन व कुकीज़ नियंत्रित कर सकते हैं।</p>',
   },
   terms: {
     title: 'Terms & Conditions (नियम एवं शर्तें) - Rajasthan Vacancy 2026',
@@ -50,7 +51,7 @@ const POLICY_SEO_META: Record<
       'Rajasthan Vacancy पोर्टल के उपयोग की नियम एवं शर्तें। आधिकारिक वेबसाइट सत्यापन व सामग्री उपयोग दिशा-निर्देश।',
     heading: 'नियम एवं शर्तें (Terms & Conditions)',
     bodyHtml:
-      '<p>Rajasthan Vacancy पर प्रकाशित सभी भर्ती, एडमिट कार्ड, रिजल्ट व योजना संबंधी सूचनाएं संबंधित विभागों द्वारा जारी आधिकारिक विज्ञप्तियों पर आधारित होती हैं।</p><p>अभ्यर्थियों को सलाह दी जाती है कि ऑनलाइन आवेदन या शुल्क भुगतान करने से पूर्व संबंधित भर्ती बोर्ड (जैसे rpsc.rajasthan.gov.in, rsmssb.rajasthan.gov.in) की आधिकारिक वेबसाइट से अंतिम तिथि व पात्रता अवश्य सत्यापित करें।</p>',
+      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) का उपयोग करके आप इन सेवा शर्तों से सहमत होते हैं। पोर्टल पर प्रकाशित सभी भर्ती, एडमिट कार्ड, रिजल्ट व सरकारी योजना संबंधी सूचनाएं संबंधित विभागों द्वारा जारी आधिकारिक विज्ञप्तियों एवं रोजगार समाचार पर आधारित होती हैं।</p><p>अभ्यर्थियों को सख्त सलाह दी जाती है कि ऑनलाइन आवेदन या परीक्षा शुल्क का भुगतान करने से पूर्व संबंधित भर्ती बोर्ड (जैसे RPSC, RSMSSB, SSC, IBPS, RRB) की आधिकारिक वेबसाइट से अंतिम तिथि, रिक्त पद, आयु छूट व पात्रता शर्तें अवश्य सत्यापित करें।</p><p>पोर्टल पर उपलब्ध किसी भी जानकारी की अनधिकृत स्वचालित स्क्रैपिंग या भ्रामक पुन:प्रकाशन निषिद्ध है। वेबसाइट प्रबंधन किसी भी समय सूचनाओं को अद्यतन या संशोधित करने का अधिकार सुरक्षित रखता है।</p>',
   },
   disclaimer: {
     title: 'Disclaimer (अस्वीकरण) - Rajasthan Vacancy 2026',
@@ -58,7 +59,7 @@ const POLICY_SEO_META: Record<
       'Rajasthan Vacancy अस्वीकरण: यह एक स्वतंत्र सूचनात्मक रोजगार समाचार पोर्टल है, किसी सरकारी संस्था से संबद्ध नहीं है।',
     heading: 'अस्वीकरण (Disclaimer)',
     bodyHtml:
-      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) एक स्वतंत्र शैक्षणिक एवं रोजगार समाचार सूचना पोर्टल है। यह किसी भी राज्य अथवा केंद्र सरकार के मंत्रालय या भर्ती बोर्ड से आधिकारिक रूप से संबद्ध नहीं है।</p><p>सभी जानकारियां आधिकारिक रोजगार समाचार व विभागीय वेबसाइटों से संकलित की जाती हैं। किसी भी त्रुटि या परिवर्तन के लिए संबंधित विभाग की आधिकारिक वेबसाइट ही अंतिम मानी जाएगी।</p>',
+      '<p>Rajasthan Vacancy (www.rajasthanvacancy.online) एक स्वतंत्र शैक्षणिक एवं रोजगार समाचार सूचना पोर्टल है। यह किसी भी राज्य सरकार, भारत सरकार के मंत्रालय, या भर्ती बोर्ड (जैसे RPSC, RSMSSB, UPSC, SSC) से आधिकारिक रूप से संबद्ध नहीं है।</p><p>इस वेबसाइट पर प्रकाशित सभी सरकारी नौकरी अधिसूचनाएं, परीक्षा तिथियां, प्रवेश पत्र लिंक, उत्तर कुंजी, परीक्षा परिणाम एवं सरकारी योजनाओं की जानकारी केवल सामान्य सूचना और अभ्यर्थियों की सुविधा के लिए संकलित की जाती है।</p><p>किसी भी अनजाने टंकण त्रुटि, तिथि परिवर्तन या विभागीय संशोधन के लिए वेबसाइट उत्तरदायी नहीं होगी। अंतिम व प्रामाणिक निर्णय हेतु सदैव संबंधित विभाग की आधिकारिक वेबसाइट एवं मूल PDF विज्ञप्ति को ही मान्य मानें।</p>',
   },
   sitemap: {
     title: 'HTML Sitemap Directory - Rajasthan Vacancy 2026',
@@ -190,12 +191,30 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   let robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
   let structuredDataSnippet = '';
   let faqReplacementJson: string | null = null;
+  let breadcrumbReplacementJson: string = JSON.stringify(
+    buildBreadcrumbSchema({ origin: baseUrl, lang: 'hi' }),
+    null,
+    2
+  );
   let ssrBodyContent = '';
 
   const sortedVacancies = [...INITIAL_VACANCIES].sort(compareVacanciesNewestFirst);
 
   if (matchedVacancy) {
     const postTitle = matchedVacancy.titleHi || matchedVacancy.title;
+    const normCat = normalizeBreadcrumbCategoryKey(matchedVacancy.category);
+    breadcrumbReplacementJson = JSON.stringify(
+      buildBreadcrumbSchema({
+        origin: baseUrl,
+        lang: 'hi',
+        categoryKey: normCat,
+        categoryLabel: CATEGORY_NAMES_HI[normCat] || CATEGORY_NAMES_HI.latest_job,
+        vacancyId: matchedVacancy.id,
+        vacancyTitle: postTitle,
+      }),
+      null,
+      2
+    );
     title = `${postTitle} - Rajasthan Vacancy 2026`;
     description =
       matchedVacancy.briefSummaryHi ||
@@ -341,11 +360,12 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
             .join('')}</tbody></table>`
         : '';
 
+    const normNavCat = normalizeBreadcrumbCategoryKey(matchedVacancy.category);
     ssrBodyContent = `
       <main class="ssr-seo-post" style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', -apple-system, sans-serif; color: #1e293b;">
-        <nav style="font-size: 13px; margin-bottom: 16px; color: #64748b;">
+        <nav aria-label="Breadcrumb" style="font-size: 13px; margin-bottom: 16px; color: #64748b;">
           <a href="${baseUrl}/" style="color: #2563eb; text-decoration: none;">होम (Home)</a> &gt; 
-          <a href="${baseUrl}/?category=${matchedVacancy.category}" style="color: #2563eb; text-decoration: none;">${CATEGORY_NAMES_HI[matchedVacancy.category] || matchedVacancy.category}</a> &gt; 
+          <a href="${baseUrl}/?category=${encodeURIComponent(normNavCat)}" style="color: #2563eb; text-decoration: none;">${CATEGORY_NAMES_HI[normNavCat] || matchedVacancy.category}</a> &gt; 
           <span>${escapeHtml(matchedVacancy.shortTitleHi || matchedVacancy.shortTitle || matchedVacancy.id)}</span>
         </nav>
 
@@ -487,16 +507,32 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     if (pMeta.noindex) {
       robotsDirective = 'noindex, follow';
     }
+    breadcrumbReplacementJson = JSON.stringify(
+      buildBreadcrumbSchema({
+        origin: baseUrl,
+        lang: 'hi',
+        policyKey: matchedPolicy,
+        policyLabel: pMeta.heading,
+      }),
+      null,
+      2
+    );
 
     ssrBodyContent = `
       <main class="ssr-seo-policy" style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', sans-serif; color: #1e293b;">
-        <nav style="font-size: 13px; margin-bottom: 16px; color: #64748b;">
+        <nav aria-label="Breadcrumb" style="font-size: 13px; margin-bottom: 16px; color: #64748b;">
           <a href="${baseUrl}/" style="color: #2563eb; text-decoration: none;">मुख्य पृष्ठ (Home)</a> &gt; <span>${escapeHtml(pMeta.heading)}</span>
         </nav>
         <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">${escapeHtml(pMeta.heading)}</h1>
         <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; line-height: 1.8; font-size: 15px;">
           ${pMeta.bodyHtml}
         </div>
+        <nav aria-label="मुख्य श्रेणियां" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 10px;">
+          ${Object.entries(CATEGORY_NAMES_HI)
+            .filter(([k]) => k !== 'upcoming')
+            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+            .join('')}
+        </nav>
       </main>
     `;
   } else if (matchedCategory && matchedCategory !== 'ALL') {
@@ -504,36 +540,63 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     title = `${catHi} 2026 - Rajasthan Vacancy Portal`;
     description = `राजस्थान एवं केंद्र सरकार की ${catHi} 2026 की नवीनतम अपडेट, नोटिफिकेशन, परीक्षा तिथि, प्रवेश पत्र एवं रिजल्ट।`;
     canonicalUrl = `${baseUrl}/?category=${encodeURIComponent(matchedCategory)}`;
+    breadcrumbReplacementJson = JSON.stringify(
+      buildBreadcrumbSchema({
+        origin: baseUrl,
+        lang: 'hi',
+        categoryKey: matchedCategory,
+        categoryLabel: catHi,
+      }),
+      null,
+      2
+    );
 
-    const categoryJobs = sortedVacancies.filter((v) => v.category === matchedCategory);
+    const categoryJobs = sortedVacancies.filter((v) => {
+      if (v.category === matchedCategory) return true;
+      if (matchedCategory === 'latest_job' && (v.category === 'ugc_net' || v.status === 'active')) return true;
+      if (matchedCategory === 'admit_card' && (v.status === 'admit_card_out' || v.title.toLowerCase().includes('admit card') || v.titleHi?.includes('प्रवेश पत्र'))) return true;
+      if (matchedCategory === 'result' && (v.status === 'result_declared' || v.title.toLowerCase().includes('result') || v.titleHi?.includes('रिजल्ट') || v.titleHi?.includes('परिणाम'))) return true;
+      if (matchedCategory === 'scheme' && (v.organization === 'Sarkari Yojana' || v.titleHi?.includes('योजना'))) return true;
+      if (matchedCategory === 'answer_key' && (v.status === 'answer_key_out' || v.title.toLowerCase().includes('answer key') || v.titleHi?.includes('उत्तर कुंजी'))) return true;
+      return false;
+    });
 
     ssrBodyContent = `
       <main class="ssr-seo-category" style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', sans-serif;">
-        <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">
+        <nav style="font-size: 13px; margin-bottom: 14px; color: #64748b;">
+          <a href="${baseUrl}/" style="color: #2563eb; text-decoration: none;">मुख्य पृष्ठ (Home)</a> &gt; <span>${escapeHtml(catHi)}</span>
+        </nav>
+        <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">
           ${escapeHtml(catHi)} (2026)
         </h1>
-        <p style="font-size: 15px; color: #475569; margin-bottom: 24px;">
+        <p style="font-size: 15px; color: #475569; margin-bottom: 20px;">
           ${escapeHtml(description)}
         </p>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           ${categoryJobs
             .map(
               (job) => `
-            <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: #ffffff;">
+            <article style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; background: #ffffff;">
               <h2 style="font-size: 17px; margin: 0 0 8px 0;">
-                <a href="${baseUrl}/?vacancy=${encodeURIComponent(job.id)}" style="color: #0f172a; text-decoration: none; font-weight: 700;">
+                <a href="${baseUrl}/?vacancy=${encodeURIComponent(job.id)}" style="color: #0066cc; text-decoration: underline; font-weight: 700;">
                   ${escapeHtml(job.titleHi || job.title)}
                 </a>
               </h2>
-              <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;">${escapeHtml(job.briefSummaryHi || '')}</p>
+              <p style="margin: 0 0 6px 0; font-size: 14px; color: #334155;">${escapeHtml(job.briefSummaryHi || job.descriptionHi || '')}</p>
               <p style="margin: 0; font-size: 13px; color: #64748b;">
-                <strong>पद:</strong> ${escapeHtml(job.totalPosts || 'विभिन्न')} | <strong>योग्यता:</strong> ${escapeHtml(job.qualification?.join(', ') || '12वीं/स्नातक')}
+                <strong>विभाग:</strong> ${escapeHtml(job.departmentHi || job.department || job.organization)} | <strong>पद:</strong> ${escapeHtml(job.totalPosts || 'विभिन्न')} | <strong>अंतिम तिथि:</strong> ${escapeHtml(job.importantDates?.applyLastDate || 'नोटिफिकेशन देखें')}
               </p>
-            </div>
+            </article>
           `
             )
             .join('')}
         </div>
+        <nav aria-label="सभी श्रेणियां" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 10px;">
+          ${Object.entries(CATEGORY_NAMES_HI)
+            .filter(([k]) => k !== 'upcoming')
+            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+            .join('')}
+        </nav>
       </main>
     `;
   } else if (targetVacancyId && !matchedVacancy) {
@@ -553,25 +616,39 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
         <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 12px; text-align: center;">
           Rajasthan Vacancy 2026 - राजस्थान सरकारी भर्ती एवं रोजगार समाचार पोर्टल
         </h1>
-        <p style="font-size: 15px; color: #475569; text-align: center; margin-bottom: 24px;">
+        <p style="font-size: 15px; color: #475569; text-align: center; margin-bottom: 18px;">
           RSMSSB, RPSC, राजस्थान पुलिस, पटवारी, रीट, पशु परिचर, प्रवेश पत्र, आंसर की एवं सरकारी रिजल्ट की सबसे तेज और सटीक अपडेट।
         </p>
+        <nav aria-label="मुख्य श्रेणियां" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 22px;">
+          ${Object.entries(CATEGORY_NAMES_HI)
+            .filter(([k]) => k !== 'upcoming')
+            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="padding: 6px 12px; background: #15803d; color: #ffffff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+            .join('')}
+        </nav>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
           ${topJobs
             .map(
               (job) => `
-            <div style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; background: #ffffff;">
+            <article style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; background: #ffffff;">
               <h2 style="font-size: 16px; margin: 0 0 6px 0;">
-                <a href="${baseUrl}/?vacancy=${encodeURIComponent(job.id)}" style="color: #1e3a8a; text-decoration: none; font-weight: 700;">
+                <a href="${baseUrl}/?vacancy=${encodeURIComponent(job.id)}" style="color: #0066cc; text-decoration: underline; font-weight: 700;">
                   ${escapeHtml(job.titleHi || job.title)}
                 </a>
               </h2>
-              <span style="font-size: 12px; color: #16a34a; font-weight: bold;">कुल पद: ${escapeHtml(job.totalPosts || 'विभिन्न')}</span>
-            </div>
+              <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;">${escapeHtml((job.briefSummaryHi || '').slice(0, 140))}</p>
+              <span style="font-size: 12px; color: #16a34a; font-weight: bold;">कुल पद: ${escapeHtml(job.totalPosts || 'विभिन्न')} | ${escapeHtml(job.updatedAt || job.createdAt || '')}</span>
+            </article>
           `
             )
             .join('')}
         </div>
+        <footer style="margin-top: 24px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px;">
+          <a href="${baseUrl}/?policy=about" style="color: #475569;">हमारे बारे में (About Us)</a>
+          <a href="${baseUrl}/?policy=contact" style="color: #475569;">संपर्क करें (Contact Us)</a>
+          <a href="${baseUrl}/?policy=privacy" style="color: #475569;">गोपनीयता नीति (Privacy Policy)</a>
+          <a href="${baseUrl}/?policy=terms" style="color: #475569;">नियम व शर्तें (Terms)</a>
+          <a href="${baseUrl}/?policy=disclaimer" style="color: #475569;">अस्वीकरण (Disclaimer)</a>
+        </footer>
       </main>
     `;
   }
@@ -635,6 +712,19 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     /<meta\b[^>]*name=["']?twitter:image["']?[^>]*>/i,
     `<meta name="twitter:image" content="${featuredThumbUrl}" />`
   );
+
+  // Replace static #dynamic-breadcrumb-schema-ld with route-specific BreadcrumbList JSON-LD (Home / Home > Category / Home > Category > Job)
+  if (/<script\b[^>]*id=["']?dynamic-breadcrumb-schema-ld["']?[^>]*>[\s\S]*?<\/script>/i.test(modifiedHtml)) {
+    modifiedHtml = modifiedHtml.replace(
+      /<script\b[^>]*id=["']?dynamic-breadcrumb-schema-ld["']?[^>]*>[\s\S]*?<\/script>/i,
+      `<script id="dynamic-breadcrumb-schema-ld" type="application/ld+json">\n${breadcrumbReplacementJson}\n</script>`
+    );
+  } else {
+    modifiedHtml = modifiedHtml.replace(
+      '</head>',
+      `<script id="dynamic-breadcrumb-schema-ld" type="application/ld+json">\n${breadcrumbReplacementJson}\n</script>\n</head>`
+    );
+  }
 
   // Replace static #dynamic-faq-schema-ld with page-specific FAQPage JSON-LD so we never emit duplicate FAQPage schemas
   if (faqReplacementJson) {

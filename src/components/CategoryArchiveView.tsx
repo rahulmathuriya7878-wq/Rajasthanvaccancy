@@ -149,12 +149,18 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                         </div>
                       )}
 
-                    <h2 
-                      onClick={() => onSelectVacancy(item)}
-                      className="entry-title post-title-link transition cursor-pointer leading-snug mb-2"
-                      style={{ color: '#0066cc', textDecoration: 'underline' }}
-                    >
-                      <span>{title}</span>
+                    <h2 className="entry-title leading-snug mb-2">
+                      <a
+                        href={`/?vacancy=${encodeURIComponent(item.id)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onSelectVacancy(item);
+                        }}
+                        className="post-title-link transition cursor-pointer inline-block"
+                        style={{ color: '#0066cc', textDecoration: 'underline' }}
+                      >
+                        {title}
+                      </a>
                     </h2>
                       <div className="entry-meta text-xs text-[#575760] flex items-center gap-2 flex-wrap">
                         <span className="posted-on">
@@ -190,12 +196,16 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                       <div className="entry-summary text-slate-800 text-[15px] leading-relaxed mb-4 post-item">
                         <p className="line-clamp-3">
                           {excerpt} …{' '}
-                          <button
-                            onClick={() => onSelectVacancy(item)}
+                          <a
+                            href={`/?vacancy=${encodeURIComponent(item.id)}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onSelectVacancy(item);
+                            }}
                             className="text-blue-600 hover:text-blue-800 hover:underline font-bold cursor-pointer inline-flex items-center"
                           >
                             Read more »
-                          </button>
+                          </a>
                         </p>
                       </div>
                     )}
@@ -268,18 +278,22 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
               {allSections.map((sec) => {
                 const isCurrent = categoryKey === sec.key;
                 return (
-                  <button
+                  <a
                     key={sec.key}
-                    onClick={() => onSelectCategory(sec.key)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition cursor-pointer ${
+                    href={`/?category=${encodeURIComponent(sec.key)}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory(sec.key);
+                    }}
+                    className={`no-link-color w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition cursor-pointer ${
                       isCurrent
-                        ? 'bg-[#1e953a] text-white shadow-xs'
+                        ? 'bg-[#1e953a] !text-white shadow-xs'
                         : 'text-slate-700 hover:bg-slate-100 hover:text-[#1e953a]'
                     }`}
                   >
                     <span>{isHi ? sec.titleHi : sec.title}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
+                  </a>
                 );
               })}
             </div>
@@ -300,7 +314,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
+                className="no-link-color w-full bg-[#25D366] hover:bg-[#20ba59] !text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
               >
                 <span>Join WhatsApp Channel</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -309,7 +323,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 href="https://t.me/newrajsthanjobs"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#0088cc] hover:bg-[#0077b5] text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
+                className="no-link-color w-full bg-[#0088cc] hover:bg-[#0077b5] !text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
               >
                 <span>Join Telegram Channel</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -329,14 +343,18 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
             <ul className="divide-y divide-blue-50">
               {recentPosts.map((post) => (
                 <li key={post.id} className="py-2.5 first:pt-0 last:pb-0">
-                  <button
-                    onClick={() => onSelectVacancy(post)}
+                  <a
+                    href={`/?vacancy=${encodeURIComponent(post.id)}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectVacancy(post);
+                    }}
                     className="text-left text-xs font-bold text-[#0056b3] hover:text-blue-900 hover:underline transition line-clamp-2 cursor-pointer block leading-snug group"
                     style={{ color: '#0056b3' }}
                     title={isHi ? post.titleHi : post.title}
                   >
                     👉 <span className="text-[#0056b3] group-hover:text-blue-900 group-hover:underline">{isHi ? (post.titleHi || post.title) : post.title}</span>
-                  </button>
+                  </a>
                   <span className="text-[10px] text-blue-600/80 mt-1 block pl-4 font-medium flex items-center gap-1">
                     <span className="inline-block w-1 h-1 rounded-full bg-blue-500"></span>
                     <span>{formatDisplayDate(post.updatedAt || post.importantDates?.notificationDate || post.createdAt)}</span>
