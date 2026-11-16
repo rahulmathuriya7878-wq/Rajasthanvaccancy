@@ -11,6 +11,12 @@ Allow: /
 User-agent: Googlebot-Mobile
 Allow: /
 
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Google-adstxt
+Allow: /ads.txt
+
 User-agent: Bingbot
 Allow: /
 

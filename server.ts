@@ -179,7 +179,7 @@ async function startServer() {
       'https://www.rajasthanvacancy.online/sitemap.xml',
     ])).map(u => `Sitemap: ${u}`).join('\n');
     res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\n${sitemaps}\n`);
+    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Mediapartners-Google\nAllow: /\n\nUser-agent: Google-adstxt\nAllow: /ads.txt\n\nUser-agent: Bingbot\nAllow: /\n\n${sitemaps}\n`);
   });
 
   // Dynamic RSS 2.0 Feed for Google News & Search Instant Reach
@@ -220,6 +220,7 @@ async function startServer() {
 
   // Google AdSense ads.txt verification endpoint
   app.get('/ads.txt', (_req, res) => {
+    res.set('Cache-Control', 'public, max-age=3600');
     res.type('text/plain; charset=utf-8');
     res.send('google.com, pub-3176571184961509, DIRECT, f08c47fec0942fa0\n');
   });
