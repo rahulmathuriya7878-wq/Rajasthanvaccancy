@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   CheckCircle2,
   Folder,
-  Send,
   MessageCircle,
   FileText,
   Check,
@@ -32,7 +31,7 @@ import { AdSlotWrapper } from './AdSlotWrapper';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
-import { generateHindiShareText, getVacancyShareUrl, getSocialShareLinks } from '../utils/shareUtils';
+import { generateHindiShareText, getVacancyShareUrl } from '../utils/shareUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -3518,71 +3517,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     })}
                   </div>
                 )}
-
-                {/* Social Share Links Bar (https://www.rajasthanvacancy.online/) */}
-                {(() => {
-                  const shareUrl = getVacancyShareUrl(editablePost.id);
-                  const links = getSocialShareLinks(shareUrl, postTitle, generateHindiShareText(editablePost));
-                  return (
-                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-                          <Share2 className="w-4 h-4 text-[#15803d]" />
-                          <span>{isHi ? 'इस भर्ती को दोस्तों के साथ शेयर करें (Share Post):' : 'Share This Recruitment Post:'}</span>
-                        </div>
-                        <span className="text-xs text-slate-500 font-mono truncate">{shareUrl}</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <a
-                          href={links.whatsapp}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs transition shadow-2xs"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5 fill-white" />
-                          <span>WhatsApp</span>
-                        </a>
-                        <a
-                          href={links.telegram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs transition shadow-2xs"
-                        >
-                          <Send className="w-3.5 h-3.5" />
-                          <span>Telegram</span>
-                        </a>
-                        <a
-                          href={links.facebook}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1877F2] hover:bg-[#1465d1] text-white font-bold text-xs transition shadow-2xs"
-                        >
-                          <span>Facebook</span>
-                        </a>
-                        <a
-                          href={links.twitter}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-2xs"
-                        >
-                          <span>X / Twitter</span>
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(shareUrl);
-                            setCopiedLink(true);
-                            setTimeout(() => setCopiedLink(false), 2000);
-                          }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-xs transition cursor-pointer shadow-2xs"
-                        >
-                          {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                          <span>{copiedLink ? (isHi ? 'लिंक कॉपी हुआ ✓' : 'Link Copied ✓') : (isHi ? 'लिंक कॉपी करें' : 'Copy Link')}</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })()}
 
                 {/* Post Navigation: Previous & Next Post Links */}
                 <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">

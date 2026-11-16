@@ -374,3 +374,23 @@ export const resolveJobSchemaDates = (v?: {
   return { datePosted, validThrough };
 };
 
+/**
+ * Formats any recognized date string (YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY, Hindi/English month dates)
+ * strictly as DD/MM/YYYY (e.g., 16/11/2026). Descriptive non-date strings are preserved as-is.
+ */
+export const formatDateDDMMYYYY = (dateVal?: string | null, fallback = 'शीघ्र'): string => {
+  if (!dateVal || typeof dateVal !== 'string') return fallback;
+  const trimmed = dateVal.trim();
+  if (!trimmed || trimmed.toUpperCase() === 'TBA' || trimmed === '0000-00-00') return fallback;
+
+  const sentinel = '1900-01-01';
+  const iso = toIso8601DateString(trimmed, sentinel);
+  if (iso !== sentinel) {
+    const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      return `${match[3]}/${match[2]}/${match[1]}`;
+    }
+  }
+
+  return trimmed;
+};

@@ -1,5 +1,5 @@
 import { VacancyItem } from '../types';
-import { resolveJobDates } from './dateUtils';
+import { resolveJobDates, formatDateDDMMYYYY } from './dateUtils';
 
 export const SHARE_BASE_URL = 'https://www.rajasthanvacancy.online';
 
@@ -41,10 +41,20 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
   const totalPosts = item.totalPosts || 'विभिन्न पद';
 
-  // Integrated date resolution for all posts across the portal
+  // Integrated date resolution for all posts across the portal formatted as DD/MM/YYYY
   const resolved = resolveJobDates(item);
-  const startDateText = resolved.applyStartDate || (item.importantDates as any)?.applyStartDate || '2026-10-25';
-  const lastDateText = resolved.applyLastDate || (item.importantDates as any)?.applyLastDate || '2026-11-09';
+  const rawStartDate =
+    resolved.applyStartDate ||
+    (item.importantDates as any)?.applyStartDate ||
+    item.createdAt ||
+    '2026-10-25';
+  const rawLastDate =
+    resolved.applyLastDate ||
+    (item.importantDates as any)?.applyLastDate ||
+    '2026-11-09';
+
+  const startDateText = formatDateDDMMYYYY(rawStartDate, 'शीघ्र');
+  const lastDateText = formatDateDDMMYYYY(rawLastDate, 'शीघ्र');
 
   return `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${postTitle}\n🔢 *कुल पद:* ${totalPosts}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDateText}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDateText}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${shareUrl}`;
 }
