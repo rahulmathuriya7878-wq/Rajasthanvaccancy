@@ -34,6 +34,7 @@ import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { useAuth } from './context/AuthContext';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 import { useDynamicBreadcrumbSchema } from './hooks/useDynamicBreadcrumbSchema';
+import { useDynamicJobSchema } from './hooks/useDynamicJobSchema';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 import { compareVacanciesNewestFirst } from './utils/dateUtils';
 
@@ -292,6 +293,13 @@ export default function App() {
     activePolicyView,
   });
 
+  // Keep <script id="dynamic-job-schema-ld"> synced with memoized ISO 8601 datePosted/validThrough
+  useDynamicJobSchema({
+    vacancy: selectedVacancy,
+    lang,
+    origin: getCanonicalOrigin(),
+  });
+
   // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy or selectedCategory changes
   useEffect(() => {
     try {
@@ -335,38 +343,6 @@ export default function App() {
         let twImg = document.querySelector('meta[name="twitter:image"]');
         if (twImg) twImg.setAttribute('content', featuredThumb);
 
-        // Dynamic Schema.org JobPosting or Article JSON-LD for rich Googlebot indexing
-        let jobScript = document.getElementById('dynamic-job-schema-ld') as HTMLScriptElement | null;
-        if (!jobScript) {
-          jobScript = document.createElement('script');
-          jobScript.id = 'dynamic-job-schema-ld';
-          jobScript.type = 'application/ld+json';
-          document.head.appendChild(jobScript);
-        }
-        const jobSchema = {
-          "@context": "https://schema.org",
-          "@type": selectedVacancy.category === 'scheme' ? 'Article' : 'JobPosting',
-          "title": selectedVacancy.titleHi || selectedVacancy.title,
-          "description": descText,
-          "datePosted": selectedVacancy.createdAt || '2026-10-27',
-          "validThrough": selectedVacancy.importantDates?.applyLastDate || '2026-12-31',
-          "employmentType": "FULL_TIME",
-          "hiringOrganization": {
-            "@type": "Organization",
-            "name": selectedVacancy.departmentHi || selectedVacancy.department || selectedVacancy.organization,
-            "sameAs": selectedVacancy.officialLinks?.officialWebsiteUrl || origin
-          },
-          "jobLocation": {
-            "@type": "Place",
-            "address": {
-              "@type": "PostalAddress",
-              "addressRegion": "Rajasthan",
-              "addressCountry": "IN"
-            }
-          }
-        };
-        jobScript.textContent = JSON.stringify(jobSchema, null, 2);
-
       } else if (selectedCategory !== 'ALL') {
         if (currentVacancyId) {
           url.searchParams.delete('vacancy');
@@ -408,9 +384,6 @@ export default function App() {
         if (twTitle) twTitle.setAttribute('content', catTitle);
         const twDesc = document.querySelector('meta[name="twitter:description"]');
         if (twDesc) twDesc.setAttribute('content', catDesc);
-
-        const jobScript = document.getElementById('dynamic-job-schema-ld');
-        if (jobScript) jobScript.remove();
 
       } else if (activePolicyView) {
         if (url.searchParams.get('policy') !== activePolicyView || url.pathname !== '/') {
@@ -493,10 +466,6 @@ export default function App() {
         if (twTitle) twTitle.setAttribute('content', 'Rajasthan Vacancy 2026');
         const twDesc = document.querySelector('meta[name="twitter:description"]');
         if (twDesc) twDesc.setAttribute('content', defaultDesc);
-
-        // Clean up individual job schema on home view
-        const jobScript = document.getElementById('dynamic-job-schema-ld');
-        if (jobScript) jobScript.remove();
       }
       (window as any).updateDynamicFaqSchema?.();
     } catch (e) {

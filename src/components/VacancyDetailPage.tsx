@@ -1097,73 +1097,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const postCanonicalUrl = buildCanonicalUrl({ vacancyId: editablePost.id });
     applyCanonicalTag(postCanonicalUrl);
 
-    // Dynamic Schema.org JobPosting JSON-LD
-    let scriptEl = document.getElementById('vacancy-job-posting-ld') as HTMLScriptElement | null;
-    if (!scriptEl) {
-      scriptEl = document.createElement('script');
-      scriptEl.id = 'vacancy-job-posting-ld';
-      scriptEl.type = 'application/ld+json';
-      document.head.appendChild(scriptEl);
-    }
-
-    const postDates = resolveJobDates(editablePost);
-    const startDate = postDates.notificationDate || editablePost.createdAt || '2026-10-25';
-    const lastDate = postDates.applyLastDate || '2026-11-25';
-
-    const formatIsoDate = (d: any, fallback: string): string => {
-      if (!d || typeof d !== 'string') return fallback;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-      if (/^\d{4}-\d{2}-\d{2}T/.test(d)) return d;
-      if (d.includes('2026') || d.includes('2025')) {
-        if (d.includes('अक्टूबर') || d.includes('Oct')) return '2026-10-25';
-        if (d.includes('जनवरी') || d.includes('Jan')) return '2026-01-15';
-        if (d.includes('फरवरी') || d.includes('Feb')) return '2026-02-15';
-        if (d.includes('मार्च') || d.includes('Mar')) return '2026-03-15';
-        if (d.includes('नवंबर') || d.includes('Nov')) return '2026-11-15';
-        if (d.includes('दिसंबर') || d.includes('Dec')) return '2026-12-15';
-      }
-      return fallback;
-    };
-
-    const isoDatePosted = formatIsoDate(startDate, editablePost.createdAt || '2026-10-25');
-    const isoValidThrough = formatIsoDate(lastDate, '2026-11-25');
-
-    const jobPostingData = {
-      "@context": "https://schema.org/",
-      "@type": "JobPosting",
-      "@id": `${postCanonicalUrl}#job`,
-      "title": editablePost.titleHi || editablePost.title,
-      "description": editablePost.briefSummaryHi || editablePost.descriptionHi || newDesc,
-      "identifier": {
-        "@type": "PropertyValue",
-        "name": editablePost.organization || "Rajasthan Government",
-        "value": editablePost.id
-      },
-      "datePosted": isoDatePosted,
-      "validThrough": isoValidThrough,
-      "employmentType": "FULL_TIME",
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": editablePost.organization || "Rajasthan Govt Department",
-        "sameAs": editablePost.officialLinks?.officialWebsiteUrl || "https://rajasthan.gov.in"
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": "Rajasthan",
-          "addressCountry": "IN"
-        }
-      }
-    };
-
-    scriptEl.textContent = JSON.stringify(jobPostingData, null, 2);
-
     return () => {
       document.title = originalTitle;
       if (metaDesc) metaDesc.setAttribute('content', originalDesc);
-      const scriptToRemove = document.getElementById('vacancy-job-posting-ld');
-      if (scriptToRemove) scriptToRemove.remove();
     };
   }, [vacancy.id, postTitle, editablePost]);
 

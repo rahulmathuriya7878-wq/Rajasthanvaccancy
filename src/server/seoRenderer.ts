@@ -2,7 +2,7 @@ import type { Request } from 'express';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import { VacancyItem } from '../types';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
-import { parseVacancyTimestamp, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { compareVacanciesNewestFirst, resolveJobSchemaDates } from '../utils/dateUtils';
 import { buildBreadcrumbSchema, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 
 const CATEGORY_NAMES_HI: Record<string, string> = {
@@ -103,17 +103,6 @@ function escapeHtml(val: string | number | undefined | null): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
-}
-
-function toIsoDateString(val?: string | null, fallback = '2026-12-31'): string {
-  if (!val || typeof val !== 'string') return fallback;
-  const trimmed = val.trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
-  const ts = parseVacancyTimestamp(trimmed);
-  if (ts > 0 && ts < Number.MAX_SAFE_INTEGER) {
-    return new Date(ts).toISOString().split('T')[0];
-  }
-  return fallback;
 }
 
 function renderApplicationFeeHtml(fee: any): string {
@@ -222,8 +211,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     canonicalUrl = `${baseUrl}/?vacancy=${encodeURIComponent(matchedVacancy.id)}`;
     ogType = 'article';
 
-    const datePostedIso = toIsoDateString(matchedVacancy.createdAt, '2026-11-13');
-    const validThroughIso = toIsoDateString(matchedVacancy.importantDates?.applyLastDate, '2026-12-31');
+    const { datePosted: datePostedIso, validThrough: validThroughIso } = resolveJobSchemaDates(matchedVacancy);
     const orgUrl = matchedVacancy.officialLinks?.officialWebsiteUrl || `${baseUrl}/`;
     const thumbUrl = getJobFeaturedImage(matchedVacancy);
 
@@ -269,7 +257,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           },
         },
       };
-      structuredDataSnippet = `<script type="application/ld+json">\n${JSON.stringify(jobPostingLd, null, 2)}\n</script>`;
+      structuredDataSnippet = `<script id="dynamic-job-schema-ld" type="application/ld+json">\n${JSON.stringify(jobPostingLd, null, 2)}\n</script>`;
     } else {
       const articleLd = {
         '@context': 'https://schema.org',
@@ -295,7 +283,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           '@id': canonicalUrl,
         },
       };
-      structuredDataSnippet = `<script type="application/ld+json">\n${JSON.stringify(articleLd, null, 2)}\n</script>`;
+      structuredDataSnippet = `<script id="dynamic-job-schema-ld" type="application/ld+json">\n${JSON.stringify(articleLd, null, 2)}\n</script>`;
     }
 
     const postFaqs =

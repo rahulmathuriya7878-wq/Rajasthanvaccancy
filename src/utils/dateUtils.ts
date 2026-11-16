@@ -224,3 +224,153 @@ export const compareVacanciesNewestFirst = (
   if (tsB !== tsA) return tsB - tsA;
   return 0;
 };
+
+const pad2 = (n: number): string => String(n).padStart(2, '0');
+
+const isValidUtcDate = (year: number, monthIndex: number, day: number): boolean => {
+  if (year < 1990 || year > 2100 || monthIndex < 0 || monthIndex > 11 || day < 1 || day > 31) {
+    return false;
+  }
+  const d = new Date(Date.UTC(year, monthIndex, day));
+  return d.getUTCFullYear() === year && d.getUTCMonth() === monthIndex && d.getUTCDate() === day;
+};
+
+const formatUtcIsoDate = (ms: number): string => {
+  const d = new Date(ms);
+  return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`;
+};
+
+const addDaysIsoDate = (isoYmd: string, days: number): string => {
+  const m = isoYmd.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return '2026-12-31';
+  const baseMs = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return formatUtcIsoDate(baseMs + days * 86_400_000);
+};
+
+/**
+ * Converts any date string (ISO 8601, DD/MM/YYYY, Hindi month string, or English month string)
+ * into a guaranteed valid ISO 8601 date string (`YYYY-MM-DD` or validated ISO timestamp).
+ * Non-date descriptive text falls back safely to `fallbackIso`.
+ */
+export const toIso8601DateString = (
+  val?: string | null,
+  fallbackIso = '2026-12-31',
+  preserveTimestamp = false
+): string => {
+  const safeFallback = /^\d{4}-\d{2}-\d{2}(T.*)?$/.test(fallbackIso) ? fallbackIso : '2026-12-31';
+  if (!val || typeof val !== 'string') return safeFallback;
+
+  const trimmed = val.trim();
+  if (!trimmed) return safeFallback;
+
+  const lower = trimmed.toLowerCase();
+  if (
+    trimmed.includes('अभी') ||
+    lower.includes('just now') ||
+    trimmed.includes('शीघ्र') ||
+    lower === 'tba' ||
+    trimmed === '0000-00-00'
+  ) {
+    if (trimmed.includes('अभी') || lower.includes('just now')) {
+      return formatUtcIsoDate(Date.now());
+    }
+    return safeFallback;
+  }
+
+  // 1. Exact full ISO 8601 timestamp with timezone/offset or YYYY-MM-DD
+  const isoFullMatch = trimmed.match(
+    /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(Z|[+-]\d{2}:\d{2})?)?$/
+  );
+  if (isoFullMatch) {
+    const year = Number(isoFullMatch[1]);
+    const month = Number(isoFullMatch[2]) - 1;
+    const day = Number(isoFullMatch[3]);
+    if (isValidUtcDate(year, month, day)) {
+      if (preserveTimestamp && isoFullMatch[4]) {
+        const hh = isoFullMatch[4];
+        const mm = isoFullMatch[5] || '00';
+        const ss = isoFullMatch[6] || '00';
+        const tz = isoFullMatch[7] || '+05:30';
+        return `${year}-${pad2(month + 1)}-${pad2(day)}T${hh}:${mm}:${ss}${tz}`;
+      }
+      return `${year}-${pad2(month + 1)}-${pad2(day)}`;
+    }
+    return safeFallback;
+  }
+
+  // 2. DD/MM/YYYY or DD-MM-YYYY
+  const dmyMatch = trimmed.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (dmyMatch) {
+    const day = Number(dmyMatch[1]);
+    const month = Number(dmyMatch[2]) - 1;
+    const year = Number(dmyMatch[3]);
+    if (isValidUtcDate(year, month, day)) {
+      return `${year}-${pad2(month + 1)}-${pad2(day)}`;
+    }
+    return safeFallback;
+  }
+
+  // 3. Hindi month formats (e.g. "28 अक्टूबर 2026" or "अक्टूबर 2026")
+  for (const [mName, mIdx] of Object.entries(HINDI_MONTH_MAP)) {
+    if (trimmed.includes(mName)) {
+      const yearMatch = trimmed.match(/\b(20\d{2}|19\d{2})\b/);
+      const year = yearMatch ? Number(yearMatch[1]) : 2026;
+      const withoutYear = yearMatch ? trimmed.replace(yearMatch[0], '') : trimmed;
+      const dayMatch = withoutYear.match(/\b([1-9]|[12]\d|3[01])\b/);
+      const day = dayMatch ? Number(dayMatch[1]) : 1;
+      if (isValidUtcDate(year, mIdx, day)) {
+        return `${year}-${pad2(mIdx + 1)}-${pad2(day)}`;
+      }
+    }
+  }
+
+  // 4. Strict standard English date strings (only if trimmed actually contains a month name or ISO/slash pattern)
+  if (/[a-z]{3}/i.test(trimmed) && /\b\d{4}\b/.test(trimmed)) {
+    const parsed = Date.parse(trimmed);
+    if (!isNaN(parsed)) {
+      return formatUtcIsoDate(parsed);
+    }
+  }
+
+  return safeFallback;
+};
+
+/**
+ * Resolves strictly valid ISO 8601 `datePosted` and `validThrough` fields for Schema.org JobPosting/Article.
+ * Guarantees `validThrough` is always a valid ISO 8601 date and never precedes `datePosted`.
+ */
+export const resolveJobSchemaDates = (v?: {
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  importantDates?: any;
+}): { datePosted: string; validThrough: string } => {
+  const defaultPosted = '2026-11-16';
+  const rawNotif =
+    v?.importantDates && !Array.isArray(v.importantDates)
+      ? v.importantDates.notificationDate
+      : Array.isArray(v?.importantDates)
+        ? v.importantDates.find((d: any) => d?.key === 'notificationDate')?.value
+        : undefined;
+  const rawLastDate =
+    v?.importantDates && !Array.isArray(v.importantDates)
+      ? v.importantDates.applyLastDate || v.importantDates.feeLastDate
+      : Array.isArray(v?.importantDates)
+        ? v.importantDates.find((d: any) => d?.key === 'applyLastDate' || d?.key === 'feeLastDate')?.value
+        : undefined;
+
+  const datePosted = toIso8601DateString(
+    v?.createdAt || rawNotif || v?.updatedAt,
+    defaultPosted
+  );
+
+  const defaultValidThrough = addDaysIsoDate(datePosted, 45);
+  let validThrough = toIso8601DateString(rawLastDate, defaultValidThrough);
+
+  // Google Rich Results requires validThrough >= datePosted
+  if (validThrough < datePosted) {
+    validThrough = defaultValidThrough;
+  }
+
+  return { datePosted, validThrough };
+};
+
