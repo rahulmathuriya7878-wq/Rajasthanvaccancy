@@ -55,15 +55,30 @@
           var search = window.location.search || '';
           var pathname = (window.location.pathname || '/').replace(/^\/+|\/+$/g, '');
           var canonicalUrl = origin + '/';
+          var knownCategories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'news', 'exam_date', 'syllabus'];
 
           var params = new URLSearchParams(search);
-          var vacancyId = params.get('vacancy') || (pathname && pathname.toLowerCase() !== 'sitemap' && pathname.indexOf('.') === -1 ? pathname : null);
+          var policyParam = params.get('policy');
           var category = params.get('category');
+          var vacancyId = params.get('vacancy');
+
+          if (!vacancyId && !category && !policyParam && pathname && pathname.indexOf('.') === -1) {
+            var lowerPath = pathname.toLowerCase();
+            if (lowerPath === 'sitemap' || lowerPath === 'about' || lowerPath === 'contact' || lowerPath === 'privacy' || lowerPath === 'terms' || lowerPath === 'disclaimer') {
+              policyParam = lowerPath;
+            } else if (knownCategories.indexOf(lowerPath) !== -1) {
+              category = lowerPath;
+            } else {
+              vacancyId = pathname;
+            }
+          }
 
           if (vacancyId) {
             canonicalUrl = origin + '/?vacancy=' + encodeURIComponent(vacancyId);
           } else if (category && category !== 'ALL') {
             canonicalUrl = origin + '/?category=' + encodeURIComponent(category);
+          } else if (policyParam) {
+            canonicalUrl = origin + '/?policy=' + encodeURIComponent(policyParam);
           }
 
           var canonLink = document.getElementById('primary-canonical') || document.querySelector('link[rel="canonical"]');

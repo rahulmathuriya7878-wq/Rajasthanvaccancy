@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LanguageMode, VacancyItem } from '../types';
+import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface HeaderProps {
   lang: LanguageMode;
@@ -62,11 +63,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   // Sort vacancies by newest added/updated date so new posts appear at the front of header ribbon ticker
-  const sortedVacancies = [...latestVacancies].sort((a, b) => {
-    const dateA = a.createdAt || a.updatedAt || a.importantDates?.notificationDate || '';
-    const dateB = b.createdAt || b.updatedAt || b.importantDates?.notificationDate || '';
-    return dateB.localeCompare(dateA);
-  });
+  const sortedVacancies = [...latestVacancies].sort(compareVacanciesNewestFirst);
   const tickerItems = sortedVacancies.slice(0, 8);
   const displayItems = tickerItems.length > 0 ? [...tickerItems, ...tickerItems] : [];
 

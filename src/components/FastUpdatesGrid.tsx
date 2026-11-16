@@ -12,7 +12,7 @@ import {
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
 
-import { formatDisplayDate } from '../utils/dateUtils';
+import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface FastUpdatesGridProps {
   vacancies: VacancyItem[];
@@ -43,13 +43,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 }) => {
   const isHi = lang === 'hi';
 
-  // Sort helper to ensure newest updates always come first
+  // Sort helper to ensure newest & newly added updates always appear at the top
   const sortByNewest = (items: VacancyItem[]) => {
-    return [...items].sort((a, b) => {
-      const dateA = a.updatedAt || a.createdAt || a.importantDates?.notificationDate || '';
-      const dateB = b.updatedAt || b.createdAt || b.importantDates?.notificationDate || '';
-      return dateB.localeCompare(dateA);
-    });
+    return [...items].sort(compareVacanciesNewestFirst);
   };
 
   // 2. Admit Card

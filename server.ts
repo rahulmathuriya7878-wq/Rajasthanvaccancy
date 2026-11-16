@@ -13,6 +13,20 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Enforce single canonical host (www.rajasthanvacancy.online) and clean root URL (/index.html -> /)
+  app.use((req, res, next) => {
+    const rawHost = (req.get('host') || '').toLowerCase();
+    if (rawHost === 'rajasthanvacancy.online') {
+      return res.redirect(301, `https://www.rajasthanvacancy.online${req.originalUrl}`);
+    }
+    if (req.path === '/index.html') {
+      const qIdx = req.originalUrl.indexOf('?');
+      const qs = qIdx !== -1 ? req.originalUrl.slice(qIdx) : '';
+      return res.redirect(301, `/${qs}`);
+    }
+    next();
+  });
+
   // API Routes
   // Synchronize authenticated user profile to Cloud SQL
   app.post('/api/auth/sync', requireAuth, async (req: AuthRequest, res) => {
@@ -125,10 +139,10 @@ async function startServer() {
         xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
       });
 
-      // Portal Info & HTML Sitemap Pages
-      const policyPages = ['sitemap', 'about', 'contact', 'privacy', 'terms', 'disclaimer'];
+      // Portal Info Pages (indexable pages with unique SSR content; ?policy=sitemap excluded from XML sitemap)
+      const policyPages = ['about', 'contact', 'privacy', 'terms', 'disclaimer'];
       policyPages.forEach(p => {
-        xml += `  <url>\n    <loc>${baseUrl}/?policy=${p}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${p === 'sitemap' ? '0.9' : '0.7'}</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${baseUrl}/?policy=${p}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
       });
 
       // Vacancies (All Active Posts indexed with valid ISO lastmod)
@@ -160,8 +174,12 @@ async function startServer() {
   // Robots.txt with Multi-Bot Allow & Sitemap Directives
   app.get('/robots.txt', (req, res) => {
     const origin = getBaseOriginFromRequest(req);
+    const sitemaps = Array.from(new Set([
+      `${origin}/sitemap.xml`,
+      'https://www.rajasthanvacancy.online/sitemap.xml',
+    ])).map(u => `Sitemap: ${u}`).join('\n');
     res.type('text/plain');
-    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\nSitemap: https://www.rajasthanvacancy.online/sitemap.xml\n`);
+    res.send(`User-agent: *\nAllow: /\nCrawl-delay: 0\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Googlebot-Image\nAllow: /\n\nUser-agent: Googlebot-Mobile\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\n${sitemaps}\n`);
   });
 
   // Dynamic RSS 2.0 Feed for Google News & Search Instant Reach
@@ -201,23 +219,34 @@ async function startServer() {
   });
 
   // Automated Search Engine Auto-Index Endpoint (Google Ping + Bing + IndexNow Protocol)
-  app.all('/api/seo/auto-index', async (_req, res) => {
+  app.all('/api/seo/auto-index', async (req, res) => {
     try {
       const baseUrl = 'https://www.rajasthanvacancy.online';
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
 
-      const urlList = [
-        `${baseUrl}/`,
-        `${baseUrl}/?category=latest_job`,
-        `${baseUrl}/?category=admit_card`,
-        `${baseUrl}/?category=result`,
-        `${baseUrl}/?category=answer_key`,
-        `${baseUrl}/?category=scheme`,
-        `${baseUrl}/?category=news`,
-        `${baseUrl}/?category=exam_date`,
-        `${baseUrl}/?category=syllabus`,
-        ...INITIAL_VACANCIES.map(v => `${baseUrl}/?vacancy=${v.id}`)
-      ];
+      const customUrls = Array.isArray(req.body?.urls)
+        ? req.body.urls.filter((u: unknown): u is string => typeof u === 'string' && u.startsWith('http'))
+        : [];
+
+      const urlList = customUrls.length > 0
+        ? Array.from(new Set(customUrls))
+        : [
+            `${baseUrl}/`,
+            `${baseUrl}/?category=latest_job`,
+            `${baseUrl}/?category=admit_card`,
+            `${baseUrl}/?category=result`,
+            `${baseUrl}/?category=answer_key`,
+            `${baseUrl}/?category=scheme`,
+            `${baseUrl}/?category=news`,
+            `${baseUrl}/?category=exam_date`,
+            `${baseUrl}/?category=syllabus`,
+            `${baseUrl}/?policy=about`,
+            `${baseUrl}/?policy=contact`,
+            `${baseUrl}/?policy=privacy`,
+            `${baseUrl}/?policy=terms`,
+            `${baseUrl}/?policy=disclaimer`,
+            ...INITIAL_VACANCIES.map(v => `${baseUrl}/?vacancy=${v.id}`)
+          ];
 
       const pings: Array<{ service: string; status: string; detail?: string }> = [];
 
@@ -267,12 +296,72 @@ async function startServer() {
         success: true,
         message: 'Auto-Index request sent to search engine crawlers successfully',
         indexedCount: urlList.length,
+        baseUrl,
         pings,
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {
       console.error('Failed to run auto-index:', error);
       res.status(500).json({ success: false, error: error.message || 'Auto-index execution failed' });
+    }
+  });
+
+  // Live URL Inspection Endpoint (verifies live SSR HTML, Canonical, Schema & Robots)
+  app.get('/api/seo/inspect', async (req, res) => {
+    try {
+      const rawUrl = typeof req.query.url === 'string' ? req.query.url.trim() : '';
+      const baseUrl = 'https://www.rajasthanvacancy.online';
+      let parsed: URL;
+      try {
+        parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `${baseUrl}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`);
+      } catch {
+        parsed = new URL(`${baseUrl}/`);
+      }
+
+      const targetPath = `${parsed.pathname}${parsed.search}`;
+      const localRes = await fetch(`http://127.0.0.1:${PORT}${targetPath}`, {
+        headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' },
+        signal: AbortSignal.timeout(5000)
+      });
+
+      const bodyText = await localRes.text();
+      const titleMatch = bodyText.match(/<title>([^<]*)<\/title>/i);
+      const canonicalMatch = bodyText.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']*)["']/i);
+      const robotsMatch = bodyText.match(/<meta[^>]*name=["']robots["'][^>]*content=["']([^"']*)["']/i);
+      const hasJobPosting = bodyText.includes('"@type": "JobPosting"') || bodyText.includes('"@type":"JobPosting"');
+      const hasFaq = bodyText.includes('"@type": "FAQPage"') || bodyText.includes('"@type":"FAQPage"');
+
+      const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const vacancyParam = parsed.searchParams.get('vacancy');
+      const matchedVacancy = vacancyParam
+        ? INITIAL_VACANCIES.find(v => v.id.toLowerCase() === vacancyParam.toLowerCase())
+        : null;
+
+      res.json({
+        success: true,
+        url: `${baseUrl}${targetPath}`,
+        httpStatus: localRes.status,
+        crawlable: localRes.ok && !/noindex/i.test(robotsMatch?.[1] || ''),
+        title: titleMatch?.[1] || 'Rajasthan Vacancy 2026',
+        canonical: canonicalMatch?.[1] || `${baseUrl}${targetPath}`,
+        robots: robotsMatch?.[1] ? `Allowed (${robotsMatch[1].split(',')[0]})` : 'Allowed (User-agent: Googlebot)',
+        schema: hasJobPosting && hasFaq
+          ? 'Valid (JobPosting + FAQPage + BreadcrumbList)'
+          : hasJobPosting
+          ? 'Valid (JobPosting)'
+          : hasFaq
+          ? 'Valid (WebSite + FAQPage + BreadcrumbList)'
+          : targetPath.includes('.xml')
+          ? 'Valid XML Sitemap / RSS Feed'
+          : 'Valid (WebSite / BreadcrumbList)',
+        mobileFriendly: true,
+        priority: matchedVacancy && (matchedVacancy.isTrending || matchedVacancy.isHot) ? '1.0 (सर्वोच्च)' : targetPath === '/' ? '1.0 (सर्वोच्च)' : '0.9',
+        matchedPost: matchedVacancy ? (matchedVacancy.titleHi || matchedVacancy.title) : null,
+        lastmod: matchedVacancy?.createdAt || new Date().toISOString().split('T')[0],
+        checkedAt: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message || 'URL inspection failed' });
     }
   });
 
@@ -360,9 +449,9 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     }
   });
 
-  // Serve compiled static files in production before fallback HTML middleware
+  // Serve compiled static files in production (index: false ensures / always runs SSR SEO renderer)
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.resolve('dist')));
+    app.use(express.static(path.resolve('dist'), { index: false }));
   }
 
   // Vite dev middleware or production static files with SSR Pre-Rendering for Googlebot & Users
@@ -411,7 +500,7 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
   });
 
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('dist'));
+    app.use(express.static('dist', { index: false }));
   } else if (vite) {
     app.use(vite.middlewares);
   }

@@ -21,6 +21,8 @@ export interface AdSectionProps {
   minHeight?: string | number;
   /** Enable full width responsive behavior */
   responsive?: boolean;
+  /** Optional inline styles for the outer ad container */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -36,6 +38,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
   label = 'विज्ञापन (Advertisement)',
   minHeight = '90px',
   responsive = true,
+  style,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const adRef = useRef<HTMLModElement>(null);
@@ -106,11 +109,13 @@ export const AdSection: React.FC<AdSectionProps> = ({
     };
   }, [client, slot]);
 
+  const resolvedMinHeight = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
+
   return (
     <div
       ref={containerRef}
       className={`w-full min-w-[250px] my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`}
-      style={{ minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }}
+      style={{ minHeight: resolvedMinHeight, ...style }}
     >
       {label && (
         <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-1 select-none">
@@ -118,7 +123,10 @@ export const AdSection: React.FC<AdSectionProps> = ({
         </div>
       )}
 
-      <div className="block w-full min-h-[90px] overflow-hidden">
+      <div
+        className="block w-full overflow-hidden"
+        style={{ minHeight: resolvedMinHeight }}
+      >
         <ins
           ref={adRef}
           className="adsbygoogle"

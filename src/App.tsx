@@ -41,6 +41,7 @@ import { useAuth } from './context/AuthContext';
 import { generateHindiShareText } from './utils/shareUtils';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
+import { compareVacanciesNewestFirst } from './utils/dateUtils';
 
 import { INITIAL_VACANCIES } from './data/mockVacancies';
 import { 
@@ -454,16 +455,50 @@ export default function App() {
           url.searchParams.set('policy', activePolicyView);
           window.history.replaceState({ policy: activePolicyView }, '', url.toString());
         }
-        const policyTitles: Record<string, string> = {
-          sitemap: 'Sitemap - Rajasthan Vacancy 2026',
-          privacy: 'Privacy Policy - Rajasthan Vacancy 2026',
-          terms: 'Terms & Conditions - Rajasthan Vacancy 2026',
-          contact: 'Contact Us - Rajasthan Vacancy 2026',
-          about: 'About Us - Rajasthan Vacancy 2026',
-          disclaimer: 'Disclaimer - Rajasthan Vacancy 2026',
+        const policyMeta: Record<string, { title: string; desc: string; robots?: string }> = {
+          sitemap: {
+            title: 'HTML Sitemap Directory - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy 2026 की सभी सरकारी भर्तियों, एडमिट कार्ड, रिजल्ट व योजनाओं की श्रेणीवार निर्देशिका।',
+            robots: 'noindex, follow',
+          },
+          privacy: {
+            title: 'Privacy Policy - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy (www.rajasthanvacancy.online) गोपनीयता नीति: उपयोगकर्ता डेटा सुरक्षा, कुकीज़ एवं विज्ञापन नीति की पूरी जानकारी।',
+          },
+          terms: {
+            title: 'Terms & Conditions - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy पोर्टल के उपयोग की नियम एवं शर्तें। सूचना स्रोतों, आधिकारिक वेबसाइट सत्यापन और सामग्री उपयोग के नियम।',
+          },
+          contact: {
+            title: 'Contact Us - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy संपादकीय टीम से संपर्क करें: सरकारी भर्ती अपडेट, सुधार सुझाव या सहायता के लिए ईमेल व संपर्क विवरण।',
+          },
+          about: {
+            title: 'About Us - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy (www.rajasthanvacancy.online) के बारे में जानें - राजस्थान व केंद्र सरकार की भर्तियों, रिजल्ट व योजनाओं का विश्वसनीय पोर्टल।',
+          },
+          disclaimer: {
+            title: 'Disclaimer - Rajasthan Vacancy 2026',
+            desc: 'Rajasthan Vacancy अस्वीकरण (Disclaimer): सभी भर्ती सूचनाएं आधिकारिक पोर्टलों पर आधारित हैं। आवेदन से पूर्व आधिकारिक विज्ञप्ति अवश्य जांचें।',
+          },
         };
-        document.title = policyTitles[activePolicyView] || 'Rajasthan Vacancy 2026';
-        applyCanonicalTag(`${origin}/?policy=${activePolicyView}`);
+        const pMeta = policyMeta[activePolicyView] || {
+          title: 'Rajasthan Vacancy 2026',
+          desc: 'Rajasthan Vacancy 2026 portal information page.',
+        };
+        const policyCanonical = `${origin}/?policy=${activePolicyView}`;
+        document.title = pMeta.title;
+        if (metaDescEl) metaDescEl.setAttribute('content', pMeta.desc);
+        applyCanonicalTag(policyCanonical);
+
+        const robotsEl = document.querySelector('meta[name="robots"]');
+        if (robotsEl) {
+          robotsEl.setAttribute('content', pMeta.robots || 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+        }
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', pMeta.title);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', pMeta.desc);
       } else {
         if (currentVacancyId || url.searchParams.has('category') || url.searchParams.has('policy') || url.pathname !== '/') {
           url.pathname = '/';
@@ -471,6 +506,10 @@ export default function App() {
           url.searchParams.delete('category');
           url.searchParams.delete('policy');
           window.history.replaceState({ vacancyId: null, category: null }, '', url.toString());
+        }
+        const robotsEl = document.querySelector('meta[name="robots"]');
+        if (robotsEl) {
+          robotsEl.setAttribute('content', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
         }
         document.title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';
         const defaultDesc = 'Latest Rajasthan & Central Govt job alerts 2026: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Pashu Parichar, Admit Card, Answer Key & Sarkari Results.';
@@ -595,6 +634,9 @@ export default function App() {
 
     const formattedJob: VacancyItem = {
       ...newJob,
+      addedAtMs: Date.now(),
+      isNew: true,
+      isHot: newJob.isHot ?? true,
       createdAt: newJob.createdAt || new Date().toISOString().split('T')[0],
       updatedAt: newJob.updatedAt || 'अभी-अभी (Just Now)',
       status: newJob.status || 'active'
@@ -604,7 +646,11 @@ export default function App() {
     setSelectedVacancy(formattedJob);
 
     // Background Auto-Index ping for new post
-    fetch('/api/seo/auto-index', { method: 'POST' }).catch(() => {});
+    fetch('/api/seo/auto-index', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls: [`${getCanonicalOrigin()}/?vacancy=${encodeURIComponent(formattedJob.id)}`] })
+    }).catch(() => {});
     if (formattedJob.category === 'scheme' || formattedJob.organization === 'Sarkari Yojana') {
       showToast(lang === 'hi' ? 'सरकारी योजना सफलतापूर्वक जोड़ी गई व तुरंत होमपेज पर लाइव!' : 'Scheme alert posted & live on homepage!');
     } else {
@@ -616,7 +662,11 @@ export default function App() {
     setVacancies(prev => prev.map(v => v.id === updatedJob.id ? updatedJob : v));
     setSelectedVacancy(updatedJob);
     // Background Auto-Index ping for updated post
-    fetch('/api/seo/auto-index', { method: 'POST' }).catch(() => {});
+    fetch('/api/seo/auto-index', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls: [`${getCanonicalOrigin()}/?vacancy=${encodeURIComponent(updatedJob.id)}`] })
+    }).catch(() => {});
     showToast(lang === 'hi' ? 'पोस्ट विवरण सफलतापूर्वक अपडेट कर दिया गया!' : 'Post details updated successfully!');
     setEditingVacancy(null);
   };
@@ -737,8 +787,8 @@ export default function App() {
         const postsB = typeof b.totalPosts === 'number' ? b.totalPosts : 0;
         return postsB - postsA;
       }
-      // default: latest
-      return b.createdAt.localeCompare(a.createdAt);
+      // default: latest (newest / newly added post always appears first)
+      return compareVacanciesNewestFirst(a, b);
     });
   }, [vacancies, searchQuery, selectedBoard, selectedCategory, selectedQualification, selectedStatus, selectedLocation, selectedJobType, selectedSalaryRange, sortBy]);
 

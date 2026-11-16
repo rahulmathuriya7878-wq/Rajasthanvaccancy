@@ -244,6 +244,7 @@ export interface VacancyItem {
   seoSettings?: SeoSettings;
   featuredImage?: string;
   imageUrl?: string;
+  addedAtMs?: number;
   updatedAt?: string;
   createdAt: string;
 }

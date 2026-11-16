@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, Edit3, Trash2 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
+import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface RecentPostsListProps {
   vacancies: VacancyItem[];
@@ -34,11 +35,7 @@ export const RecentPostsList: React.FC<RecentPostsListProps> = ({
         // Exclude closed vacancies if any
         return v.status !== 'closed';
       })
-      .sort((a, b) => {
-        const dateA = a.updatedAt || a.createdAt || a.importantDates?.notificationDate || '';
-        const dateB = b.updatedAt || b.createdAt || b.importantDates?.notificationDate || '';
-        return dateB.localeCompare(dateA);
-      })
+      .sort(compareVacanciesNewestFirst)
       .slice(0, maxPosts);
   }, [vacancies, maxPosts]);
 

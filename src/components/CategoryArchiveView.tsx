@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
-import { formatDisplayDate } from '../utils/dateUtils';
+import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
 
 interface CategoryArchiveViewProps {
   categoryKey: string;
@@ -56,11 +56,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
 
   // 10 recent posts for the authentic GeneratePress sidebar
   const recentPosts = [...allVacancies]
-    .sort((a, b) => {
-      const dateA = a.updatedAt || a.createdAt || a.importantDates?.notificationDate || '';
-      const dateB = b.updatedAt || b.createdAt || b.importantDates?.notificationDate || '';
-      return dateB.localeCompare(dateA);
-    })
+    .sort(compareVacanciesNewestFirst)
     .slice(0, 10);
 
   const allSections = [

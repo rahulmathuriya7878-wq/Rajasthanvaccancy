@@ -146,7 +146,7 @@ export const resolveJobDates = (v?: any): IntegratedJobDates => {
   }
 
   // Fallbacks if not set in importantDates
-  if (!notif) notif = v.updatedAt || v.createdAt || 'अक्टूबर 2026';
+  if (!notif) notif = v.updatedAt || v.createdAt || 'नवंबर 2026';
   if (!applyStart) applyStart = v.createdAt || 'शीघ्र';
   if (!applyLast) applyLast = 'शीघ्र';
   if (!feeLast) feeLast = applyLast;
@@ -161,4 +161,90 @@ export const resolveJobDates = (v?: any): IntegratedJobDates => {
     admitCardDate: admitCard,
     examDate: exam
   };
+};
+
+const HINDI_MONTH_MAP: Record<string, number> = {
+  'जनवरी': 0,
+  'फरवरी': 1,
+  'मार्च': 2,
+  'अप्रैल': 3,
+  'मई': 4,
+  'जून': 5,
+  'जुलाई': 6,
+  'अगस्त': 7,
+  'सितंबर': 8,
+  'अक्टूबर': 9,
+  'नवंबर': 10,
+  'नवम्बर': 10,
+  'दिसंबर': 11,
+  'दिसम्बर': 11,
+};
+
+/**
+ * Parses ISO dates (YYYY-MM-DD), DD/MM/YYYY, Hindi dates ("13 नवंबर 2026"),
+ * or "अभी-अभी / Just Now" strings into comparable epoch milliseconds.
+ */
+export const parseVacancyTimestamp = (val?: string | null): number => {
+  if (!val || typeof val !== 'string') return 0;
+  const trimmed = val.trim();
+  if (!trimmed) return 0;
+
+  if (trimmed.includes('अभी') || trimmed.toLowerCase().includes('just now')) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  // YYYY-MM-DD (or full ISO)
+  const ymd = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if (ymd) {
+    const [, y, m, d, hh = '0', mm = '0', ss = '0'] = ymd;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss));
+  }
+
+  // DD/MM/YYYY or DD-MM-YYYY
+  const dmy = trimmed.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  if (dmy) {
+    const [, d, m, y] = dmy;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d));
+  }
+
+  // Hindi month e.g. "13 नवंबर 2026"
+  for (const [mName, mIdx] of Object.entries(HINDI_MONTH_MAP)) {
+    if (trimmed.includes(mName)) {
+      const nums = trimmed.match(/\d+/g);
+      if (nums && nums.length >= 1) {
+        const day = nums.find(n => n.length <= 2) ? Number(nums.find(n => n.length <= 2)) : 1;
+        const year = nums.find(n => n.length === 4) ? Number(nums.find(n => n.length === 4)) : 2026;
+        return Date.UTC(year, mIdx, day);
+      }
+    }
+  }
+
+  const parsed = Date.parse(trimmed);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+/**
+ * Deterministic comparator placing newly added posts (addedAtMs / "अभी-अभी" / newest date)
+ * strictly at the very top while preserving array insertion order on ties.
+ */
+export const compareVacanciesNewestFirst = (
+  a: { addedAtMs?: number; updatedAt?: string; createdAt?: string; importantDates?: any },
+  b: { addedAtMs?: number; updatedAt?: string; createdAt?: string; importantDates?: any }
+): number => {
+  const addedDiff = (b.addedAtMs || 0) - (a.addedAtMs || 0);
+  if (addedDiff !== 0) return addedDiff;
+
+  const tsA = Math.max(
+    parseVacancyTimestamp(a.updatedAt),
+    parseVacancyTimestamp(a.createdAt),
+    parseVacancyTimestamp(a.importantDates?.notificationDate)
+  );
+  const tsB = Math.max(
+    parseVacancyTimestamp(b.updatedAt),
+    parseVacancyTimestamp(b.createdAt),
+    parseVacancyTimestamp(b.importantDates?.notificationDate)
+  );
+
+  if (tsB !== tsA) return tsB - tsA;
+  return 0;
 };

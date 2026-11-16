@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
-import { formatDisplayDate, resolveJobDates, IntegratedJobDates } from '../utils/dateUtils';
+import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 import { generateHindiShareText, getVacancyShareUrl, getSocialShareLinks } from '../utils/shareUtils';
@@ -1222,7 +1222,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   // Recent Posts for related opportunities at the bottom of the card (10 items)
   const recentPosts = useMemo(() => {
-    return allVacancies.filter(v => v.id !== vacancy.id).slice(0, 10);
+    return [...allVacancies]
+      .filter(v => v.id !== vacancy.id)
+      .sort(compareVacanciesNewestFirst)
+      .slice(0, 10);
   }, [allVacancies, vacancy]);
 
   // Documents list (tailored specifically to highest eligibility)
@@ -3790,13 +3793,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
               )}
 
               {/* AdSense at the absolute bottom of the post */}
-              <div className="w-full mt-8 pt-4 border-t border-slate-200">
+              <div className="w-full mt-[20px] border-t border-slate-200">
                 <AdSection 
                   slot="post-very-bottom-slot"
                   client="ca-pub-8302542447035711"
                   label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
-                  minHeight={100}
-                  className="w-full"
+                  minHeight={250}
+                  className="w-full mt-[20px] mb-0"
+                  style={{ marginTop: '20px', minHeight: '250px' }}
                 />
               </div>
             </article>

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ArrowLeft, Map, ExternalLink, FileText, FolderOpen, Globe, Rss } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
+import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { formatDisplayDate } from '../utils/dateUtils';
 
 interface SitemapPageProps {
@@ -37,11 +38,7 @@ export const SitemapPage: React.FC<SitemapPageProps> = ({
 
   const groupedByCategory = useMemo(() => {
     const sortNewest = (items: VacancyItem[]) =>
-      [...items].sort((a, b) => {
-        const dateA = a.updatedAt || a.createdAt || a.importantDates?.notificationDate || '';
-        const dateB = b.updatedAt || b.createdAt || b.importantDates?.notificationDate || '';
-        return dateB.localeCompare(dateA);
-      });
+      [...items].sort(compareVacanciesNewestFirst);
 
     return SECTION_CATEGORIES.map((sec) => {
       const items = sortNewest(
