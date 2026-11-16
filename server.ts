@@ -218,6 +218,12 @@ async function startServer() {
     res.send('rajasthanvacancyindexnow2026\n');
   });
 
+  // Google AdSense ads.txt verification endpoint
+  app.get('/ads.txt', (_req, res) => {
+    res.type('text/plain; charset=utf-8');
+    res.send('google.com, pub-3176571184961509, DIRECT, f08c47fec0942fa0\n');
+  });
+
   // Automated Search Engine Auto-Index Endpoint (Google Ping + Bing + IndexNow Protocol)
   app.all('/api/seo/auto-index', async (req, res) => {
     try {
