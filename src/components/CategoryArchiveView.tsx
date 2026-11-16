@@ -311,7 +311,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
             </p>
             <div className="space-y-2">
               <a
-                href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-link-color w-full bg-[#25D366] hover:bg-[#20ba59] !text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"
@@ -320,7 +320,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <a
-                href="https://t.me/newrajsthanjobs"
+                href="https://t.me/rajsthan_vacancy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-link-color w-full bg-[#0088cc] hover:bg-[#0077b5] !text-white text-xs font-black py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs"

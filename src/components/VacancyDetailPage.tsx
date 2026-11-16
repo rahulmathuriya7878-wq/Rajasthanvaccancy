@@ -1676,7 +1676,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </div>
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
                     <a
-                      href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                      href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"

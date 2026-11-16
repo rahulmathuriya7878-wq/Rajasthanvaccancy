@@ -794,8 +794,8 @@ export default function App() {
 
       <FloatingSocialButtons 
         lang={lang} 
-        whatsappUrl="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
-        telegramUrl="https://t.me/newrajsthanjobs"
+        whatsappUrl="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
+        telegramUrl="https://t.me/rajsthan_vacancy"
       />
       <OfflineIndicator lang={lang} />
     </div>

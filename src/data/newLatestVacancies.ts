@@ -127,12 +127,12 @@ export const CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY: VacancyItem = {
     {
       label: 'Join Official WhatsApp Channel (राजस्थान भर्ती अपडेट)',
       actionText: 'Join WhatsApp',
-      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+      url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j'
     },
     {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',
       actionText: 'Join Telegram',
-      url: 'https://t.me/newrajsthanjobs'
+      url: 'https://t.me/rajsthan_vacancy'
     }
   ],
   officialLinks: {
@@ -240,8 +240,8 @@ export const BSF_SI_LDCE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'BSF SI Apply Online (ऑनलाइन आवेदन)', actionText: 'Apply Online', url: 'https://rectt.bsf.gov.in/' },
     { label: 'Official Detailed Notification PDF (विस्तृत विज्ञप्ति)', actionText: 'Download PDF', url: 'https://rectt.bsf.gov.in/' },
-    { label: 'Join Official WhatsApp Channel (राजस्थान भर्ती)', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel (New Rajasthan Jobs)', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel (राजस्थान भर्ती)', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel (New Rajasthan Jobs)', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'BSF Official Website (आधिकारिक पोर्टल)', actionText: 'Official Portal', url: 'https://bsf.gov.in/' }
   ],
   officialLinks: {
@@ -321,8 +321,8 @@ export const RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'RRC NR Apprentice Apply Online', actionText: 'Apply Online', url: 'https://www.rrcnr.org/' },
     { label: 'Official Detailed Notification PDF', actionText: 'Download PDF', url: 'https://www.rrcnr.org/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'RRC NR Official Portal', actionText: 'Official Portal', url: 'https://www.rrcnr.org/' }
   ],
   officialLinks: {
@@ -402,8 +402,8 @@ export const DSSSB_SWEEPER_CHOWKIDAR_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'DSSSB Apply Online Portal', actionText: 'Apply Online', url: 'https://dsssbonline.nic.in/' },
     { label: 'Official Notification PDF Download', actionText: 'Download PDF', url: 'https://dsssb.delhi.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'DSSSB Official Website', actionText: 'Official Website', url: 'https://dsssb.delhi.gov.in/' }
   ],
   officialLinks: {
@@ -483,8 +483,8 @@ export const INDIAN_ARMY_TES_57_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'Join Indian Army Apply Online', actionText: 'Apply Online', url: 'https://joinindianarmy.nic.in/' },
     { label: 'Official TES-57 Notification PDF', actionText: 'Download PDF', url: 'https://joinindianarmy.nic.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'Indian Army Official Portal', actionText: 'Official Portal', url: 'https://joinindianarmy.nic.in/' }
   ],
   officialLinks: {
@@ -564,8 +564,8 @@ export const IBPS_SO_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'IBPS SO Apply Online', actionText: 'Apply Online', url: 'https://ibps.in/' },
     { label: 'Official SO Notification PDF Download', actionText: 'Download PDF', url: 'https://ibps.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'IBPS Official Website', actionText: 'Official Website', url: 'https://ibps.in/' }
   ],
   officialLinks: {
@@ -647,8 +647,8 @@ export const RAJASTHAN_POLICE_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = 
   directLinks: [
     { label: 'Rajasthan Police Apply Online (SSO Portal)', actionText: 'Apply via SSO', url: 'https://sso.rajasthan.gov.in/' },
     { label: 'Official Constable Notification PDF Download', actionText: 'Download PDF', url: 'https://police.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'Rajasthan Police Official Website', actionText: 'Official Website', url: 'https://police.rajasthan.gov.in/' }
   ],
   officialLinks: {
@@ -728,8 +728,8 @@ export const RAJASTHAN_HIGH_COURT_CLERK_RECRUITMENT_2026_VACANCY: VacancyItem = 
   directLinks: [
     { label: 'Rajasthan High Court Apply Online', actionText: 'Apply Online', url: 'https://hcraj.nic.in/' },
     { label: 'Official Detailed Notification PDF', actionText: 'Download PDF', url: 'https://hcraj.nic.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'Rajasthan High Court Official Portal', actionText: 'Official Portal', url: 'https://hcraj.nic.in/' }
   ],
   officialLinks: {
@@ -809,8 +809,8 @@ export const SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   directLinks: [
     { label: 'SSC New Portal Apply Online', actionText: 'Apply Online', url: 'https://ssc.gov.in/' },
     { label: 'Official SSC GD Notification PDF', actionText: 'Download PDF', url: 'https://ssc.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
     { label: 'SSC Official Portal', actionText: 'Official Portal', url: 'https://ssc.gov.in/' }
   ],
   officialLinks: {

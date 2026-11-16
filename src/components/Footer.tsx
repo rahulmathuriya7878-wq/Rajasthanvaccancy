@@ -25,8 +25,8 @@ export const Footer: React.FC<FooterProps> = ({
   const isHi = lang === 'hi';
 
   const officialLinks = [
-    { name: 'WhatsApp चैनल (Official Alerts)', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { name: 'Telegram चैनल (Official Channel)', url: 'https://t.me/newrajsthanjobs' },
+    { name: 'WhatsApp चैनल (Official Alerts)', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { name: 'Telegram चैनल (Official Channel)', url: 'https://t.me/rajsthan_vacancy' },
     { name: 'राजस्थान वैकेंसी (www.rajasthanvacancy.online)', url: 'https://www.rajasthanvacancy.online/' },
     { name: 'RSMSSB (कर्मचारी चयन बोर्ड)', url: 'https://rsmssb.rajasthan.gov.in' },
     { name: 'RPSC (राजस्थान लोक सेवा आयोग)', url: 'https://rpsc.rajasthan.gov.in' },

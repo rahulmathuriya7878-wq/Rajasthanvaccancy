@@ -90,7 +90,13 @@
     <priority>0.6</priority>
   </url>
 
-  <!-- Vacancy & News Posts (56 Active URLs) -->
+  <!-- Vacancy & News Posts -->
+  <url>
+    <loc>https://www.rajasthanvacancy.online/?vacancy=rrb-group-d-result-2026</loc>
+    <lastmod>2026-11-16</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+  </url>
   <url>
     <loc>https://www.rajasthanvacancy.online/?vacancy=csir-npl-mts-recruitment-2026</loc>
     <lastmod>2026-11-13</lastmod>

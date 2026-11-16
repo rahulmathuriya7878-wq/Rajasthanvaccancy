@@ -270,7 +270,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Official WhatsApp Channel Link in Mobile Menu */}
               <a
-                href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-link-color mt-2 px-3 py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] !text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"

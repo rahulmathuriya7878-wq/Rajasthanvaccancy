@@ -45,8 +45,8 @@ export const RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026: VacancyItem = {
   directLinks: [
     { label: 'Download Admit Card (SSO Portal / RPSC Link)', actionText: 'Download Admit Card', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
     { label: 'RPSC Official Website', actionText: 'Visit RPSC', url: 'https://rpsc.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     admitCardUrl: 'https://rpsc.rajasthan.gov.in/',
@@ -101,8 +101,8 @@ export const RSSB_TEACHING_ASSOCIATE_ADMIT_CARD_2026: VacancyItem = {
   directLinks: [
     { label: 'Download RSSB Admit Card (आधिकारिक लिंक)', actionText: 'Download Admit Card', url: 'https://rssb.rajasthan.gov.in/', isPrimary: true },
     { label: 'SSO Rajasthan Portal', actionText: 'Open SSO', url: 'https://sso.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     admitCardUrl: 'https://rssb.rajasthan.gov.in/',
@@ -156,8 +156,8 @@ export const IBPS_RRB_OFFICER_SCALE_1_ADMIT_CARD_2026: VacancyItem = {
   selectionProcessHi: ['प्रारंभिक परीक्षा', 'मुख्य परीक्षा', 'साक्षात्कार'],
   directLinks: [
     { label: 'Download IBPS RRB Scale-I Call Letter', actionText: 'Download Call Letter', url: 'https://www.ibps.in/', isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     admitCardUrl: 'https://www.ibps.in/',
@@ -212,8 +212,8 @@ export const SSC_CGL_TIER_1_RESULT_2026: VacancyItem = {
   selectionProcessHi: ['टियर-1 परीक्षा (परिणाम घोषित)', 'टियर-2 मुख्य परीक्षा', 'दस्तावेज सत्यापन'],
   directLinks: [
     { label: 'Download SSC CGL Tier-1 Result PDF', actionText: 'Check Result', url: 'https://ssc.gov.in/', isPdf: true, isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     resultPdfUrl: 'https://ssc.gov.in/',
@@ -267,8 +267,8 @@ export const RSMSSB_JUNIOR_INSTRUCTOR_RESULT_2026: VacancyItem = {
   selectionProcessHi: ['लिखित परीक्षा (परिणाम जारी)', 'दस्तावेज सत्यापन', 'अंतिम मेरिट सूची'],
   directLinks: [
     { label: 'Download RSMSSB Junior Instructor Result PDF', actionText: 'Check Result', url: 'https://rssb.rajasthan.gov.in/', isPdf: true, isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     resultPdfUrl: 'https://rssb.rajasthan.gov.in/',
@@ -321,8 +321,8 @@ export const IBPS_PO_MAINS_RESULT_2026: VacancyItem = {
   selectionProcessHi: ['प्रारंभिक परीक्षा', 'मुख्य परीक्षा (रिजल्ट जारी)', 'साक्षात्कार'],
   directLinks: [
     { label: 'Check IBPS PO Mains Result', actionText: 'Check Result', url: 'https://www.ibps.in/', isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     resultPdfUrl: 'https://www.ibps.in/',
@@ -377,8 +377,8 @@ export const RPSC_RAS_PRELIMS_EXAM_DATE_2026: VacancyItem = {
   selectionProcessHi: ['प्रारंभिक परीक्षा (06 दिसंबर 2026)', 'मुख्य परीक्षा', 'साक्षात्कार'],
   directLinks: [
     { label: 'Download RPSC Exam Date Notice PDF', actionText: 'View Notice', url: 'https://rpsc.rajasthan.gov.in/', isPdf: true, isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     notificationPdfUrl: 'https://rpsc.rajasthan.gov.in/',
@@ -432,8 +432,8 @@ export const SSC_CHSL_TIER_1_EXAM_DATE_2026: VacancyItem = {
   selectionProcessHi: ['टियर-1 परीक्षा', 'टियर-2 व टाइपिंग टेस्ट', 'दस्तावेज सत्यापन'],
   directLinks: [
     { label: 'SSC CHSL Exam Schedule Notice PDF', actionText: 'View Schedule', url: 'https://ssc.gov.in/', isPdf: true, isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     notificationPdfUrl: 'https://ssc.gov.in/',
@@ -486,8 +486,8 @@ export const UPSC_IFS_MAINS_EXAM_DATE_2026: VacancyItem = {
   selectionProcessHi: ['प्रारंभिक परीक्षा', 'मुख्य परीक्षा (22 नवंबर से)', 'साक्षात्कार'],
   directLinks: [
     { label: 'Download UPSC IFS Timetable & Admit Card', actionText: 'Visit UPSC', url: 'https://www.upsc.gov.in/', isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     notificationPdfUrl: 'https://www.upsc.gov.in/',
@@ -542,8 +542,8 @@ export const RSMSSB_REVISED_EXAM_CALENDAR_NEWS_2026: VacancyItem = {
   selectionProcessHi: ['लिखित परीक्षा (कैलेंडर अनुसार)', 'दस्तावेज सत्यापन'],
   directLinks: [
     { label: 'Download RSSB Exam Calendar PDF', actionText: 'View Notice', url: 'https://rssb.rajasthan.gov.in/', isPdf: true, isPrimary: true },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     notificationPdfUrl: 'https://rssb.rajasthan.gov.in/',
@@ -597,8 +597,8 @@ export const SJED_SCHOLARSHIP_DATE_EXTEND_NEWS_2026: VacancyItem = {
   directLinks: [
     { label: 'Apply via SJED / SSO Rajasthan Portal', actionText: 'Apply Online', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
     { label: 'SJED Official Scholarship Portal', actionText: 'Official Portal', url: 'https://sje.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
@@ -654,8 +654,8 @@ export const CM_HIGHER_EDUCATION_SCHOLARSHIP_YOJANA_2026: VacancyItem = {
   directLinks: [
     { label: 'Apply Online via Rajasthan Scholarship Portal', actionText: 'Apply Online', url: 'https://hte.rajasthan.gov.in/', isPrimary: true },
     { label: 'SSO Rajasthan Portal (Citizen App)', actionText: 'Open SSO', url: 'https://sso.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
@@ -710,8 +710,8 @@ export const DEVNARAYAN_SCOOTY_YOJANA_2026: VacancyItem = {
   directLinks: [
     { label: 'Apply Online (SSO Rajasthan Portal)', actionText: 'Apply Online', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
     { label: 'Rajasthan Higher Education Portal', actionText: 'Official Portal', url: 'https://hte.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/newrajsthanjobs' }
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
   officialLinks: {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
@@ -722,7 +722,90 @@ export const DEVNARAYAN_SCOOTY_YOJANA_2026: VacancyItem = {
   updatedAt: '2026-11-11'
 };
 
+export const RRB_GROUP_D_RESULT_2026_NEWS: VacancyItem = {
+  id: 'rrb-group-d-result-2026',
+  title: 'RRB Group D Result 2026 News: रेलवे ग्रुप डी रिजल्ट, स्कोरकार्ड, जोन-वाइज कटऑफ और PET/DV लेटेस्ट अपडेट',
+  titleHi: 'RRB Group D Result 2026 न्यूज़: रेलवे ग्रुप डी (Level-1) रिजल्ट, जोन-वाइज कटऑफ, स्कोरकार्ड व PET लेटेस्ट अपडेट',
+  shortTitle: 'RRB Group D Result 2026 News',
+  shortTitleHi: 'RRB ग्रुप डी रिजल्ट 2026 न्यूज़',
+  organization: 'Railway Board',
+  department: 'Railway Recruitment Boards (RRB), Ministry of Railways',
+  departmentHi: 'रेलवे भर्ती बोर्ड (RRB), रेल मंत्रालय (भारत सरकार)',
+  advtNo: 'RRB CEN Level-1 (Group D) 2026',
+  category: 'news',
+  tags: ['news', 'rrb group d result 2026', 'railway group d result', 'rrb cutoff 2026', 'sarkari result news'],
+  isTrending: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 19450,
+  savesCount: 4820,
+  totalPosts: '30,000+ (Level-1 पद)',
+  postName: 'RRB Group D Level-1 (Track Maintainer, Pointsman, Assistant, Porter) Result & Cutoff Update',
+  postNameHi: 'रेलवे ग्रुप डी (Level-1) रिजल्ट, कटऑफ व शारीरिक दक्षता परीक्षा (PET) अपडेट',
+  qualification: ['10th', 'ITI/Diploma'],
+  qualificationDetails: '10th Pass / ITI / NAC Candidates who appeared in RRB Group D CBT Exam 2026.',
+  qualificationDetailsHi: '10वीं पास / ITI / NAC अभ्यर्थी जो रेलवे ग्रुप डी (Level-1) CBT परीक्षा 2026 में शामिल हुए हैं।',
+  briefSummary: 'Latest RRB Group D Result 2026 News: Railway Recruitment Boards (RRBs) zone-wise CBT result, normalization scorecard, category-wise cutoff marks, and Physical Efficiency Test (PET) schedule details.',
+  briefSummaryHi: 'रेलवे भर्ती बोर्ड (RRB) द्वारा ग्रुप डी (Level-1) भर्ती परीक्षा 2026 के रिजल्ट, नॉर्मलाइज्ड स्कोरकार्ड, जोन-वाइज (RRB Ajmer, Ahmedabad, Allahabad, Chandigarh, Mumbai आदि) कटऑफ अंक तथा अगले चरण की शारीरिक दक्षता परीक्षा (PET) व डॉक्यूमेंट वेरिफिकेशन को लेकर ताज़ा अपडेट जारी की गई है। अभ्यर्थी अपने रजिस्ट्रेशन नंबर व जन्मतिथि से आधिकारिक RRB वेबसाइट पर रिजल्ट व स्कोरकार्ड स्टेटस चेक कर सकते हैं।',
+  description: 'Complete news update on RRB Group D Result 2026, zone-wise merit list PDF, expected/official cut-off marks, scorecard download steps, and PET selection details.',
+  descriptionHi: 'रेलवे ग्रुप डी (CEN Level-1) परीक्षा के बाद सभी क्षेत्रीय रेलवे भर्ती बोर्ड (RRBs) अपनी आधिकारिक वेबसाइट पर मेरिट लिस्ट PDF व स्कोरकार्ड लिंक सक्रिय करते हैं। PET के लिए चयनित अभ्यर्थियों के रोल नंबर की सूची अलग से प्रकाशित की जाती है।',
+  jobLocation: 'All India (RRB Zones including Ajmer / Jaipur)',
+  salary: '₹18,000 – ₹56,900/- (Level-1 Pay Matrix)',
+  salaryHi: '₹18,000 – ₹56,900/- (7th CPC Level-1 वेतनमान व भत्ते)',
+  ageLimit: { min: 18, max: 33, asOnDate: '2026-07-01' },
+  applicationFee: [{ category: 'Result & Scorecard Download Fee', amount: '₹0/- (निःशुल्क)' }],
+  importantDates: {
+    notificationDate: '2026-11-16',
+    applyStartDate: '2026-11-16',
+    applyLastDate: '2026-12-31',
+    feeLastDate: '2026-12-31',
+    admitCardDate: 'स्कोरकार्ड लिंक जारी होते ही उपलब्ध',
+    examDate: 'CBT परीक्षा उपरांत PET/DV शेड्यूल'
+  },
+  selectionProcess: [
+    'Computer Based Test (CBT) Score & Normalization',
+    'Physical Efficiency Test (PET)',
+    'Document Verification (DV)',
+    'Medical Examination'
+  ],
+  selectionProcessHi: [
+    'कंप्यूटर आधारित परीक्षा (CBT) व नॉर्मलाइज्ड स्कोरकार्ड',
+    'शारीरिक दक्षता परीक्षा (PET - दौड़ एवं वजन उठाना)',
+    'दस्तावेज सत्यापन (Document Verification)',
+    'चिकित्सा परीक्षण (Medical Test) व अंतिम चयन'
+  ],
+  faqs: [
+    {
+      qHi: 'RRB Group D Result 2026 ऑनलाइन कैसे चेक करें?',
+      aHi: 'अपने संबंधित क्षेत्रीय RRB (जैसे rrbajmer.gov.in या rrbcdg.gov.in) की आधिकारिक वेबसाइट पर जाएं, "CEN Level-1 (Group D) Result / Scorecard" लिंक खोलें और रजिस्ट्रेशन नंबर व जन्मतिथि से लॉगिन करें।',
+      q: 'How to check RRB Group D Result 2026 online?',
+      a: 'Visit your regional RRB website (e.g. rrbajmer.gov.in or rrbcdg.gov.in), click the CEN Level-1 Result/Scorecard link, and log in using your Registration Number and Date of Birth.'
+    },
+    {
+      qHi: 'RRB Group D Result के बाद अगला चरण क्या होता है?',
+      aHi: 'CBT में शॉर्टलिस्ट हुए अभ्यर्थियों को शारीरिक दक्षता परीक्षा (PET) के लिए बुलाया जाता है, जिसके बाद डॉक्यूमेंट वेरिफिकेशन व मेडिकल जांच होती है।',
+      q: 'What is the next stage after RRB Group D CBT Result?',
+      a: 'Shortlisted candidates are called for the Physical Efficiency Test (PET), followed by Document Verification (DV) and Medical Examination.'
+    }
+  ],
+  directLinks: [
+    { label: 'RRB Ajmer Official Result Portal', actionText: 'Check Result', url: 'https://www.rrbajmer.gov.in/', isPrimary: true },
+    { label: 'RRB Chandigarh Official Website', actionText: 'Official Link', url: 'https://www.rrbcdg.gov.in/' },
+    { label: 'Railway Recruitment Central Portal (RRB Apply)', actionText: 'Visit Portal', url: 'https://www.rrbapply.gov.in/' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
+  officialLinks: {
+    resultPdfUrl: 'https://www.rrbajmer.gov.in/',
+    officialWebsiteUrl: 'https://www.rrbcdg.gov.in/'
+  },
+  status: 'active',
+  createdAt: '2026-11-16',
+  updatedAt: '2026-11-16'
+};
+
 export const ALL_SECTION_UPDATES_NOV_2026: VacancyItem[] = [
+  RRB_GROUP_D_RESULT_2026_NEWS,
   RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026,
   RSSB_TEACHING_ASSOCIATE_ADMIT_CARD_2026,
   IBPS_RRB_OFFICER_SCALE_1_ADMIT_CARD_2026,

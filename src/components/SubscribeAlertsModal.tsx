@@ -111,7 +111,7 @@ export const SubscribeAlertsModal: React.FC<SubscribeAlertsModalProps> = ({
                   {isHi ? 'या सीधे WhatsApp पर जॉब अलर्ट पाएं:' : 'Or get instant alerts on WhatsApp:'}
                 </p>
                 <a
-                  href="https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e"
+                  href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-2 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs shadow-xs transition flex items-center justify-center gap-1.5"

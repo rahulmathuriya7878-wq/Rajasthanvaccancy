@@ -139,12 +139,12 @@ export const INDIAN_AIR_FORCE_AFCAT_01_2027_VACANCY: VacancyItem = {
     {
       label: 'Join WhatsApp Group (व्हाट्सएप ग्रुप से तुरंत जुड़ें)',
       actionText: 'Join WhatsApp',
-      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+      url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j'
     },
     {
       label: 'Join Telegram Channel (टेलीग्राम चैनल से जुड़ें)',
       actionText: 'Join Telegram',
-      url: 'https://t.me/newrajsthanjobs'
+      url: 'https://t.me/rajsthan_vacancy'
     }
   ],
   faqs: [
@@ -299,7 +299,7 @@ export const JEE_MAIN_2027_SESSION_1_VACANCY: VacancyItem = {
     {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',
       actionText: 'Join Now',
-      url: 'https://t.me/newrajsthanjobs'
+      url: 'https://t.me/rajsthan_vacancy'
     },
     {
       label: 'NTA Official Portal',
@@ -3536,12 +3536,12 @@ export const KVS_SAMVIDA_SATHI_2026_VACANCY: VacancyItem = {
     {
       label: 'Join WhatsApp Channel (राजस्थान भर्ती अपडेट्स)',
       actionText: 'Join Channel',
-      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+      url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j'
     },
     {
       label: 'Join Telegram Channel (New Rajasthan Jobs)',
       actionText: 'Join Now',
-      url: 'https://t.me/newrajsthanjobs'
+      url: 'https://t.me/rajsthan_vacancy'
     },
     {
       label: 'Official Website (केन्द्रीय विद्यालय संगठन)',
@@ -3642,12 +3642,12 @@ export const CRPF_SPORTS_QUOTA_RECRUITMENT_2026_VACANCY: VacancyItem = {
     {
       label: 'Join WhatsApp Group (व्हाट्सएप ग्रुप से जुड़ें)',
       actionText: 'Join WhatsApp',
-      url: 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e'
+      url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j'
     },
     {
       label: 'Join Telegram Channel (टेलीग्राम चैनल से जुड़ें)',
       actionText: 'Join Telegram',
-      url: 'https://t.me/newrajsthanjobs'
+      url: 'https://t.me/rajsthan_vacancy'
     }
   ],
   tags: [

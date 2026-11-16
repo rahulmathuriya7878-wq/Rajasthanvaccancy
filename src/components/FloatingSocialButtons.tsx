@@ -10,8 +10,8 @@ interface FloatingSocialButtonsProps {
 
 export const FloatingSocialButtons: React.FC<FloatingSocialButtonsProps> = ({
   lang,
-  whatsappUrl = 'https://whatsapp.com/channel/0029VbDoDuyFsn0ljkiOBX3e',
-  telegramUrl = 'https://t.me/newrajsthanjobs'
+  whatsappUrl = 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j',
+  telegramUrl = 'https://t.me/rajsthan_vacancy'
 }) => {
   const isHi = lang === 'hi';
 
