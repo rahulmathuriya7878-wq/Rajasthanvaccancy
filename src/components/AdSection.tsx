@@ -46,6 +46,8 @@ export const AdSection: React.FC<AdSectionProps> = ({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    isPushed.current = false;
+    let observer: ResizeObserver | null = null;
 
     // 1. Inject AdSense script into document head only if no adsbygoogle script exists yet
     const existingScript = document.querySelector(
@@ -93,11 +95,12 @@ export const AdSection: React.FC<AdSectionProps> = ({
     };
 
     // Attempt push on next animation frame after layout pass
-    let rafId = window.requestAnimationFrame(() => {
+    const rafId = window.requestAnimationFrame(() => {
       if (!tryPushAd() && typeof ResizeObserver !== 'undefined' && containerRef.current) {
-        const observer = new ResizeObserver(() => {
+        observer = new ResizeObserver(() => {
           if (tryPushAd()) {
-            observer.disconnect();
+            observer?.disconnect();
+            observer = null;
           }
         });
         observer.observe(containerRef.current);
@@ -106,6 +109,9 @@ export const AdSection: React.FC<AdSectionProps> = ({
 
     return () => {
       window.cancelAnimationFrame(rafId);
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, [client, slot]);
 

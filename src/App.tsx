@@ -35,6 +35,7 @@ import { useAuth } from './context/AuthContext';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 import { useDynamicBreadcrumbSchema } from './hooks/useDynamicBreadcrumbSchema';
 import { useDynamicJobSchema } from './hooks/useDynamicJobSchema';
+import { useDynamicFaqSchema } from './hooks/useDynamicFaqSchema';
 import { getJobFeaturedImage } from './utils/thumbnailGenerator';
 import { compareVacanciesNewestFirst } from './utils/dateUtils';
 
@@ -140,7 +141,6 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY_VACANCIES, JSON.stringify(vacancies));
     try {
       window.dispatchEvent(new Event('raj_vacancies_updated'));
-      (window as any).updateDynamicFaqSchema?.();
     } catch (e) {}
   }, [vacancies]);
 
@@ -298,6 +298,12 @@ export default function App() {
     vacancy: selectedVacancy,
     lang,
     origin: getCanonicalOrigin(),
+  });
+
+  // Keep <script id="dynamic-faq-schema-ld"> synced for Google Rich Results FAQPage
+  useDynamicFaqSchema({
+    vacancy: selectedVacancy,
+    lang,
   });
 
   // Update URL, Canonical, OpenGraph, and JobPosting JSON-LD schema when selectedVacancy or selectedCategory changes
@@ -467,7 +473,6 @@ export default function App() {
         const twDesc = document.querySelector('meta[name="twitter:description"]');
         if (twDesc) twDesc.setAttribute('content', defaultDesc);
       }
-      (window as any).updateDynamicFaqSchema?.();
     } catch (e) {
       console.error('Error updating URL params and SEO titles', e);
     }

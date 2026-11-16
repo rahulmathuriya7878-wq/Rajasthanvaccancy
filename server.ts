@@ -208,6 +208,7 @@ async function startServer() {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
+      const { toIso8601DateString } = await import('./src/utils/dateUtils');
       let rss = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n`;
       rss += `  <title>Rajasthan Vacancy 2026 - Sarkari Job Alerts</title>\n`;
       rss += `  <link>${baseUrl}/</link>\n`;
@@ -216,12 +217,13 @@ async function startServer() {
       rss += `  <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />\n`;
 
       INITIAL_VACANCIES.slice(0, 100).forEach(v => {
+        const safeIso = toIso8601DateString(v.createdAt || v.updatedAt, '2026-11-13');
         rss += `  <item>\n`;
         rss += `    <title><![CDATA[${v.titleHi || v.title}]]></title>\n`;
         rss += `    <link>${baseUrl}/?vacancy=${v.id}</link>\n`;
         rss += `    <guid isPermaLink="true">${baseUrl}/?vacancy=${v.id}</guid>\n`;
         rss += `    <description><![CDATA[${v.briefSummaryHi || v.descriptionHi || v.title}]]></description>\n`;
-        rss += `    <pubDate>${new Date(v.createdAt || '2026-11-13').toUTCString()}</pubDate>\n`;
+        rss += `    <pubDate>${new Date(safeIso).toUTCString()}</pubDate>\n`;
         rss += `  </item>\n`;
       });
 
@@ -357,13 +359,24 @@ async function startServer() {
       const canonicalMatch = bodyText.match(/<link[^>]*rel=["']canonical["'][^>]*href=["']([^"']*)["']/i);
       const robotsMatch = bodyText.match(/<meta[^>]*name=["']robots["'][^>]*content=["']([^"']*)["']/i);
       const hasJobPosting = bodyText.includes('"@type": "JobPosting"') || bodyText.includes('"@type":"JobPosting"');
+      const hasNewsArticle = bodyText.includes('"@type": "NewsArticle"') || bodyText.includes('"@type":"NewsArticle"');
+      const hasArticle = !hasNewsArticle && (bodyText.includes('"@type": "Article"') || bodyText.includes('"@type":"Article"'));
       const hasFaq = bodyText.includes('"@type": "FAQPage"') || bodyText.includes('"@type":"FAQPage"');
+      const hasBreadcrumb = bodyText.includes('"@type": "BreadcrumbList"') || bodyText.includes('"@type":"BreadcrumbList"');
 
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
       const vacancyParam = parsed.searchParams.get('vacancy');
       const matchedVacancy = vacancyParam
         ? INITIAL_VACANCIES.find(v => v.id.toLowerCase() === vacancyParam.toLowerCase())
         : null;
+
+      const detectedSchemas = [
+        hasJobPosting ? 'JobPosting' : null,
+        hasNewsArticle ? 'NewsArticle' : null,
+        hasArticle ? 'Article' : null,
+        hasFaq ? 'FAQPage' : null,
+        hasBreadcrumb ? 'BreadcrumbList' : null,
+      ].filter(Boolean);
 
       res.json({
         success: true,
@@ -373,14 +386,10 @@ async function startServer() {
         title: titleMatch?.[1] || 'Rajasthan Vacancy 2026',
         canonical: canonicalMatch?.[1] || `${baseUrl}${targetPath}`,
         robots: robotsMatch?.[1] ? `Allowed (${robotsMatch[1].split(',')[0]})` : 'Allowed (User-agent: Googlebot)',
-        schema: hasJobPosting && hasFaq
-          ? 'Valid (JobPosting + FAQPage + BreadcrumbList)'
-          : hasJobPosting
-          ? 'Valid (JobPosting)'
-          : hasFaq
-          ? 'Valid (WebSite + FAQPage + BreadcrumbList)'
-          : targetPath.includes('.xml')
+        schema: targetPath.includes('.xml')
           ? 'Valid XML Sitemap / RSS Feed'
+          : detectedSchemas.length > 0
+          ? `Valid (${detectedSchemas.join(' + ')})`
           : 'Valid (WebSite / BreadcrumbList)',
         mobileFriendly: true,
         priority: matchedVacancy && (matchedVacancy.isTrending || matchedVacancy.isHot) ? '1.0 (सर्वोच्च)' : targetPath === '/' ? '1.0 (सर्वोच्च)' : '0.9',
@@ -492,11 +501,27 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     app.use(vite.middlewares);
   }
 
+  // Google Search Console HTML site verification files
+  app.get(/^\/google[a-zA-Z0-9_-]+\.html$/i, (req, res, next) => {
+    const safeName = path.basename(req.path);
+    const candidates = [
+      path.resolve('public', safeName),
+      path.resolve('dist', safeName),
+    ];
+    for (const filePath of candidates) {
+      if (fs.existsSync(filePath)) {
+        res.type('text/html; charset=utf-8');
+        return res.sendFile(filePath);
+      }
+    }
+    return next();
+  });
+
   // Pre-render HTML for Googlebot / Search Crawlers & Browsers
   app.use(async (req, res, next) => {
     const url = req.originalUrl;
     // Skip API, asset requests, and static extensions
-    if (url.startsWith('/api/') || /\.(js|jsx|ts|tsx|css|png|jpg|jpeg|gif|svg|ico|json|txt|xml|woff|woff2|ttf|map)$/i.test(req.path)) {
+    if (url.startsWith('/api/') || /\.(js|jsx|ts|tsx|css|png|jpg|jpeg|gif|svg|ico|json|txt|xml|woff|woff2|ttf|map|html)$/i.test(req.path)) {
       return next();
     }
 
