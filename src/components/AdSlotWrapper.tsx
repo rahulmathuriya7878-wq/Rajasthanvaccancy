@@ -85,7 +85,7 @@ export const AdSlotWrapper: React.FC<AdSlotWrapperProps> = ({
           status === 'filled' ? 'opacity-0' : 'opacity-100'
         }`}
       >
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 select-none">
           {skeletonLabel}
         </span>
         <div

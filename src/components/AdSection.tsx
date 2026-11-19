@@ -66,8 +66,8 @@ export const AdSection: React.FC<AdSectionProps> = ({
       document.head.appendChild(scriptTag);
     }
 
-    // 2. Helper to safely push ad only when container has non-zero availableWidth
-    const tryPushAd = (): boolean => {
+    // 2. Helper to safely push ad only when container has non-zero availableWidth (without forcing synchronous reflow)
+    const tryPushAd = (observedWidth?: number): boolean => {
       if (isPushed.current || !adRef.current || !containerRef.current) {
         return false;
       }
@@ -80,7 +80,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
         return true;
       }
 
-      const width = containerRef.current.offsetWidth || adRef.current.offsetWidth;
+      const width = typeof observedWidth === 'number' ? observedWidth : containerRef.current.clientWidth;
       if (width <= 0) {
         return false;
       }
@@ -97,21 +97,26 @@ export const AdSection: React.FC<AdSectionProps> = ({
       }
     };
 
-    // Attempt push on next animation frame after layout pass
-    const rafId = window.requestAnimationFrame(() => {
-      if (!tryPushAd() && typeof ResizeObserver !== 'undefined' && containerRef.current) {
-        observer = new ResizeObserver(() => {
-          if (tryPushAd()) {
-            observer?.disconnect();
-            observer = null;
-          }
-        });
-        observer.observe(containerRef.current);
-      }
-    });
+    let rafId: number | null = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      observer = new ResizeObserver((entries) => {
+        const entryWidth = entries[0]?.contentRect?.width ?? 0;
+        if (entryWidth > 0 && tryPushAd(entryWidth)) {
+          observer?.disconnect();
+          observer = null;
+        }
+      });
+      observer.observe(containerRef.current);
+    } else {
+      rafId = window.requestAnimationFrame(() => {
+        tryPushAd();
+      });
+    }
 
     return () => {
-      window.cancelAnimationFrame(rafId);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
       if (observer) {
         observer.disconnect();
       }
@@ -131,7 +136,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
       style={{ minHeight: resolvedMinHeight, ...style }}
     >
       {label && !embedded && (
-        <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-1 select-none">
+        <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 text-center mb-1 select-none">
           {label}
         </div>
       )}

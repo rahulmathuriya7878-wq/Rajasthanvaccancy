@@ -44,6 +44,10 @@ async function startServer() {
     }
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    if (hostname.includes('rajasthanvacancy.online')) {
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    }
 
     if (req.path === '/index.html') {
       const qIdx = req.originalUrl.indexOf('?');
@@ -498,9 +502,10 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     }
   });
 
-  // Serve compiled static files in production (index: false ensures / always runs SSR SEO renderer)
+  // Serve compiled static files in production with efficient cache lifetimes (index: false ensures / always runs SSR SEO renderer)
   if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.resolve('dist'), { index: false }));
+    app.use('/assets', express.static(path.resolve('dist/assets'), { maxAge: '1y', immutable: true }));
+    app.use(express.static(path.resolve('dist'), { index: false, maxAge: '1d' }));
   }
 
   // Vite dev middleware or production static files with SSR Pre-Rendering for Googlebot & Users

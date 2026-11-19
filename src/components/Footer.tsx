@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="mb-8">
           {/* Official Portals Directory */}
           <div>
-            <h4 
+            <h2 
               className="text-slate-900 font-bold mb-3 uppercase tracking-wider flex items-center gap-1.5"
               style={{ 
                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -57,9 +57,9 @@ export const Footer: React.FC<FooterProps> = ({
                 fontWeight: 'bold' 
               }}
             >
-              <Building2 className="w-5 h-5 text-amber-600" />
+              <Building2 className="w-5 h-5 text-amber-700" aria-hidden="true" />
               <span>{isHi ? 'आधिकारिक सरकारी वेबसाइटें' : 'Official Government Portals'}</span>
-            </h4>
+            </h2>
             <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2" style={{ fontSize: '12pt' }}>
               {officialLinks.slice(0, 6).map((l, idx) => (
                 <li key={idx}>
@@ -67,9 +67,9 @@ export const Footer: React.FC<FooterProps> = ({
                     href={l.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-amber-600 transition flex items-center gap-1.5 text-slate-600 font-medium"
+                    className="hover:text-amber-700 transition flex items-center gap-1.5 text-slate-700 font-medium"
                   >
-                    <ExternalLink className="w-4 h-4 text-slate-400" />
+                    <ExternalLink className="w-4 h-4 text-slate-600 shrink-0" aria-hidden="true" />
                     <span>{l.name}</span>
                   </a>
                 </li>
@@ -82,22 +82,23 @@ export const Footer: React.FC<FooterProps> = ({
         {isAdmin && (
           <div className="my-8 pt-6 border-t border-slate-200">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-slate-900 font-bold text-sm sm:text-base flex items-center gap-2">
-                <Globe className="w-4 h-4 text-emerald-600" />
+              <h2 className="text-slate-900 font-bold text-sm sm:text-base flex items-center gap-2">
+                <Globe className="w-4 h-4 text-emerald-700" aria-hidden="true" />
                 <span>{isHi ? 'महत्वपूर्ण सरकारी भर्ती एवं योजना डायरेक्टरी (Quick Web Links)' : 'Rajasthan Govt Jobs & Schemes Directory'}</span>
-              </h4>
+              </h2>
               {onOpenUrlIndexation && (
                 <button
+                  type="button"
                   onClick={onOpenUrlIndexation}
                   className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
                   title={isHi ? 'Google Search Console URL Indexation Assistant' : 'URL Indexation Assistant'}
                 >
-                  <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                  <Globe className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
                   <span>{isHi ? 'सर्च कंसोल इंडेक्सेशन (GSC)' : 'URL Indexation'}</span>
                 </button>
               )}
             </div>
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-slate-600 mb-3">
               {isHi 
                 ? 'गूगल सर्च बॉट्स एवं छात्रों की सीधी पहुंच हेतु पोर्टल की सभी सक्रिय भर्तियों के डायरेक्ट लिंक:' 
                 : 'Direct crawlable hyperlinks for candidates and search engine indexing:'}
@@ -126,7 +127,7 @@ export const Footer: React.FC<FooterProps> = ({
         )}
 
         {/* Bottom copyright */}
-        <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500" style={{ fontSize: '12pt' }}>
+        <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-600" style={{ fontSize: '12pt' }}>
           <div>
             © {new Date().getFullYear()} RAJASTHAN JOBS/VACANCY — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { 
   Header 
 } from './components/Header';
@@ -6,32 +6,47 @@ import {
   FastUpdatesGrid 
 } from './components/FastUpdatesGrid';
 import { 
-  FullPagePostView 
-} from './components/FullPagePostView';
-import { 
-  CategoryArchiveView 
-} from './components/CategoryArchiveView';
-import { 
   Footer 
 } from './components/Footer';
-import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { TermsAndConditions } from './components/TermsAndConditions';
-import { ContactUs } from './components/ContactUs';
-import { AboutUs } from './components/AboutUs';
-import { Disclaimer } from './components/Disclaimer';
-import { SitemapPage } from './components/SitemapPage';
 import { FloatingSocialButtons } from './components/FloatingSocialButtons';
-import { 
-  AdminLoginModal 
-} from './components/AdminLoginModal';
-import { 
-  SubscribeAlertsModal 
-} from './components/SubscribeAlertsModal';
 import { 
   OfflineIndicator 
 } from './components/OfflineIndicator';
-import { UrlIndexationModal } from './components/UrlIndexationModal';
 import { useAuth } from './context/AuthContext';
+
+const FullPagePostView = lazy(() =>
+  import('./components/FullPagePostView').then((m) => ({ default: m.FullPagePostView }))
+);
+const CategoryArchiveView = lazy(() =>
+  import('./components/CategoryArchiveView').then((m) => ({ default: m.CategoryArchiveView }))
+);
+const PrivacyPolicy = lazy(() =>
+  import('./components/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy }))
+);
+const TermsAndConditions = lazy(() =>
+  import('./components/TermsAndConditions').then((m) => ({ default: m.TermsAndConditions }))
+);
+const ContactUs = lazy(() =>
+  import('./components/ContactUs').then((m) => ({ default: m.ContactUs }))
+);
+const AboutUs = lazy(() =>
+  import('./components/AboutUs').then((m) => ({ default: m.AboutUs }))
+);
+const Disclaimer = lazy(() =>
+  import('./components/Disclaimer').then((m) => ({ default: m.Disclaimer }))
+);
+const SitemapPage = lazy(() =>
+  import('./components/SitemapPage').then((m) => ({ default: m.SitemapPage }))
+);
+const AdminLoginModal = lazy(() =>
+  import('./components/AdminLoginModal').then((m) => ({ default: m.AdminLoginModal }))
+);
+const SubscribeAlertsModal = lazy(() =>
+  import('./components/SubscribeAlertsModal').then((m) => ({ default: m.SubscribeAlertsModal }))
+);
+const UrlIndexationModal = lazy(() =>
+  import('./components/UrlIndexationModal').then((m) => ({ default: m.UrlIndexationModal }))
+);
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from './utils/seoCanonical';
 import { useDynamicBreadcrumbSchema } from './hooks/useDynamicBreadcrumbSchema';
 import { useDynamicJobSchema } from './hooks/useDynamicJobSchema';
@@ -272,13 +287,7 @@ export default function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
   const [activePolicyView, setActivePolicyView] = useState<'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap' | null>(null);
-  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(() => {
-    try {
-      return !localStorage.getItem('raj_alert_subscribed_v1');
-    } catch (e) {
-      return false;
-    }
-  });
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
 
   const isUnresolvedInitialUrlRef = React.useRef<boolean>(false);
 
@@ -659,7 +668,7 @@ export default function App() {
           // match
         } else if (selectedCategory === 'syllabus' && (item.category === 'syllabus' || item.title.toLowerCase().includes('syllabus') || item.titleHi?.includes('पाठ्यक्रम') || item.titleHi?.includes('सिलेबस'))) {
           // match
-        } else if (selectedCategory === 'latest_job' && (item.category === 'latest_job' || item.category === 'ugc_net' || item.status === 'active')) {
+        } else if (selectedCategory === 'latest_job' && (item.category === 'latest_job' || item.category === 'ugc_net')) {
           // match
         } else {
           return false;
@@ -722,85 +731,101 @@ export default function App() {
       <main className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
         <div className="w-full space-y-6">
             {activePolicyView === 'privacy' ? (
-              <PrivacyPolicy
-                lang={lang}
-                onBack={() => setActivePolicyView(null)}
-                onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
-              />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <PrivacyPolicy
+                  lang={lang}
+                  onBack={() => setActivePolicyView(null)}
+                  onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
+                />
+              </Suspense>
             ) : activePolicyView === 'terms' ? (
-              <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <TermsAndConditions lang={lang} onBack={() => setActivePolicyView(null)} />
+              </Suspense>
             ) : activePolicyView === 'contact' ? (
-              <ContactUs lang={lang} onBack={() => setActivePolicyView(null)} />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <ContactUs lang={lang} onBack={() => setActivePolicyView(null)} />
+              </Suspense>
             ) : activePolicyView === 'about' ? (
-              <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <AboutUs lang={lang} onBack={() => setActivePolicyView(null)} />
+              </Suspense>
             ) : activePolicyView === 'disclaimer' ? (
-              <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <Disclaimer lang={lang} onBack={() => setActivePolicyView(null)} />
+              </Suspense>
             ) : activePolicyView === 'sitemap' ? (
-              <SitemapPage
-                lang={lang}
-                vacancies={vacancies}
-                onBack={() => setActivePolicyView(null)}
-                onSelectVacancy={handleSelectVacancy}
-                onSelectCategory={(cat) => {
-                  setActivePolicyView(null);
-                  setSelectedVacancy(null);
-                  setSelectedCategory(cat);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                onSelectPolicy={(policy) => {
-                  setActivePolicyView(policy);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                isAdmin={isAdmin}
-              />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">लोड हो रहा है...</div>}>
+                <SitemapPage
+                  lang={lang}
+                  vacancies={vacancies}
+                  onBack={() => setActivePolicyView(null)}
+                  onSelectVacancy={handleSelectVacancy}
+                  onSelectCategory={(cat) => {
+                    setActivePolicyView(null);
+                    setSelectedVacancy(null);
+                    setSelectedCategory(cat);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onSelectPolicy={(policy) => {
+                    setActivePolicyView(policy);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  isAdmin={isAdmin}
+                />
+              </Suspense>
             ) : selectedVacancy ? (
               /* Full Page View with Dynamic Head Meta Tags */
-              <FullPagePostView
-                vacancy={selectedVacancy}
-                onBack={() => {
-                  setSelectedVacancy(null);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                lang={lang}
-                allVacancies={vacancies}
-                onSelectOtherVacancy={handleSelectVacancy}
-                isAdmin={isAdmin}
-                onDeleteVacancy={handleDeleteVacancy}
-                onUpdateVacancy={handleUpdateVacancy}
-                onSelectCategory={(cat) => {
-                  setSelectedVacancy(null);
-                  setSelectedCategory(cat as any);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                onSearchKeyword={(keyword) => {
-                  setSelectedVacancy(null);
-                  setSearchQuery(keyword.replace(/^#/, ''));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">पोस्ट विवरण लोड हो रहा है...</div>}>
+                <FullPagePostView
+                  vacancy={selectedVacancy}
+                  onBack={() => {
+                    setSelectedVacancy(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  lang={lang}
+                  allVacancies={vacancies}
+                  onSelectOtherVacancy={handleSelectVacancy}
+                  isAdmin={isAdmin}
+                  onDeleteVacancy={handleDeleteVacancy}
+                  onUpdateVacancy={handleUpdateVacancy}
+                  onSelectCategory={(cat) => {
+                    setSelectedVacancy(null);
+                    setSelectedCategory(cat as any);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onSearchKeyword={(keyword) => {
+                    setSelectedVacancy(null);
+                    setSearchQuery(keyword.replace(/^#/, ''));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              </Suspense>
             ) : selectedCategory !== 'ALL' ? (
               /* Category Archive View matching authentic rajasthanvacancy.com category layout */
-              <CategoryArchiveView
-                categoryKey={selectedCategory}
-                categoryTitle={getSectionTitle(selectedCategory)}
-                categoryTitleHi={getSectionTitle(selectedCategory)}
-                vacancies={filteredVacancies}
-                allVacancies={vacancies}
-                lang={lang}
-                onSelectVacancy={handleSelectVacancy}
-                onClearCategory={() => {
-                  setSelectedCategory('ALL');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                onSelectCategory={(catKey) => {
-                  setSelectedCategory(catKey as any);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                isAdmin={isAdmin}
-                onDeleteVacancy={handleDeleteVacancy}
-              />
+              <Suspense fallback={<div className="py-12 text-center text-slate-600 text-sm">श्रेणी सूची लोड हो रही है...</div>}>
+                <CategoryArchiveView
+                  categoryKey={selectedCategory}
+                  categoryTitle={getSectionTitle(selectedCategory)}
+                  categoryTitleHi={getSectionTitle(selectedCategory)}
+                  vacancies={filteredVacancies}
+                  allVacancies={vacancies}
+                  lang={lang}
+                  onSelectVacancy={handleSelectVacancy}
+                  onClearCategory={() => {
+                    setSelectedCategory('ALL');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onSelectCategory={(catKey) => {
+                    setSelectedCategory(catKey as any);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  isAdmin={isAdmin}
+                  onDeleteVacancy={handleDeleteVacancy}
+                />
+              </Suspense>
             ) : (
               /* Home View: 3x2 Grid Fast Access Updates */
               <div className="space-y-4">
@@ -838,25 +863,37 @@ export default function App() {
         isAdmin={isAdmin}
       />
 
-      {/* Utility Modals */}
-      <AdminLoginModal
-        isOpen={isAdminLoginOpen}
-        onClose={() => setIsAdminLoginOpen(false)}
-        lang={lang}
-      />
+      {/* Utility Modals (Lazy-mounted only when opened) */}
+      {isAdminLoginOpen && (
+        <Suspense fallback={null}>
+          <AdminLoginModal
+            isOpen={isAdminLoginOpen}
+            onClose={() => setIsAdminLoginOpen(false)}
+            lang={lang}
+          />
+        </Suspense>
+      )}
 
-      <SubscribeAlertsModal
-        isOpen={isSubscribeModalOpen}
-        onClose={() => setIsSubscribeModalOpen(false)}
-        lang={lang}
-      />
+      {isSubscribeModalOpen && (
+        <Suspense fallback={null}>
+          <SubscribeAlertsModal
+            isOpen={isSubscribeModalOpen}
+            onClose={() => setIsSubscribeModalOpen(false)}
+            lang={lang}
+          />
+        </Suspense>
+      )}
 
-      <UrlIndexationModal
-        isOpen={isUrlIndexationOpen}
-        onClose={() => setIsUrlIndexationOpen(false)}
-        lang={lang}
-        vacancies={vacancies}
-      />
+      {isUrlIndexationOpen && (
+        <Suspense fallback={null}>
+          <UrlIndexationModal
+            isOpen={isUrlIndexationOpen}
+            onClose={() => setIsUrlIndexationOpen(false)}
+            lang={lang}
+            vacancies={vacancies}
+          />
+        </Suspense>
+      )}
 
       <FloatingSocialButtons 
         lang={lang} 

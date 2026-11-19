@@ -164,26 +164,28 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
       >
         {/* Signature Green Rounded Header matching screenshot */}
         <div className="job-section-card-header p-3 sm:p-3.5 pb-2">
-          <a
-            href={`/?category=${encodeURIComponent(sec.categoryType)}`}
-            onClick={(e) => {
-              if (onFilterCategory) {
-                e.preventDefault();
-                onFilterCategory(sec.categoryType);
-              }
-            }}
-            className="no-link-color block w-full text-center font-bold !text-white text-lg sm:text-xl py-2 px-3 sm:px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs no-underline tracking-wide"
-            style={{ 
-              backgroundColor: '#15803d',
-              color: '#ffffff',
-              borderRadius: '8px',
-              fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-              fontSize: '18px',
-              lineHeight: 1.3
-            }}
-          >
-            {sec.title}
-          </a>
+          <h2 className="m-0">
+            <a
+              href={`/?category=${encodeURIComponent(sec.categoryType)}`}
+              onClick={(e) => {
+                if (onFilterCategory) {
+                  e.preventDefault();
+                  onFilterCategory(sec.categoryType);
+                }
+              }}
+              className="no-link-color block w-full text-center font-bold !text-white text-lg sm:text-xl py-2 px-3 sm:px-4 rounded-lg select-none bg-[#15803d] hover:bg-[#166534] transition-colors cursor-pointer shadow-xs no-underline tracking-wide"
+              style={{ 
+                backgroundColor: '#15803d',
+                color: '#ffffff',
+                borderRadius: '8px',
+                fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
+                fontSize: '18px',
+                lineHeight: 1.3
+              }}
+            >
+              {sec.title}
+            </a>
+          </h2>
           {isYojanaBox && (
             <p className="text-[11px] font-semibold text-emerald-800 text-center mt-1.5 tracking-normal">
               {isHi
@@ -226,10 +228,10 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       </h3>
                       {isYojanaBox ? (
                         <div className="text-xs sm:text-[13px] text-slate-600 mt-1 flex items-center gap-1.5 flex-wrap font-normal leading-snug">
-                          <span className="text-gray-500 select-none tabular-nums">{formatPostDate(item)}</span>
+                          <span className="text-slate-600 select-none tabular-nums">{formatPostDate(item)}</span>
                           {yojanaBenefit && (
                             <>
-                              <span aria-hidden="true" className="text-slate-300">·</span>
+                              <span aria-hidden="true" className="text-slate-500">·</span>
                               <span className="font-semibold text-emerald-800">
                                 {isHi ? 'लाभ:' : 'Benefit:'} {yojanaBenefit}
                               </span>
@@ -238,7 +240,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                         </div>
                       ) : (
                         <p 
-                          className="text-xs sm:text-[13px] text-gray-500 mt-1 select-none font-normal"
+                          className="text-xs sm:text-[13px] text-slate-600 mt-1 select-none font-normal"
                         >
                           {formatPostDate(item)}
                         </p>
@@ -256,8 +258,9 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                           }}
                           className="p-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 transition"
                           title={isHi ? 'पोस्ट डिलीट करें' : 'Delete Post'}
+                          aria-label={isHi ? `${item.titleHi || item.title} पोस्ट डिलीट करें` : `Delete ${item.title}`}
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                       </div>
                     )}
@@ -269,25 +272,31 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                         e.stopPropagation();
                         if (onToggleAlertMe) onToggleAlertMe(item.id);
                       }}
-                      className={`p-1 rounded-md transition shrink-0 ${
+                      className={`p-1 rounded-md transition shrink-0 cursor-pointer ${
                         alertJobIds?.includes(item.id)
-                          ? 'text-rose-600 bg-rose-50'
-                          : 'text-slate-300 hover:text-slate-600'
+                          ? 'text-rose-700 bg-rose-50'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                       }`}
+                      aria-pressed={Boolean(alertJobIds?.includes(item.id))}
+                      aria-label={
+                        alertJobIds?.includes(item.id)
+                          ? (isHi ? `${item.titleHi || item.title} का अलर्ट हटाएं` : `Remove alert for ${item.title}`)
+                          : (isHi ? `${item.titleHi || item.title} के लिए अलर्ट सेट करें` : `Set alert for ${item.title}`)
+                      }
                       title={
                         alertJobIds?.includes(item.id)
                           ? (isHi ? (isYojanaBox ? 'योजना अलर्ट सक्रिय' : 'अलर्ट सक्रिय') : 'Alert Active')
                           : (isHi ? (isYojanaBox ? 'योजना अलर्ट सेट करें' : 'अलर्ट सेट करें') : 'Set Alert')
                       }
                     >
-                      <Bell className={`w-3.5 h-3.5 ${alertJobIds?.includes(item.id) ? 'fill-rose-600 text-rose-600' : ''}`} />
+                      <Bell className={`w-3.5 h-3.5 ${alertJobIds?.includes(item.id) ? 'fill-rose-700 text-rose-700' : ''}`} aria-hidden="true" />
                     </button>
                   </div>
                 </div>
                 );
               })
             ) : (
-              <div className="py-6 text-center text-slate-400 text-xs">
+              <div className="py-6 text-center text-slate-600 text-xs">
                 {isHi
                   ? (isYojanaBox ? 'जल्द ही नई सरकारी योजनाएं यहां जोड़ी जाएंगी' : 'जल्द ही नए अपडेट यहां जोड़े जाएंगे')
                   : 'New updates will be published soon'}
@@ -307,10 +316,16 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                   onSelectVacancy(sec.items[0]);
                 }
               }}
+              aria-label={
+                isYojanaBox
+                  ? (isHi ? 'सभी सरकारी योजनाएं देखें' : 'View All Sarkari Yojana')
+                  : (isHi ? `${sec.title} की सभी पोस्ट देखें` : `View more ${sec.title}`)
+              }
               className="font-bold text-xs hover:underline cursor-pointer inline-flex items-center gap-0.5"
-              style={{ color: '#c90000' }}
+              style={{ color: '#b91c1c' }}
             >
               <span>{isYojanaBox ? (isHi ? 'सभी योजनाएं देखें..' : 'View All Schemes..') : 'View More..'}</span>
+              <span className="sr-only"> ({sec.title})</span>
             </a>
           </div>
         </div>

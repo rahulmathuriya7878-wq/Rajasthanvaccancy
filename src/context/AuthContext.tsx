@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleAuthProvider } from '../lib/firebase.ts';
+import type { User } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -14,7 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  loading: false,
   isAdmin: false,
   signInWithGoogle: async () => {},
   loginWithPassword: () => false,
@@ -24,7 +23,6 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isAdminState, setIsAdminState] = useState<boolean>(() => {
     try {
       return localStorage.getItem('raj_admin_active_v1') === 'true';
@@ -32,40 +30,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
   });
+  const [loading, setLoading] = useState<boolean>(isAdminState);
 
+  // Only load Firebase Auth SDK when an admin session is already active (keeps public homepage bundle lightweight)
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
+    if (!isAdminState) {
       setLoading(false);
+      return;
+    }
 
-      if (currentUser) {
-        setIsAdminState(true);
-        try {
-          localStorage.setItem('raj_admin_active_v1', 'true');
-        } catch {}
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
 
-        try {
-          const token = await currentUser.getIdToken();
-          await fetch('/api/auth/sync', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              email: currentUser.email,
-              name: currentUser.displayName,
-              picture: currentUser.photoURL,
-            }),
-          });
-        } catch (err) {
-          console.error('Failed to sync user with database:', err);
-        }
+    (async () => {
+      try {
+        const [{ onAuthStateChanged }, { auth }] = await Promise.all([
+          import('firebase/auth'),
+          import('../lib/firebase.ts'),
+        ]);
+        if (!isMounted) return;
+
+        unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+          if (!isMounted) return;
+          setUser(currentUser);
+          setLoading(false);
+
+          if (currentUser) {
+            setIsAdminState(true);
+            try {
+              localStorage.setItem('raj_admin_active_v1', 'true');
+            } catch {}
+
+            try {
+              const token = await currentUser.getIdToken();
+              await fetch('/api/auth/sync', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  email: currentUser.email,
+                  name: currentUser.displayName,
+                  picture: currentUser.photoURL,
+                }),
+              });
+            } catch (err) {
+              console.error('Failed to sync user with database:', err);
+            }
+          }
+        });
+      } catch (err) {
+        if (isMounted) setLoading(false);
       }
-    });
+    })();
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      isMounted = false;
+      if (unsubscribe) unsubscribe();
+    };
+  }, [isAdminState]);
 
   const toggleAdminMode = (enabled?: boolean) => {
     const nextState = enabled !== undefined ? enabled : !isAdminState;
@@ -77,6 +101,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
+      const [{ signInWithPopup }, { auth, googleAuthProvider }] = await Promise.all([
+        import('firebase/auth'),
+        import('../lib/firebase.ts'),
+      ]);
       const result = await signInWithPopup(auth, googleAuthProvider);
       if (result.user) {
         setUser(result.user);
@@ -107,7 +135,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      if (user) {
+        const [{ signOut }, { auth }] = await Promise.all([
+          import('firebase/auth'),
+          import('../lib/firebase.ts'),
+        ]);
+        await signOut(auth);
+      }
       setUser(null);
       setIsAdminState(false);
       try {

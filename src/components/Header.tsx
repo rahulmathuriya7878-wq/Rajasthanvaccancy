@@ -43,7 +43,6 @@ export const Header: React.FC<HeaderProps> = ({
   // Sort vacancies by newest added/updated date so new posts appear at the front of header ribbon ticker
   const sortedVacancies = [...latestVacancies].sort(compareVacanciesNewestFirst);
   const tickerItems = sortedVacancies.slice(0, 8);
-  const displayItems = tickerItems.length > 0 ? [...tickerItems, ...tickerItems] : [];
 
   // Key important sections of the portal - strictly limited to the 5 requested sections
   const importantSections = [
@@ -104,36 +103,61 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Marquee Ticker with latest added posts */}
           <div className="overflow-hidden whitespace-nowrap flex-1 relative group">
             <div className="animate-marquee inline-flex items-center gap-6" style={{ animationDuration: '200s', animation: 'marquee 200s linear infinite' }}>
-              {displayItems.length > 0 ? (
-                displayItems.map((item, idx) => (
-                  <a
-                    key={`${item.id}-${idx}`}
-                    href={`/?vacancy=${encodeURIComponent(item.id)}`}
-                    onClick={(e) => {
-                      if (onSelectVacancy) {
-                        e.preventDefault();
-                        onSelectVacancy(item);
-                      }
-                    }}
-                    className="inline-flex items-center gap-2 hover:text-[#1e953a] transition text-xs font-semibold cursor-pointer group/item text-left"
-                    title={isHi ? item.titleHi : item.title}
-                  >
-                    <span className="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                      {item.organization || (isHi ? 'भर्ती' : 'Job')}
-                    </span>
-                    <span className="group-hover/item:underline underline-offset-2 headlight text-slate-800">
-                      {isHi ? (item.titleHi || item.title) : item.title}
-                    </span>
-                    {typeof item.totalPosts === 'number' && item.totalPosts > 0 && (
-                      <span className="text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded-full">
-                        {item.totalPosts} {isHi ? 'पद' : 'Posts'}
+              {tickerItems.length > 0 ? (
+                <>
+                  <div className="inline-flex items-center gap-6">
+                    {tickerItems.map((item) => (
+                      <a
+                        key={item.id}
+                        href={`/?vacancy=${encodeURIComponent(item.id)}`}
+                        onClick={(e) => {
+                          if (onSelectVacancy) {
+                            e.preventDefault();
+                            onSelectVacancy(item);
+                          }
+                        }}
+                        className="inline-flex items-center gap-2 hover:text-[#15803d] transition text-xs font-semibold cursor-pointer group/item text-left"
+                        title={isHi ? item.titleHi : item.title}
+                      >
+                        <span className="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                          {item.organization || (isHi ? 'भर्ती' : 'Job')}
+                        </span>
+                        <span className="group-hover/item:underline underline-offset-2 headlight text-slate-800">
+                          {isHi ? (item.titleHi || item.title) : item.title}
+                        </span>
+                        {typeof item.totalPosts === 'number' && item.totalPosts > 0 && (
+                          <span className="text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded-full">
+                            {item.totalPosts} {isHi ? 'पद' : 'Posts'}
+                          </span>
+                        )}
+                        <span aria-hidden="true" className="text-slate-400 font-mono select-none mx-2">•</span>
+                      </a>
+                    ))}
+                  </div>
+                  <div aria-hidden="true" className="inline-flex items-center gap-6">
+                    {tickerItems.map((item) => (
+                      <span
+                        key={`${item.id}-dup`}
+                        className="inline-flex items-center gap-2 text-xs font-semibold text-left select-none"
+                      >
+                        <span className="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                          {item.organization || (isHi ? 'भर्ती' : 'Job')}
+                        </span>
+                        <span className="headlight text-slate-800">
+                          {isHi ? (item.titleHi || item.title) : item.title}
+                        </span>
+                        {typeof item.totalPosts === 'number' && item.totalPosts > 0 && (
+                          <span className="text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded-full">
+                            {item.totalPosts} {isHi ? 'पद' : 'Posts'}
+                          </span>
+                        )}
+                        <span className="text-slate-400 font-mono select-none mx-2">•</span>
                       </span>
-                    )}
-                    <span className="text-slate-300 font-mono select-none mx-2">•</span>
-                  </a>
-                ))
+                    ))}
+                  </div>
+                </>
               ) : (
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-600">
                   {isHi ? 'नई सरकारी भर्ती एवं परिणाम सूचनाएं यहां प्रदर्शित होंगी' : 'New job announcements will scroll here'}
                 </span>
               )}
@@ -147,40 +171,48 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
           <div className="flex items-center justify-between gap-4">
             {/* Logo & Identity */}
-            <div 
-              onClick={onGoHome}
-              className={`flex items-center gap-2.5 ${onGoHome ? 'cursor-pointer hover:opacity-90 transition' : ''}`}
-              title="Go to Home"
+            <a
+              href="/"
+              onClick={(e) => {
+                if (onGoHome) {
+                  e.preventDefault();
+                  onGoHome();
+                }
+              }}
+              className="no-link-color flex items-center gap-2.5 cursor-pointer hover:opacity-90 transition no-underline"
+              title="Rajasthan Vacancy Home"
             >
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-[#15803d] flex items-center justify-center text-white font-extrabold shadow-xs">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-[#15803d] flex items-center justify-center text-white font-extrabold shadow-xs" aria-hidden="true">
                 <div className="text-center leading-none">
-                  <span className="text-[9px] block font-mono text-amber-200 font-bold">RAJ</span>
+                  <span className="text-[9px] block font-mono text-white font-bold">RAJ</span>
                   <span className="text-xs font-black tracking-tight text-white">JOBS</span>
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center gap-1">
-                  <h1 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 flex items-center">
+                  <span className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 flex items-center leading-tight">
                     <span>Rajasthan</span>
                     <span className="text-[#15803d] font-black ml-1">Vacancy</span>
-                  </h1>
+                  </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
+                <p className="text-[10px] sm:text-xs text-slate-600 font-medium">
                   {isHi ? 'राजस्थान व केंद्र भर्ती, रिजल्ट एवं योजना पोर्टल' : 'Govt Jobs, Exam Alerts & Sarkari Result Portal'}
                 </p>
               </div>
-            </div>
+            </a>
 
             {/* Right Header Navigation Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Mobile Menu Toggle Button matching '≡ Menu' from screenshot */}
               <button
+                type="button"
                 onClick={() => {
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
                 className="md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-slate-800 hover:bg-slate-100 font-semibold text-xs transition cursor-pointer"
                 aria-label="Toggle Menu"
+                aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="w-4 h-4 text-slate-800" /> : <Menu className="w-4 h-4 text-slate-800" />}
                 <span>Menu</span>
@@ -219,8 +251,8 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mobile Navigation Dropdown Drawer with all Important Sections - Clean White Background */}
           {mobileMenuOpen && (
-            <nav className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-1.5 text-xs font-bold text-slate-800 animate-fadeIn bg-white p-3 rounded-xl shadow-lg border border-slate-200 max-h-[75vh] overflow-y-auto">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-2 py-1">
+            <nav aria-label="Mobile Navigation" className="md:hidden mt-3 pt-3 border-t border-slate-200 flex flex-col gap-1.5 text-xs font-bold text-slate-800 animate-fadeIn bg-white p-3 rounded-xl shadow-lg border border-slate-200 max-h-[75vh] overflow-y-auto">
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 px-2 py-1">
                 {isHi ? 'वेबसाइट के मुख्य सेक्शंस' : 'Important Website Sections'}
               </div>
 
@@ -273,7 +305,7 @@ export const Header: React.FC<HeaderProps> = ({
                 href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="no-link-color mt-2 px-3 py-2.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] !text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+                className="no-link-color mt-2 px-3 py-2.5 rounded-lg bg-[#15803d] hover:bg-[#166534] !text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 fill-white" />
