@@ -54,7 +54,7 @@ import {
 
 import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v29';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v31';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clean up legacy cached storage versions
@@ -148,7 +148,7 @@ export default function App() {
     );
   });
 
-  // Automatically purge any post that becomes older than 20 days while app is running
+  // Automatically purge any post that becomes older than 70 days while app is running
   useEffect(() => {
     const purgeExpiredPosts = () => {
       const nowMs = Date.now();
