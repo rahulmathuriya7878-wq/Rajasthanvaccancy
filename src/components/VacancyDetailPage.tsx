@@ -78,15 +78,25 @@ export const normalizePost = (v: VacancyItem): any => {
         }
       ];
 
+  const isYojanaPost = v.category === 'scheme';
   const resolvedDates = resolveJobDates(v);
-  const defaultDatesArray = [
-    { key: 'notificationDate', label: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)', value: resolvedDates.notificationDate },
-    { key: 'applyStartDate', label: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)', value: resolvedDates.applyStartDate },
-    { key: 'applyLastDate', label: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)', value: resolvedDates.applyLastDate },
-    { key: 'feeLastDate', label: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)', value: resolvedDates.feeLastDate },
-    { key: 'admitCardDate', label: 'Admit Card Available (एडमिट कार्ड जारी तिथि)', value: resolvedDates.admitCardDate },
-    { key: 'examDate', label: 'Exam Date (परीक्षा तिथि)', value: resolvedDates.examDate },
-  ];
+  const defaultDatesArray = isYojanaPost
+    ? [
+        { key: 'notificationDate', label: 'योजना घोषणा / अपडेट तिथि (Scheme Update Date)', value: resolvedDates.notificationDate },
+        { key: 'applyStartDate', label: 'आवेदन प्रारंभ तिथि (Apply Start Date)', value: resolvedDates.applyStartDate },
+        { key: 'applyLastDate', label: 'आवेदन की अंतिम तिथि (Last Date)', value: resolvedDates.applyLastDate },
+        ...(resolvedDates.examDate && !['शीघ्र', 'यथासमय घोषित'].includes(resolvedDates.examDate.trim())
+          ? [{ key: 'examDate', label: 'सत्यापन / लाभ वितरण स्थिति (Benefit / Verification Status)', value: resolvedDates.examDate }]
+          : [])
+      ]
+    : [
+        { key: 'notificationDate', label: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)', value: resolvedDates.notificationDate },
+        { key: 'applyStartDate', label: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)', value: resolvedDates.applyStartDate },
+        { key: 'applyLastDate', label: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)', value: resolvedDates.applyLastDate },
+        { key: 'feeLastDate', label: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)', value: resolvedDates.feeLastDate },
+        { key: 'admitCardDate', label: 'Admit Card Available (एडमिट कार्ड जारी तिथि)', value: resolvedDates.admitCardDate },
+        { key: 'examDate', label: 'Exam Date (परीक्षा तिथि)', value: resolvedDates.examDate },
+      ];
 
   // If user already had custom rows, preserve any extra rows
   if (Array.isArray((v as any).importantDates)) {
@@ -95,9 +105,9 @@ export const normalizePost = (v: VacancyItem): any => {
       if (item && item.label) {
         const lbl = item.label.toLowerCase();
         const isStandard = lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('begin') ||
-          lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('last') || lbl.includes('अंतिम') ||
+          lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('last') || lbl.includes('अंतिम') ||
           lbl.includes('fee') || lbl.includes('शुल्क') || lbl.includes('admit') || lbl.includes('एडमिट') ||
-          lbl.includes('exam') || lbl.includes('परीक्षा');
+          lbl.includes('exam') || lbl.includes('परीक्षा') || lbl.includes('योजना घोषणा');
         if (!isStandard) {
           defaultDatesArray.push(item);
         }
@@ -107,30 +117,39 @@ export const normalizePost = (v: VacancyItem): any => {
 
   const defaultFeeArray = Array.isArray((v as any).applicationFee)
     ? (v as any).applicationFee
-    : [
-        { category: 'General / OBC / EWS', amount: `₹${(v.applicationFee as any)?.genObc ?? 600}/-` },
-        { category: 'SC / ST / Divyang', amount: `₹${(v.applicationFee as any)?.scSt ?? 400}/-` },
-        { category: 'Correction Charge', amount: '₹300/-' },
-        { category: 'Pay Exam Fee Through', amount: (v.applicationFee as any)?.paymentModeHi || (v.applicationFee as any)?.paymentMode || 'Online (Debit / Credit Card / Net Banking)' },
-      ];
+    : isYojanaPost
+      ? [
+          { category: 'सभी पात्र लाभार्थी / आवेदक (All Eligible Citizens)', amount: '₹0/- (निःशुल्क आवेदन)' },
+          { category: 'आवेदन एवं लाभ माध्यम (Apply / Benefit Mode)', amount: v.yojanaOverview?.paymentMode || 'DBT (सीधे बैंक खाते में) / आधिकारिक पोर्टल' }
+        ]
+      : [
+          { category: 'General / OBC / EWS', amount: `₹${(v.applicationFee as any)?.genObc ?? 600}/-` },
+          { category: 'SC / ST / Divyang', amount: `₹${(v.applicationFee as any)?.scSt ?? 400}/-` },
+          { category: 'Correction Charge', amount: '₹300/-' },
+          { category: 'Pay Exam Fee Through', amount: (v.applicationFee as any)?.paymentModeHi || (v.applicationFee as any)?.paymentMode || 'Online (Debit / Credit Card / Net Banking)' },
+        ];
 
   const defaultLatestNews = (v as any).latestNews && Array.isArray((v as any).latestNews) && (v as any).latestNews.length > 0
     ? (v as any).latestNews
     : [
         {
           id: 'news-1',
-          date: resolvedDates.notificationDate || '25 अक्टूबर 2026',
+          date: resolvedDates.notificationDate || 'नवंबर 2026',
           badge: 'ताज़ा अपडेट',
           headline: `${v.shortTitleHi || v.titleHi || v.title} के संबंध में नई सूचना जारी`,
-          details: `${v.organization || 'विभाग'} द्वारा आधिकारिक पोर्टल पर भर्ती संबंधी आवश्यक दिशा-निर्देश व परीक्षा कैलेंडर की जानकारी अपडेट कर दी गई है।`,
+          details: isYojanaPost
+            ? `${v.departmentHi || v.organization || 'संबंधित विभाग'} द्वारा योजना के ऑनलाइन आवेदन, पात्रता व लाभ वितरण संबंधी दिशानिर्देश अपडेट किए गए हैं।`
+            : `${v.organization || 'विभाग'} द्वारा आधिकारिक पोर्टल पर भर्ती संबंधी आवश्यक दिशा-निर्देश व परीक्षा कैलेंडर की जानकारी अपडेट कर दी गई है।`,
           isHighlighted: true
         },
         {
           id: 'news-2',
-          date: 'अक्टूबर 2026',
+          date: 'नवंबर 2026',
           badge: 'महत्वपूर्ण सूचना',
-          headline: 'ऑनलाइन आवेदन व पात्रता नियम',
-          details: 'इच्छुक अभ्यर्थी आवेदन करने से पूर्व अपनी शैक्षणिक योग्यता, आयु सीमा एवं आवश्यक प्रमाणपत्र (जाति/मूल निवास/EWS) की जांच अवश्य कर लें।',
+          headline: isYojanaPost ? 'आवेदन व पात्रता नियम' : 'ऑनलाइन आवेदन व पात्रता नियम',
+          details: isYojanaPost
+            ? 'लाभार्थी आवेदन करने से पूर्व अपना जन आधार कार्ड, आधार से लिंक बैंक खाता तथा आय/निवास प्रमाण पत्र अवश्य अपडेट करवा लें।'
+            : 'इच्छुक अभ्यर्थी आवेदन करने से पूर्व अपनी शैक्षणिक योग्यता, आयु सीमा एवं आवश्यक प्रमाणपत्र (जाति/मूल निवास/EWS) की जांच अवश्य कर लें।',
           isHighlighted: false
         }
       ];
@@ -156,6 +175,41 @@ export const normalizePost = (v: VacancyItem): any => {
  */
 export const getHighestEligibilityDocuments = (v: Partial<VacancyItem>, isHi = true): string[] => {
   if (!v) return [];
+
+  if (v.category === 'scheme') {
+    const schemeText = ((v.titleHi || '') + ' ' + (v.qualificationDetailsHi || '') + ' ' + (v.descriptionHi || '')).toLowerCase();
+    const isScholarshipOrStudent = schemeText.includes('छात्र') || schemeText.includes('स्कूटी') || schemeText.includes('scooty') || schemeText.includes('scholarship') || schemeText.includes('कॉलेज') || schemeText.includes('12वीं');
+    const isDairyOrFarmer = schemeText.includes('गोपाल') || schemeText.includes('पशुपालक') || schemeText.includes('किसान') || schemeText.includes('डेयरी') || schemeText.includes('loan') || schemeText.includes('लोन');
+
+    if (isHi) {
+      const yojanaDocs = [
+        'जन आधार कार्ड (Jan Aadhaar Card) एवं परिवार के मुखिया/आवेदक का आधार कार्ड।',
+        'राजस्थान का मूल निवास प्रमाण पत्र (Bonafide Domicile Certificate)।',
+        'आधार कार्ड से लिंक सक्रिय बैंक खाता पासबुक (DBT / ऋण राशि प्राप्त करने हेतु)।',
+        'नवीनतम पासपोर्ट साइज रंगीन फोटो एवं पंजीकृत मोबाइल नंबर।'
+      ];
+      if (isScholarshipOrStudent) {
+        yojanaDocs.push('10वीं व 12वीं कक्षा की मूल अंकतालिका एवं वर्तमान कॉलेज/संस्थान में नियमित प्रवेश की शुल्क रसीद।');
+        yojanaDocs.push('परिवार का नवीनतम आय प्रमाण पत्र एवं जाति प्रमाण पत्र (SC/ST/OBC/MBC/EWS यदि लागू हो)।');
+      } else if (isDairyOrFarmer) {
+        yojanaDocs.push('प्राथमिक दुग्ध उत्पादक सहकारी समिति (Dairy Society) की सदस्यता / दूध आपूर्ति पासबुक या पशुधन विवरण।');
+        yojanaDocs.push('नजदीकी ई-मित्र या राजसहकार पोर्टल पर सत्यापन हेतु पैन कार्ड (यदि उपलब्ध हो) एवं स्व-घोषणा पत्र।');
+      } else {
+        yojanaDocs.push('परिवार का आय प्रमाण पत्र एवं श्रेणी/पात्रता प्रमाण पत्र (योजना के नियमानुसार)।');
+      }
+      return yojanaDocs;
+    }
+
+    return [
+      'Jan Aadhaar Card & Aadhaar Card of the applicant.',
+      'State Domicile Certificate (Mool Niwas).',
+      'Active Bank Account Passbook linked with Aadhaar / Jan Aadhaar (for DBT).',
+      'Latest Passport Size Photograph & active mobile number.',
+      isScholarshipOrStudent
+        ? '10th/12th Marksheet, regular college admission receipt, and Family Income / Caste Certificate.'
+        : 'Scheme-specific eligibility / membership / income proof as notified by the department.'
+    ];
+  }
   
   const quals = (Array.isArray(v.qualification) ? v.qualification : []) as string[];
   const qualDetails = ((v.qualificationDetailsHi || '') + ' ' + (v.qualificationDetails || '')).toLowerCase();
@@ -251,8 +305,11 @@ export const getHighestEligibilityDocuments = (v: Partial<VacancyItem>, isHi = t
  * Tailors to offline submissions or official portal based on vacancy type.
  */
 export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string[] => {
+  const isYojanaPost = v.category === 'scheme';
+
   if (isHi && Array.isArray(v.howToApplyHi) && v.howToApplyHi.length > 0) {
-    // Sanitize any SSO occurrences
+    if (isYojanaPost) return v.howToApplyHi;
+    // Sanitize any SSO occurrences for non-scheme jobs
     return v.howToApplyHi.map(s => 
       s.replace(/राजस्थान\s*SSO\s*पोर्टल\s*\(sso\.rajasthan\.gov\.in\)/gi, 'आधिकारिक भर्ती पोर्टल')
        .replace(/sso\.rajasthan\.gov\.in/gi, 'आधिकारिक वेबसाइट')
@@ -260,11 +317,45 @@ export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string
     );
   }
   if (!isHi && Array.isArray(v.howToApply) && v.howToApply.length > 0) {
+    if (isYojanaPost) return v.howToApply;
     return v.howToApply.map(s => 
       s.replace(/Rajasthan\s*SSO\s*\(sso\.rajasthan\.gov\.in\)/gi, 'Official Recruitment Portal')
        .replace(/sso\.rajasthan\.gov\.in/gi, 'official website')
        .replace(/SSO\s*ID/gi, 'Login ID')
     );
+  }
+
+  const portalHost = v.officialLinks?.officialWebsiteUrl 
+    ? (() => {
+        try {
+          return new URL(v.officialLinks.officialWebsiteUrl).hostname;
+        } catch {
+          return 'आधिकारिक पोर्टल';
+        }
+      })()
+    : 'आधिकारिक योजना पोर्टल';
+
+  if (isYojanaPost) {
+    const schemeName = v.shortTitleHi || v.shortTitle || v.postNameHi || 'संबंधित सरकारी योजना';
+    return isHi
+      ? [
+          `चरण 1: सबसे पहले योजना के आधिकारिक पोर्टल (${portalHost}) या राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) पर जाएं अथवा नजदीकी E-Mitra केंद्र पर संपर्क करें।`,
+          `चरण 2: अपनी SSO ID व पासवर्ड से लॉगिन करें (नए उपयोगकर्ता जन आधार / आधार संख्या से Citizen रजिस्ट्रेशन करें)।`,
+          `चरण 3: डैशबोर्ड पर संबंधित विभाग की "${schemeName}" के आवेदन लिंक का चयन करें।`,
+          'चरण 4: जन आधार संख्या दर्ज कर आवेदक व परिवार के सदस्यों का ई-केवाईसी (OTP / बायोमेट्रिक) सत्यापन करें।',
+          'चरण 5: आवेदन फॉर्म में मांगी गई व्यक्तिगत जानकारी, निवास, पात्रता व आधार-लिंक्ड बैंक खाते का विवरण सही-सही भरें।',
+          'चरण 6: सभी आवश्यक दस्तावेजों (जन आधार, आय/निवास प्रमाण पत्र, पासबुक व योजना संबंधी दस्तावेज) की स्पष्ट PDF/JPG प्रति अपलोड करें।',
+          'चरण 7: भरे गए संपूर्ण आवेदन फॉर्म का पूर्वावलोकन (Preview) ध्यान से जांचें और फाइनल सबमिट (Final Submit) करें।',
+          'चरण 8: आवेदन सबमिट होने के बाद प्राप्त रसीद / आवेदन क्रमांक (Application ID) का प्रिंटआउट भविष्य के लिए सुरक्षित रखें।'
+        ]
+      : [
+          `Step 1: Visit the official scheme portal (${portalHost}), SSO Rajasthan (sso.rajasthan.gov.in), or your nearest E-Mitra center.`,
+          'Step 2: Log in using your SSO / Citizen credentials or complete new registration via Jan Aadhaar / Aadhaar.',
+          `Step 3: Select "${schemeName}" from the active citizen schemes dashboard.`,
+          'Step 4: Verify applicant details via Jan Aadhaar e-KYC and fill in required personal, eligibility, and bank account details.',
+          'Step 5: Upload clear scanned copies of all required scheme documents.',
+          'Step 6: Review the application preview carefully, submit the form online, and print/save the acknowledgment receipt.'
+        ];
   }
 
   const isOffline = ((v.postNameHi || '') + (v.titleHi || '') + (v.descriptionHi || '')).includes('ऑफलाइन') || 
@@ -292,16 +383,6 @@ export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string
       'Step 8: Send the complete application by Registered or Speed Post to the designated departmental address before the deadline.'
     ];
   }
-
-  const portalHost = v.officialLinks?.officialWebsiteUrl 
-    ? (() => {
-        try {
-          return new URL(v.officialLinks.officialWebsiteUrl).hostname;
-        } catch {
-          return 'आधिकारिक पोर्टल';
-        }
-      })()
-    : 'आधिकारिक भर्ती पोर्टल';
 
   if (isHi) {
     return [
@@ -669,6 +750,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const sectionLabels: Record<string, string> = {
     overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
+    yojana_info: 'योजना का उद्देश्य एवं मुख्य लाभ (Scheme Benefits)',
+    yojana_eligibility: 'योजना पात्रता एवं आय सीमा (Yojana Eligibility)',
     latest_update: 'लेटेस्ट अपडेट (Latest Update)',
     latest_news: 'ताज़ा समाचार (Latest News)',
     dates: 'महत्वपूर्ण तिथियाँ (Important Dates)',
@@ -676,10 +759,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     qualification: 'शैक्षणिक योग्यता (Eligibility)',
     age_limit: 'आयु सीमा (Age Limit)',
     application_fee: 'आवेदन शुल्क (Application Fee)',
-    selection_process: 'चयन प्रक्रिया (Selection Process)',
+    selection_process: 'चयन / लाभ वितरण प्रक्रिया (Selection / Benefit Process)',
     postal_address: 'आवेदन भेजने का पता (Postal Address)',
-    salary: 'वेतनमान (Salary Scale)',
+    salary: 'वेतनमान / सहायता (Salary / Assistance)',
     teacher_notes: 'स्पेशल नोट्स (Teacher Notes)',
+    documents: 'आवश्यक दस्तावेज (Required Documents)',
     how_to_apply: 'आवेदन कैसे करें (How to Apply)',
     important_links: 'महत्वपूर्ण लिंक्स (Important Links)',
     faqs: 'प्रश्नोत्तर (FAQs)'
@@ -1045,7 +1129,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     // Dynamic Meta Description & OpenGraph Tags
     const metaDesc = document.querySelector('meta[name="description"]');
     const originalDesc = metaDesc?.getAttribute('content') || '';
-    const newDesc = `${postTitle}: कुल पद ${editablePost.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+    const isSchemePost = editablePost.category === 'scheme';
+    const newDesc = isSchemePost
+      ? `${postTitle}: मुख्य लाभ (${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'सरकारी सहायता'}), पात्रता शर्तें, आवश्यक दस्तावेज, अंतिम तिथि एवं ऑनलाइन आवेदन प्रक्रिया।`
+      : `${postTitle}: कुल पद ${editablePost.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
     if (metaDesc) {
       metaDesc.setAttribute('content', newDesc);
     }
@@ -1152,8 +1239,36 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return getHowToApplySteps(editablePost, isHi);
   }, [editablePost, isHi]);
 
-  // FAQs with fully integrated dates
-  const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : [
+  const isYojana = editablePost.category === 'scheme';
+  const isFlexCategory = editablePost.category === 'news' || editablePost.category === 'scheme';
+
+  // FAQs with fully integrated dates & scheme-aware fallback
+  const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : isYojana ? [
+    {
+      q: `What benefit is provided under ${shortJobName}?`,
+      qHi: `${shortJobName} के अंतर्गत लाभार्थियों को क्या लाभ / सहायता मिलती है?`,
+      a: editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salary || 'Financial assistance and scheme benefits as per official norms.',
+      aHi: `${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'पात्र लाभार्थियों को सरकारी नियमानुसार वित्तीय सहायता एवं योजना लाभ प्रदान किया जाता है।'}`
+    },
+    {
+      q: `Who is eligible to apply for ${shortJobName}?`,
+      qHi: `इस सरकारी योजना के लिए कौन-कौन पात्र (Eligible) हैं?`,
+      a: editablePost.qualificationDetails || 'Permanent residents fulfilling department eligibility norms.',
+      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'राजस्थान के मूल निवासी जो विभाग द्वारा निर्धारित पात्रता एवं आय सीमा की शर्तें पूरी करते हैं।'}`
+    },
+    {
+      q: `What is the last date to apply for ${shortJobName}?`,
+      qHi: `इस योजना में आवेदन करने की अंतिम तिथि क्या है?`,
+      a: `Applications can be submitted from ${applyStartDateDisplay} to ${applyLastDateDisplay}.`,
+      aHi: `योजना के अंतर्गत ऑनलाइन आवेदन ${applyStartDateDisplay} से ${applyLastDateDisplay} तक किए जा सकते हैं।`
+    },
+    {
+      q: `How to apply online for ${shortJobName}?`,
+      qHi: `${shortJobName} के लिए ऑनलाइन आवेदन कैसे करें?`,
+      a: 'Eligible applicants can apply online via the official portal / Rajasthan SSO or nearest E-Mitra center.',
+      aHi: `पात्र आवेदक संबंधित आधिकारिक पोर्टल (${editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'sso.rajasthan.gov.in'}) अथवा नजदीकी E-Mitra केंद्र के माध्यम से ऑनलाइन आवेदन कर सकते हैं।`
+    }
+  ] : [
     {
       q: `What is the last date to apply for this vacancy?`,
       qHi: `इस भर्ती के लिए ऑनलाइन आवेदन की अंतिम तिथि क्या है?`,
@@ -1180,21 +1295,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     }
   ];
 
-  const DEFAULT_SECTION_ORDER = [
-    'overview',
-    'latest_news',
-    'dates',
-    'application_fee',
-    'post_breakdown',
-    'qualification',
-    'age_limit',
-    'selection_process',
-    'postal_address',
-    'documents',
-    'how_to_apply',
-    'important_links',
-    'faqs'
-  ];
+  const DEFAULT_SECTION_ORDER = isYojana
+    ? [
+        'overview',
+        'yojana_info',
+        'yojana_eligibility',
+        'latest_news',
+        'dates',
+        'application_fee',
+        'selection_process',
+        'documents',
+        'how_to_apply',
+        'important_links',
+        'faqs'
+      ]
+    : [
+        'overview',
+        'latest_news',
+        'dates',
+        'application_fee',
+        'post_breakdown',
+        'qualification',
+        'age_limit',
+        'selection_process',
+        'postal_address',
+        'documents',
+        'how_to_apply',
+        'important_links',
+        'faqs'
+      ];
 
   const activeSectionKeys = useMemo(() => {
     const savedOrder = currentVacancy.sectionOrder;
@@ -1202,9 +1331,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const normalizedSaved = savedOrder.map(k => k === 'fee' ? 'application_fee' : k === 'salary' ? 'salary_table' : k);
     const missing = DEFAULT_SECTION_ORDER.filter(k => !normalizedSaved.includes(k));
     return [...normalizedSaved, ...missing];
-  }, [currentVacancy.sectionOrder]);
-
-  const isFlexCategory = editablePost.category === 'news' || editablePost.category === 'scheme';
+  }, [currentVacancy.sectionOrder, isYojana]);
 
   return (
     <div className="w-full text-[#222222] space-y-3 sm:space-y-4">
@@ -1566,7 +1693,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     className="inline-block max-w-full break-words bg-[#0a5243] !text-[#a7f3d0] border border-[#10b981]/70 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-2xs"
                     style={{ color: '#a7f3d0', backgroundColor: '#0a5243' }}
                   >
-                    {editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT')}
+                    {isYojana
+                      ? (editablePost.departmentHi || editablePost.department || 'सरकारी योजना, राजस्थान सरकार')
+                      : (editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT'))}
                   </span>
                   <div>
                     <EditableText
@@ -1588,11 +1717,42 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     className="!text-[#6ee7b7] text-xs sm:text-sm font-semibold leading-relaxed"
                     style={{ color: '#6ee7b7' }}
                   >
-                    {isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide'}
+                    {isYojana
+                      ? (isHi
+                          ? 'योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आवश्यक दस्तावेज एवं ऑनलाइन आवेदन प्रक्रिया'
+                          : 'Scheme Objectives, Benefits, Eligibility Criteria, Documents & Application Guide')
+                      : (isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide')}
                   </p>
 
-                  {/* Centered Total Posts Box */}
-                  {(!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
+                  {/* Centered Total Posts / Scheme Benefit Box */}
+                  {isYojana ? (
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
+                        {isHi ? 'मुख्य लाभ / वित्तीय सहायता (Scheme Benefit)' : 'Scheme Benefit / Assistance'}
+                      </span>
+                      <span 
+                        className="text-xl sm:text-2xl font-black !text-[#facc15] block mt-1 tracking-wide drop-shadow-xs leading-snug"
+                        style={{ color: '#facc15' }}
+                      >
+                        <EditableText
+                          value={
+                            editablePost.yojanaOverview?.maxAnnualAssistance ||
+                            editablePost.salaryHi ||
+                            editablePost.salary ||
+                            editablePost.totalPosts ||
+                            (isHi ? 'सरकारी सहायता व योजना लाभ' : 'Government Scheme Assistance')
+                          }
+                          onChange={(val) => {
+                            setEditablePost(prev => ({ ...prev, salaryHi: val, salary: val }));
+                          }}
+                          titlePrefix="योजना मुख्य लाभ"
+                        />
+                      </span>
+                    </div>
+                  ) : (!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
                     <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
                       <span 
                         className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
@@ -1615,8 +1775,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     </div>
                   )}
 
-                  {/* Integrated Key Dates Grid */}
-                  {!isFlexCategory && (() => {
+                  {/* Integrated Key Dates / Yojana Snapshot Grid */}
+                  {isYojana ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
+                      {[
+                        { label: 'राज्य / क्षेत्र', value: editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान', isImportant: false },
+                        { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
+                        { label: 'अंतिम तिथि', value: applyLastDateDisplay, isImportant: true },
+                        { label: 'आवेदन माध्यम', value: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन / E-Mitra', isImportant: false }
+                      ].map((d, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                        >
+                          <span 
+                            className="text-[11px] uppercase font-bold block"
+                            style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                          >
+                            {d.label}
+                          </span>
+                          <span 
+                            className="font-extrabold text-xs sm:text-sm mt-0.5 block break-words"
+                            style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                          >
+                            {d.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : !isFlexCategory && (() => {
                     const rawDates = [
                       { label: 'नोटिफिकेशन तिथि', value: notificationDateDisplay, isImportant: false },
                       { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
@@ -1671,7 +1858,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 sm:px-3.5 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs min-w-0">
                   <div className="flex items-center gap-1.5 font-bold text-slate-800 min-w-0">
                     <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
-                    <span className="text-xs sm:text-sm break-words">{isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:'}</span>
+                    <span className="text-xs sm:text-sm break-words">
+                      {isYojana
+                        ? (isHi ? 'सरकारी योजनाओं का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant Sarkari Yojana updates on WhatsApp:')
+                        : (isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:')}
+                    </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
                     <a
@@ -1715,7 +1906,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <p className="post-item">
                     <strong>{postTitle}:</strong>{' '}
                     <EditableText
-                      value={editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`}
+                      value={
+                        isYojana
+                          ? (editablePost.briefSummaryHi || editablePost.yojanaGeneralInfo?.descriptionHi || `${editablePost.departmentHi || editablePost.organization || 'राजस्थान सरकार'} द्वारा ${shortJobName} के अंतर्गत पात्र नागरिकों को आर्थिक व कल्याणकारी सहायता प्रदान की जा रही है।`)
+                          : (editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`)
+                      }
                       onChange={(val) => {
                         setEditablePost(prev => ({ ...prev, briefSummaryHi: val }));
                       }}
@@ -1723,9 +1918,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     />
                   </p>
                   <p className="post-item">
-                    {isHi 
-                      ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
-                      : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`}
+                    {isYojana
+                      ? (isHi
+                          ? `इस सरकारी योजना की ताज़ा अधिसूचना ${notificationDateDisplay} को अपडेट की गई है। योजना के तहत आवेदन ${applyStartDateDisplay} से शुरू हो चुके हैं और पात्र लाभार्थी ${applyLastDateDisplay} तक ${editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन पोर्टल / E-Mitra'} के माध्यम से आवेदन कर सकते हैं। योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आय सीमा, आवश्यक दस्तावेज व आवेदन प्रक्रिया की संपूर्ण जानकारी नीचे दी गई है।`
+                          : `Updated on ${notificationDateDisplay}, applications under this government scheme are open from ${applyStartDateDisplay} to ${applyLastDateDisplay} via ${editablePost.yojanaOverview?.applyMode || 'official online portal / E-Mitra'}. Check scheme benefits, eligibility criteria, required documents, and step-by-step application details below.`)
+                      : (isHi 
+                          ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
+                          : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`)}
                   </p>
                 </div>
 
@@ -1758,94 +1957,149 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         return placeholders.some(p => val.trim().toLowerCase() === p.toLowerCase());
                       };
 
-                      const defaultOverviewRows = [
-                        { label: 'भर्ती / योजना संस्था', val: editablePost.department || editablePost.organization, isEdit: true, keyName: 'department' },
-                        { label: 'नाम / शीर्षक', val: editablePost.shortTitleHi || editablePost.shortTitle || shortJobName, isEdit: true, keyName: 'shortTitleHi' },
-                        { 
-                          label: 'विज्ञापन संख्या', 
-                          val: editablePost.advtNo || 'विज्ञप्ति अनुसार', 
-                          isEdit: true, 
-                          keyName: 'advtNo',
-                          show: !isFlexCategory || !isPlaceholder(editablePost.advtNo, ['विज्ञप्ति अनुसार', 'शीघ्र', 'यथासमय घोषित'])
-                        },
-                        { 
-                          label: 'घोषित कुल पद / सीटें', 
-                          val: editablePost.totalPosts || 'विभिन्न पद', 
-                          isEdit: true, 
-                          keyName: 'totalPosts',
-                          show: !isFlexCategory || !isPlaceholder(String(editablePost.totalPosts || ''), ['विभिन्न पद', 'विभिन्न'])
-                        },
-                        { 
-                          label: 'नोटिफिकेशन तिथि', 
-                          val: resolvedDates.notificationDate, 
-                          isDate: true, 
-                          dateKey: 'notificationDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.notificationDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
-                        },
-                        { 
-                          label: 'आवेदन शुरू', 
-                          val: resolvedDates.applyStartDate, 
-                          isDate: true, 
-                          dateKey: 'applyStartDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.applyStartDate, ['शीघ्र', 'यथासमय घोषित'])
-                        },
-                        { 
-                          label: isOfflinePost ? 'ऑफलाइन आवेदन की अंतिम तिथि' : 'ऑनलाइन आवेदन की अंतिम तिथि', 
-                          val: resolvedDates.applyLastDate, 
-                          isDate: true, 
-                          dateKey: 'applyLastDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.applyLastDate, ['शीघ्र', 'यथासमय घोषित'])
-                        },
-                        { 
-                          label: 'फीस भुगतान अंतिम तिथि', 
-                          val: resolvedDates.feeLastDate, 
-                          isDate: true, 
-                          dateKey: 'feeLastDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.feeLastDate, ['शीघ्र', 'यथासमय घोषित'])
-                        },
-                        { 
-                          label: 'एडमिट कार्ड जारी तिथि', 
-                          val: resolvedDates.admitCardDate, 
-                          isDate: true, 
-                          dateKey: 'admitCardDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.admitCardDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
-                        },
-                        { 
-                          label: 'परीक्षा तिथि', 
-                          val: resolvedDates.examDate, 
-                          isDate: true, 
-                          dateKey: 'examDate',
-                          show: !isFlexCategory || !isPlaceholder(resolvedDates.examDate, ['शीघ्र', 'यथासमय घोषित'])
-                        },
-                        { 
-                          label: 'आवेदन का माध्यम', 
-                          val: editablePost.applicationMode || (isOfflinePost ? 'ऑफलाइन (Speed Post / Registered Post)' : 'ऑनलाइन (Online Portal)'), 
-                          isEdit: true,
-                          keyName: 'applicationMode',
-                          show: !isFlexCategory 
-                        },
-                        { 
-                          label: 'स्थान / कार्यक्षेत्र', 
-                          val: editablePost.jobLocation, 
-                          isEdit: true, 
-                          keyName: 'jobLocation',
-                          show: Boolean(editablePost.jobLocation && editablePost.jobLocation.trim()) 
-                        },
-                        { 
-                          label: 'शैक्षणिक योग्यता / पात्रता', 
-                          val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 
-                          isEdit: true, 
-                          keyName: 'qualificationDetailsHi',
-                          show: !isFlexCategory || !isPlaceholder(editablePost.qualificationDetailsHi || editablePost.qualificationDetails, ['पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 'पद अनुसार 10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'])
-                        },
-                        { 
-                          label: 'स्टाइपेंड / वित्तीय सहायता / वेतनमान', 
-                          val: editablePost.salaryHi || editablePost.salary || 'पे-मैट्रिक्स नियमानुसार देय', 
-                          isEdit: true, 
-                          keyName: 'salaryHi',
-                          show: !isFlexCategory || !isPlaceholder(editablePost.salaryHi || editablePost.salary, ['पे-मैट्रिक्स नियमानुसार देय'])
-                        }
-                      ].filter(r => r.show !== false);
+                      const defaultOverviewRows = isYojana
+                        ? [
+                            { label: 'योजना का नाम', val: editablePost.yojanaOverview?.yojanaName || editablePost.postNameHi || editablePost.shortTitleHi || shortJobName, isEdit: true, keyName: 'postNameHi' },
+                            { label: 'संबंधित विभाग / मंत्रालय', val: editablePost.yojanaOverview?.department || editablePost.departmentHi || editablePost.department || editablePost.organization, isEdit: true, keyName: 'departmentHi' },
+                            { label: 'राज्य / क्षेत्र', val: editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान', isEdit: true, keyName: 'jobLocation' },
+                            {
+                              label: 'लाभार्थी वर्ग (Beneficiaries)',
+                              val: editablePost.yojanaOverview?.beneficiaries || editablePost.yojanaOverview?.totalBeneficiariesCount || editablePost.totalPosts || 'पात्र नागरिक / लाभार्थी',
+                              isEdit: true,
+                              keyName: 'totalPosts',
+                              show: !isPlaceholder(String(editablePost.yojanaOverview?.beneficiaries || editablePost.totalPosts || ''), ['विभिन्न पद'])
+                            },
+                            {
+                              label: 'मुख्य लाभ / सहायता राशि',
+                              val: editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.yojanaOverview?.monthlyAssistance || editablePost.salaryHi || editablePost.salary || 'योजना नियमानुसार देय',
+                              isEdit: true,
+                              keyName: 'salaryHi'
+                            },
+                            {
+                              label: 'योजना अपडेट तिथि',
+                              val: resolvedDates.notificationDate,
+                              isDate: true,
+                              dateKey: 'notificationDate',
+                              show: !isPlaceholder(resolvedDates.notificationDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन प्रारंभ तिथि',
+                              val: resolvedDates.applyStartDate,
+                              isDate: true,
+                              dateKey: 'applyStartDate',
+                              show: !isPlaceholder(resolvedDates.applyStartDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन की अंतिम तिथि',
+                              val: resolvedDates.applyLastDate,
+                              isDate: true,
+                              dateKey: 'applyLastDate',
+                              show: !isPlaceholder(resolvedDates.applyLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन का माध्यम',
+                              val: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन (SSO पोर्टल / आधिकारिक वेबसाइट / E-Mitra)',
+                              isEdit: true,
+                              keyName: 'applicationMode'
+                            },
+                            ...(editablePost.yojanaOverview?.paymentMode
+                              ? [{ label: 'लाभ वितरण प्रक्रिया (Payment Mode)', val: editablePost.yojanaOverview.paymentMode, isEdit: false }]
+                              : []),
+                            {
+                              label: 'पात्रता सारांश',
+                              val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'राजस्थान मूल निवासी एवं योजना नियमानुसार पात्र',
+                              isEdit: true,
+                              keyName: 'qualificationDetailsHi'
+                            }
+                          ].filter(r => r.show !== false)
+                        : [
+                            { label: 'भर्ती / योजना संस्था', val: editablePost.department || editablePost.organization, isEdit: true, keyName: 'department' },
+                            { label: 'नाम / शीर्षक', val: editablePost.shortTitleHi || editablePost.shortTitle || shortJobName, isEdit: true, keyName: 'shortTitleHi' },
+                            { 
+                              label: 'विज्ञापन संख्या', 
+                              val: editablePost.advtNo || 'विज्ञप्ति अनुसार', 
+                              isEdit: true, 
+                              keyName: 'advtNo',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.advtNo, ['विज्ञप्ति अनुसार', 'शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'घोषित कुल पद / सीटें', 
+                              val: editablePost.totalPosts || 'विभिन्न पद', 
+                              isEdit: true, 
+                              keyName: 'totalPosts',
+                              show: !isFlexCategory || !isPlaceholder(String(editablePost.totalPosts || ''), ['विभिन्न पद', 'विभिन्न'])
+                            },
+                            { 
+                              label: 'नोटिफिकेशन तिथि', 
+                              val: resolvedDates.notificationDate, 
+                              isDate: true, 
+                              dateKey: 'notificationDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.notificationDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
+                            },
+                            { 
+                              label: 'आवेदन शुरू', 
+                              val: resolvedDates.applyStartDate, 
+                              isDate: true, 
+                              dateKey: 'applyStartDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.applyStartDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: isOfflinePost ? 'ऑफलाइन आवेदन की अंतिम तिथि' : 'ऑनलाइन आवेदन की अंतिम तिथि', 
+                              val: resolvedDates.applyLastDate, 
+                              isDate: true, 
+                              dateKey: 'applyLastDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.applyLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'फीस भुगतान अंतिम तिथि', 
+                              val: resolvedDates.feeLastDate, 
+                              isDate: true, 
+                              dateKey: 'feeLastDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.feeLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'एडमिट कार्ड जारी तिथि', 
+                              val: resolvedDates.admitCardDate, 
+                              isDate: true, 
+                              dateKey: 'admitCardDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.admitCardDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
+                            },
+                            { 
+                              label: 'परीक्षा तिथि', 
+                              val: resolvedDates.examDate, 
+                              isDate: true, 
+                              dateKey: 'examDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.examDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'आवेदन का माध्यम', 
+                              val: editablePost.applicationMode || (isOfflinePost ? 'ऑफलाइन (Speed Post / Registered Post)' : 'ऑनलाइन (Online Portal)'), 
+                              isEdit: true,
+                              keyName: 'applicationMode',
+                              show: !isFlexCategory 
+                            },
+                            { 
+                              label: 'स्थान / कार्यक्षेत्र', 
+                              val: editablePost.jobLocation, 
+                              isEdit: true, 
+                              keyName: 'jobLocation',
+                              show: Boolean(editablePost.jobLocation && editablePost.jobLocation.trim()) 
+                            },
+                            { 
+                              label: 'शैक्षणिक योग्यता / पात्रता', 
+                              val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 
+                              isEdit: true, 
+                              keyName: 'qualificationDetailsHi',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.qualificationDetailsHi || editablePost.qualificationDetails, ['पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 'पद अनुसार 10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'])
+                            },
+                            { 
+                              label: 'स्टाइपेंड / वित्तीय सहायता / वेतनमान', 
+                              val: editablePost.salaryHi || editablePost.salary || 'पे-मैट्रिक्स नियमानुसार देय', 
+                              isEdit: true, 
+                              keyName: 'salaryHi',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.salaryHi || editablePost.salary, ['पे-मैट्रिक्स नियमानुसार देय'])
+                            }
+                          ].filter(r => r.show !== false);
 
                       const overviewRows = Array.isArray(editablePost.overviewRows) && editablePost.overviewRows.length > 0
                         ? editablePost.overviewRows
@@ -2022,6 +2276,126 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </tbody>
                             </table>
                           </div>
+                        </div>
+                      );
+                    }
+
+                    case 'yojana_info': {
+                      if (!isYojana || isSectionDeleted('yojana_info')) return null;
+                      const genInfo = editablePost.yojanaGeneralInfo;
+                      const headingText = genInfo?.headingHi || `${shortJobName} क्या है? (योजना का उद्देश्य एवं मुख्य लाभ)`;
+                      const descText = genInfo?.descriptionHi || editablePost.descriptionHi || editablePost.briefSummaryHi;
+                      const objText = genInfo?.objectiveHi;
+                      const benefitText = genInfo?.benefitsSummaryHi || editablePost.salaryHi || editablePost.salary;
+                      const keyPoints = genInfo?.keyPointsHi || [];
+
+                      if (!descText && !objText && !benefitText && keyPoints.length === 0) return null;
+
+                      return (
+                        <div key="yojana_info" className="space-y-3">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <h2
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {headingText}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderAdminSectionControls('yojana_info', 'योजना के लाभ')}
+                            </div>
+                          </div>
+
+                          <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-lg p-3.5 sm:p-4 space-y-2.5 text-slate-800" style={{ fontSize: '12pt' }}>
+                            {descText && (
+                              <p className="post-item leading-relaxed whitespace-pre-line">{descText}</p>
+                            )}
+                            {objText && (
+                              <p className="post-item leading-relaxed">
+                                <strong className="text-emerald-900">योजना का मुख्य उद्देश्य: </strong>
+                                {objText}
+                              </p>
+                            )}
+                            {benefitText && (
+                              <p className="post-item leading-relaxed">
+                                <strong className="text-emerald-900">प्रमुख वित्तीय सहायता / लाभ: </strong>
+                                {benefitText}
+                              </p>
+                            )}
+                            {keyPoints.length > 0 && (
+                              <ul className="list-disc pl-5 space-y-1.5 pt-1 text-slate-700">
+                                {keyPoints.map((pt, i) => (
+                                  <li key={i}>{pt}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                          {getSectionTable('yojana_info') && renderCustomTableComponent(
+                            getSectionTable('yojana_info')!,
+                            (updatedTable) => setSectionTable('yojana_info', updatedTable),
+                            () => handleDeleteTableFromSection('yojana_info')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'yojana_eligibility': {
+                      if (!isYojana || isSectionDeleted('yojana_eligibility')) return null;
+                      const elig = editablePost.yojanaEligibility;
+                      const headingText = elig?.headingHi || `${shortJobName} के लिए पात्रता शर्तें (Eligibility & Income Limit)`;
+                      const criteriaList = (elig?.criteriaHi && elig.criteriaHi.length > 0)
+                        ? elig.criteriaHi
+                        : [
+                            `मूल निवास: आवेदक ${editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान'} राज्य का स्थायी / मूल निवासी होना चाहिए।`,
+                            editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'विभाग द्वारा अधिसूचित पात्रता शर्तें पूर्ण करता हो।',
+                            editablePost.ageLimit?.min
+                              ? `आयु सीमा: आवेदक की आयु ${editablePost.ageLimit.min} से ${editablePost.ageLimit.max || 60} वर्ष के मध्य होनी चाहिए।`
+                              : 'आवेदक के पास स्वयं का जन आधार कार्ड, आधार कार्ड व आधार-लिंक्ड बैंक खाता होना आवश्यक है।'
+                          ];
+                      const incomeList = elig?.incomeLimitHi || [];
+
+                      return (
+                        <div key="yojana_eligibility" className="space-y-2.5">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <h2
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {headingText}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderAdminSectionControls('yojana_eligibility', 'योजना पात्रता')}
+                            </div>
+                          </div>
+
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {criteriaList.map((crit, idx) => (
+                              <li key={idx}>{crit}</li>
+                            ))}
+                          </ul>
+
+                          {incomeList.length > 0 && (
+                            <div className="mt-2.5 p-3 rounded-md bg-slate-50 border border-slate-200 space-y-1">
+                              <div className="font-bold text-slate-900 text-sm">पारिवारिक आय सीमा नियम (Income Limit):</div>
+                              <ul className="list-disc pl-5 space-y-1 text-slate-700 text-sm">
+                                {incomeList.map((inc, idx) => (
+                                  <li key={idx}>{inc}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {getSectionTable('yojana_eligibility') && renderCustomTableComponent(
+                            getSectionTable('yojana_eligibility')!,
+                            (updatedTable) => setSectionTable('yojana_eligibility', updatedTable),
+                            () => handleDeleteTableFromSection('yojana_eligibility')
+                          )}
                         </div>
                       );
                     }
@@ -2279,7 +2653,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              {shortJobName} Application Fee
+                              {isYojana ? `${shortJobName} आवेदन शुल्क (Application Fee)` : `${shortJobName} Application Fee`}
                             </h2>
                             <div className="flex items-center gap-1.5">
                               {renderSectionShareButton('fee', `${shortJobName} Application Fee`)}
@@ -2456,7 +2830,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       );
 
                     case 'qualification': {
-                      if (isSectionDeleted('qualification')) return null;
+                      if (isSectionDeleted('qualification') || isYojana) return null;
                       const qualText = vacancy.qualificationDetailsHi || vacancy.qualificationDetails;
                       if (isFlexCategory && !qualText) return null;
 
@@ -2666,13 +3040,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }
 
                     case 'selection_process': {
-                      if (isSectionDeleted('selection_process') || isFlexCategory) return null;
-                      const defaultSelectionSteps = [
-                        'लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।',
-                        'मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।',
-                        'चिकित्सीय परीक्षण (Medical Fitness Examination)।',
-                        'अंतिम चयन सूची का प्रकाशन।'
-                      ];
+                      if (isSectionDeleted('selection_process') || (isFlexCategory && !isYojana)) return null;
+                      const defaultSelectionSteps = isYojana
+                        ? [
+                            'आधिकारिक योजना पोर्टल / SSO / E-Mitra के माध्यम से ऑनलाइन आवेदन जमा करना।',
+                            'संबंधित विभाग / नोडल अधिकारी द्वारा पात्रता एवं दस्तावेजों का सत्यापन।',
+                            'पात्र लाभार्थियों की स्वीकृत सूची जारी होना व DBT / कार्ड के माध्यम से लाभ प्रदान करना।'
+                          ]
+                        : [
+                            'लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।',
+                            'मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।',
+                            'चिकित्सीय परीक्षण (Medical Fitness Examination)।',
+                            'अंतिम चयन सूची का प्रकाशन।'
+                          ];
                       const stepsList = (Array.isArray(editablePost.selectionProcessHi) && editablePost.selectionProcessHi.length > 0)
                         ? editablePost.selectionProcessHi
                         : defaultSelectionSteps;
@@ -2690,15 +3070,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              चयन प्रक्रिया और मेरिट की गणना
+                              {isYojana ? `${shortJobName} सत्यापन एवं लाभ प्राप्ति प्रक्रिया` : 'चयन प्रक्रिया और मेरिट की गणना'}
                             </h2>
                             <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('selection_process', `${shortJobName} चयन प्रक्रिया`)}
-                              {renderAdminSectionControls('selection_process', 'चयन प्रक्रिया')}
+                              {renderSectionShareButton('selection_process', isYojana ? `${shortJobName} लाभ प्राप्ति प्रक्रिया` : `${shortJobName} चयन प्रक्रिया`)}
+                              {renderAdminSectionControls('selection_process', isYojana ? 'लाभ प्राप्ति प्रक्रिया' : 'चयन प्रक्रिया')}
                             </div>
                           </div>
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
-                            इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:
+                            {isYojana
+                              ? 'इस योजना के अंतर्गत आवेदन सत्यापन तथा लाभ वितरण निम्नलिखित चरणों के अनुसार किया जाता है:'
+                              : 'इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:'}
                           </p>
                           <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
                             {stepsList.map((step, idx) => (
@@ -2816,7 +3198,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
                           </div>
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
-                            ऑनलाइन फॉर्म भरने से पूर्व अभ्यर्थी पद की अधिकतम योग्यता अनुसार निम्नलिखित दस्तावेज तैयार रखें:
+                            {isYojana
+                              ? 'योजना के अंतर्गत ऑनलाइन आवेदन करने से पूर्व लाभार्थी निम्नलिखित आवश्यक दस्तावेज तैयार रखें:'
+                              : 'ऑनलाइन फॉर्म भरने से पूर्व अभ्यर्थी पद की अधिकतम योग्यता अनुसार निम्नलिखित दस्तावेज तैयार रखें:'}
                           </p>
                           <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '12pt' }}>
                             {documentsList.map((doc, i) => (
@@ -3037,7 +3421,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                <tbody>
                                 <tr className="border-b border-slate-300">
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                    Start {shortJobName} form (आवेदन प्रारंभ)
+                                    {isYojana ? `${shortJobName} आवेदन प्रारंभ (Scheme Apply Start)` : `Start ${shortJobName} form (आवेदन प्रारंभ)`}
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
                                     {applyStartDateDisplay}
@@ -3458,15 +3842,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <Folder className="w-4 h-4 text-[#0056b3]" />
                   <span className="text-slate-700 font-bold">Categories:</span>
                   <a
-                    href="/?category=latest_job"
+                    href={isYojana ? '/?category=scheme' : '/?category=latest_job'}
                     onClick={(e) => {
                       e.preventDefault();
-                      onSelectCategory?.('latest_job');
+                      onSelectCategory?.(isYojana ? 'scheme' : 'latest_job');
                     }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
                   >
-                    Latest Job
+                    {isYojana ? 'Sarkari Yojana' : 'Latest Job'}
                   </a>
                   <span className="text-slate-400">,</span>
                   <a

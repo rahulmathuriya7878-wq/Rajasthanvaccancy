@@ -1,5 +1,267 @@
 import { VacancyItem } from '../types';
 
+export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
+  id: 'rajasthan-cet-admit-card-2026',
+  title: 'Rajasthan CET Admit Card 2026: Senior Secondary (12th Level) Hall Ticket Releasing on 26 November 2026, Exam 01–03 Dec',
+  titleHi: 'Rajasthan CET Admit Card 2026: राजस्थान सीईटी एडमिट कार्ड 26 नवंबर को जारी होंगे, परीक्षा 01 से 03 दिसंबर 2026 तक',
+  shortTitle: 'Rajasthan CET Admit Card 2026 (26 Nov)',
+  shortTitleHi: 'राजस्थान CET एडमिट कार्ड 2026 (26 नवंबर को जारी)',
+  organization: 'RSMSSB',
+  department: 'Rajasthan Staff Selection Board (RSSB / RSMSSB), Jaipur',
+  departmentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB), जयपुर',
+  advtNo: 'RSSB/CET-12th/Admit-Card/2026',
+  category: 'admit_card',
+  tags: ['rajasthan cet admit card 2026', 'cet 12th level admit card', 'rssb admit card', '26 november 2026', 'sso portal'],
+  isTrending: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 18450,
+  savesCount: 4620,
+  totalPosts: 'सीईटी पात्रता परीक्षा 2026',
+  postName: 'Common Eligibility Test (CET Senior Secondary 12th Level) 2026',
+  postNameHi: 'समान पात्रता परीक्षा (CET सीनियर सेकेंडरी 12वीं स्तर) 2026',
+  qualification: ['12th'],
+  qualificationDetails: '12th Pass (Senior Secondary) candidates who submitted the RSSB CET 2026 online application form.',
+  qualificationDetailsHi: 'राजस्थान कर्मचारी चयन बोर्ड की CET (12वीं स्तर) 2026 परीक्षा हेतु सफलतापूर्वक आवेदन करने वाले अभ्यर्थी।',
+  briefSummary: 'Rajasthan CET (12th Level) Admit Card 2026 will be released on 26 November 2026 by RSSB/RSMSSB ahead of the 01–03 December 2026 exam.',
+  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB) द्वारा समान पात्रता परीक्षा (CET सीनियर सेकेंडरी / 12वीं स्तर) 2026 के प्रवेश पत्र (Admit Card) 26 नवंबर 2026 को जारी किए जाएंगे। बोर्ड के संशोधित परीक्षा कैलेंडर के अनुसार परीक्षा 01, 02 एवं 03 दिसंबर 2026 को आयोजित की जाएगी। अभ्यर्थी अपने SSO ID (sso.rajasthan.gov.in) व एप्लीकेशन नंबर से एडमिट कार्ड डाउनलोड कर सकेंगे।',
+  description: 'Download Rajasthan CET 12th Level Admit Card 2026 releasing on 26 November 2026 via sso.rajasthan.gov.in and rssb.rajasthan.gov.in.',
+  descriptionHi: 'राजस्थान CET 12th लेवल परीक्षा में शामिल होने वाले लाखों अभ्यर्थियों के लिए बड़ी खबर है। RSSB द्वारा 26 नवंबर 2026 को ऑनलाइन ई-एडमिट कार्ड अपलोड कर दिए जाएंगे। परीक्षा 01 दिसंबर से 03 दिसंबर 2026 तक निर्धारित केंद्रों पर दो पारियों में संपन्न होगी। परीक्षा केंद्र पर प्रवेश पत्र के साथ मूल फोटो पहचान पत्र (आधार कार्ड/पैन कार्ड/वोटर आईडी) और नवीनतम रंगीन फोटो साथ ले जाना अनिवार्य होगा।',
+  jobLocation: 'Rajasthan (All Districts Exam Centres)',
+  salary: 'पात्रता परीक्षा (Rajasthan Govt 12th Level Vacancies)',
+  salaryHi: 'राजस्थान सरकार की 12वीं स्तर भर्तियों (पटवारी/पुलिस/एलडीसी/वनपाल) हेतु पात्रता परीक्षा',
+  ageLimit: { min: 18, max: 40, asOnDate: '2026-01-01' },
+  applicationFee: [{ category: 'Admit Card Download', amount: 'निःशुल्क (Online via SSO ID / Application No.)' }],
+  importantDates: {
+    notificationDate: '2026-11-19',
+    applyStartDate: '2026-09-01',
+    applyLastDate: '2026-10-01',
+    feeLastDate: '2026-10-01',
+    admitCardDate: '2026-11-26',
+    examDate: '01, 02 एवं 03 दिसंबर 2026'
+  },
+  latestNews: [
+    {
+      id: 'cet-admit-26-nov',
+      date: '2026-11-19',
+      badge: 'ADMIT CARD DATE',
+      headline: 'Rajasthan CET एडमिट कार्ड 26 नवंबर 2026 को जारी होंगे',
+      details: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा CET (सीनियर सेकेंडरी 12वीं स्तर) परीक्षा 01, 02 व 03 दिसंबर 2026 को आयोजित की जाएगी, जिसके प्रवेश पत्र 26 नवंबर 2026 को SSO पोर्टल एवं बोर्ड की वेबसाइट पर जारी होंगे।',
+      linkUrl: 'https://sso.rajasthan.gov.in/',
+      linkText: 'SSO Portal पर जाएं',
+      isHighlighted: true
+    }
+  ],
+  selectionProcess: [
+    'Written Objective Exam (01, 02 & 03 Dec 2026)',
+    'CET Score Card Declaration (1 Year Validity)'
+  ],
+  selectionProcessHi: [
+    'वस्तुनिष्ठ लिखित परीक्षा (01, 02 व 03 दिसंबर 2026)',
+    'CET स्कोर कार्ड एवं पात्रता प्रमाण पत्र जारी होना'
+  ],
+  examPattern: {
+    examMode: 'Offline OMR Based',
+    examModeHi: 'ऑफलाइन (OMR शीट आधारित वस्तुनिष्ठ परीक्षा)',
+    totalMarks: 300,
+    duration: '3 Hours (180 Minutes)',
+    durationHi: '3 घंटे (180 मिनट)',
+    negativeMarking: 'No Negative Marking',
+    negativeMarkingHi: 'कोई नेगेटिव मार्किंग नहीं (5वां विकल्प E अनिवार्य)',
+    subjects: [
+      { subject: 'Rajasthan GK, History, Culture, Geography, Polity & Economy', subjectHi: 'राजस्थान व भारत का इतिहास, कला-संस्कृति, भूगोल एवं राजनीति', marks: 120 },
+      { subject: 'General Science, Reasoning, Maths & Computer', subjectHi: 'दैनिक विज्ञान, तार्किक विवेचन, गणित एवं कंप्यूटर ज्ञान', marks: 110 },
+      { subject: 'General Hindi & General English', subjectHi: 'सामान्य हिंदी एवं सामान्य अंग्रेजी', marks: 70 }
+    ],
+    notesHi: [
+      'कुल 150 प्रश्न (300 अंक) पूछे जाएंगे।',
+      'कोई नकारात्मक अंकन (Negative Marking) नहीं है, लेकिन 5वां गोला (E विकल्प) नियम लागू रहेगा।',
+      'परीक्षा प्रारंभ होने से 1 घंटे पहले परीक्षा केंद्र में प्रवेश बंद हो जाएगा।'
+    ]
+  },
+  requiredDocumentsHi: [
+    'Rajasthan CET ई-एडमिट कार्ड (प्रिंट आउट)',
+    'मूल फोटो पहचान पत्र (आधार कार्ड / ड्राइविंग लाइसेंस / पासपोर्ट / वोटर आईडी)',
+    'नवीनतम पासपोर्ट साइज रंगीन फोटो (2.5 सेमी x 2.5 सेमी)',
+    'पारदर्शी नीला बॉल पॉइंट पेन (Transparent Blue Ball Pen)'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले राजस्थान SSO पोर्टल sso.rajasthan.gov.in या बोर्ड की वेबसाइट rssb.rajasthan.gov.in पर जाएं।',
+    'चरण 2: SSO ID और पासवर्ड से लॉगिन करके "Recruitment Portal" ऐप खोलें।',
+    'चरण 3: ऊपर दिए गए "Get Admit Card" टैब पर क्लिक करें।',
+    'चरण 4: "Common Eligibility Test (Senior Secondary Level) 2026" के सामने "Get Admit Card" चुनें।',
+    'चरण 5: स्क्रीन पर आपका प्रवेश पत्र खुल जाएगा — परीक्षा तिथि, पारी और केंद्र की जांच कर PDF प्रिंट निकाल लें।'
+  ],
+  directLinks: [
+    { label: 'Download Admit Card (SSO Rajasthan Portal - 26 Nov से सक्रिय)', actionText: 'SSO Portal', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
+    { label: 'RSSB Official Website (Admit Card Section)', actionText: 'Visit RSSB', url: 'https://rssb.rajasthan.gov.in/' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
+  officialLinks: {
+    admitCardUrl: 'https://sso.rajasthan.gov.in/',
+    notificationPdfUrl: 'https://rssb.rajasthan.gov.in/',
+    officialWebsiteUrl: 'https://rssb.rajasthan.gov.in/'
+  },
+  faqs: [
+    {
+      q: 'When will Rajasthan CET Admit Card 2026 be released?',
+      qHi: 'राजस्थान CET एडमिट कार्ड 2026 कब जारी होगा?',
+      a: 'Rajasthan CET (12th Level) Admit Card 2026 will be released on 26 November 2026.',
+      aHi: 'राजस्थान CET (सीनियर सेकेंडरी 12वीं स्तर) एडमिट कार्ड 26 नवंबर 2026 को आधिकारिक रूप से जारी किए जाएंगे।'
+    },
+    {
+      q: 'What are the Rajasthan CET 12th Level Exam Dates 2026?',
+      qHi: 'राजस्थान CET 2026 परीक्षा कब आयोजित होगी?',
+      a: 'The exam will be held on 01, 02, and 03 December 2026.',
+      aHi: 'RSSB के संशोधित परीक्षा कैलेंडर के अनुसार यह परीक्षा 01, 02 एवं 03 दिसंबर 2026 को आयोजित की जाएगी।'
+    },
+    {
+      q: 'How can I download Rajasthan CET Admit Card 2026?',
+      qHi: 'राजस्थान CET एडमिट कार्ड कैसे डाउनलोड करें?',
+      a: 'Log in at sso.rajasthan.gov.in, open Recruitment Portal -> Get Admit Card, or visit rssb.rajasthan.gov.in with Application Number & DOB.',
+      aHi: 'sso.rajasthan.gov.in पर लॉगिन करके Recruitment Portal में Get Admit Card से या rssb.rajasthan.gov.in पर आवेदन संख्या व जन्मतिथि डालकर डाउनलोड कर सकते हैं।'
+    }
+  ],
+  status: 'upcoming',
+  createdAt: '2026-11-19',
+  updatedAt: '2026-11-19'
+};
+
+export const UGC_NET_EXAM_DATE_2026: VacancyItem = {
+  id: 'ugc-net-exam-date-2026',
+  title: 'UGC NET Exam Date 2026 Update: NTA Announces December 2026 Exam Schedule (14–18 & 21 Dec), Check Shifts & City Slip',
+  titleHi: 'UGC NET Exam Date 2026 नया अपडेट: NTA ने घोषित की दिसंबर 2026 परीक्षा तिथि (14 से 18 व 21 दिसंबर), शिफ्ट व सिटी स्लिप देखें',
+  shortTitle: 'UGC NET Exam Date 2026 (New Update)',
+  shortTitleHi: 'UGC NET एग्जाम डेट 2026 (नया अपडेट)',
+  organization: 'UGC NET',
+  department: 'National Testing Agency (NTA) & University Grants Commission',
+  departmentHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) एवं विश्वविद्यालय अनुदान आयोग',
+  advtNo: 'NTA/UGC-NET/Dec-2026/Schedule',
+  category: 'exam_date',
+  tags: ['ugc net exam date 2026', 'ugc net december 2026', 'nta ugc net schedule', 'ugc net city slip', 'ugc net admit card 2026'],
+  isTrending: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 21400,
+  savesCount: 5180,
+  totalPosts: '83+ विषय (JRF, Assistant Professor & Ph.D)',
+  postName: 'UGC NET December 2026 CBT Examination Schedule',
+  postNameHi: 'यूजीसी नेट दिसंबर 2026 परीक्षा तिथि एवं शिफ्ट शेड्यूल',
+  qualification: ['PostGraduate'],
+  qualificationDetails: 'Candidates registered for UGC NET December 2026 Session (Assistant Professor, JRF & Ph.D Admission).',
+  qualificationDetailsHi: 'यूजीसी नेट दिसंबर 2026 सत्र के लिए आवेदन करने वाले स्नातकोत्तर अभ्यर्थी।',
+  briefSummary: 'NTA has released the updated UGC NET December 2026 Exam Date schedule: CBT exams will be conducted from 14 to 18 December and on 21 December 2026 in two shifts.',
+  briefSummaryHi: 'राष्ट्रीय परीक्षण एजेंसी (NTA) द्वारा यूजीसी नेट दिसंबर 2026 परीक्षा तिथि (UGC NET Exam Date 2026) को लेकर नया अपडेट जारी कर दिया गया है। जारी शेड्यूल के अनुसार परीक्षा 14 दिसंबर से 18 दिसंबर 2026 तथा 21 दिसंबर 2026 को देशभर के परीक्षा केंद्रों पर कंप्यूटर आधारित (CBT) मोड में दो पारियों में आयोजित की जाएगी। एग्जाम सिटी इंटिमेशन स्लिप परीक्षा से 21 दिन पहले ugcnet.nta.nic.in पर जारी की जाएगी।',
+  description: 'Complete new update for NTA UGC NET December 2026 Exam Date, Shift-I & Shift-II timings, City Intimation Slip, and Admit Card download steps.',
+  descriptionHi: 'यूजीसी नेट दिसंबर 2026 की तैयारी कर रहे लाखों अभ्यर्थियों के लिए NTA की ओर से महत्वपूर्ण परीक्षा कार्यक्रम अपडेट आ गया है। इस बार परीक्षा 6 दिनों (14, 15, 16, 17, 18 और 21 दिसंबर 2026) में 83+ विषयों के लिए आयोजित होगी।\n\n📌 नई परीक्षा शिफ्ट टाइमिंग (Shift Timings):\n• प्रथम पारी (Shift-I): सुबह 09:00 AM से दोपहर 12:00 PM तक\n• द्वितीय पारी (Shift-II): दोपहर 03:00 PM से शाम 06:00 PM तक\n\n📢 एग्जाम सिटी स्लिप व एडमिट कार्ड अपडेट:\n• परीक्षा शहर सूचना पर्ची (Exam City Intimation Slip) परीक्षा तिथि से लगभग 21 दिन पूर्व ugcnet.nta.nic.in पर उपलब्ध होगी।\n• विषयवार विस्तृत डेट शीट (Subject-wise Date Sheet) एवं हॉल टिकट परीक्षा से कुछ दिन पहले जारी किए जाएंगे।',
+  jobLocation: 'All India (CBT Exam Centres including Jaipur, Jodhpur, Udaipur, Kota, Ajmer, Bikaner)',
+  salary: 'JRF ₹37,000–₹42,000/month + Asst. Professor / Ph.D Eligibility',
+  salaryHi: 'JRF फैलोशिप: ₹37,000/- से ₹42,000/- प्रतिमाह + HRA एवं असिस्टेंट प्रोफेसर पात्रता',
+  ageLimit: {
+    min: 21,
+    max: 30,
+    asOnDate: '2026-12-01',
+    relaxationNotes: 'Max 30 years for JRF; No upper age limit for Assistant Professor & Ph.D only.',
+    relaxationNotesHi: 'JRF हेतु अधिकतम आयु 30 वर्ष (महिला/आरक्षित वर्गों को 5 वर्ष छूट); असिस्टेंट प्रोफेसर हेतु कोई ऊपरी आयु सीमा नहीं।'
+  },
+  applicationFee: [{ category: 'Exam Schedule Status', amount: 'तिथियां घोषित (14–18 व 21 दिसंबर 2026)' }],
+  importantDates: {
+    notificationDate: '2026-11-19',
+    applyStartDate: '2026-10-20',
+    applyLastDate: '2026-11-20',
+    feeLastDate: '2026-11-21',
+    admitCardDate: 'दिसंबर 2026 (सिटी स्लिप परीक्षा से 21 दिन पूर्व)',
+    examDate: '14, 15, 16, 17, 18 एवं 21 दिसंबर 2026'
+  },
+  latestNews: [
+    {
+      id: 'ugc-net-dec-2026-new-schedule',
+      date: '2026-11-19',
+      badge: 'NEW UPDATE',
+      headline: 'UGC NET दिसंबर 2026 परीक्षा तिथियां घोषित: 14 से 18 व 21 दिसंबर को होगी CBT परीक्षा',
+      details: 'NTA ने दिसंबर 2026 सत्र की परीक्षा तिथियों और दो पारियों (09:00 AM–12:00 PM व 03:00 PM–06:00 PM) का शेड्यूल जारी किया है। सिटी स्लिप परीक्षा से 21 दिन पहले ugcnet.nta.nic.in पर आएगी।',
+      linkUrl: 'https://ugcnet.nta.nic.in/',
+      linkText: 'NTA पोर्टल देखें',
+      isHighlighted: true
+    }
+  ],
+  selectionProcess: [
+    'CBT Exam: Paper-I & Paper-II (14–18 & 21 Dec 2026)',
+    'Provisional Answer Key & Response Sheet',
+    'Final Subject-wise Cut-off & E-Certificate (JRF / Asst Professor / Ph.D)'
+  ],
+  selectionProcessHi: [
+    'ऑनलाइन सीबीटी परीक्षा (14 से 18 एवं 21 दिसंबर 2026)',
+    'प्रोविजनल उत्तर कुंजी एवं आपत्ति निस्तारण',
+    'विषयवार कटऑफ, परिणाम एवं JRF/NET ई-सर्टिफिकेट'
+  ],
+  examPattern: {
+    examMode: 'Online Computer Based Test (CBT)',
+    examModeHi: 'ऑनलाइन कंप्यूटर आधारित परीक्षा (CBT - Shift I & II)',
+    totalMarks: 300,
+    duration: '3 Hours (180 Minutes Combined)',
+    durationHi: '3 घंटे (180 मिनट - बिना किसी ब्रेक के)',
+    negativeMarking: 'No Negative Marking (+2 per correct)',
+    negativeMarkingHi: 'कोई नेगेटिव मार्किंग नहीं (प्रत्येक सही उत्तर के +2 अंक)',
+    subjects: [
+      { subject: 'Paper I: General Teaching & Research Aptitude (50 Qs)', subjectHi: 'पेपर I: शिक्षण एवं शोध अभिक्षमता (50 प्रश्न)', marks: 100 },
+      { subject: 'Paper II: Concerned Post Graduate Subject (100 Qs)', subjectHi: 'पेपर II: संबंधित स्नातकोत्तर विषय (100 प्रश्न)', marks: 200 }
+    ],
+    notesHi: [
+      'Shift-I का समय सुबह 09:00 AM से दोपहर 12:00 PM और Shift-II का समय दोपहर 03:00 PM से शाम 06:00 PM रहेगा।',
+      'कुल 150 बहुविकल्पीय प्रश्न होंगे और किसी भी गलत उत्तर पर अंक नहीं कटेंगे।',
+      'अभ्यर्थियों को परीक्षा केंद्र पर 90 मिनट पहले रिपोर्ट करना होगा।'
+    ]
+  },
+  requiredDocumentsHi: [
+    'UGC NET दिसंबर 2026 एडमिट कार्ड (A4 साइज प्रिंट)',
+    'मूल फोटो पहचान पत्र (आधार कार्ड / पैन कार्ड / पासपोर्ट / ड्राइविंग लाइसेंस)',
+    'दो पासपोर्ट साइज फोटो (आवेदन फॉर्म में अपलोड की गई फोटो के समान)',
+    'दिव्यांग प्रमाण पत्र (यदि PwD श्रेणी लागू हो)'
+  ],
+  howToApplyHi: [
+    'चरण 1: NTA UGC NET की आधिकारिक वेबसाइट ugcnet.nta.nic.in पर जाएं।',
+    'चरण 2: होमपेज पर "Latest News" में "UGC NET December 2026 Exam Schedule / City Intimation Slip" लिंक पर क्लिक करें।',
+    'चरण 3: विषयवार परीक्षा तिथि की PDF जांचें या अपना Application Number व जन्मतिथि दर्ज करें।',
+    'चरण 4: अपनी परीक्षा तिथि, परीक्षा शहर और शिफ्ट (Shift-I या Shift-II) की जानकारी डाउनलोड कर सुरक्षित रखें।'
+  ],
+  directLinks: [
+    { label: 'NTA UGC NET Official Website (Exam Date & City Slip)', actionText: 'Visit Portal', url: 'https://ugcnet.nta.nic.in/', isPrimary: true },
+    { label: 'UGC NET Dec 2026 Complete Notification & Preparation Guide', actionText: 'View Post', url: '/?vacancy=ugc-net-2026-dec' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
+  officialLinks: {
+    notificationPdfUrl: 'https://ugcnet.nta.nic.in/',
+    admitCardUrl: 'https://ugcnet.nta.nic.in/',
+    officialWebsiteUrl: 'https://ugcnet.nta.nic.in/'
+  },
+  faqs: [
+    {
+      q: 'What is the new UGC NET December 2026 Exam Date?',
+      qHi: 'UGC NET दिसंबर 2026 की नई परीक्षा तिथि क्या है?',
+      a: 'NTA will conduct the UGC NET December 2026 CBT exam from 14 to 18 December and on 21 December 2026.',
+      aHi: 'NTA के नए अपडेट के अनुसार यूजीसी नेट दिसंबर 2026 की परीक्षा 14 से 18 दिसंबर 2026 और 21 दिसंबर 2026 को आयोजित की जाएगी।'
+    },
+    {
+      q: 'What are the shift timings for UGC NET Exam 2026?',
+      qHi: 'यूजीसी नेट 2026 परीक्षा की शिफ्ट टाइमिंग क्या रहेगी?',
+      a: 'Shift I runs from 09:00 AM to 12:00 PM and Shift II runs from 03:00 PM to 06:00 PM.',
+      aHi: 'प्रथम पारी (Shift-I) सुबह 09:00 AM से दोपहर 12:00 PM तक तथा द्वितीय पारी (Shift-II) दोपहर 03:00 PM से शाम 06:00 PM तक आयोजित होगी।'
+    },
+    {
+      q: 'When will UGC NET Exam City Slip and Admit Card 2026 release?',
+      qHi: 'UGC NET सिटी स्लिप और एडमिट कार्ड कब जारी होंगे?',
+      a: 'City Intimation Slip is released 21 days before the exam date and Admit Cards follow on ugcnet.nta.nic.in.',
+      aHi: 'एग्जाम सिटी स्लिप परीक्षा तिथि से 21 दिन पहले और एडमिट कार्ड परीक्षा से कुछ दिन पूर्व ugcnet.nta.nic.in पर जारी किए जाएंगे।'
+    }
+  ],
+  status: 'active',
+  createdAt: '2026-11-19',
+  updatedAt: '2026-11-19'
+};
+
 export const RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026: VacancyItem = {
   id: 'rpsc-protection-officer-admit-card-2026',
   title: 'RPSC Protection Officer Admit Card 2026 Released: 15 नवंबर परीक्षा के प्रवेश पत्र जारी, SSO से डाउनलोड करें',
@@ -661,6 +923,44 @@ export const CM_HIGHER_EDUCATION_SCHOLARSHIP_YOJANA_2026: VacancyItem = {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
     officialWebsiteUrl: 'https://hte.rajasthan.gov.in/'
   },
+  yojanaOverview: {
+    yojanaName: 'मुख्यमंत्री उच्च शिक्षा छात्रवृत्ति योजना 2026-27',
+    state: 'राजस्थान',
+    department: 'कॉलेज शिक्षा आयुक्तालय (DCE), राजस्थान सरकार',
+    academicSession: '2026-27',
+    beneficiaries: 'RBSE 12वीं में 60%+ अंक प्राप्त नियमित कॉलेज विद्यार्थी',
+    monthlyAssistance: '₹500/- प्रति माह (10 माह हेतु)',
+    maxAnnualAssistance: '₹5,000/- प्रति वर्ष (दिव्यांग हेतु ₹10,000/-)',
+    totalBeneficiariesCount: '1,00,000+ पात्र विद्यार्थी',
+    applyStartDate: '01 अक्टूबर 2026',
+    applyLastDate: '30 नवंबर 2026',
+    applyMode: 'ऑनलाइन (SSO पोर्टल DCE Scholarship App)',
+    paymentMode: 'DBT (सीधे आधार लिंक बैंक खाते में)',
+    officialWebsite: 'hte.rajasthan.gov.in / sso.rajasthan.gov.in'
+  },
+  yojanaGeneralInfo: {
+    headingHi: 'मुख्यमंत्री उच्च शिक्षा छात्रवृत्ति योजना क्या है? (उद्देश्य व लाभ)',
+    descriptionHi: 'राजस्थान सरकार के कॉलेज शिक्षा आयुक्तालय द्वारा अल्प आय वर्ग के मेधावी विद्यार्थियों को उच्च शिक्षा जारी रखने हेतु आर्थिक संबल देने के लिए यह छात्रवृत्ति योजना संचालित की जाती है।',
+    objectiveHi: '12वीं कक्षा में उत्कृष्ट अंक प्राप्त करने वाले जरूरतमंद विद्यार्थियों को कॉलेज की पढ़ाई व पुस्तकों के खर्च हेतु वार्षिक वित्तीय सहायता प्रदान करना।',
+    benefitsSummaryHi: 'चयनित सामान्य पात्र विद्यार्थियों को ₹500 प्रति माह (अधिकतम 10 माह के लिए कुल ₹5,000/- प्रति वर्ष) तथा दिव्यांग विद्यार्थियों को ₹1,000 प्रति माह (वार्षिक ₹10,000/-) की छात्रवृत्ति DBT द्वारा बैंक खाते में मिलती है।',
+    keyPointsHi: [
+      'आवेदन SSO पोर्टल (sso.rajasthan.gov.in) पर Scholarship (DCE) ऐप के माध्यम से ऑनलाइन किया जाता है।',
+      'कोई लिखित परीक्षा नहीं होती, चयन 12वीं बोर्ड के अंकों की मेरिट व कॉलेज सत्यापन के आधार पर होता है।',
+      'छात्रवृत्ति की राशि सीधे लाभार्थी विद्यार्थी के जन आधार से जुड़े बैंक खाते में ट्रांसफर होती है।'
+    ]
+  },
+  yojanaEligibility: {
+    headingHi: 'मुख्यमंत्री उच्च शिक्षा छात्रवृत्ति 2026-27 पात्रता शर्तें व आय सीमा',
+    criteriaHi: [
+      'आवेदक विद्यार्थी राजस्थान राज्य का मूल निवासी होना चाहिए।',
+      'विद्यार्थी ने राजस्थान माध्यमिक शिक्षा बोर्ड (RBSE), अजमेर की 12वीं परीक्षा न्यूनतम 60% अंकों के साथ उत्तीर्ण की हो और वरीयता सूची के प्रथम 1 लाख विद्यार्थियों में शामिल हो।',
+      'विद्यार्थी राजस्थान के किसी मान्यता प्राप्त महाविद्यालय/विश्वविद्यालय में नियमित (Regular) अध्ययनरत होना चाहिए।',
+      'विद्यार्थी किसी अन्य सरकारी छात्रवृत्ति योजना का लाभ न ले रहा हो एवं उसका स्वयं का बैंक खाता जन आधार से लिंक हो।'
+    ],
+    incomeLimitHi: [
+      'परिवार के माता-पिता/अभिभावक की सभी स्रोतों से कुल वार्षिक आय ₹2,50,000/- (2.50 लाख रुपये) से अधिक नहीं होनी चाहिए।'
+    ]
+  },
   status: 'active',
   createdAt: '2026-11-13',
   updatedAt: '2026-11-13'
@@ -716,6 +1016,43 @@ export const DEVNARAYAN_SCOOTY_YOJANA_2026: VacancyItem = {
   officialLinks: {
     applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
     officialWebsiteUrl: 'https://hte.rajasthan.gov.in/'
+  },
+  yojanaOverview: {
+    yojanaName: 'देवनारायण छात्रा स्कूटी वितरण एवं प्रोत्साहन राशि योजना 2026-27',
+    state: 'राजस्थान',
+    department: 'उच्च शिक्षा विभाग (DCE), राजस्थान सरकार',
+    academicSession: '2026-27',
+    beneficiaries: 'अति पिछड़ा वर्ग (MBC) की 12वीं में 50%+ अंक प्राप्त नियमित कॉलेज छात्राएं',
+    maxAnnualAssistance: 'निःशुल्क स्कूटी अथवा ₹10,000 – ₹20,000/- प्रोत्साहन राशि',
+    totalBeneficiariesCount: '1,500+ निःशुल्क स्कूटी + प्रोत्साहन राशि',
+    applyStartDate: '01 अक्टूबर 2026',
+    applyLastDate: '30 नवंबर 2026',
+    applyMode: 'ऑनलाइन (SSO पोर्टल Scholarship App)',
+    paymentMode: 'निःशुल्क स्कूटी वितरण / DBT प्रोत्साहन राशि',
+    officialWebsite: 'hte.rajasthan.gov.in / sso.rajasthan.gov.in'
+  },
+  yojanaGeneralInfo: {
+    headingHi: 'देवनारायण छात्रा स्कूटी योजना क्या है? (मुख्य लाभ व उद्देश्य)',
+    descriptionHi: 'अति पिछड़ा वर्ग (MBC - गुर्जर, बंजारा, गाडिया लुहार, रायका/रेबारी, गडरिया) की मेधावी छात्राओं को उच्च शिक्षा में आगे बढ़ने हेतु प्रोत्साहित करने के लिए यह योजना चलाई जा रही है।',
+    objectiveHi: 'कॉलेज एवं विश्वविद्यालय स्तर पर नियमित अध्ययन करने वाली MBC वर्ग की छात्राओं को आवागमन की सुविधा (फ्री स्कूटी) एवं छात्रवृत्ति प्रोत्साहन देना।',
+    benefitsSummaryHi: 'वरीयता सूची में चयनित 1,500+ छात्राओं को निःशुल्क स्कूटी (1 वर्ष बीमा + हेलमेट सहित) दी जाती है तथा वरीयता से शेष पात्र छात्राओं को स्नातक/स्नातकोत्तर में ₹10,000 से ₹20,000/- वार्षिक प्रोत्साहन राशि प्रदान की जाती है।',
+    keyPointsHi: [
+      'योजना का लाभ राजस्थान की मूल निवासी MBC वर्ग की अविवाहित/विवाहित सभी पात्र छात्राओं को मिलता है।',
+      'स्नातक प्रथम वर्ष (BA/BSc/BCom) में ₹10,000/- प्रति वर्ष एवं स्नातकोत्तर (PG) में ₹20,000/- प्रोत्साहन राशि का प्रावधान है।',
+      'स्कूटी सुपुर्दगी से 5 वर्ष तक छात्रा वाहन को बेच या हस्तांतरित नहीं कर सकती।'
+    ]
+  },
+  yojanaEligibility: {
+    headingHi: 'देवनारायण छात्रा स्कूटी योजना 2026-27 पात्रता व आय सीमा',
+    criteriaHi: [
+      'छात्रा राजस्थान की मूल निवासी और अति पिछड़ा वर्ग (MBC) से संबंधित होनी चाहिए।',
+      'RBSE / CBSE 12वीं परीक्षा में न्यूनतम 50% या उससे अधिक अंक प्राप्त किए हों।',
+      '12वीं उत्तीर्ण करने के पश्चात राजकीय/मान्यता प्राप्त निजी कॉलेज में स्नातक प्रथम वर्ष में नियमित (Regular) प्रवेश लिया हो।',
+      'परिवार का जन आधार कार्ड और छात्रा का बैंक खाता आधार से लिंक होना आवश्यक है।'
+    ],
+    incomeLimitHi: [
+      'माता-पिता/अभिभावक/पति की कुल वार्षिक आय ₹2,50,000/- (2.50 लाख रुपये) से अधिक न हो।'
+    ]
   },
   status: 'active',
   createdAt: '2026-11-11',
@@ -804,7 +1141,128 @@ export const RRB_GROUP_D_RESULT_2026_NEWS: VacancyItem = {
   updatedAt: '2026-11-16'
 };
 
+export const GOPAL_CREDIT_CARD_YOJANA_2026: VacancyItem = {
+  id: 'gopal-credit-card-yojana-2026',
+  title: 'Rajasthan Gopal Credit Card Yojana 2026: पशुपालकों को ₹1 लाख तक ब्याज-मुक्त लोन, पात्रता, दस्तावेज व ऑनलाइन आवेदन',
+  titleHi: 'राजस्थान गोपाल क्रेडिट कार्ड योजना 2026: गोपालकों को मिलेगा ₹1 लाख तक 0% ब्याज लोन, ऑनलाइन आवेदन प्रक्रिया देखें',
+  shortTitle: 'Gopal Credit Card Yojana 2026',
+  shortTitleHi: 'गोपाल क्रेडिट कार्ड योजना 2026',
+  organization: 'Sarkari Yojana',
+  department: 'Cooperative Department & Animal Husbandry, Government of Rajasthan',
+  departmentHi: 'सहकारिता विभाग एवं पशुपालन विभाग, राजस्थान सरकार',
+  advtNo: 'GCCY-Rajasthan/2026',
+  category: 'scheme',
+  tags: ['yojana', 'gopal credit card yojana 2026', 'rajasthan yojana', 'pashupalak loan', 'sarkari yojana'],
+  isTrending: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 18240,
+  savesCount: 4610,
+  totalPosts: '5 लाख+ गोपालक किसान (₹1 लाख लोन)',
+  postName: 'Mukhyamantri Gopal Credit Card Loan Scheme 2026 (0% Interest)',
+  postNameHi: 'राजस्थान गोपाल क्रेडिट कार्ड योजना (₹1 लाख तक ब्याज-मुक्त ऋण)',
+  qualification: ['10th'],
+  qualificationDetails: 'Permanent resident of Rajasthan engaged in dairy/animal husbandry & member of Cooperative Dairy Society.',
+  qualificationDetailsHi: 'राजस्थान का मूल निवासी गोपालक / पशुपालक जो दुग्ध उत्पादक सहकारी समिति से जुड़ा हो (न्यूनतम आयु 18 वर्ष)।',
+  briefSummary: 'Rajasthan Gopal Credit Card Yojana 2026 provides interest-free short-term loan up to ₹1,00,000 for dairy and livestock farmers. Check eligibility, required documents, and SSO/RajSahakar apply online steps.',
+  briefSummaryHi: 'राजस्थान सरकार द्वारा पशुपालकों और दुग्ध उत्पादक किसानों की आर्थिक मदद के लिए गोपाल क्रेडिट कार्ड योजना (GCCY 2026) संचालित की जा रही है। इस योजना के अंतर्गत पात्र गोपालक परिवारों को डेयरी उपकरण, पशु शेड निर्माण, चारा कटर व पशु आहार हेतु ₹1,00,000/- तक का अल्पकालीन ऋण 0% ब्याज दर (ब्याज-मुक्त) पर बिना किसी गारंटी के उपलब्ध कराया जाता है। इच्छुक पशुपालक SSO पोर्टल, राजसहकार पोर्टल या नजदीकी E-Mitra के माध्यम से ऑनलाइन आवेदन कर सकते हैं।',
+  description: 'Complete details of Rajasthan Gopal Credit Card Yojana 2026 including ₹1 Lakh loan benefit, eligibility conditions, cooperative bank process, documents, and online application steps.',
+  descriptionHi: 'किसान क्रेडिट कार्ड (KCC) की तर्ज पर शुरू की गई गोपाल क्रेडिट कार्ड योजना से 1 वर्ष के भीतर ऋण चुकाने पर कोई ब्याज नहीं देना होता है।',
+  jobLocation: 'Rajasthan (All Districts)',
+  salary: '₹1,00,000/- तक ब्याज-मुक्त ऋण (0% Interest)',
+  salaryHi: '₹1,00,000/- तक का अल्पकालीन ब्याज-मुक्त ऋण (0% ब्याज)',
+  ageLimit: { min: 18, max: 65, asOnDate: '2026-11-18' },
+  applicationFee: [{ category: 'सभी पात्र पशुपालक (All Applicants)', amount: '₹0/- (निःशुल्क आवेदन)' }],
+  importantDates: {
+    notificationDate: '2026-11-18',
+    applyStartDate: '2026-11-18',
+    applyLastDate: '2027-03-31',
+    feeLastDate: '2027-03-31',
+    admitCardDate: 'कोई परीक्षा नहीं (दस्तावेज सत्यापन आधारित)',
+    examDate: 'सत्यापन के बाद सीधे बैंक खाते में लोन'
+  },
+  selectionProcess: [
+    'Online Application via SSO / RajSahakar Portal or E-Mitra',
+    'Verification by Gram Seva Sahakari Samiti (PACS) / Cooperative Bank',
+    'Credit Limit Approval & Card Issue',
+    'Loan Disbursement to Bank Account (Up to ₹1 Lakh)'
+  ],
+  selectionProcessHi: [
+    'SSO / RajSahakar पोर्टल या E-Mitra से ऑनलाइन आवेदन',
+    'ग्राम सेवा सहकारी समिति (PACS) एवं केंद्रीय सहकारी बैंक द्वारा सत्यापन',
+    'गोपाल क्रेडिट कार्ड स्वीकृति (Credit Limit Approval)',
+    'बैंक खाते में ₹1 लाख तक ऋण राशि ट्रांसफर'
+  ],
+  faqs: [
+    {
+      qHi: 'राजस्थान गोपाल क्रेडिट कार्ड योजना में कितना लोन मिलता है?',
+      aHi: 'पात्र पशुपालक एवं दुग्ध उत्पादक किसानों को ₹1,00,000/- (एक लाख रुपये) तक का अल्पकालीन ऋण बिना ब्याज (0% ब्याज दर) के दिया जाता है।',
+      q: 'How much loan is provided under Rajasthan Gopal Credit Card Yojana 2026?',
+      a: 'Eligible dairy and livestock farmers in Rajasthan receive an interest-free short-term loan of up to ₹1,00,000 (0% interest on timely repayment within 1 year).'
+    },
+    {
+      qHi: 'गोपाल क्रेडिट कार्ड योजना के लिए ऑनलाइन आवेदन कैसे करें?',
+      aHi: 'आप अपनी राजस्थान SSO ID से sso.rajasthan.gov.in पर लॉगिन करके RajSahakar (Cooperative) ऐप के माध्यम से अथवा नजदीकी E-Mitra / ग्राम सेवा सहकारी समिति पर जाकर आवेदन कर सकते हैं।',
+      q: 'How to apply online for Gopal Credit Card Yojana?',
+      a: 'Log in to sso.rajasthan.gov.in, select the RajSahakar portal, fill in your Jan Aadhaar and dairy society details, upload documents, and submit online or via your nearest E-Mitra.'
+    }
+  ],
+  directLinks: [
+    { label: 'Apply Online (SSO Rajasthan Portal)', actionText: 'Apply Online', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
+    { label: 'RajSahakar Cooperative Official Portal', actionText: 'Visit Portal', url: 'https://rajsahakar.rajasthan.gov.in/' },
+    { label: 'Rajasthan Cooperative Department Website', actionText: 'Official Website', url: 'https://cooperative.rajasthan.gov.in/' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
+    officialWebsiteUrl: 'https://rajsahakar.rajasthan.gov.in/'
+  },
+  yojanaOverview: {
+    yojanaName: 'राजस्थान मुख्यमंत्री गोपाल क्रेडिट कार्ड योजना (GCCY 2026)',
+    state: 'राजस्थान (सभी जिले)',
+    department: 'सहकारिता विभाग एवं पशुपालन विभाग, राजस्थान सरकार',
+    beneficiaries: 'राजस्थान के दुग्ध उत्पादक एवं पशुपालक (गोपालक किसान)',
+    maxAnnualAssistance: '₹1,00,000/- तक 0% ब्याज-मुक्त ऋण (बिना गारंटी)',
+    totalBeneficiariesCount: '5 लाख+ गोपालक परिवार (प्रथम व द्वितीय चरण लक्ष्य)',
+    applyStartDate: '18 नवंबर 2026',
+    applyLastDate: '31 मार्च 2027',
+    applyMode: 'ऑनलाइन (SSO / RajSahakar पोर्टल या E-Mitra)',
+    paymentMode: 'केंद्रीय सहकारी बैंक द्वारा सीधे बैंक खाते में ऋण राशि',
+    officialWebsite: 'rajsahakar.rajasthan.gov.in / sso.rajasthan.gov.in'
+  },
+  yojanaGeneralInfo: {
+    headingHi: 'राजस्थान गोपाल क्रेडिट कार्ड योजना 2026 क्या है? (सामान्य जानकारी व लाभ)',
+    descriptionHi: 'किसान क्रेडिट कार्ड (KCC) की तर्ज पर राजस्थान सरकार ने पशुपालक व दुग्ध उत्पादक किसानों की आय बढ़ाने और डेयरी व्यवसाय को मजबूत करने के लिए गोपाल क्रेडिट कार्ड योजना (Gopal Credit Card Yojana 2026) शुरू की है।',
+    objectiveHi: 'ग्रामीण पशुपालकों को साहूकारों के महंगे कर्ज से बचाकर पशुधन शेड, चारा, बांटा व डेयरी उपकरण खरीदने हेतु सस्ता एवं ब्याज-मुक्त अल्पकालीन ऋण उपलब्ध कराना।',
+    benefitsSummaryHi: 'पात्र गोपालक परिवारों को ₹1,00,000/- (एक लाख रुपये) तक का अल्पकालीन ऋण बिना किसी ब्याज (0% ब्याज दर) और बिना गारंटी के दिया जाता है। समय पर 1 वर्ष के भीतर ऋण चुकाने पर शत-प्रतिशत ब्याज अनुदान सरकार द्वारा वहन किया जाता है।',
+    keyPointsHi: [
+      'ऋण राशि का उपयोग गोवंश/पशु आहार, हरा चारा, चारा कटर मशीन, दूध निकालने की मशीन (Milking Machine) व पशु शेड निर्माण में किया जा सकता है।',
+      'ऋण पर 0% ब्याज लाभ लेने के लिए स्वीकृत ऋण राशि को 1 वर्ष (12 माह) की अवधि के भीतर वापस जमा कराना अनिवार्य है।',
+      'ऑनलाइन आवेदन के बाद संबंधित ग्राम सेवा सहकारी समिति (PACS) व केंद्रीय सहकारी बैंक द्वारा भौतिक सत्यापन किया जाता है।'
+    ]
+  },
+  yojanaEligibility: {
+    headingHi: 'गोपाल क्रेडिट कार्ड योजना 2026 के लिए पात्रता शर्तें',
+    criteriaHi: [
+      'आवेदक राजस्थान राज्य का स्थायी / मूल निवासी गोपालक या पशुपालक किसान होना चाहिए।',
+      'आवेदक परिवार के पास दुधारू पशु (गाय/भैंस) होने चाहिए तथा वह स्थानीय प्राथमिक दुग्ध उत्पादक सहकारी समिति (Dairy Cooperative Society) का सदस्य हो।',
+      'आवेदक की न्यूनतम आयु 18 वर्ष होनी चाहिए तथा उसका जन आधार कार्ड, आधार कार्ड व बैंक खाता सक्रिय होना चाहिए।',
+      'आवेदक किसी भी सहकारी या राष्ट्रीयकृत बैंक का डिफॉल्टर (बकायादार) नहीं होना चाहिए।'
+    ],
+    incomeLimitHi: [
+      'किसी विशेष आय सीमा की बाध्यता नहीं है, परंतु सक्रिय दुग्ध उत्पादक / पशुपालक किसान परिवार होना आवश्यक है।'
+    ]
+  },
+  status: 'active',
+  createdAt: '2026-11-18',
+  updatedAt: '2026-11-18'
+};
+
 export const ALL_SECTION_UPDATES_NOV_2026: VacancyItem[] = [
+  RAJASTHAN_CET_ADMIT_CARD_NOV_2026,
+  UGC_NET_EXAM_DATE_2026,
+  GOPAL_CREDIT_CARD_YOJANA_2026,
   RRB_GROUP_D_RESULT_2026_NEWS,
   RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026,
   RSSB_TEACHING_ASSOCIATE_ADMIT_CARD_2026,

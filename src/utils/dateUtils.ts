@@ -395,7 +395,7 @@ export const formatDateDDMMYYYY = (dateVal?: string | null, fallback = 'शी�
   return trimmed;
 };
 
-export const AUTO_DELETE_MAX_AGE_DAYS = 60;
+export const AUTO_DELETE_MAX_AGE_DAYS = 20;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface ExpirablePostLike {
@@ -422,7 +422,7 @@ export const getPostPublishedTimestamp = (v?: ExpirablePostLike | null): number 
 };
 
 /**
- * Returns true when a post is strictly older than `maxAgeDays` (default 60 days)
+ * Returns true when a post is strictly older than `maxAgeDays` (default 20 days)
  * and should be automatically deleted from active listings, sitemaps, and feeds.
  */
 export const isPostOlderThanDays = (
@@ -449,7 +449,7 @@ export const isPostOlderThanDays = (
 };
 
 /**
- * Filters out posts older than `maxAgeDays` (default 60 days).
+ * Filters out posts older than `maxAgeDays` (default 20 days).
  */
 export const filterActivePostsWithinDays = <T extends ExpirablePostLike>(
   items: T[],

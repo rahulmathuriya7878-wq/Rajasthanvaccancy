@@ -39,7 +39,8 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
     .replace(/:\s*Notification Released.*$/i, '')
     .trim();
 
-  const totalPosts = item.totalPosts || 'विभिन्न पद';
+  const isYojana = item.category === 'scheme';
+  const totalPosts = item.totalPosts || (isYojana ? 'पात्र लाभार्थी' : 'विभिन्न पद');
 
   // Integrated date resolution for all posts across the portal formatted as DD/MM/YYYY
   const resolved = resolveJobDates(item);
@@ -55,6 +56,11 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
 
   const startDateText = formatDateDDMMYYYY(rawStartDate, 'शीघ्र');
   const lastDateText = formatDateDDMMYYYY(rawLastDate, 'शीघ्र');
+
+  if (isYojana) {
+    const benefitText = item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary || totalPosts;
+    return `🚨 *सरकारी योजना अपडेट* 🚨\n\n📋 *योजना का नाम:* ${postTitle}\n🎁 *मुख्य लाभ / सहायता:* ${benefitText}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDateText}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDateText}\n\n👇 *योजना की पात्रता, दस्तावेज व ऑनलाइन आवेदन प्रक्रिया देखें:*\n${shareUrl}`;
+  }
 
   return `🚨 *BIG अपडेट* 🚨\n\n📋 *भर्ती का नाम:* ${postTitle}\n🔢 *कुल पद:* ${totalPosts}\n💳 *आवेदन की प्रारंभ तिथि:* ${startDateText}\n⏳ *आवेदन की अंतिम तिथि:* ${lastDateText}\n\n👇 *संपूर्ण विवरण पढ़ें व ऑनलाइन फॉर्म भरें:*\n${shareUrl}`;
 }

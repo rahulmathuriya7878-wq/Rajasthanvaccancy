@@ -81,29 +81,36 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
       </nav>
 
       {/* Category Archive Header Card */}
-      <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-[#1e953a]">
+      <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-[#1e953a] px-2 py-0.5 rounded">
-              {isHi ? 'श्रेणी अभिलेखागार' : 'Category Archive'}
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#15803d] mb-1">
+            <span>
+              {categoryKey === 'scheme'
+                ? (isHi ? 'सरकारी योजना अभिलेखागार' : 'Sarkari Yojana Archive')
+                : (isHi ? 'श्रेणी अभिलेखागार' : 'Category Archive')}
             </span>
-            <span className="text-xs text-slate-500 font-medium">
-              {vacancies.length} {isHi ? 'पोस्ट उपलब्ध' : 'Posts found'}
+            <span aria-hidden="true" className="text-slate-300">·</span>
+            <span className="text-slate-500 font-medium tabular-nums">
+              {vacancies.length} {categoryKey === 'scheme' ? (isHi ? 'योजनाएं उपलब्ध' : 'Schemes found') : (isHi ? 'पोस्ट उपलब्ध' : 'Posts found')}
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 headlight">
             {isHi ? categoryTitleHi : categoryTitle}
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            {isHi 
-              ? `${categoryTitleHi} से संबंधित सभी आधिकारिक सूचनाएं, डाउनलोड लिंक्स एवं महत्वपूर्ण अपडेट्स।`
-              : `All recent notifications, official links, and updates filed under ${categoryTitle}.`}
+          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+            {categoryKey === 'scheme'
+              ? (isHi
+                  ? 'राजस्थान एवं केंद्र सरकार की सभी जनकल्याणकारी योजनाओं, छात्रवृत्ति, लोन सब्सिडी, पात्रता शर्तें, आवश्यक दस्तावेज व ऑनलाइन आवेदन की संपूर्ण जानकारी।'
+                  : 'Complete details of Rajasthan & Central Government welfare schemes, scholarships, subsidies, eligibility, documents, and online apply portals.')
+              : (isHi
+                  ? `${categoryTitleHi} से संबंधित सभी आधिकारिक सूचनाएं, डाउनलोड लिंक्स एवं महत्वपूर्ण अपडेट्स।`
+                  : `All recent notifications, official links, and updates filed under ${categoryTitle}.`)}
           </p>
         </div>
 
         <button
           onClick={onClearCategory}
-          className="self-start md:self-center px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          className="self-start md:self-center px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{isHi ? 'सभी अपडेट्स देखें' : 'View All Updates'}</span>
@@ -204,9 +211,28 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                             }}
                             className="text-blue-600 hover:text-blue-800 hover:underline font-bold cursor-pointer inline-flex items-center"
                           >
-                            Read more »
+                            {categoryKey === 'scheme' ? (isHi ? 'योजना विवरण पढ़ें »' : 'View Scheme »') : 'Read more »'}
                           </a>
                         </p>
+                        {categoryKey === 'scheme' && (
+                          <div className="mt-2.5 pt-2.5 border-t border-slate-100 text-xs text-slate-600 flex items-center gap-2 flex-wrap">
+                            {(item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary) && (
+                              <span>
+                                <strong className="text-emerald-800">{isHi ? 'मुख्य लाभ:' : 'Benefit:'}</strong>{' '}
+                                {item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary}
+                              </span>
+                            )}
+                            {(item.departmentHi || item.department) && (
+                              <>
+                                <span aria-hidden="true" className="text-slate-300">·</span>
+                                <span>
+                                  <strong className="text-slate-800">{isHi ? 'विभाग:' : 'Dept:'}</strong>{' '}
+                                  {isHi ? (item.departmentHi || item.department) : item.department}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -223,7 +249,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                         onClick={() => onSelectVacancy(item)}
                         className="comments-link text-slate-600 hover:text-blue-600 flex items-center gap-1 cursor-pointer font-medium hover:underline"
                       >
-                        <span>Leave a comment</span>
+                        <span>{categoryKey === 'scheme' ? (isHi ? 'पात्रता व आवेदन देखें' : 'Eligibility & Apply') : 'Leave a comment'}</span>
                       </button>
                     </footer>
                   </article>
@@ -255,14 +281,16 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
           {/* 1. Sidebar Search Widget */}
           <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs">
             <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-2 mb-3 headlight">
-              {isHi ? 'भर्ती या सूचना खोजें' : 'Search Posts'}
+              {categoryKey === 'scheme'
+                ? (isHi ? 'सरकारी योजना खोजें' : 'Search Schemes')
+                : (isHi ? 'भर्ती या सूचना खोजें' : 'Search Posts')}
             </h3>
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery && setSearchQuery(e.target.value)}
-                placeholder={isHi ? 'यहाँ सर्च करें...' : 'Search here...'}
+                placeholder={categoryKey === 'scheme' ? (isHi ? 'योजना का नाम खोजें...' : 'Search scheme...') : (isHi ? 'यहाँ सर्च करें...' : 'Search here...')}
                 className="w-full bg-slate-50 focus:bg-white text-slate-900 text-xs pl-8 pr-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#1e953a]"
               />
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />

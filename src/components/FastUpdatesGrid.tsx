@@ -143,7 +143,20 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
     return rawDate;
   };
 
+  const getYojanaBenefitSummary = (item: VacancyItem) => {
+    const raw =
+      item.yojanaOverview?.maxAnnualAssistance ||
+      item.yojanaOverview?.monthlyAssistance ||
+      item.salaryHi ||
+      item.salary ||
+      (typeof item.totalPosts === 'string' ? item.totalPosts : '');
+    if (!raw || raw === 'विभिन्न पद') return '';
+    return raw.length > 52 ? `${raw.slice(0, 50).trim()}…` : raw;
+  };
+
   const renderSectionBox = (sec: typeof row1Sections[0]) => {
+    const isYojanaBox = sec.key === 'scheme';
+
     return (
       <div 
         key={sec.key}
@@ -171,16 +184,25 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
           >
             {sec.title}
           </a>
+          {isYojanaBox && (
+            <p className="text-[11px] font-semibold text-emerald-800 text-center mt-1.5 tracking-normal">
+              {isHi
+                ? 'सरकारी योजनाएं · लाभ, पात्रता, दस्तावेज व ऑनलाइन आवेदन'
+                : 'Govt Schemes · Benefits, Eligibility & Online Apply'}
+            </p>
+          )}
         </div>
 
         {/* List of Posts matching screenshot */}
         <div className="job-section-card-body p-3 sm:p-4 pt-2 flex-1 flex flex-col justify-between min-w-0">
           <div className="space-y-3.5 sm:space-y-4 min-w-0">
             {sec.items.length > 0 ? (
-              sec.items.slice(0, 100).map((item) => (
+              sec.items.slice(0, 100).map((item) => {
+                const yojanaBenefit = isYojanaBox ? getYojanaBenefitSummary(item) : '';
+                return (
                 <div 
                   key={item.id} 
-                  className="group min-w-0"
+                  className={`group min-w-0 ${isYojanaBox ? 'pb-3 border-b border-slate-100 last:border-b-0 last:pb-0' : ''}`}
                 >
                   <div className="flex items-start justify-between gap-1.5 min-w-0">
                     <a
@@ -202,11 +224,25 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                       >
                         {isHi ? (item.titleHi || item.title) : item.title}
                       </h3>
-                      <p 
-                        className="text-xs sm:text-[13px] text-gray-500 mt-1 select-none font-normal"
-                      >
-                        {formatPostDate(item)}
-                      </p>
+                      {isYojanaBox ? (
+                        <div className="text-xs sm:text-[13px] text-slate-600 mt-1 flex items-center gap-1.5 flex-wrap font-normal leading-snug">
+                          <span className="text-gray-500 select-none tabular-nums">{formatPostDate(item)}</span>
+                          {yojanaBenefit && (
+                            <>
+                              <span aria-hidden="true" className="text-slate-300">·</span>
+                              <span className="font-semibold text-emerald-800">
+                                {isHi ? 'लाभ:' : 'Benefit:'} {yojanaBenefit}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        <p 
+                          className="text-xs sm:text-[13px] text-gray-500 mt-1 select-none font-normal"
+                        >
+                          {formatPostDate(item)}
+                        </p>
+                      )}
                     </a>
 
                     {/* Admin Actions (Delete) for logged-in Admin */}
@@ -238,16 +274,23 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                           ? 'text-rose-600 bg-rose-50'
                           : 'text-slate-300 hover:text-slate-600'
                       }`}
-                      title={alertJobIds?.includes(item.id) ? (isHi ? 'अलर्ट सक्रिय' : 'Alert Active') : (isHi ? 'अलर्ट सेट करें' : 'Set Alert')}
+                      title={
+                        alertJobIds?.includes(item.id)
+                          ? (isHi ? (isYojanaBox ? 'योजना अलर्ट सक्रिय' : 'अलर्ट सक्रिय') : 'Alert Active')
+                          : (isHi ? (isYojanaBox ? 'योजना अलर्ट सेट करें' : 'अलर्ट सेट करें') : 'Set Alert')
+                      }
                     >
                       <Bell className={`w-3.5 h-3.5 ${alertJobIds?.includes(item.id) ? 'fill-rose-600 text-rose-600' : ''}`} />
                     </button>
                   </div>
                 </div>
-              ))
+                );
+              })
             ) : (
               <div className="py-6 text-center text-slate-400 text-xs">
-                {isHi ? 'जल्द ही नए अपडेट यहां जोड़े जाएंगे' : 'New updates will be published soon'}
+                {isHi
+                  ? (isYojanaBox ? 'जल्द ही नई सरकारी योजनाएं यहां जोड़ी जाएंगी' : 'जल्द ही नए अपडेट यहां जोड़े जाएंगे')
+                  : 'New updates will be published soon'}
               </div>
             )}
           </div>
@@ -267,7 +310,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
               className="font-bold text-xs hover:underline cursor-pointer inline-flex items-center gap-0.5"
               style={{ color: '#c90000' }}
             >
-              <span>View More..</span>
+              <span>{isYojanaBox ? (isHi ? 'सभी योजनाएं देखें..' : 'View All Schemes..') : 'View More..'}</span>
             </a>
           </div>
         </div>

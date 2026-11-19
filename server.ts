@@ -168,7 +168,7 @@ async function startServer() {
         xml += `  <url>\n    <loc>${baseUrl}/?policy=${p}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`;
       });
 
-      // Vacancies (All Active Posts within 60 days indexed with valid ISO lastmod)
+      // Vacancies (All Active Posts within 20 days indexed with valid ISO lastmod)
       activeVacancies.forEach(v => {
         const rawDate = v.createdAt || '';
         const validLastmod = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : todayIso;

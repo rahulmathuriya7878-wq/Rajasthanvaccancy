@@ -206,10 +206,13 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
       null,
       2
     );
+    const isSchemePost = matchedVacancy.category === 'scheme';
     title = `${postTitle} - Rajasthan Vacancy 2026`;
     description =
       matchedVacancy.briefSummaryHi ||
-      `${postTitle}: कुल पद ${matchedVacancy.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+      (isSchemePost
+        ? `${postTitle}: मुख्य लाभ (${matchedVacancy.yojanaOverview?.maxAnnualAssistance || matchedVacancy.salaryHi || matchedVacancy.salary || 'सरकारी सहायता'}), पात्रता शर्तें, आवश्यक दस्तावेज, अंतिम तिथि एवं ऑनलाइन आवेदन प्रक्रिया।`
+        : `${postTitle}: कुल पद ${matchedVacancy.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`);
     canonicalUrl = `${baseUrl}/?vacancy=${encodeURIComponent(matchedVacancy.id)}`;
     ogType = 'article';
 
@@ -375,20 +378,20 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
                 <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.advtNo || 'आधिकारिक सूचना 2026')}</td>
               </tr>
               <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 8px 4px; font-weight: bold;">कुल पद (Total Posts)</td>
-                <td style="padding: 8px 4px; color: #15803d; font-weight: bold;">${escapeHtml(matchedVacancy.totalPosts || 'विभिन्न पद')}</td>
+                <td style="padding: 8px 4px; font-weight: bold;">${isSchemePost ? 'लाभार्थी वर्ग (Beneficiaries)' : 'कुल पद (Total Posts)'}</td>
+                <td style="padding: 8px 4px; color: #15803d; font-weight: bold;">${escapeHtml(isSchemePost ? (matchedVacancy.yojanaOverview?.beneficiaries || matchedVacancy.totalPosts || 'पात्र नागरिक') : (matchedVacancy.totalPosts || 'विभिन्न पद'))}</td>
               </tr>
               <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 8px 4px; font-weight: bold;">पद का नाम (Post Name)</td>
-                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.postNameHi || matchedVacancy.postName || 'विभिन्न')}</td>
+                <td style="padding: 8px 4px; font-weight: bold;">${isSchemePost ? 'योजना का नाम (Scheme Name)' : 'पद का नाम (Post Name)'}</td>
+                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(isSchemePost ? (matchedVacancy.yojanaOverview?.yojanaName || matchedVacancy.postNameHi || matchedVacancy.postName || postTitle) : (matchedVacancy.postNameHi || matchedVacancy.postName || 'विभिन्न'))}</td>
               </tr>
               <tr style="border-bottom: 1px solid #e2e8f0;">
-                <td style="padding: 8px 4px; font-weight: bold;">वेतनमान (Salary)</td>
-                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.salaryHi || matchedVacancy.salary || 'नियमानुसार')}</td>
+                <td style="padding: 8px 4px; font-weight: bold;">${isSchemePost ? 'मुख्य लाभ / सहायता (Benefit)' : 'वेतनमान (Salary)'}</td>
+                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.yojanaOverview?.maxAnnualAssistance || matchedVacancy.salaryHi || matchedVacancy.salary || 'नियमानुसार')}</td>
               </tr>
               <tr>
-                <td style="padding: 8px 4px; font-weight: bold;">स्थान</td>
-                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.jobLocation || 'राजस्थान')}</td>
+                <td style="padding: 8px 4px; font-weight: bold;">${isSchemePost ? 'राज्य / क्षेत्र' : 'स्थान'}</td>
+                <td style="padding: 8px 4px; color: #334155;">${escapeHtml(matchedVacancy.yojanaOverview?.state || matchedVacancy.jobLocation || 'राजस्थान')}</td>
               </tr>
             </tbody>
           </table>
@@ -396,13 +399,13 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
 
         <section style="margin-bottom: 24px;">
           <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; border-left: 4px solid #d97706; padding-left: 10px; margin-bottom: 12px;">
-            संक्षिप्त विवरण एवं मुख्य जानकारी (Overview)
+            ${isSchemePost ? 'योजना का संक्षिप्त विवरण एवं मुख्य लाभ (Scheme Overview)' : 'संक्षिप्त विवरण एवं मुख्य जानकारी (Overview)'}
           </h2>
           <p style="font-size: 15px; line-height: 1.8; color: #334155; margin-bottom: 12px;">
             ${escapeHtml(matchedVacancy.briefSummaryHi || '')}
           </p>
           <p style="font-size: 15px; line-height: 1.8; color: #334155; white-space: pre-line;">
-            ${escapeHtml(matchedVacancy.descriptionHi || matchedVacancy.description || '')}
+            ${escapeHtml(matchedVacancy.yojanaGeneralInfo?.benefitsSummaryHi || matchedVacancy.descriptionHi || matchedVacancy.description || '')}
           </p>
         </section>
 
@@ -410,14 +413,14 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
 
         <section style="margin-bottom: 24px;">
           <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; border-left: 4px solid #d97706; padding-left: 10px; margin-bottom: 12px;">
-            शैक्षणिक योग्यता एवं आयु सीमा (Eligibility & Age Limit)
+            ${isSchemePost ? 'योजना पात्रता एवं शर्तें (Scheme Eligibility)' : 'शैक्षणिक योग्यता एवं आयु सीमा (Eligibility & Age Limit)'}
           </h2>
           <p style="font-size: 15px; line-height: 1.8; color: #334155;">
-            <strong>शैक्षणिक योग्यता:</strong> ${escapeHtml(matchedVacancy.qualificationDetailsHi || matchedVacancy.qualificationDetails || matchedVacancy.qualification?.join(', ') || 'विज्ञप्ति अनुसार')}
+            <strong>${isSchemePost ? 'मुख्य पात्रता:' : 'शैक्षणिक योग्यता:'}</strong> ${escapeHtml(matchedVacancy.qualificationDetailsHi || matchedVacancy.qualificationDetails || matchedVacancy.qualification?.join(', ') || 'विज्ञप्ति अनुसार')}
           </p>
-          <p style="font-size: 15px; line-height: 1.8; color: #334155; margin-top: 6px;">
+          ${!isSchemePost ? `<p style="font-size: 15px; line-height: 1.8; color: #334155; margin-top: 6px;">
             <strong>आयु सीमा:</strong> न्यूनतम ${matchedVacancy.ageLimit?.min || 18} वर्ष एवं अधिकतम ${matchedVacancy.ageLimit?.max || 40} वर्ष (गणना तिथि: ${escapeHtml(matchedVacancy.ageLimit?.asOnDate || 'नियमानुसार')})। ${escapeHtml(matchedVacancy.ageLimit?.relaxationNotesHi || '')}
-          </p>
+          </p>` : ''}
         </section>
 
         ${feeHtml ? `<section style="margin-bottom: 24px;"><h2 style="font-size: 20px; font-weight: 700; color: #0f172a; border-left: 4px solid #d97706; padding-left: 10px; margin-bottom: 12px;">आवेदन शुल्क (Application Fee)</h2>${feeHtml}</section>` : ''}

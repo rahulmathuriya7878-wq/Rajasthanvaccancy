@@ -1194,23 +1194,42 @@ export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
     otrNoteHi: 'सामान्य (General): ₹1150, ईडब्ल्यूएस/ओबीसी-एनसीएल: ₹600, एससी/एसटी/दिव्यांग: ₹325 (ऑनलाइन नेट बैंकिंग/यूपीआई)'
   },
   importantDates: {
-    notificationDate: 'अक्टूबर 2026',
+    notificationDate: '2026-10-19',
     applyStartDate: '2026-10-20',
     applyLastDate: '2026-11-20',
     feeLastDate: '2026-11-21',
-    examDate: 'दिसंबर 2026 (CBT Exam)',
-    admitCardDate: 'परीक्षा से 10 दिन पूर्व'
+    examDate: '14, 15, 16, 17, 18 एवं 21 दिसंबर 2026 (CBT Mode)',
+    admitCardDate: 'सिटी स्लिप परीक्षा से 21 दिन पहले'
   },
+  latestNews: [
+    {
+      id: 'ugc-net-exam-date-nov19',
+      date: '2026-11-19',
+      badge: 'NEW UPDATE',
+      headline: 'NTA UGC NET दिसंबर 2026 परीक्षा तिथियां घोषित: 14 से 18 एवं 21 दिसंबर 2026 को होगी परीक्षा',
+      details: 'यूजीसी नेट दिसंबर 2026 की CBT परीक्षा 14–18 व 21 दिसंबर 2026 को दो पारियों (Shift-I: 09:00 AM–12:00 PM, Shift-II: 03:00 PM–06:00 PM) में आयोजित होगी। सिटी स्लिप परीक्षा से 21 दिन पहले ugcnet.nta.nic.in पर जारी होगी।',
+      linkUrl: 'https://ugcnet.nta.nic.in/',
+      linkText: 'NTA वेबसाइट देखें',
+      isHighlighted: true
+    }
+  ],
+  directLinks: [
+    { label: 'UGC NET Exam Date 2026 New Schedule & City Slip Info', actionText: 'View Update', url: '/?vacancy=ugc-net-exam-date-2026', isPrimary: true },
+    { label: 'NTA UGC NET Official Website (ugcnet.nta.nic.in)', actionText: 'Visit NTA', url: 'https://ugcnet.nta.nic.in/' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
   selectionProcess: ['Computer Based Test (CBT) - Paper I & Paper II', 'Subject-wise Merit List for JRF & Assistant Professor'],
   selectionProcessHi: [
-    'कंप्यूटर आधारित ऑनलाइन परीक्षा (CBT Mode - Paper 1 & Paper 2)',
+    'कंप्यूटर आधारित ऑनलाइन परीक्षा (CBT Mode - 14 से 18 व 21 दिसंबर 2026)',
     'विषयवार एवं श्रेणीवार कटऑफ मेरिट लिस्ट (JRF एवं असिस्टेंट प्रोफेसर हेतु)',
     'ई-सर्टिफिकेट एवं जेआरएफ अवॉर्ड लेटर जारी होना'
   ],
   officialLinks: {
-    applyOnlineUrl: 'https://ugcnet.nta.ac.in',
-    notificationPdfUrl: 'https://ugcnet.nta.ac.in',
-    officialWebsiteUrl: 'https://ugcnet.nta.ac.in'
+    applyOnlineUrl: 'https://ugcnet.nta.nic.in/',
+    notificationPdfUrl: 'https://ugcnet.nta.nic.in/',
+    admitCardUrl: 'https://ugcnet.nta.nic.in/',
+    officialWebsiteUrl: 'https://ugcnet.nta.nic.in/'
   },
   postBreakdown: [
     {
@@ -1296,8 +1315,8 @@ export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
     {
       q: 'When is UGC NET Dec 2026 exam?',
       qHi: 'यूजीसी नेट दिसंबर 2026 परीक्षा कब है?',
-      a: 'December 2026',
-      aHi: 'दिसंबर 2026 में कंप्यूटर आधारित (CBT) मोड में विभिन्न पारियों में आयोजित होगी।'
+      a: '14 to 18 December 2026 and 21 December 2026 (Shift I: 09:00 AM–12:00 PM, Shift II: 03:00 PM–06:00 PM).',
+      aHi: 'नए अपडेट के अनुसार यूजीसी नेट दिसंबर 2026 परीक्षा 14 से 18 दिसंबर व 21 दिसंबर 2026 को दो पारियों (09:00 AM–12:00 PM व 03:00 PM–06:00 PM) में CBT मोड में आयोजित होगी।'
     },
     {
       q: 'Is there any negative marking in UGC NET 2026?',
@@ -1312,9 +1331,9 @@ export const UGC_NET_DECEMBER_2026_VACANCY: VacancyItem = {
       aHi: 'जेआरएफ हेतु सामान्य वर्ग के पुरुषों के लिए अधिकतम 30 वर्ष है। महिला अभ्यर्थियों तथा आरक्षित वर्गों (OBC/SC/ST/PwD) को 5 वर्ष की छूट प्राप्त है।'
     }
   ],
-  tags: ['#UGCNET2026', '#UGCNETDec2026', '#NTAUGCNET', '#AssistantProfessor', '#JRF2026', '#UGCNETAdmitCard', '#UGCNETResult', '#SarkariResult2026', '#CollegeLecturerJob', '#RajasthanVacancy2026'],
+  tags: ['#UGCNET2026', '#UGCNETDec2026', '#UGCNETExamDate2026', '#NTAUGCNET', '#AssistantProfessor', '#JRF2026', '#UGCNETAdmitCard', '#UGCNETResult', '#SarkariResult2026', '#RajasthanVacancy2026'],
   status: 'active',
-  updatedAt: '19 अक्टूबर 2026',
+  updatedAt: '2026-11-19',
   createdAt: '2026-10-19'
 };
 
