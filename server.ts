@@ -5,7 +5,12 @@ import { createServer as createViteServer } from 'vite';
 import { requireAuth, AuthRequest } from './src/middleware/auth';
 import { getOrCreateUser, getUserByUid } from './src/db/users';
 import { getSavedVacanciesByUserId, saveVacancyItem, removeSavedVacancyItem } from './src/db/vacancies';
-import { renderSeoEnhancedHtml, getBaseOriginFromRequest } from './src/server/seoRenderer';
+import {
+  renderSeoPage,
+  getBaseOriginFromRequest,
+  resolveCanonicalRedirect,
+  getPopulatedCategories,
+} from './src/server/seoRenderer';
 
 async function startServer() {
   const app = express();
@@ -148,7 +153,7 @@ async function startServer() {
     try {
       const baseUrl = getBaseOriginFromRequest(req);
       const { INITIAL_VACANCIES } = await import('./src/data/mockVacancies');
-      const { filterActivePostsWithinDays } = await import('./src/utils/dateUtils');
+      const { filterActivePostsWithinDays, toIso8601DateString } = await import('./src/utils/dateUtils');
       const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
       const todayIso = new Date().toISOString().split('T')[0];
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
@@ -156,8 +161,8 @@ async function startServer() {
       // Home
       xml += `  <url>\n    <loc>${baseUrl}/</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
 
-      // Categories (clean query parameters, NO hashes/anchors!)
-      const categories = ['latest_job', 'admit_card', 'result', 'answer_key', 'scheme', 'exam_date', 'syllabus', 'news'];
+      // Only include populated categories in sitemap so empty category pages never cause duplicate-canonical signals
+      const categories = getPopulatedCategories(activeVacancies);
       categories.forEach(cat => {
         xml += `  <url>\n    <loc>${baseUrl}/?category=${cat}</loc>\n    <lastmod>${todayIso}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
       });
@@ -170,9 +175,9 @@ async function startServer() {
 
       // Vacancies (All Active Posts within 70 days indexed with valid ISO lastmod)
       activeVacancies.forEach(v => {
-        const rawDate = v.createdAt || '';
-        const validLastmod = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : todayIso;
-        const priority = (v.isTrending || v.isHot || v.id === 'csir-npl-mts-recruitment-2026' || v.id === 'kvs-samvida-sathi-recruitment-2026' || v.id === 'jee-main-2027-session-1') ? '1.0' : '0.9';
+        const rawDate = v.updatedAt || v.createdAt || '';
+        const validLastmod = toIso8601DateString(rawDate, todayIso).split('T')[0];
+        const priority = (v.isTrending || v.isHot) ? '1.0' : '0.9';
         xml += `  <url>\n    <loc>${baseUrl}/?vacancy=${v.id}</loc>\n    <lastmod>${validLastmod}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
       });
 
@@ -524,12 +529,25 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
     return next();
   });
 
-  // Pre-render HTML for Googlebot / Search Crawlers & Browsers
+  // Pre-render HTML for Googlebot / Search Crawlers & Browsers with strict 301 canonicalization & HTTP Link headers
   app.use(async (req, res, next) => {
     const url = req.originalUrl;
     // Skip API, asset requests, and static extensions
     if (url.startsWith('/api/') || /\.(js|jsx|ts|tsx|css|png|jpg|jpeg|gif|svg|ico|json|txt|xml|woff|woff2|ttf|map|html)$/i.test(req.path)) {
       return next();
+    }
+
+    // 301 redirect all non-canonical URL variants (path slugs, category/policy path aliases, tracking params, case mismatches)
+    const canonicalRedirectPath = resolveCanonicalRedirect(req);
+    if (canonicalRedirectPath) {
+      const rawHost = (req.get('host') || '').toLowerCase();
+      const hostname = rawHost.split(':')[0];
+      const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+      const redirectTarget = isLocalHost
+        ? canonicalRedirectPath
+        : `${getBaseOriginFromRequest(req)}${canonicalRedirectPath}`;
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.redirect(301, redirectTarget);
     }
 
     try {
@@ -548,8 +566,24 @@ Include clear section titles, emojis, structured bullet points, and accurate inf
         }
       }
 
-      const enhancedHtml = renderSeoEnhancedHtml(template, req);
-      res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(enhancedHtml);
+      const seo = renderSeoPage(template, req);
+      const rawHost = (req.get('host') || '').toLowerCase();
+      const hostname = rawHost.split(':')[0];
+      const isPreviewMirrorHost =
+        hostname.endsWith('.run.app') ||
+        hostname.endsWith('.pages.dev') ||
+        hostname.endsWith('.vercel.app');
+
+      if (isPreviewMirrorHost) {
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      } else {
+        res.setHeader('X-Robots-Tag', seo.robotsDirective);
+        if (seo.statusCode === 200 && seo.isIndexable && seo.canonicalUrl) {
+          res.setHeader('Link', `<${seo.canonicalUrl}>; rel="canonical"`);
+        }
+      }
+
+      res.status(seo.statusCode).set({ 'Content-Type': 'text/html; charset=utf-8' }).send(seo.html);
     } catch (e: any) {
       if (vite) {
         vite.ssrFixStacktrace(e);

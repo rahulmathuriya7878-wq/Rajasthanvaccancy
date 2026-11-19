@@ -71,28 +71,167 @@ const POLICY_SEO_META: Record<
   },
 };
 
-export function getBaseOriginFromRequest(req: Request): string {
-  const host = (req.get('host') || '').toLowerCase();
+export const CANONICAL_ORIGIN = 'https://www.rajasthanvacancy.online';
 
-  if (host.includes('rajasthanvacancy.online')) {
-    return 'https://www.rajasthanvacancy.online';
+export const INDEXABLE_CATEGORIES = [
+  'latest_job',
+  'admit_card',
+  'result',
+  'answer_key',
+  'scheme',
+  'exam_date',
+  'syllabus',
+  'news',
+] as const;
+
+export function getBaseOriginFromRequest(_req?: Request): string {
+  return CANONICAL_ORIGIN;
+}
+
+export function getCategoryVacancies(vacancies: VacancyItem[], categoryKey: string): VacancyItem[] {
+  const normCat = normalizeBreadcrumbCategoryKey(categoryKey);
+  return vacancies.filter((v) => {
+    if (normCat === 'latest_job') {
+      return v.category === 'latest_job' || v.category === 'ugc_net';
+    }
+    if (normCat === 'admit_card') {
+      return v.category === 'admit_card' || v.status === 'admit_card_out';
+    }
+    if (normCat === 'result') {
+      return v.category === 'result' || v.status === 'result_declared';
+    }
+    if (normCat === 'answer_key') {
+      return v.category === 'answer_key' || v.status === 'answer_key_out';
+    }
+    if (normCat === 'scheme') {
+      return v.category === 'scheme' || v.organization === 'Sarkari Yojana';
+    }
+    if (normCat === 'exam_date') {
+      return v.category === 'exam_date';
+    }
+    if (normCat === 'syllabus') {
+      return v.category === 'syllabus';
+    }
+    if (normCat === 'news') {
+      return v.category === 'news';
+    }
+    return v.category === normCat;
+  });
+}
+
+export function getPopulatedCategories(vacancies?: VacancyItem[]): string[] {
+  const active = vacancies || filterActivePostsWithinDays(INITIAL_VACANCIES);
+  return INDEXABLE_CATEGORIES.filter((cat) => getCategoryVacancies(active, cat).length > 0);
+}
+
+const NOISE_QUERY_PARAMS = new Set([
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_term',
+  'utm_content',
+  'utm_id',
+  'fbclid',
+  'gclid',
+  'yclid',
+  'mc_cid',
+  'mc_eid',
+  'm',
+  'amp',
+  'ref',
+  'si',
+  'source',
+  '_ga',
+]);
+
+/**
+ * Resolves non-canonical URL variants (path slugs, category/policy path aliases,
+ * uppercase/lowercase ID mismatches, category=ALL/ugc_net, tracking query params)
+ * into a single 301 redirect target path (relative to site root), or null if already canonical.
+ */
+export function resolveCanonicalRedirect(req: Request): string | null {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+
+  const rawPath = req.path || '/';
+  const urlPath = rawPath.replace(/^\/+|\/+$/g, '');
+  const lowerPath = urlPath.toLowerCase();
+
+  // Never redirect tool or search views
+  if (req.query.tool || req.query.indexation || req.query.search) {
+    return null;
   }
-  if (host.includes('pages.dev')) {
-    return `https://${req.get('host')}`;
+
+  const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
+  const queryKeys = Object.keys(req.query || {});
+  const hasNoiseParams = queryKeys.some((k) => NOISE_QUERY_PARAMS.has(k.toLowerCase()));
+
+  const queryVacancy = typeof req.query.vacancy === 'string' ? req.query.vacancy.trim() : null;
+  const queryCategory = typeof req.query.category === 'string' ? req.query.category.trim() : null;
+  const queryPolicy = typeof req.query.policy === 'string' ? req.query.policy.trim().toLowerCase() : null;
+
+  // 1. Path-based policy alias (/about, /privacy, /contact, /terms, /disclaimer, /sitemap) -> /?policy=...
+  if (urlPath && POLICY_SEO_META[lowerPath]) {
+    return `/?policy=${encodeURIComponent(lowerPath)}`;
   }
-  if (host.includes('rajasthanvacancies.com')) {
-    return 'https://rajasthanvacancies.com';
+
+  // 2. Path-based category alias (/latest_job, /admit_card, /ugc_net, etc.) -> /?category=...
+  if (urlPath && (CATEGORY_NAMES_HI[lowerPath] || lowerPath === 'ugc_net')) {
+    const normCat = normalizeBreadcrumbCategoryKey(lowerPath);
+    return `/?category=${encodeURIComponent(normCat)}`;
   }
-  if (host.includes('rajasthanvacancy.com')) {
-    return 'https://rajasthanvacancy.com';
+
+  // 3. Path-based active vacancy slug (/ugc-net-exam-date-2026 or /ugc-net-exam-date-2026/) -> /?vacancy=...
+  if (urlPath && !urlPath.includes('.')) {
+    const matchedByPath = activeVacancies.find((v) => v.id.toLowerCase() === lowerPath);
+    if (matchedByPath) {
+      return `/?vacancy=${encodeURIComponent(matchedByPath.id)}`;
+    }
   }
-  if (host.includes('vercel.app')) {
-    return `https://${req.get('host')}`;
+
+  // 4. Query-based vacancy canonicalization (exact ID casing + strip extra/noise params)
+  if (queryVacancy) {
+    const matchedByQuery = activeVacancies.find((v) => v.id.toLowerCase() === queryVacancy.toLowerCase());
+    if (matchedByQuery) {
+      const target = `/?vacancy=${encodeURIComponent(matchedByQuery.id)}`;
+      const isExact = rawPath === '/' && queryKeys.length === 1 && req.query.vacancy === matchedByQuery.id;
+      if (!isExact) {
+        return target;
+      }
+    }
+    return null;
   }
-  if (host && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('run.app')) {
-    return `https://${req.get('host')}`;
+
+  // 5. Query-based category canonicalization (?category=ALL -> /, ?category=ugc_net -> ?category=latest_job)
+  if (queryCategory) {
+    if (queryCategory.toUpperCase() === 'ALL') {
+      return '/';
+    }
+    const lowerCat = queryCategory.toLowerCase();
+    if (CATEGORY_NAMES_HI[lowerCat] || lowerCat === 'ugc_net' || lowerCat === 'job') {
+      const normCat = normalizeBreadcrumbCategoryKey(lowerCat);
+      const isExact = rawPath === '/' && queryKeys.length === 1 && req.query.category === normCat;
+      if (!isExact) {
+        return `/?category=${encodeURIComponent(normCat)}`;
+      }
+    }
+    return null;
   }
-  return 'https://www.rajasthanvacancy.online';
+
+  // 6. Query-based policy canonicalization
+  if (queryPolicy && POLICY_SEO_META[queryPolicy]) {
+    const isExact = rawPath === '/' && queryKeys.length === 1 && req.query.policy === queryPolicy;
+    if (!isExact) {
+      return `/?policy=${encodeURIComponent(queryPolicy)}`;
+    }
+    return null;
+  }
+
+  // 7. Homepage with tracking/noise query params (?utm_source=..., ?fbclid=..., ?m=1) -> /
+  if (rawPath === '/' && hasNoiseParams) {
+    return '/';
+  }
+
+  return null;
 }
 
 function escapeHtml(val: string | number | undefined | null): string {
@@ -125,7 +264,19 @@ function renderApplicationFeeHtml(fee: any): string {
   return '';
 }
 
+export interface SeoRenderResult {
+  html: string;
+  statusCode: number;
+  canonicalUrl: string | null;
+  robotsDirective: string;
+  isIndexable: boolean;
+}
+
 export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): string {
+  return renderSeoPage(htmlTemplate, req).html;
+}
+
+export function renderSeoPage(htmlTemplate: string, req: Request): SeoRenderResult {
   const baseUrl = getBaseOriginFromRequest(req);
   const urlPath = (req.path || '/').replace(/^\/+|\/+$/g, '');
   const lowerPath = urlPath.toLowerCase();
@@ -141,10 +292,16 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     matchedPolicy = lowerPath;
   }
 
-  // 2. Identify target category
-  let matchedCategory: string | null = queryCategory;
-  if (!matchedCategory && !matchedPolicy && urlPath && CATEGORY_NAMES_HI[lowerPath]) {
-    matchedCategory = lowerPath;
+  // 2. Identify target category (normalize ugc_net/job -> latest_job)
+  let matchedCategory: string | null = null;
+  if (queryCategory && queryCategory.toUpperCase() !== 'ALL') {
+    const lowerCat = queryCategory.toLowerCase();
+    if (CATEGORY_NAMES_HI[lowerCat] || lowerCat === 'ugc_net' || lowerCat === 'job') {
+      matchedCategory = normalizeBreadcrumbCategoryKey(lowerCat);
+    }
+  }
+  if (!matchedCategory && !matchedPolicy && urlPath && (CATEGORY_NAMES_HI[lowerPath] || lowerPath === 'ugc_net')) {
+    matchedCategory = normalizeBreadcrumbCategoryKey(lowerPath);
   }
 
   // 3. Identify target vacancy
@@ -166,6 +323,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   }
 
   const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
+  const populatedCategories = getPopulatedCategories(activeVacancies);
 
   let matchedVacancy: VacancyItem | undefined;
   if (targetVacancyId) {
@@ -174,12 +332,14 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     );
   }
 
+  let statusCode = 200;
   let title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';
   let description =
     'Rajasthan Vacancy 2026: Latest Rajasthan & Central Govt job alerts, RSMSSB, RPSC, Rajasthan Police, Patwari, REET, Pashu Parichar, Admit Cards, Answer Keys, and Sarkari Results.';
-  let canonicalUrl = `${baseUrl}/`;
+  let canonicalUrl: string | null = `${baseUrl}/`;
   let ogType = 'website';
   let robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  let isIndexable = true;
   let structuredDataSnippet = '';
   let faqReplacementJson: string | null = null;
   let breadcrumbReplacementJson: string = JSON.stringify(
@@ -499,6 +659,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     canonicalUrl = `${baseUrl}/?policy=${encodeURIComponent(matchedPolicy)}`;
     if (pMeta.noindex) {
       robotsDirective = 'noindex, follow';
+      isIndexable = false;
     }
     breadcrumbReplacementJson = JSON.stringify(
       buildBreadcrumbSchema({
@@ -521,17 +682,16 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           ${pMeta.bodyHtml}
         </div>
         <nav aria-label="मुख्य श्रेणियां" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 10px;">
-          ${Object.entries(CATEGORY_NAMES_HI)
-            .filter(([k]) => k !== 'upcoming')
-            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+          ${populatedCategories
+            .map((k) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(CATEGORY_NAMES_HI[k] || k)}</a>`)
             .join('')}
         </nav>
       </main>
     `;
   } else if (matchedCategory && matchedCategory !== 'ALL') {
     const catHi = CATEGORY_NAMES_HI[matchedCategory] || matchedCategory;
-    title = `${catHi} 2026 - Rajasthan Vacancy Portal`;
-    description = `राजस्थान एवं केंद्र सरकार की ${catHi} 2026 की नवीनतम अपडेट, नोटिफिकेशन, परीक्षा तिथि, प्रवेश पत्र एवं रिजल्ट।`;
+    title = `${catHi} 2026 - Rajasthan Vacancy 2026`;
+    description = `राजस्थान एवं केंद्र सरकार की ${catHi} 2026 की नवीनतम सूची, ऑनलाइन आवेदन, परीक्षा तिथियां, प्रवेश पत्र एवं आधिकारिक पीडीएफ अपडेट।`;
     canonicalUrl = `${baseUrl}/?category=${encodeURIComponent(matchedCategory)}`;
     breadcrumbReplacementJson = JSON.stringify(
       buildBreadcrumbSchema({
@@ -544,15 +704,13 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
       2
     );
 
-    const categoryJobs = sortedVacancies.filter((v) => {
-      if (v.category === matchedCategory) return true;
-      if (matchedCategory === 'latest_job' && (v.category === 'ugc_net' || v.status === 'active')) return true;
-      if (matchedCategory === 'admit_card' && (v.status === 'admit_card_out' || v.title.toLowerCase().includes('admit card') || v.titleHi?.includes('प्रवेश पत्र'))) return true;
-      if (matchedCategory === 'result' && (v.status === 'result_declared' || v.title.toLowerCase().includes('result') || v.titleHi?.includes('रिजल्ट') || v.titleHi?.includes('परिणाम'))) return true;
-      if (matchedCategory === 'scheme' && (v.organization === 'Sarkari Yojana' || v.titleHi?.includes('योजना'))) return true;
-      if (matchedCategory === 'answer_key' && (v.status === 'answer_key_out' || v.title.toLowerCase().includes('answer key') || v.titleHi?.includes('उत्तर कुंजी'))) return true;
-      return false;
-    });
+    const categoryJobs = getCategoryVacancies(sortedVacancies, matchedCategory);
+
+    // Prevent Google "Duplicate, Google chose different canonical than user" on empty category pages
+    if (categoryJobs.length === 0) {
+      robotsDirective = 'noindex, follow';
+      isIndexable = false;
+    }
 
     ssrBodyContent = `
       <main class="ssr-seo-category" style="max-width: 900px; margin: 0 auto; padding: 24px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', sans-serif;">
@@ -560,7 +718,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           <a href="${baseUrl}/" style="color: #2563eb; text-decoration: none;">मुख्य पृष्ठ (Home)</a> &gt; <span>${escapeHtml(catHi)}</span>
         </nav>
         <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">
-          ${escapeHtml(catHi)} (2026)
+          ${escapeHtml(catHi)} — कुल ${categoryJobs.length} सक्रिय अपडेट (2026)
         </h1>
         <p style="font-size: 15px; color: #475569; margin-bottom: 20px;">
           ${escapeHtml(description)}
@@ -577,7 +735,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
               </h2>
               <p style="margin: 0 0 6px 0; font-size: 14px; color: #334155;">${escapeHtml(job.briefSummaryHi || job.descriptionHi || '')}</p>
               <p style="margin: 0; font-size: 13px; color: #64748b;">
-                <strong>विभाग:</strong> ${escapeHtml(job.departmentHi || job.department || job.organization)} | <strong>पद:</strong> ${escapeHtml(job.totalPosts || 'विभिन्न')} | <strong>अंतिम तिथि:</strong> ${escapeHtml(job.importantDates?.applyLastDate || 'नोटिफिकेशन देखें')}
+                <strong>विभाग:</strong> ${escapeHtml(job.departmentHi || job.department || job.organization)} | <strong>${job.category === 'scheme' ? 'लाभ' : 'पद'}:</strong> ${escapeHtml(job.category === 'scheme' ? (job.yojanaOverview?.maxAnnualAssistance || job.salaryHi || 'सरकारी सहायता') : (job.totalPosts || 'विभिन्न'))} | <strong>अंतिम तिथि:</strong> ${escapeHtml(job.importantDates?.applyLastDate || 'नोटिफिकेशन देखें')}
               </p>
             </article>
           `
@@ -585,19 +743,39 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
             .join('')}
         </div>
         <nav aria-label="सभी श्रेणियां" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; gap: 10px;">
-          ${Object.entries(CATEGORY_NAMES_HI)
-            .filter(([k]) => k !== 'upcoming')
-            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+          ${populatedCategories
+            .map((k) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13px;">${escapeHtml(CATEGORY_NAMES_HI[k] || k)}</a>`)
             .join('')}
         </nav>
       </main>
     `;
   } else if (targetVacancyId && !matchedVacancy) {
-    // Unknown/deleted vacancy slug -> prevent soft-404 duplicate canonical conflict
+    // Deleted or non-existent vacancy slug -> return true HTTP 404 + noindex so Google never treats it as a duplicate of Homepage
+    statusCode = 404;
+    isIndexable = false;
     robotsDirective = 'noindex, follow';
-    canonicalUrl = `${baseUrl}/`;
+    canonicalUrl = null;
+    title = 'पोस्ट उपलब्ध नहीं है (404) - Rajasthan Vacancy 2026';
+    description = 'यह भर्ती या सूचना समाप्त हो चुकी है अथवा पोर्टल से हटा दी गई है। नवीनतम राजस्थान सरकारी भर्तियों के लिए मुख्य पृष्ठ देखें।';
+    ssrBodyContent = `
+      <main class="ssr-seo-404" style="max-width: 900px; margin: 0 auto; padding: 28px 16px; font-family: 'Mangal', 'Noto Sans Devanagari', sans-serif; color: #1e293b;">
+        <h1 style="font-size: 24px; font-weight: 800; color: #b91c1c; margin-bottom: 12px;">यह पोस्ट अब उपलब्ध नहीं है (404 Not Found)</h1>
+        <p style="font-size: 15px; color: #475569; margin-bottom: 20px;">संभवतः इस भर्ती/अधिसूचना की समय-सीमा समाप्त हो चुकी है या इसे पोर्टल से हटा दिया गया है। नीचे दी गई नवीनतम सक्रिय भर्तियाँ देखें:</p>
+        <p style="margin-bottom: 20px;"><a href="${baseUrl}/" style="color: #15803d; font-weight: 700; text-decoration: underline;">मुख्य पृष्ठ (Rajasthan Vacancy Home) पर जाएं</a></p>
+        <ul style="padding-left: 20px; line-height: 1.9;">
+          ${sortedVacancies
+            .slice(0, 12)
+            .map(
+              (job) =>
+                `<li><a href="${baseUrl}/?vacancy=${encodeURIComponent(job.id)}" style="color: #0066cc; text-decoration: underline;">${escapeHtml(job.titleHi || job.title)}</a></li>`
+            )
+            .join('')}
+        </ul>
+      </main>
+    `;
   } else if (querySearch) {
     // Search result parameter pages -> prevent crawl bloat & duplicate canonical conflict
+    isIndexable = false;
     robotsDirective = 'noindex, follow';
     canonicalUrl = `${baseUrl}/`;
   } else {
@@ -613,9 +791,8 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
           RSMSSB, RPSC, राजस्थान पुलिस, पटवारी, रीट, पशु परिचर, प्रवेश पत्र, आंसर की एवं सरकारी रिजल्ट की सबसे तेज और सटीक अपडेट।
         </p>
         <nav aria-label="मुख्य श्रेणियां" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 22px;">
-          ${Object.entries(CATEGORY_NAMES_HI)
-            .filter(([k]) => k !== 'upcoming')
-            .map(([k, lbl]) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="padding: 6px 12px; background: #15803d; color: #ffffff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 13px;">${escapeHtml(lbl)}</a>`)
+          ${populatedCategories
+            .map((k) => `<a href="${baseUrl}/?category=${encodeURIComponent(k)}" style="padding: 6px 12px; background: #15803d; color: #ffffff; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 13px;">${escapeHtml(CATEGORY_NAMES_HI[k] || k)}</a>`)
             .join('')}
         </nav>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
@@ -629,7 +806,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
                 </a>
               </h2>
               <p style="margin: 0 0 6px 0; font-size: 13px; color: #475569;">${escapeHtml((job.briefSummaryHi || '').slice(0, 140))}</p>
-              <span style="font-size: 12px; color: #16a34a; font-weight: bold;">कुल पद: ${escapeHtml(job.totalPosts || 'विभिन्न')} | ${escapeHtml(job.updatedAt || job.createdAt || '')}</span>
+              <span style="font-size: 12px; color: #16a34a; font-weight: bold;">${job.category === 'scheme' ? 'लाभ' : 'कुल पद'}: ${escapeHtml(job.category === 'scheme' ? (job.yojanaOverview?.maxAnnualAssistance || job.salaryHi || 'सरकारी सहायता') : (job.totalPosts || 'विभिन्न'))} | ${escapeHtml(job.updatedAt || job.createdAt || '')}</span>
             </article>
           `
             )
@@ -655,17 +832,23 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     `<meta name="description" content="${escapeHtml(description)}" />`
   );
 
-  // Replace Meta Robots
+  // Replace Meta Robots (tag 404 pages so client JS never flips robots back to index)
   modifiedHtml = modifiedHtml.replace(
     /<meta\b[^>]*name=["']?robots["']?[^>]*>/i,
-    `<meta name="robots" content="${robotsDirective}" />`
+    statusCode === 404
+      ? `<meta name="robots" data-ssr-status="404" content="${robotsDirective}" />`
+      : `<meta name="robots" data-ssr="1" content="${robotsDirective}" />`
   );
 
-  // Replace Canonical Tag with strict self-referential canonical URL (matches any attribute order)
-  modifiedHtml = modifiedHtml.replace(
-    /<link\b[^>]*rel=["']?canonical["']?[^>]*>/i,
-    `<link rel="canonical" id="primary-canonical" href="${canonicalUrl}" />`
-  );
+  // Replace or remove Canonical Tag (404 pages must NOT emit a competing canonical tag; 200 pages get data-ssr="1")
+  if (canonicalUrl) {
+    modifiedHtml = modifiedHtml.replace(
+      /<link\b[^>]*rel=["']?canonical["']?[^>]*>/i,
+      `<link rel="canonical" id="primary-canonical" data-ssr="1" href="${canonicalUrl}" />`
+    );
+  } else {
+    modifiedHtml = modifiedHtml.replace(/<link\b[^>]*rel=["']?canonical["']?[^>]*>\s*/i, '');
+  }
   modifiedHtml = modifiedHtml.replace(
     /<link\b[^>]*rel=["']?sitemap["']?[^>]*>/i,
     `<link rel="sitemap" type="application/xml" title="Sitemap" href="${baseUrl}/sitemap.xml" />`
@@ -686,7 +869,7 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
   );
   modifiedHtml = modifiedHtml.replace(
     /<meta\b[^>]*property=["']?og:url["']?[^>]*>/i,
-    `<meta property="og:url" content="${canonicalUrl}" />`
+    `<meta property="og:url" content="${canonicalUrl || `${baseUrl}/`}" />`
   );
   modifiedHtml = modifiedHtml.replace(
     /<meta\b[^>]*property=["']?og:type["']?[^>]*>/i,
@@ -781,5 +964,11 @@ export function renderSeoEnhancedHtml(htmlTemplate: string, req: Request): strin
     );
   }
 
-  return modifiedHtml;
+  return {
+    html: modifiedHtml,
+    statusCode,
+    canonicalUrl,
+    robotsDirective,
+    isIndexable,
+  };
 }

@@ -13,37 +13,10 @@
 export const DEFAULT_PRODUCTION_ORIGIN = 'https://www.rajasthanvacancy.online';
 
 /**
- * Detect the appropriate canonical base origin dynamically.
- * Prioritizes custom production domain (www.rajasthanvacancy.online) and cloud hosts.
+ * Always return the single authoritative production canonical origin
+ * so preview hosts, apex domains, or alternate domains never compete as canonicals.
  */
 export function getCanonicalOrigin(): string {
-  if (typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname.toLowerCase();
-    
-    // Primary custom domain support
-    if (host.includes('rajasthanvacancy.online')) {
-      return 'https://www.rajasthanvacancy.online';
-    }
-    // Cloudflare Pages support
-    if (host.includes('pages.dev')) {
-      return `https://${window.location.host}`;
-    }
-    // Custom domain variants
-    if (host.includes('rajasthanvacancies.com')) {
-      return 'https://rajasthanvacancies.com';
-    }
-    if (host.includes('rajasthanvacancy.com')) {
-      return 'https://rajasthanvacancy.com';
-    }
-    // Vercel deployment domain
-    if (host.includes('vercel.app')) {
-      return `https://${window.location.host}`;
-    }
-    // Any live production domain that is not localhost or cloud development preview
-    if (host !== 'localhost' && !host.includes('run.app') && !host.includes('127.0.0.1')) {
-      return `https://${window.location.host}`;
-    }
-  }
   return DEFAULT_PRODUCTION_ORIGIN;
 }
 
@@ -55,8 +28,7 @@ export interface CanonicalParams {
 
 /**
  * Calculates the exact canonical URL for the current view state.
- * Guarantees that every distinct view has a self-referential canonical tag
- * so search engines never misclassify pages as "Alternate page with proper canonical tag".
+ * Guarantees that every distinct view has a single self-referential canonical tag.
  */
 export function buildCanonicalUrl(params: CanonicalParams = {}): string {
   const origin = getCanonicalOrigin();
@@ -67,10 +39,10 @@ export function buildCanonicalUrl(params: CanonicalParams = {}): string {
     return `${origin}/?vacancy=${encodeURIComponent(cleanId)}`;
   }
 
-  // 2. Category Archive View (e.g. ?category=latest_job, ?category=result, etc.)
-  // CRITICAL: Category pages must have self-referential canonical tags to be indexed
+  // 2. Category Archive View (normalize aliases like ugc_net -> latest_job)
   if (params.category && params.category !== 'ALL') {
-    return `${origin}/?category=${encodeURIComponent(params.category)}`;
+    const cleanCat = normalizeBreadcrumbCategoryKey(params.category);
+    return `${origin}/?category=${encodeURIComponent(cleanCat)}`;
   }
 
   // 3. Fallback to clean path if specific valid subpath

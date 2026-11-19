@@ -40,25 +40,19 @@
       (function() {
         try {
           var host = window.location.hostname.toLowerCase();
-          if (window.location.protocol === 'http:' && host.indexOf('rajasthanvacancy.online') !== -1) {
+          if (host === 'rajasthanvacancy.online' || (window.location.protocol === 'http:' && host === 'www.rajasthanvacancy.online')) {
             window.location.replace('https://www.rajasthanvacancy.online' + window.location.pathname + window.location.search + window.location.hash);
             return;
           }
-          var origin = 'https://www.rajasthanvacancy.online';
-          if (host.indexOf('rajasthanvacancy.online') !== -1) {
-            origin = 'https://www.rajasthanvacancy.online';
-          } else if (host.indexOf('pages.dev') !== -1) {
-            origin = 'https://' + window.location.host;
-          } else if (host.indexOf('rajasthanvacancies.com') !== -1) {
-            origin = 'https://rajasthanvacancies.com';
-          } else if (host.indexOf('rajasthanvacancy.com') !== -1) {
-            origin = 'https://rajasthanvacancy.com';
-          } else if (host.indexOf('vercel.app') !== -1) {
-            origin = 'https://' + window.location.host;
-          } else if (host !== 'localhost' && host !== '127.0.0.1' && host.indexOf('run.app') === -1) {
-            origin = 'https://' + window.location.host;
+
+          // Never override server-side rendered canonical or 404/noindex decisions
+          var canonLink = document.getElementById('primary-canonical') || document.querySelector('link[rel="canonical"]');
+          var robotsMeta = document.querySelector('meta[name="robots"]');
+          if ((canonLink && canonLink.getAttribute('data-ssr') === '1') || (robotsMeta && robotsMeta.getAttribute('data-ssr-status') === '404')) {
+            return;
           }
 
+          var origin = 'https://www.rajasthanvacancy.online';
           var search = window.location.search || '';
           var pathname = (window.location.pathname || '/').replace(/^\/+|\/+$/g, '');
           var canonicalUrl = origin + '/';
@@ -69,12 +63,18 @@
           var category = params.get('category');
           var vacancyId = params.get('vacancy');
 
+          if (category === 'ugc_net' || category === 'job') {
+            category = 'latest_job';
+          }
+
           if (!vacancyId && !category && !policyParam && pathname && pathname.indexOf('.') === -1) {
             var lowerPath = pathname.toLowerCase();
             if (lowerPath === 'sitemap' || lowerPath === 'about' || lowerPath === 'contact' || lowerPath === 'privacy' || lowerPath === 'terms' || lowerPath === 'disclaimer') {
               policyParam = lowerPath;
             } else if (knownCategories.indexOf(lowerPath) !== -1) {
               category = lowerPath;
+            } else if (lowerPath === 'ugc_net') {
+              category = 'latest_job';
             } else {
               vacancyId = pathname;
             }
@@ -88,7 +88,6 @@
             canonicalUrl = origin + '/?policy=' + encodeURIComponent(policyParam);
           }
 
-          var canonLink = document.getElementById('primary-canonical') || document.querySelector('link[rel="canonical"]');
           if (canonLink) {
             canonLink.setAttribute('href', canonicalUrl);
           }

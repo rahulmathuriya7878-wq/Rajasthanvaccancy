@@ -280,6 +280,8 @@ export default function App() {
     }
   });
 
+  const isUnresolvedInitialUrlRef = React.useRef<boolean>(false);
+
   // Deep linking sync for SEO (reads ?vacancy=... or pathname /slug/ and ?category=... from URL/sitemap)
   useEffect(() => {
     try {
@@ -312,13 +314,18 @@ export default function App() {
           } catch (e) {}
         }
         if (found) {
+          isUnresolvedInitialUrlRef.current = false;
           setSelectedVacancy(found);
           setActivePolicyView(null);
+        } else {
+          isUnresolvedInitialUrlRef.current = true;
         }
       }
 
       if (categoryParam && categoryParam !== 'ALL') {
-        setSelectedCategory(categoryParam as CategoryType);
+        isUnresolvedInitialUrlRef.current = false;
+        const normalizedCat = categoryParam === 'ugc_net' ? 'latest_job' : categoryParam;
+        setSelectedCategory(normalizedCat as CategoryType);
         setActivePolicyView(null);
       }
     } catch (e) {
@@ -357,6 +364,7 @@ export default function App() {
       const isHi = lang === 'hi';
 
       if (selectedVacancy) {
+        isUnresolvedInitialUrlRef.current = false;
         if (currentVacancyId !== selectedVacancy.id || url.pathname !== '/' || url.searchParams.has('policy')) {
           url.pathname = '/';
           url.searchParams.set('vacancy', selectedVacancy.id);
@@ -364,10 +372,15 @@ export default function App() {
           url.searchParams.delete('policy');
           window.history.replaceState({ vacancyId: selectedVacancy.id }, '', url.toString());
         }
-        const titleText = `${isHi ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy`;
+        const titleText = `${isHi ? (selectedVacancy.titleHi || selectedVacancy.title) : selectedVacancy.title} - Rajasthan Vacancy 2026`;
         const descText = selectedVacancy.briefSummaryHi || selectedVacancy.briefSummary || selectedVacancy.descriptionHi || selectedVacancy.title;
         const canonicalHref = buildCanonicalUrl({ vacancyId: selectedVacancy.id });
 
+        const robotsEl = document.querySelector('meta[name="robots"]');
+        if (robotsEl) {
+          robotsEl.removeAttribute('data-ssr-status');
+          robotsEl.setAttribute('content', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+        }
         document.title = titleText;
         if (metaDescEl) metaDescEl.setAttribute('content', descText);
         applyCanonicalTag(canonicalHref);
@@ -485,6 +498,18 @@ export default function App() {
         const ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogDesc) ogDesc.setAttribute('content', pMeta.desc);
       } else {
+        const robotsEl = document.querySelector('meta[name="robots"]');
+        const isSsrNotFound = robotsEl?.getAttribute('data-ssr-status') === '404';
+        if (isSsrNotFound || isUnresolvedInitialUrlRef.current) {
+          // Deleted/unknown initial slug: keep noindex, follow and remove competing canonical so Google never flags a duplicate canonical
+          if (robotsEl) {
+            robotsEl.setAttribute('data-ssr-status', '404');
+            robotsEl.setAttribute('content', 'noindex, follow');
+          }
+          document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+          document.title = 'पोस्ट उपलब्ध नहीं है (404) - Rajasthan Vacancy 2026';
+          return;
+        }
         if (currentVacancyId || url.searchParams.has('category') || url.searchParams.has('policy') || url.pathname !== '/') {
           url.pathname = '/';
           url.searchParams.delete('vacancy');
@@ -492,8 +517,8 @@ export default function App() {
           url.searchParams.delete('policy');
           window.history.replaceState({ vacancyId: null, category: null }, '', url.toString());
         }
-        const robotsEl = document.querySelector('meta[name="robots"]');
         if (robotsEl) {
+          robotsEl.removeAttribute('data-ssr-status');
           robotsEl.setAttribute('content', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
         }
         document.title = 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal';

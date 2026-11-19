@@ -4,6 +4,32 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "rajasthanvacancy.online"
+        }
+      ],
+      "destination": "https://www.rajasthanvacancy.online/:path*",
+      "permanent": true
+    },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/about", "destination": "/?policy=about", "permanent": true },
+    { "source": "/contact", "destination": "/?policy=contact", "permanent": true },
+    { "source": "/privacy", "destination": "/?policy=privacy", "permanent": true },
+    { "source": "/terms", "destination": "/?policy=terms", "permanent": true },
+    { "source": "/disclaimer", "destination": "/?policy=disclaimer", "permanent": true },
+    { "source": "/latest_job", "destination": "/?category=latest_job", "permanent": true },
+    { "source": "/ugc_net", "destination": "/?category=latest_job", "permanent": true },
+    { "source": "/admit_card", "destination": "/?category=admit_card", "permanent": true },
+    { "source": "/result", "destination": "/?category=result", "permanent": true },
+    { "source": "/scheme", "destination": "/?category=scheme", "permanent": true },
+    { "source": "/exam_date", "destination": "/?category=exam_date", "permanent": true },
+    { "source": "/news", "destination": "/?category=news", "permanent": true }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

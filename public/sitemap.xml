@@ -28,12 +28,6 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://www.rajasthanvacancy.online/?category=answer_key</loc>
-    <lastmod>2026-11-19</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://www.rajasthanvacancy.online/?category=scheme</loc>
     <lastmod>2026-11-19</lastmod>
     <changefreq>hourly</changefreq>
@@ -41,12 +35,6 @@
   </url>
   <url>
     <loc>https://www.rajasthanvacancy.online/?category=exam_date</loc>
-    <lastmod>2026-11-19</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://www.rajasthanvacancy.online/?category=syllabus</loc>
     <lastmod>2026-11-19</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>

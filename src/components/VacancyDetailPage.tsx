@@ -29,7 +29,7 @@ import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
 import { AdSection } from './AdSection';
 import { AdSlotWrapper } from './AdSlotWrapper';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
-import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
+import { buildCanonicalUrl, applyCanonicalTag, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 import { generateHindiShareText, getVacancyShareUrl } from '../utils/shareUtils';
 
@@ -1353,11 +1353,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </a>
           <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
           <a
-            href={`/?category=${encodeURIComponent(editablePost.category || 'latest_job')}`}
+            href={`/?category=${encodeURIComponent(normalizeBreadcrumbCategoryKey(editablePost.category))}`}
             onClick={(e) => {
               e.preventDefault();
               if (onSelectCategory) {
-                onSelectCategory(editablePost.category || 'latest_job');
+                onSelectCategory(normalizeBreadcrumbCategoryKey(editablePost.category));
               } else {
                 onBack();
               }
@@ -3866,10 +3866,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   </a>
                   <span className="text-slate-400">,</span>
                   <a
-                    href={`/?category=${encodeURIComponent(vacancy.category || 'latest_job')}`}
+                    href={`/?category=${encodeURIComponent(normalizeBreadcrumbCategoryKey(vacancy.category))}`}
                     onClick={(e) => {
                       e.preventDefault();
-                      onSelectCategory?.(vacancy.category || 'latest_job');
+                      onSelectCategory?.(normalizeBreadcrumbCategoryKey(vacancy.category));
                     }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
