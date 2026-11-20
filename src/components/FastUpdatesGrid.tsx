@@ -405,7 +405,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
             skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
           >
             <AdSection 
-              slot="home-bottom-slot" 
+              slot="3785509362" 
               client="ca-pub-3176571184961509" 
               label={isHi ? 'विज्ञापन' : 'Advertisement'} 
               minHeight={90}

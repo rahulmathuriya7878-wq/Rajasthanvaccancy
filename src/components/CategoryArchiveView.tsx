@@ -272,7 +272,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
 
           {/* Ad banner in category archive */}
           <div className="pt-4">
-            <AdSection slot="category-bottom" />
+            <AdSection slot="3785509362" />
           </div>
         </div>
 

@@ -1936,7 +1936,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   skeletonLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
                 >
                   <AdSection 
-                    slot="post-top-slot"
+                    slot="3785509362"
                     client="ca-pub-3176571184961509"
                     label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
                     minHeight={90}
@@ -3369,7 +3369,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
                           >
                             <AdSection 
-                              slot="post-middle-slot"
+                              slot="3785509362"
                               client="ca-pub-3176571184961509"
                               label={isHi ? 'विज्ञापन' : 'Advertisement'}
                               minHeight={90}
@@ -3958,7 +3958,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
               >
                 <AdSection 
-                  slot="post-bottom-slot"
+                  slot="3785509362"
                   client="ca-pub-3176571184961509"
                   label={isHi ? 'विज्ञापन' : 'Advertisement'}
                   minHeight={90}
@@ -4014,7 +4014,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   skeletonLabel={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
                 >
                   <AdSection 
-                    slot="post-very-bottom-slot"
+                    slot="3785509362"
                     client="ca-pub-3176571184961509"
                     label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
                     minHeight={250}

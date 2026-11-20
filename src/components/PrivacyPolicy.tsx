@@ -29,8 +29,8 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOp
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             {isHi ? 'गोपनीयता नीति (Comprehensive Privacy Policy)' : 'Comprehensive Privacy Policy'}
           </h1>
-          <p className="text-xs text-slate-500 font-medium">
-            {isHi ? 'अंतिम अपडेट: अक्टूबर 2026 | RAJASTHAN VACCANCY/JOBS' : 'Last Updated: October 2026'}
+          <p className="text-xs text-slate-600 font-medium">
+            {isHi ? 'अंतिम अपडेट: नवंबर 2026 | Rajasthan Vacancy (www.rajasthanvacancy.online)' : 'Last Updated: November 2026 | www.rajasthanvacancy.online'}
           </p>
         </div>
       </div>
@@ -39,8 +39,8 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOp
         <section className="space-y-2">
           <p>
             {isHi
-              ? 'RAJASTHAN VACCANCY/JOBS ("हम", "हमारा", या "पोर्टल") अपने सभी आकांक्षी उपयोगकर्ताओं, पाठकों एवं अभ्यर्थियों की गोपनीयता (Privacy) की रक्षा करने के लिए पूरी तरह प्रतिबद्ध है। यह विस्तृत गोपनीयता नीति दस्तावेज स्पष्ट करता है कि जब आप हमारी वेबसाइट (rajasthanvacancy.in) पर आते हैं, तो हम आपकी कौन-कौन सी जानकारी एकत्र करते हैं, उसका उपयोग किन उद्देश्यों के लिए करते हैं और उसकी सुरक्षा कैसे सुनिश्चित करते हैं।'
-              : 'RAJASTHAN VACCANCY/JOBS ("we", "our", or "portal") is fully committed to protecting the privacy of all aspirants, readers, and candidates visiting our platform.'}
+              ? 'Rajasthan Vacancy ("हम", "हमारा", या "पोर्टल") अपने सभी आकांक्षी उपयोगकर्ताओं, पाठकों एवं अभ्यर्थियों की गोपनीयता (Privacy) की रक्षा करने के लिए पूरी तरह प्रतिबद्ध है। यह विस्तृत गोपनीयता नीति दस्तावेज स्पष्ट करता है कि जब आप हमारी वेबसाइट (https://www.rajasthanvacancy.online/) पर आते हैं, तो हम आपकी कौन-कौन सी जानकारी एकत्र करते हैं, उसका उपयोग किन उद्देश्यों के लिए करते हैं और उसकी सुरक्षा कैसे सुनिश्चित करते हैं।'
+              : 'Rajasthan Vacancy (https://www.rajasthanvacancy.online/) is fully committed to protecting the privacy of all aspirants, readers, and candidates visiting our platform.'}
           </p>
         </section>
 
@@ -82,13 +82,39 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ lang, onBack, onOp
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-amber-600" />
-            <span>3. कुकीज़ और ट्रैकिंग तकनीक (Cookies Policy)</span>
+            <Lock className="w-4 h-4 text-amber-700" />
+            <span>3. कुकीज़, Google AdSense और DoubleClick DART कुकी नीति (Cookies &amp; AdSense)</span>
           </h2>
           <p>
             {isHi
-              ? 'हम अपने विज़िटर्स के ब्राउज़िंग अनुभव को बेहतर बनाने के लिए कुकीज़ (Cookies) का उपयोग करते हैं। कुकीज़ छोटी टेक्स्ट फाइलें होती हैं जो आपके डिवाइस में स्टोर होती हैं। आप चाहें तो अपने ब्राउज़र सेटिंग्स से कुकीज़ को अस्वीकार (Disable) कर सकते हैं, हालांकि इससे वेबसाइट के कुछ फीचर्स सीमित हो सकते हैं।'
-              : 'We use cookies to improve user experience. You can disable cookies through your browser settings.'}
+              ? 'हम अपने विज़िटर्स के ब्राउज़िंग अनुभव को बेहतर बनाने और पोर्टल की निःशुल्क सेवा जारी रखने के लिए कुकीज़ (Cookies) तथा Google AdSense सहित तृतीय-पक्ष विज्ञापन सेवाओं का उपयोग करते हैं। Google, एक तृतीय-पक्ष विक्रेता के रूप में, हमारी वेबसाइट (www.rajasthanvacancy.online) पर विज्ञापन दिखाने के लिए DoubleClick DART कुकी का उपयोग करता है, जिससे पाठकों को उनकी पूर्व वेबसाइट विज़िट के आधार पर प्रासंगिक विज्ञापन प्रदर्शित किए जा सकें।'
+              : 'We use cookies and third-party advertising partners including Google AdSense. Google uses the DoubleClick DART cookie to serve ads to visitors based on their visits to www.rajasthanvacancy.online and other sites on the internet.'}
+          </p>
+          <p>
+            {isHi ? (
+              <>
+                उपयोगकर्ता{' '}
+                <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-700">
+                  Google Ads Settings
+                </a>{' '}
+                पर जाकर वैयक्तिकृत विज्ञापनों (Personalized Advertising) से बाहर निकल सकते हैं तथा{' '}
+                <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-700">
+                  Google Advertising Privacy Policy
+                </a>{' '}
+                का अवलोकन कर सकते हैं। आप चाहें तो अपने ब्राउज़र की सेटिंग्स से भी कुकीज़ को नियंत्रित या बंद कर सकते हैं।
+              </>
+            ) : (
+              <>
+                Users may opt out of personalized advertising by visiting{' '}
+                <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-700">
+                  Google Ads Settings
+                </a>{' '}
+                or reviewing the{' '}
+                <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-700">
+                  Google Advertising Privacy Policy
+                </a>.
+              </>
+            )}
           </p>
         </section>
 

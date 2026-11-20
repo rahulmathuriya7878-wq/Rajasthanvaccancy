@@ -28,8 +28,8 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ lang, on
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             {isHi ? 'नियम व शर्तें (Comprehensive Terms & Conditions)' : 'Comprehensive Terms & Conditions'}
           </h1>
-          <p className="text-xs text-slate-500 font-medium">
-            {isHi ? 'अंतिम अपडेट: अक्टूबर 2026 | उपयोग की शर्तें' : 'Last Updated: October 2026'}
+          <p className="text-xs text-slate-600 font-medium">
+            {isHi ? 'अंतिम अपडेट: नवंबर 2026 | www.rajasthanvacancy.online' : 'Last Updated: November 2026 | www.rajasthanvacancy.online'}
           </p>
         </div>
       </div>
@@ -38,8 +38,8 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ lang, on
         <section className="space-y-2">
           <p>
             {isHi
-              ? 'RAJASTHAN VACCANCY/JOBS पोर्टल पर आपका स्वागत है। इस वेबसाइट (rajasthanvacancy.in) का उपयोग करने से पहले कृपया इन नियमों और शर्तों को ध्यान से पढ़ें। इस प्लेटफ़ॉर्म का उपयोग करके आप इस बात की पुष्टि करते हैं कि आप इन शर्तों से पूरी तरह सहमत हैं।'
-              : 'Welcome to RAJASTHAN VACCANCY/JOBS. By accessing and using this website, you agree to comply with and be bound by the following comprehensive terms and conditions.'}
+              ? 'Rajasthan Vacancy पोर्टल पर आपका स्वागत है। इस वेबसाइट (https://www.rajasthanvacancy.online/) का उपयोग करने से पहले कृपया इन नियमों और शर्तों को ध्यान से पढ़ें। इस प्लेटफ़ॉर्म का उपयोग करके आप इस बात की पुष्टि करते हैं कि आप इन शर्तों से पूरी तरह सहमत हैं।'
+              : 'Welcome to Rajasthan Vacancy (https://www.rajasthanvacancy.online/). By accessing and using this website, you agree to comply with and be bound by the following comprehensive terms and conditions.'}
           </p>
         </section>
 
@@ -74,8 +74,8 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ lang, on
           </h2>
           <p>
             {isHi
-              ? 'इस वेबसाइट पर प्रस्तुत सभी लेआउट, ग्राफिक्स, डेटाबेस और विशेष रूप से तैयार की गई सारांश सामग्री RAJASTHAN VACCANCY/JOBS के स्वामित्व में हैं। लिखित अनुमति के बिना इस सामग्री का वाणिज्यिक उपयोग, स्क्रेपिंग या कॉपी करना कानूनी रूप से वर्जित है।'
-              : 'All layouts, graphics, and summarized content on this website are owned by RAJASTHAN VACCANCY/JOBS. Commercial reproduction without written permission is prohibited.'}
+              ? 'इस वेबसाइट पर प्रस्तुत सभी लेआउट, ग्राफिक्स, डेटाबेस और विशेष रूप से तैयार की गई सारांश सामग्री Rajasthan Vacancy (www.rajasthanvacancy.online) के स्वामित्व में हैं। लिखित अनुमति के बिना इस सामग्री का वाणिज्यिक उपयोग, स्क्रेपिंग या कॉपी करना कानूनी रूप से वर्जित है।'
+              : 'All layouts, graphics, and summarized content on this website are owned by Rajasthan Vacancy (www.rajasthanvacancy.online). Commercial reproduction without written permission is prohibited.'}
           </p>
         </section>
 
@@ -86,8 +86,8 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ lang, on
           </h2>
           <p>
             {isHi
-              ? 'इस पोर्टल पर दी गई सूचनाओं के आधार पर लिए गए किसी भी निर्णय, आवेदन विलंब, परीक्षा चयन या वित्तीय लेन-देन से होने वाले किसी भी प्रत्यक्ष या अप्रत्यक्ष नुकसान के लिए RAJASTHAN VACCANCY/JOBS उत्तरदायी नहीं होगा।'
-              : 'RAJASTHAN VACCANCY/JOBS shall not be held liable for any direct or indirect losses resulting from reliance on the information provided.'}
+              ? 'इस पोर्टल पर दी गई सूचनाओं के आधार पर लिए गए किसी भी निर्णय, आवेदन विलंब, परीक्षा चयन या वित्तीय लेन-देन से होने वाले किसी भी प्रत्यक्ष या अप्रत्यक्ष नुकसान के लिए Rajasthan Vacancy (www.rajasthanvacancy.online) उत्तरदायी नहीं होगा।'
+              : 'Rajasthan Vacancy (www.rajasthanvacancy.online) shall not be held liable for any direct or indirect losses resulting from reliance on the information provided.'}
           </p>
         </section>
       </div>

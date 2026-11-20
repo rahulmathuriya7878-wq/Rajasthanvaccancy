@@ -38,8 +38,8 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({ lang, onBack }) => {
         <section className="space-y-2">
           <p>
             {isHi
-              ? 'RAJASTHAN VACCANCY/JOBS (rajasthanvacancy.in) एक स्वतंत्र, गैर-सरकारी सूचनात्मक एग्रीगेटर पोर्टल है। कृपया इस वेबसाइट का उपयोग करने से पहले इस व्यापक अस्वीकरण (Disclaimer) को अच्छी तरह समझ लें।'
-              : 'RAJASTHAN VACCANCY/JOBS is an independent, non-governmental informational aggregator portal. Please read this comprehensive disclaimer carefully before using our website.'}
+              ? 'Rajasthan Vacancy (https://www.rajasthanvacancy.online/) एक स्वतंत्र, गैर-सरकारी सूचनात्मक एग्रीगेटर पोर्टल है। कृपया इस वेबसाइट का उपयोग करने से पहले इस व्यापक अस्वीकरण (Disclaimer) को अच्छी तरह समझ लें।'
+              : 'Rajasthan Vacancy (https://www.rajasthanvacancy.online/) is an independent, non-governmental informational aggregator portal. Please read this comprehensive disclaimer carefully before using our website.'}
           </p>
         </section>
 

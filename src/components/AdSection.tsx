@@ -124,6 +124,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
   }, [client, slot]);
 
   const resolvedMinHeight = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
+  const resolvedSlot = /^\d+$/.test(String(slot).trim()) ? String(slot).trim() : '3785509362';
 
   return (
     <div
@@ -155,7 +156,7 @@ export const AdSection: React.FC<AdSectionProps> = ({
             minHeight: resolvedMinHeight,
           }}
           data-ad-client={client}
-          data-ad-slot={slot}
+          data-ad-slot={resolvedSlot}
           data-ad-format={format}
           data-full-width-responsive={responsive ? 'true' : 'false'}
         />

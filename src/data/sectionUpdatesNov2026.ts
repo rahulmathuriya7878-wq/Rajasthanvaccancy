@@ -1259,7 +1259,193 @@ export const GOPAL_CREDIT_CARD_YOJANA_2026: VacancyItem = {
   updatedAt: '2026-11-18'
 };
 
+export const RAJASTHAN_PALANHAR_YOJANA_2026: VacancyItem = {
+  id: 'rajasthan-palanhar-yojana-2026',
+  title: 'Rajasthan Palanhar Yojana 2026: बच्चों को ₹750 से ₹2,500 प्रतिमाह व ₹2,000 सालाना आर्थिक सहायता, पात्रता व ऑनलाइन आवेदन',
+  titleHi: 'राजस्थान पालनहार योजना 2026: अनाथ व निराश्रित बच्चों को ₹1,500 से ₹2,500 प्रतिमाह + ₹2,000 वार्षिक सहायता, ऑनलाइन आवेदन व स्टेटस देखें',
+  shortTitle: 'Rajasthan Palanhar Yojana 2026',
+  shortTitleHi: 'राजस्थान पालनहार योजना 2026',
+  organization: 'Sarkari Yojana',
+  department: 'Social Justice & Empowerment Department (SJED), Government of Rajasthan',
+  departmentHi: 'सामाजिक न्याय एवं अधिकारिता विभाग (SJED), राजस्थान सरकार',
+  advtNo: 'SJED-Rajasthan/Palanhar/2026',
+  category: 'scheme',
+  tags: ['yojana', 'rajasthan palanhar yojana 2026', 'palanhar yojana', 'sjed rajasthan', 'sarkari yojana', 'palanhar payment status'],
+  isTrending: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 21650,
+  savesCount: 5480,
+  totalPosts: '₹1,500–₹2,500/माह + ₹2,000/वर्ष',
+  postName: 'Rajasthan Palanhar Yojana 2026 (Child Upbringing & Education Financial Assistance)',
+  postNameHi: 'राजस्थान पालनहार योजना 2026 (अनाथ व विशेष श्रेणी बच्चों हेतु आर्थिक सहायता)',
+  qualification: ['10th'],
+  qualificationDetails: 'Bonafide resident of Rajasthan; child aged 0–18 years attending Anganwadi (2–6 yrs) or School (6–18 yrs) under eligible categories.',
+  qualificationDetailsHi: 'राजस्थान का मूल निवासी परिवार; 0 से 18 वर्ष के पात्र बच्चे (2–6 वर्ष हेतु आंगनबाड़ी व 6–18 वर्ष हेतु विद्यालय में नियमित अध्ययन अनिवार्य)।',
+  briefSummary: 'Rajasthan Palanhar Yojana 2026 provides monthly financial assistance of ₹1,500 to ₹2,500 (orphan category) and ₹750 to ₹1,500 (other eligible categories) plus ₹2,000 annual grant for uniform/shoes/sweater. Apply online via SSO Portal, SJE Portal, or E-Mitra.',
+  briefSummaryHi: 'राजस्थान सरकार के सामाजिक न्याय एवं अधिकारिता विभाग (SJED) द्वारा राज्य के अनाथ, निराश्रित एवं विशेष श्रेणी के बच्चों के पालन-पोषण, शिक्षा और उज्ज्वल भविष्य हेतु "राजस्थान पालनहार योजना 2026 (Rajasthan Palanhar Yojana 2026)" संचालित की जा रही है। इस योजना के तहत अनाथ बच्चों को 0–6 वर्ष में ₹1,500 प्रतिमाह व 6–18 वर्ष में ₹2,500 प्रतिमाह (तथा अन्य पात्र श्रेणियों को ₹750 से ₹1,500 प्रतिमाह) सीधे बैंक खाते (DBT) में दिए जाते हैं। इसके साथ ही कपड़ों, जूते व स्वेटर के लिए ₹2,000 प्रति वर्ष अतिरिक्त सहायता भी मिलती है। पात्र अभिभावक SSO पोर्टल, sje.rajasthan.gov.in या नजदीकी E-Mitra के माध्यम से ऑनलाइन आवेदन कर सकते हैं।',
+  description: 'Complete guide to Rajasthan Palanhar Yojana 2026: monthly assistance rates, ₹2,000 annual grant, all eligible categories, income limit, required documents, SSO/E-Mitra online application steps, and payment status check.',
+  descriptionHi: 'राजस्थान पालनहार योजना का उद्देश्य अनाथ और असहाय बच्चों को संस्थागत देखभाल के बजाय परिवार के भीतर ही सुरक्षित माहौल में पालन-पोषण और गुणवत्तापूर्ण शिक्षा उपलब्ध कराना है। योजना के अंतर्गत सहायता राशि सीधे पालनहार (अभिभावक) के जन आधार से लिंक बैंक खाते में ट्रांसफर की जाती है।',
+  jobLocation: 'Rajasthan (All Districts)',
+  salary: '₹750 – ₹2,500/माह + ₹2,000 वार्षिक अनुदान (DBT)',
+  salaryHi: 'अनाथ बच्चे: ₹1,500–₹2,500/माह | अन्य श्रेणियाँ: ₹750–₹1,500/माह + ₹2,000 वार्षिक',
+  ageLimit: {
+    min: 0,
+    max: 18,
+    asOnDate: '2026-11-20',
+    relaxationNotes: 'Child age 0 to 18 years (extendable up to 19 years or passing Class 12th for regular school students).',
+    relaxationNotesHi: 'बच्चे की आयु 0 से 18 वर्ष (नियमित विद्यालयी शिक्षा जारी रखने पर 19 वर्ष या कक्षा 12वीं उत्तीर्ण होने तक लाभ देय)।'
+  },
+  applicationFee: [{ category: 'सभी पात्र श्रेणी के आवेदक (All Applicants)', amount: '₹0/- (निःशुल्क सरकारी सेवा / ई-मित्र टोकन शुल्क लागू)' }],
+  importantDates: {
+    notificationDate: '2026-11-20',
+    applyStartDate: '2026-11-20',
+    applyLastDate: 'वर्ष भर ऑनलाइन आवेदन व वार्षिक नवीनीकरण (Renewal) सक्रिय',
+    feeLastDate: 'निःशुल्क ऑनलाइन आवेदन',
+    admitCardDate: 'कोई परीक्षा नहीं (दस्तावेज व स्कूल सत्यापन आधारित)',
+    examDate: 'सत्यापन उपरांत प्रतिमाह DBT से बैंक खाते में भुगतान'
+  },
+  latestNews: [
+    {
+      id: 'palanhar-yojana-2026-update',
+      date: '2026-11-20',
+      badge: 'YOJANA UPDATE 2026',
+      headline: 'राजस्थान पालनहार योजना 2026: ऑनलाइन आवेदन, वार्षिक नवीनीकरण (Renewal) व पेमेंट स्टेटस सक्रिय',
+      details: 'पात्र अभिभावक SSO पोर्टल, SJE पोर्टल व नजदीकी ई-मित्र के माध्यम से नए आवेदन एवं बच्चों का वार्षिक अध्ययन सत्यापन (Renewal) करवा सकते हैं ताकि ₹750–₹2,500 प्रतिमाह सहायता राशि निरंतर खाते में आती रहे।',
+      linkUrl: 'https://sje.rajasthan.gov.in/',
+      linkText: 'SJE पोर्टल देखें',
+      isHighlighted: true
+    }
+  ],
+  selectionProcess: [
+    'Online Application Submission via SSO Portal / SJE Portal / E-Mitra',
+    'Verification by BDO (Rural) or SDO (Urban) & Social Justice Department',
+    'Annual School / Anganwadi Attendance Verification (Shala Darpan / Renewal)',
+    'Direct Monthly Financial Assistance Transfer via DBT to Jan Aadhaar Linked Bank Account'
+  ],
+  selectionProcessHi: [
+    'SSO पोर्टल, SJE पोर्टल या नजदीकी E-Mitra केंद्र पर ऑनलाइन आवेदन',
+    'ग्रामीण क्षेत्र में विकास अधिकारी (BDO) व शहरी क्षेत्र में उपखंड अधिकारी (SDO) द्वारा सत्यापन',
+    'आंगनबाड़ी / विद्यालय (शाला दर्पण) में नियमित अध्ययन का वार्षिक नवीनीकरण (Renewal)',
+    'जन आधार से जुड़े बैंक खाते में प्रतिमाह DBT द्वारा सीधे सहायता राशि ट्रांसफर'
+  ],
+  requiredDocumentsHi: [
+    'पालनहार (अभिभावक) एवं बच्चे का आधार कार्ड (Aadhaar Card)',
+    'राजस्थान जन आधार कार्ड (Jan Aadhaar Card — बैंक खाता लिंक होना आवश्यक)',
+    'राजस्थान का मूल निवास प्रमाण पत्र (Bonafide Resident Certificate)',
+    'बच्चे का जन्म प्रमाण पत्र (Birth Certificate) एवं पासपोर्ट साइज फोटो',
+    'विद्यालय में नियमित अध्ययन का प्रमाण पत्र (6–18 वर्ष) या आंगनबाड़ी पंजीकरण प्रमाण (2–6 वर्ष)',
+    'पालनहार का वार्षिक आय प्रमाण पत्र (₹1.20 लाख से कम; BPL परिवार हेतु छूट)',
+    'श्रेणी प्रमाण पत्र: अनाथ हेतु माता-पिता का मृत्यु प्रमाण पत्र / विधवा-परित्यक्ता पेंशन PPO कॉपी / 40%+ दिव्यांगता प्रमाण पत्र / HIV-कुष्ठ-सिलिकोसिस मेडिकल प्रमाण पत्र / न्यायालय सजा आदेश की प्रति',
+    'अभिभावक की बैंक पासबुक एवं सक्रिय मोबाइल नंबर'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) या सामाजिक न्याय एवं अधिकारिता विभाग की वेबसाइट (sje.rajasthan.gov.in) पर जाएं, अथवा अपने सभी मूल दस्तावेजों के साथ नजदीकी E-Mitra केंद्र पर जाएं।',
+    'चरण 2: SSO ID से लॉगिन करने के बाद "SJMS / Palanhar" सेवा विकल्प चुनें।',
+    'चरण 3: पालनहार (अभिभावक) का जन आधार नंबर दर्ज करें तथा संबंधित पात्र श्रेणी (अनाथ, विधवा, दिव्यांग, परित्यक्ता, सिलिकोसिस आदि) का चयन करें।',
+    'चरण 4: बच्चे का विवरण, आयु, आंगनबाड़ी/स्कूल (शाला दर्पण) जानकारी और बैंक विवरण सही-सही भरें।',
+    'चरण 5: आवश्यक दस्तावेज (मृत्यु/पेंशन/दिव्यांग/अध्ययन व आय प्रमाण पत्र) स्कैन कर अपलोड करें और आवेदन सबमिट कर रसीद (Application ID) सुरक्षित रख लें।',
+    'चरण 6: आवेदन व पेमेंट स्टेटस चेक करने के लिए sje.rajasthan.gov.in या jansoochna.rajasthan.gov.in पर जन आधार / एप्लीकेशन नंबर दर्ज करें।'
+  ],
+  customSections: [
+    {
+      id: 'palanhar-assistance-table',
+      title: 'Rajasthan Palanhar Yojana 2026 Financial Assistance Rates',
+      titleHi: 'राजस्थान पालनहार योजना 2026: आयु एवं श्रेणी के अनुसार मिलने वाली सहायता राशि',
+      content: 'Monthly and annual financial assistance provided under Rajasthan Palanhar Yojana 2026:',
+      contentHi: 'राजस्थान सरकार द्वारा पालनहार योजना के अंतर्गत बच्चों की श्रेणी व आयु वर्ग के अनुसार निम्नलिखित आर्थिक सहायता प्रदान की जाती है:',
+      sectionType: 'table',
+      tableData: {
+        headers: ['पात्र श्रेणी (Category)', '0 से 6 वर्ष (आंगनबाड़ी)', '6 से 18 वर्ष (स्कूल जाने वाले)', 'वार्षिक अतिरिक्त अनुदान (वस्त्र/जूते/स्वेटर)'],
+        rows: [
+          ['अनाथ बच्चे (Orphan Children)', '₹1,500/- प्रति माह', '₹2,500/- प्रति माह', '₹2,000/- प्रति वर्ष (एकमुश्त)'],
+          ['अन्य पात्र श्रेणियाँ (विधवा/तलाकशुदा/दिव्यांग/HIV/कुष्ठ/सिलिकोसिस आदि)', '₹750/- प्रति माह', '₹1,500/- प्रति माह', '₹2,000/- प्रति वर्ष (पात्र श्रेणियों हेतु)']
+        ]
+      }
+    }
+  ],
+  faqs: [
+    {
+      qHi: 'राजस्थान पालनहार योजना 2026 में बच्चों को प्रतिमाह कितने रुपये मिलते हैं?',
+      aHi: 'अनाथ श्रेणी के बच्चों को 0 से 6 वर्ष की आयु में ₹1,500 प्रति माह और 6 से 18 वर्ष (स्कूल जाने वाले) को ₹2,500 प्रति माह मिलते हैं। अन्य पात्र श्रेणियों (विधवा, परित्यक्ता, दिव्यांग, HIV, कुष्ठ, सिलिकोसिस आदि) के बच्चों को 0–6 वर्ष में ₹750 प्रति माह तथा 6–18 वर्ष में ₹1,500 प्रति माह दिए जाते हैं। इसके अलावा वस्त्र, जूते व स्वेटर हेतु ₹2,000 वार्षिक अतिरिक्त सहायता भी मिलती है।',
+      q: 'How much monthly assistance is provided under Rajasthan Palanhar Yojana 2026?',
+      a: 'Orphan children receive ₹1,500/month (0–6 years) and ₹2,500/month (6–18 years). Children in other eligible categories receive ₹750/month (0–6 years) and ₹1,500/month (6–18 years), plus an annual ₹2,000 grant for clothes, shoes, and sweaters.'
+    },
+    {
+      qHi: 'पालनहार योजना 2026 के लिए ऑनलाइन आवेदन कैसे करें?',
+      aHi: 'पात्र अभिभावक अपनी राजस्थान SSO ID (sso.rajasthan.gov.in) पर SJMS/Palanhar मॉड्यूल के माध्यम से अथवा नजदीकी E-Mitra केंद्र पर जन आधार व आवश्यक दस्तावेज ले जाकर ऑनलाइन आवेदन कर सकते हैं।',
+      q: 'How to apply online for Rajasthan Palanhar Yojana 2026?',
+      a: 'Eligible guardians can apply online through the Rajasthan SSO Portal (sso.rajasthan.gov.in) under SJMS/Palanhar or visit their nearest E-Mitra kiosk with Jan Aadhaar and supporting documents.'
+    },
+    {
+      qHi: 'पालनहार योजना का पेमेंट व आवेदन स्टेटस कैसे चेक करें?',
+      aHi: 'आप सामाजिक न्याय एवं अधिकारिता विभाग के पोर्टल (sje.rajasthan.gov.in) या जन सूचना पोर्टल (jansoochna.rajasthan.gov.in) पर जाकर अपना जन आधार नंबर या एप्लीकेशन आईडी दर्ज करके आवेदन व मासिक पेमेंट स्टेटस देख सकते हैं।',
+      q: 'How to check Palanhar Yojana application and payment status?',
+      a: 'Visit sje.rajasthan.gov.in or jansoochna.rajasthan.gov.in and enter your Jan Aadhaar number or Application ID to check live application and monthly DBT payment status.'
+    },
+    {
+      qHi: 'पालनहार योजना में वार्षिक नवीनीकरण (Renewal) क्यों जरूरी है?',
+      aHi: 'प्रत्येक शैक्षणिक सत्र में बच्चे के आंगनबाड़ी या स्कूल में नियमित अध्ययन की पुष्टि के लिए ई-मित्र या शाला दर्पण के माध्यम से वार्षिक नवीनीकरण (Renewal) करवाना अनिवार्य है, अन्यथा मासिक भुगतान रुक सकता है।',
+      q: 'Why is annual renewal mandatory in Palanhar Yojana?',
+      a: 'Annual renewal verifies the child’s regular attendance at Anganwadi or school each academic year so monthly DBT assistance continues without interruption.'
+    }
+  ],
+  directLinks: [
+    { label: 'Apply Online (SSO Rajasthan Portal)', actionText: 'Apply via SSO', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
+    { label: 'SJE Rajasthan Official Website (Palanhar Portal & Guidelines)', actionText: 'Visit SJE Portal', url: 'https://sje.rajasthan.gov.in/' },
+    { label: 'Check Palanhar Application & Payment Status (Jan Soochna Portal)', actionText: 'Check Status', url: 'https://jansoochna.rajasthan.gov.in/' },
+    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
+    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
+    notificationPdfUrl: 'https://sje.rajasthan.gov.in/',
+    officialWebsiteUrl: 'https://sje.rajasthan.gov.in/'
+  },
+  yojanaOverview: {
+    yojanaName: 'राजस्थान पालनहार योजना 2026 (Rajasthan Palanhar Yojana)',
+    state: 'राजस्थान (सभी जिले)',
+    department: 'सामाजिक न्याय एवं अधिकारिता विभाग (SJED), राजस्थान सरकार',
+    beneficiaries: 'अनाथ, निराश्रित, विधवा/परित्यक्ता/दिव्यांग/HIV/कुष्ठ/सिलिकोसिस प्रभावित परिवारों के बच्चे (0–18 वर्ष)',
+    monthlyAssistance: 'अनाथ: ₹1,500–₹2,500/माह | अन्य श्रेणियाँ: ₹750–₹1,500/माह',
+    maxAnnualAssistance: '₹2,500/माह + ₹2,000 वार्षिक (कपड़े/जूते/स्वेटर अनुदान)',
+    applyStartDate: 'ऑनलाइन आवेदन व नवीनीकरण (Renewal) सक्रिय',
+    applyLastDate: 'वर्ष भर खुला (ऑनलाइन पंजीकरण व सत्यापन)',
+    applyMode: 'ऑनलाइन (SSO पोर्टल / SJE पोर्टल / नजदीकी E-Mitra)',
+    paymentMode: 'DBT (जन आधार से लिंक बैंक खाते में प्रतिमाह सीधा भुगतान)',
+    officialWebsite: 'sje.rajasthan.gov.in / sso.rajasthan.gov.in'
+  },
+  yojanaGeneralInfo: {
+    headingHi: 'राजस्थान पालनहार योजना 2026 क्या है? (सामान्य जानकारी व मुख्य लाभ)',
+    descriptionHi: 'राजस्थान सरकार के सामाजिक न्याय एवं अधिकारिता विभाग (SJED) द्वारा संचालित पालनहार योजना राज्य की एक प्रमुख जनकल्याणकारी योजना है, जिसके अंतर्गत अनाथ एवं आर्थिक रूप से असहाय विशेष श्रेणी के बच्चों को किसी निकटतम रिश्तेदार या परिचित (पालनहार) के परिवार में रहकर पालन-पोषण व शिक्षा के लिए नियमित मासिक आर्थिक सहायता दी जाती है।',
+    objectiveHi: 'अनाथ एवं निराश्रित बच्चों को अनाथालय के स्थान पर पारिवारिक वातावरण में सुरक्षित देखभाल, पोषण और 18 वर्ष की आयु (या 12वीं कक्षा) तक निरंतर शिक्षा सुनिश्चित करना।',
+    benefitsSummaryHi: 'अनाथ बच्चों को 0–6 वर्ष तक ₹1,500 प्रति माह व 6–18 वर्ष तक ₹2,500 प्रति माह तथा अन्य पात्र श्रेणियों के बच्चों को 0–6 वर्ष में ₹750 प्रति माह व 6–18 वर्ष में ₹1,500 प्रति माह आर्थिक सहायता मिलती है। साथ ही वस्त्र, जूते व स्वेटर हेतु ₹2,000 प्रति वर्ष अतिरिक्त अनुदान भी दिया जाता है।',
+    keyPointsHi: [
+      '2 से 6 वर्ष की आयु के बच्चों को आंगनबाड़ी केंद्र तथा 6 से 18 वर्ष के बच्चों को मान्यता प्राप्त विद्यालय में नियमित अध्ययनरत होना अनिवार्य है।',
+      'नियमित पढ़ाई जारी रखने पर बच्चे को 19 वर्ष की आयु अथवा कक्षा 12वीं उत्तीर्ण होने तक योजना का लाभ बढ़ाया जा सकता है।',
+      'सभी पात्र परिवारों के लिए हर शैक्षणिक सत्र में ई-मित्र / शाला दर्पण के माध्यम से वार्षिक नवीनीकरण (Renewal) करवाना आवश्यक है।'
+    ]
+  },
+  yojanaEligibility: {
+    headingHi: 'राजस्थान पालनहार योजना 2026 के लिए पात्र श्रेणियाँ एवं शर्तें',
+    criteriaHi: [
+      'बच्चा एवं पालनहार परिवार राजस्थान राज्य का मूल निवासी (कम से कम 3 वर्षों से निवासरत) होना चाहिए।',
+      '1. अनाथ बच्चे (माता-पिता दोनों की मृत्यु हो चुकी हो) | 2. न्यायिक प्रक्रिया से मृत्युदंड या आजीवन कारावास प्राप्त माता-पिता के बच्चे।',
+      '3. निराश्रित पेंशन की पात्र विधवा माता के बच्चे (अधिकतम 3 बच्चों तक) | 4. पुनर्विवाहित विधवा माता के बच्चे।',
+      '5. एड्स (HIV) पीड़ित माता-पिता के बच्चे | 6. कुष्ठ रोग (Leprosy) अथवा सिलिकोसिस से पीड़ित माता-पिता के बच्चे।',
+      '7. विशेष योग्यजन (40% या अधिक दिव्यांगता) माता-पिता के बच्चे | 8. तलाकशुदा / परित्यक्ता पेंशन पात्र महिला या नाता जाने वाली माता की संतान।'
+    ],
+    incomeLimitHi: [
+      'पालनहार (अभिभावक) परिवार की वार्षिक आय ₹1.20 लाख (₹1,20,000/-) से अधिक नहीं होनी चाहिए (BPL व अनाथ श्रेणी में विशेष विभागीय प्रावधान लागू)।'
+    ]
+  },
+  status: 'active',
+  createdAt: '2026-11-20',
+  updatedAt: '2026-11-20'
+};
+
 export const ALL_SECTION_UPDATES_NOV_2026: VacancyItem[] = [
+  RAJASTHAN_PALANHAR_YOJANA_2026,
   RAJASTHAN_CET_ADMIT_CARD_NOV_2026,
   UGC_NET_EXAM_DATE_2026,
   GOPAL_CREDIT_CARD_YOJANA_2026,

@@ -399,11 +399,26 @@ export const AUTO_DELETE_MAX_AGE_DAYS = 70;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export interface ExpirablePostLike {
+  category?: string;
+  organization?: string;
+  tags?: string[];
   addedAtMs?: number;
   updatedAt?: string;
   createdAt?: string;
   importantDates?: any;
 }
+
+/**
+ * Sarkari Yojana (scheme) posts are evergreen government schemes and are permanently exempt from auto-delete.
+ */
+export const isYojanaPost = (v?: ExpirablePostLike | null): boolean => {
+  if (!v) return false;
+  return (
+    v.category === 'scheme' ||
+    v.organization === 'Sarkari Yojana' ||
+    (Array.isArray(v.tags) && v.tags.some((t) => typeof t === 'string' && t.toLowerCase() === 'yojana'))
+  );
+};
 
 /**
  * Resolves the effective publish/update timestamp (UTC epoch ms) for a post.
@@ -424,13 +439,14 @@ export const getPostPublishedTimestamp = (v?: ExpirablePostLike | null): number 
 /**
  * Returns true when a post is strictly older than `maxAgeDays` (default 70 days)
  * and should be automatically deleted from active listings, sitemaps, and feeds.
+ * Sarkari Yojana (scheme) posts are exempt from auto-delete and always return false.
  */
 export const isPostOlderThanDays = (
   v?: ExpirablePostLike | null,
   maxAgeDays = AUTO_DELETE_MAX_AGE_DAYS,
   referenceNowMs = Date.now()
 ): boolean => {
-  if (!v) return false;
+  if (!v || isYojanaPost(v)) return false;
   const postTs = getPostPublishedTimestamp(v);
   if (!postTs || postTs === Number.MAX_SAFE_INTEGER) return false;
 
@@ -449,7 +465,8 @@ export const isPostOlderThanDays = (
 };
 
 /**
- * Filters out posts older than `maxAgeDays` (default 70 days).
+ * Filters out non-Yojana posts older than `maxAgeDays` (default 70 days).
+ * Sarkari Yojana (scheme) posts are always preserved.
  */
 export const filterActivePostsWithinDays = <T extends ExpirablePostLike>(
   items: T[],
