@@ -69,7 +69,7 @@ import {
 
 import { CheckCircle2 } from 'lucide-react';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v31';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v32';
 const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 // Clean up legacy cached storage versions
@@ -130,7 +130,7 @@ export default function App() {
     } catch (e) {}
 
     let filteredLoaded = filterActivePostsWithinDays(
-      loaded.filter(v => !initialDeleted.includes(v.id) && v.id !== 'ugc-net-2026-june'),
+      loaded.filter(v => !initialDeleted.includes(v.id) && v.id !== 'ugc-net-2026-june' && v.id !== 'bsf-si-ldce-recruitment-2026'),
       AUTO_DELETE_MAX_AGE_DAYS
     );
     

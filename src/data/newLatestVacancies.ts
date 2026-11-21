@@ -171,89 +171,6 @@ export const CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY: VacancyItem = {
   updatedAt: '2026-11-13'
 };
 
-export const BSF_SI_LDCE_RECRUITMENT_2026_VACANCY: VacancyItem = {
-  id: 'bsf-si-ldce-recruitment-2026',
-  title: 'BSF SI LDCE Recruitment 2026: सब इंस्पेक्टर के 1167 पदों पर भर्ती का नोटिफिकेशन जारी, आवेदन शुरू',
-  titleHi: 'BSF SI LDCE भर्ती 2026: सब इंस्पेक्टर के 1167 पदों पर नोटिफिकेशन जारी, आवेदन शुरू',
-  shortTitle: 'BSF SI LDCE 2026',
-  shortTitleHi: 'BSF सब इंस्पेक्टर भर्ती 2026',
-  organization: 'Central Govt',
-  department: 'Border Security Force (BSF)',
-  departmentHi: 'सीमा सुरक्षा बल (BSF)',
-  advtNo: 'BSF/RECT/SI-LDCE/2026/01',
-  category: 'latest_job',
-  tags: ['bsf', 'si', 'recruitment', 'latest job', 'defense'],
-  isTrending: true,
-  isHighDemand: true,
-  isHot: true,
-  isNew: true,
-  clicksCount: 14200,
-  savesCount: 3820,
-  totalPosts: '1167 पद',
-  postName: 'Sub Inspector (SI) - GD via LDCE 2026',
-  postNameHi: 'सब इंस्पेक्टर (जीडी) - एलडीसीई 2026',
-  qualification: ['Graduate'],
-  qualificationDetails: 'Graduation degree from a recognized university and 4 years regular service in BSF.',
-  qualificationDetailsHi: 'मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) डिग्री एवं सीमा सुरक्षा बल में निर्धारित सेवाकाल।',
-  briefSummary: 'Border Security Force has released recruitment for 1167 Sub Inspector GD posts via LDCE. Eligible departmental candidates can apply online.',
-  briefSummaryHi: 'सीमा सुरक्षा बल (BSF) द्वारा सब इंस्पेक्टर (जीडी) के 1167 पदों पर भर्ती के लिए आधिकारिक नोटिफिकेशन जारी कर दिया गया है। योग्य एवं सेवारत अभ्यर्थी निर्धारित अंतिम तिथि 31 दिसंबर 2026 तक ऑनलाइन आवेदन कर सकते हैं।',
-  description: 'Complete recruitment details for BSF Sub Inspector LDCE 2026.',
-  descriptionHi: 'बीएसएफ में सब इंस्पेक्टर के 1167 पदों पर भर्ती का विस्तृत नोटिफिकेशन जारी हो चुका है। योग्य अभ्यर्थी ऑनलाइन आवेदन कर सकते हैं।',
-  jobLocation: 'All India',
-  salary: 'Level-6 (₹35,400 – ₹1,12,400/-)',
-  salaryHi: 'पे मैट्रिक्स लेवल-6 (₹35,400 से ₹1,12,400/-)',
-  ageLimit: {
-    min: 20,
-    max: 32,
-    asOnDate: '2026-12-31',
-    relaxationNotes: 'Up to 32 years for General/OBC, 37 years for SC/ST.',
-    relaxationNotesHi: 'सामान्य वर्ग के लिए अधिकतम 32 वर्ष तथा SC/ST के लिए 37 वर्ष तक छूट देय होगी।'
-  },
-  applicationFee: {
-    general: 0,
-    obc: 0,
-    sc: 0,
-    st: 0,
-    female: 0,
-    paymentMode: 'विभागीय परीक्षा - निशुल्क'
-  },
-  importantDates: {
-    notificationDate: '2026-11-12',
-    applyStartDate: '2026-11-12',
-    applyLastDate: '2026-12-31',
-    feeLastDate: '2026-12-31',
-    admitCardDate: 'जनवरी 2027',
-    examDate: 'फरवरी 2027'
-  },
-  selectionProcess: [
-    'Written Examination (OMR/CBT)',
-    'Physical Standard Test (PST)',
-    'Physical Efficiency Test (PET)',
-    'Detailed Medical Examination (DME)'
-  ],
-  selectionProcessHi: [
-    'लिखित परीक्षा (CBT / OMR)',
-    'शारीरिक मानक परीक्षण (PST)',
-    'शारीरिक दक्षता परीक्षण (PET)',
-    'विस्तृत चिकित्सा परीक्षण (DME)'
-  ],
-  directLinks: [
-    { label: 'BSF SI Apply Online (ऑनलाइन आवेदन)', actionText: 'Apply Online', url: 'https://rectt.bsf.gov.in/' },
-    { label: 'Official Detailed Notification PDF (विस्तृत विज्ञप्ति)', actionText: 'Download PDF', url: 'https://rectt.bsf.gov.in/' },
-    { label: 'Join Official WhatsApp Channel (राजस्थान भर्ती)', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
-    { label: 'Join Telegram Channel (New Rajasthan Jobs)', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' },
-    { label: 'BSF Official Website (आधिकारिक पोर्टल)', actionText: 'Official Portal', url: 'https://bsf.gov.in/' }
-  ],
-  officialLinks: {
-    applyOnlineUrl: 'https://rectt.bsf.gov.in/',
-    notificationPdfUrl: 'https://rectt.bsf.gov.in/',
-    officialWebsiteUrl: 'https://bsf.gov.in/'
-  },
-  status: 'active',
-  createdAt: '2026-11-12',
-  updatedAt: '2026-11-12'
-};
-
 export const RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   id: 'rrc-nr-apprentice-recruitment-2026',
   title: 'RRC NR Apprentice Recruitment 2026: उत्तर रेलवे में 4651 अप्रेंटिस पदों का नोटिफिकेशन जारी, आवेदन 11 नवंबर से',
@@ -825,7 +742,6 @@ export const SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = {
 
 export const EIGHT_LATEST_VACANCIES: VacancyItem[] = [
   CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY,
-  BSF_SI_LDCE_RECRUITMENT_2026_VACANCY,
   RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY,
   DSSSB_SWEEPER_CHOWKIDAR_RECRUITMENT_2026_VACANCY,
   INDIAN_ARMY_TES_57_RECRUITMENT_2026_VACANCY,

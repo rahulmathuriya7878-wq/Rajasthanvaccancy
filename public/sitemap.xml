@@ -3,7 +3,7 @@
   <!-- Main Home Portal -->
   <url>
     <loc>https://www.rajasthanvacancy.online/</loc>
-    <lastmod>2026-11-20</lastmod>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Category Sections -->
   <url>
     <loc>https://www.rajasthanvacancy.online/?category=latest_job</loc>
-    <lastmod>2026-11-19</lastmod>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
@@ -142,12 +142,6 @@
   <url>
     <loc>https://www.rajasthanvacancy.online/?vacancy=cm-higher-education-scholarship-yojana-2026</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>hourly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.rajasthanvacancy.online/?vacancy=bsf-si-ldce-recruitment-2026</loc>
-    <lastmod>2026-11-12</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
