@@ -1,0 +1,4457 @@
+'use client';
+
+import React, { useEffect, useState, useMemo } from 'react';
+import { 
+  Calendar, 
+  ShieldCheck, 
+  Edit3, 
+  Trash2,
+  Bell, 
+  Search,
+  ChevronRight, 
+  ChevronLeft,
+  CheckCircle2,
+  Folder,
+  MessageCircle,
+  FileText,
+  Check,
+  Plus,
+  PlusCircle,
+  RefreshCw,
+  EyeOff,
+  X,
+  Home,
+  Copy,
+  ExternalLink,
+  Tag,
+  Flame,
+  Share2,
+  Cloud
+} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
+import { AdSection } from './AdSection';
+import { AdSlotWrapper } from './AdSlotWrapper';
+import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { buildCanonicalUrl, applyCanonicalTag, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
+import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
+import { generateHindiShareText, getVacancyShareUrl } from '../utils/shareUtils';
+
+interface VacancyDetailPageProps {
+  vacancy: VacancyItem;
+  onBack: () => void;
+  lang: LanguageMode;
+  allVacancies: VacancyItem[];
+  onSelectOtherVacancy: (item: VacancyItem) => void;
+  onDeleteVacancy?: (id: string) => void;
+  onUpdateVacancy?: (updatedJob: VacancyItem) => void | Promise<{ synced: boolean; reason?: string; message?: string }>;
+  onOpenAdminLogin?: () => void;
+  isAdmin?: boolean;
+  onSelectCategory?: (category: string) => void;
+  onSearchKeyword?: (keyword: string) => void;
+}
+
+// Pure normalizer to safely guarantee Arrays for importantDates, applicationFee, directLinks and latestNews
+export const normalizePost = (v: VacancyItem): any => {
+  if (!v) return v;
+
+  const defaultDirectLinks = (v as any).directLinks && Array.isArray((v as any).directLinks) && (v as any).directLinks.length > 0
+    ? (v as any).directLinks
+    : [
+        {
+          label: 'Apply Online',
+          actionText: 'Click Here',
+          type: 'apply',
+          url: v.officialLinks?.applyOnlineUrl || v.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in',
+          isPrimary: true
+        },
+        {
+          label: 'Download Notification (PDF)',
+          actionText: 'Download PDF',
+          type: 'notification',
+          url: v.officialLinks?.notificationPdfUrl || v.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in',
+          isPdf: true,
+          fileName: `${(v.shortTitle || v.title || 'Notification').replace(/\s+/g, '_')}.pdf`
+        },
+        {
+          label: 'Official Website',
+          actionText: 'Click Here',
+          type: 'official',
+          url: v.officialLinks?.officialWebsiteUrl || 'https://www.rajasthanvacancy.online/'
+        }
+      ];
+
+  const isYojanaPost = v.category === 'scheme';
+  const resolvedDates = resolveJobDates(v);
+  const defaultDatesArray = isYojanaPost
+    ? [
+        { key: 'notificationDate', label: 'योजना घोषणा / अपडेट तिथि (Scheme Update Date)', value: resolvedDates.notificationDate },
+        { key: 'applyStartDate', label: 'आवेदन प्रारंभ तिथि (Apply Start Date)', value: resolvedDates.applyStartDate },
+        { key: 'applyLastDate', label: 'आवेदन की अंतिम तिथि (Last Date)', value: resolvedDates.applyLastDate },
+        ...(resolvedDates.examDate && !['शीघ्र', 'यथासमय घोषित'].includes(resolvedDates.examDate.trim())
+          ? [{ key: 'examDate', label: 'सत्यापन / लाभ वितरण स्थिति (Benefit / Verification Status)', value: resolvedDates.examDate }]
+          : [])
+      ]
+    : [
+        { key: 'notificationDate', label: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)', value: resolvedDates.notificationDate },
+        { key: 'applyStartDate', label: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)', value: resolvedDates.applyStartDate },
+        { key: 'applyLastDate', label: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)', value: resolvedDates.applyLastDate },
+        { key: 'feeLastDate', label: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)', value: resolvedDates.feeLastDate },
+        { key: 'admitCardDate', label: 'Admit Card Available (एडमिट कार्ड जारी तिथि)', value: resolvedDates.admitCardDate },
+        { key: 'examDate', label: 'Exam Date (परीक्षा तिथि)', value: resolvedDates.examDate },
+      ];
+
+  // If user already had custom rows, preserve any extra rows
+  if (Array.isArray((v as any).importantDates)) {
+    const existing = (v as any).importantDates;
+    for (const item of existing) {
+      if (item && item.label) {
+        const lbl = item.label.toLowerCase();
+        const isStandard = lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('begin') ||
+          lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('last') || lbl.includes('अंतिम') ||
+          lbl.includes('fee') || lbl.includes('शुल्क') || lbl.includes('admit') || lbl.includes('एडमिट') ||
+          lbl.includes('exam') || lbl.includes('परीक्षा') || lbl.includes('योजना घोषणा');
+        if (!isStandard) {
+          defaultDatesArray.push(item);
+        }
+      }
+    }
+  }
+
+  const defaultFeeArray = Array.isArray((v as any).applicationFee)
+    ? (v as any).applicationFee
+    : isYojanaPost
+      ? [
+          { category: 'सभी पात्र लाभार्थी / आवेदक (All Eligible Citizens)', amount: '₹0/- (निःशुल्क आवेदन)' },
+          { category: 'आवेदन एवं लाभ माध्यम (Apply / Benefit Mode)', amount: v.yojanaOverview?.paymentMode || 'DBT (सीधे बैंक खाते में) / आधिकारिक पोर्टल' }
+        ]
+      : [
+          { category: 'General / OBC / EWS', amount: `₹${(v.applicationFee as any)?.genObc ?? 600}/-` },
+          { category: 'SC / ST / Divyang', amount: `₹${(v.applicationFee as any)?.scSt ?? 400}/-` },
+          { category: 'Correction Charge', amount: '₹300/-' },
+          { category: 'Pay Exam Fee Through', amount: (v.applicationFee as any)?.paymentModeHi || (v.applicationFee as any)?.paymentMode || 'Online (Debit / Credit Card / Net Banking)' },
+        ];
+
+  const defaultLatestNews = (v as any).latestNews && Array.isArray((v as any).latestNews) && (v as any).latestNews.length > 0
+    ? (v as any).latestNews
+    : [
+        {
+          id: 'news-1',
+          date: resolvedDates.notificationDate || 'नवंबर 2026',
+          badge: 'ताज़ा अपडेट',
+          headline: `${v.shortTitleHi || v.titleHi || v.title} के संबंध में नई सूचना जारी`,
+          details: isYojanaPost
+            ? `${v.departmentHi || v.organization || 'संबंधित विभाग'} द्वारा योजना के ऑनलाइन आवेदन, पात्रता व लाभ वितरण संबंधी दिशानिर्देश अपडेट किए गए हैं।`
+            : `${v.organization || 'विभाग'} द्वारा आधिकारिक पोर्टल पर भर्ती संबंधी आवश्यक दिशा-निर्देश व परीक्षा कैलेंडर की जानकारी अपडेट कर दी गई है।`,
+          isHighlighted: true
+        },
+        {
+          id: 'news-2',
+          date: 'नवंबर 2026',
+          badge: 'महत्वपूर्ण सूचना',
+          headline: isYojanaPost ? 'आवेदन व पात्रता नियम' : 'ऑनलाइन आवेदन व पात्रता नियम',
+          details: isYojanaPost
+            ? 'लाभार्थी आवेदन करने से पूर्व अपना जन आधार कार्ड, आधार से लिंक बैंक खाता तथा आय/निवास प्रमाण पत्र अवश्य अपडेट करवा लें।'
+            : 'इच्छुक अभ्यर्थी आवेदन करने से पूर्व अपनी शैक्षणिक योग्यता, आयु सीमा एवं आवश्यक प्रमाणपत्र (जाति/मूल निवास/EWS) की जांच अवश्य कर लें।',
+          isHighlighted: false
+        }
+      ];
+
+  return {
+    ...v,
+    directLinks: defaultDirectLinks,
+    importantDates: defaultDatesArray,
+    applicationFee: defaultFeeArray,
+    latestNews: defaultLatestNews,
+    requiredDocumentsHi: (v as any).requiredDocumentsHi && Array.isArray((v as any).requiredDocumentsHi) && (v as any).requiredDocumentsHi.length > 0
+      ? (v as any).requiredDocumentsHi
+      : getHighestEligibilityDocuments(v, true),
+    howToApplyHi: (v as any).howToApplyHi && Array.isArray((v as any).howToApplyHi) && (v as any).howToApplyHi.length > 0
+      ? getHowToApplySteps(v, true)
+      : getHowToApplySteps(v, true)
+  };
+};
+
+/**
+ * Dynamically computes required educational & category documents tailored specifically
+ * to the vacancy's maximum/highest eligibility tier (10th only / 12th only / Graduation / PG).
+ */
+export const getHighestEligibilityDocuments = (v: Partial<VacancyItem>, isHi = true): string[] => {
+  if (!v) return [];
+
+  if (v.category === 'scheme') {
+    const schemeText = ((v.titleHi || '') + ' ' + (v.qualificationDetailsHi || '') + ' ' + (v.descriptionHi || '')).toLowerCase();
+    const isScholarshipOrStudent = schemeText.includes('छात्र') || schemeText.includes('स्कूटी') || schemeText.includes('scooty') || schemeText.includes('scholarship') || schemeText.includes('कॉलेज') || schemeText.includes('12वीं');
+    const isDairyOrFarmer = schemeText.includes('गोपाल') || schemeText.includes('पशुपालक') || schemeText.includes('किसान') || schemeText.includes('डेयरी') || schemeText.includes('loan') || schemeText.includes('लोन');
+
+    if (isHi) {
+      const yojanaDocs = [
+        'जन आधार कार्ड (Jan Aadhaar Card) एवं परिवार के मुखिया/आवेदक का आधार कार्ड।',
+        'राजस्थान का मूल निवास प्रमाण पत्र (Bonafide Domicile Certificate)।',
+        'आधार कार्ड से लिंक सक्रिय बैंक खाता पासबुक (DBT / ऋण राशि प्राप्त करने हेतु)।',
+        'नवीनतम पासपोर्ट साइज रंगीन फोटो एवं पंजीकृत मोबाइल नंबर।'
+      ];
+      if (isScholarshipOrStudent) {
+        yojanaDocs.push('10वीं व 12वीं कक्षा की मूल अंकतालिका एवं वर्तमान कॉलेज/संस्थान में नियमित प्रवेश की शुल्क रसीद।');
+        yojanaDocs.push('परिवार का नवीनतम आय प्रमाण पत्र एवं जाति प्रमाण पत्र (SC/ST/OBC/MBC/EWS यदि लागू हो)।');
+      } else if (isDairyOrFarmer) {
+        yojanaDocs.push('प्राथमिक दुग्ध उत्पादक सहकारी समिति (Dairy Society) की सदस्यता / दूध आपूर्ति पासबुक या पशुधन विवरण।');
+        yojanaDocs.push('नजदीकी ई-मित्र या राजसहकार पोर्टल पर सत्यापन हेतु पैन कार्ड (यदि उपलब्ध हो) एवं स्व-घोषणा पत्र।');
+      } else {
+        yojanaDocs.push('परिवार का आय प्रमाण पत्र एवं श्रेणी/पात्रता प्रमाण पत्र (योजना के नियमानुसार)।');
+      }
+      return yojanaDocs;
+    }
+
+    return [
+      'Jan Aadhaar Card & Aadhaar Card of the applicant.',
+      'State Domicile Certificate (Mool Niwas).',
+      'Active Bank Account Passbook linked with Aadhaar / Jan Aadhaar (for DBT).',
+      'Latest Passport Size Photograph & active mobile number.',
+      isScholarshipOrStudent
+        ? '10th/12th Marksheet, regular college admission receipt, and Family Income / Caste Certificate.'
+        : 'Scheme-specific eligibility / membership / income proof as notified by the department.'
+    ];
+  }
+  
+  const quals = (Array.isArray(v.qualification) ? v.qualification : []) as string[];
+  const qualDetails = ((v.qualificationDetailsHi || '') + ' ' + (v.qualificationDetails || '')).toLowerCase();
+  const title = ((v.title || '') + ' ' + (v.titleHi || '') + ' ' + (v.postName || '') + ' ' + (v.postNameHi || '')).toLowerCase();
+
+  // Tier detection
+  const isPostGrad = quals.includes('PostGraduate') || qualDetails.includes('स्नातकोत्तर') || qualDetails.includes('post graduate') || qualDetails.includes('मास्टर') || qualDetails.includes('m.sc') || qualDetails.includes('m.a') || qualDetails.includes('m.com');
+  const isBEdOrBSTC = quals.includes('B.Ed/BSTC') || qualDetails.includes('b.ed') || qualDetails.includes('bstc') || qualDetails.includes('d.el.ed') || qualDetails.includes('ctet') || qualDetails.includes('reet');
+  const isEngineering = quals.includes('Engineering') || qualDetails.includes('b.tech') || qualDetails.includes('b.e.') || qualDetails.includes('इंजीनियरिंग');
+  const isMedical = quals.includes('Medical') || qualDetails.includes('mbbs') || qualDetails.includes('bams') || qualDetails.includes('चिकित्सा') || qualDetails.includes('नर्सिंग') || qualDetails.includes('anm') || qualDetails.includes('gnm');
+  const isGraduate = isPostGrad || isBEdOrBSTC || isEngineering || isMedical || quals.includes('Graduate') || qualDetails.includes('स्नातक') || qualDetails.includes('graduate') || qualDetails.includes('डिग्री');
+  const isItiDiploma = quals.includes('ITI/Diploma') || qualDetails.includes('iti') || qualDetails.includes('आईटीआई') || qualDetails.includes('डिप्लोमा') || qualDetails.includes('diploma');
+  const is12th = isGraduate || quals.includes('12th') || qualDetails.includes('12वीं') || qualDetails.includes('12th') || qualDetails.includes('10+2') || qualDetails.includes('इंटरमीडिएट') || qualDetails.includes('उच्च माध्यमिक');
+  const is10thOnly = !isGraduate && !is12th;
+
+  const docs: string[] = [];
+
+  if (isHi) {
+    // 10th marksheet for Date of Birth & matriculation
+    docs.push('दसवीं (10th) कक्षा की अंकतालिका एवं प्रमाण पत्र (जन्मतिथि सत्यापन हेतु)।');
+
+    if (isPostGrad) {
+      docs.push('बारहवीं (12th) कक्षा की अंकतालिका एवं प्रमाण पत्र।');
+      docs.push('स्नातक (Graduation) की डिग्री एवं अंकतालिकाएं।');
+      docs.push('अधिकतम शैक्षणिक योग्यता: संबंधित विषय में स्नातकोत्तर (PG / Master Degree) की डिग्री एवं अंकतालिका।');
+    } else if (isBEdOrBSTC) {
+      docs.push('बारहवीं (12th) कक्षा की अंकतालिका एवं प्रमाण पत्र।');
+      docs.push('स्नातक (Graduation) की डिग्री व अंकतालिका।');
+      docs.push('अधिकतम शैक्षणिक योग्यता: B.Ed / BSTC / D.El.Ed एवं शिक्षक पात्रता परीक्षा (CTET / REET) उत्तीर्ण प्रमाण पत्र।');
+    } else if (isEngineering) {
+      docs.push('बारहवीं (12th) कक्षा की अंकतालिका एवं प्रमाण पत्र।');
+      docs.push('अधिकतम शैक्षणिक योग्यता: संबंधित इंजीनियरिंग शाखा में B.E. / B.Tech डिग्री एवं समस्त सेमेस्टर की अंकतालिकाएं।');
+    } else if (isMedical) {
+      docs.push('बारहवीं (12th) कक्षा की अंकतालिका।');
+      docs.push('अधिकतम शैक्षणिक योग्यता: MBBS / नर्सिंग डिग्री / डिप्लोमा एवं संबंधित काउंसिल का वैध रजिस्ट्रेशन प्रमाण पत्र।');
+    } else if (isGraduate) {
+      docs.push('बारहवीं (12th) कक्षा की अंकतालिका एवं प्रमाण पत्र।');
+      docs.push(v.qualificationDetailsHi
+        ? `अधिकतम शैक्षणिक योग्यता: ${v.qualificationDetailsHi}`
+        : 'अधिकतम शैक्षणिक योग्यता: मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) डिग्री एवं समस्त वर्षों की अंकतालिकाएं।'
+      );
+    } else if (is12th) {
+      // 12th pass maximum eligibility: do NOT add Graduation!
+      docs.push('बारहवीं (12th / 10+2) कक्षा उत्तीर्ण की मूल अंकतालिका एवं प्रमाण पत्र (अधिकतम शैक्षणिक योग्यता)।');
+      if (qualDetails.includes('टाइपिंग') || qualDetails.includes('typing') || title.includes('typist') || title.includes('टाइपिस्ट')) {
+        docs.push('कंप्यूटर टाइपिंग दक्षता प्रमाण पत्र (30 WPM हिंदी अथवा निर्धारित गति)।');
+      }
+      if (isItiDiploma) {
+        docs.push('संबंधित ट्रेड में ITI / डिप्लोमा प्रमाण पत्र एवं अंकतालिका।');
+      }
+    } else if (is10thOnly) {
+      // 10th pass only: do NOT add 12th or Graduation!
+      if (isItiDiploma || qualDetails.includes('iti') || qualDetails.includes('आईटीआई')) {
+        docs.push('संबंधित अधिसूचित ट्रेड में NCVT / SCVT द्वारा जारी ITI / नेशनल अप्रेंटिसशिप (NAC) प्रमाण पत्र (तकनीकी पदों हेतु)।');
+      } else if (v.qualificationDetailsHi) {
+        docs.push(`अधिकतम शैक्षणिक योग्यता: ${v.qualificationDetailsHi}`);
+      }
+    } else {
+      if (v.qualificationDetailsHi) {
+        docs.push(`अधिकतम शैक्षणिक योग्यता: ${v.qualificationDetailsHi}`);
+      }
+    }
+
+    // Standard non-educational documents
+    docs.push('मूल निवास प्रमाण पत्र (Bonafide Domicile Certificate)।');
+    docs.push('जाति प्रमाण पत्र (SC / ST / OBC / MBC / EWS प्रमाण पत्र, यदि लागू हो)।');
+    docs.push('नवीनतम पासपोर्ट साइज रंगीन फोटो एवं स्पष्ट हस्ताक्षर।');
+    docs.push('पहचान पत्र (आधार कार्ड / पैन कार्ड अनिवार्य)।');
+  } else {
+    docs.push('10th class marksheet and certificate (for Date of Birth verification).');
+    if (isGraduate) {
+      docs.push('12th class marksheet and certificate.');
+      docs.push(`Highest Educational Qualification: ${v.qualificationDetails || 'Graduation Degree & all semester marksheets.'}`);
+    } else if (is12th) {
+      docs.push(`Highest Educational Qualification: ${v.qualificationDetails || '12th (10+2) Marksheet & Passing Certificate.'}`);
+      if (qualDetails.includes('typing') || title.includes('typist')) {
+        docs.push('Computer typing proficiency certificate / skill certificate.');
+      }
+    } else {
+      docs.push(`Highest Educational Qualification: ${v.qualificationDetails || '10th (Matriculation) Certificate.'}`);
+    }
+    docs.push('State Domicile Certificate (Mool Niwas).');
+    docs.push('Caste Certificate (SC/ST/OBC/EWS) if applicable.');
+    docs.push('Recent passport size photograph and scanned signature.');
+    docs.push('Identity Proof (Aadhaar Card / Voter ID).');
+  }
+
+  return docs;
+};
+
+/**
+ * Dynamically computes application steps completely free of SSO hardcoding.
+ * Tailors to offline submissions or official portal based on vacancy type.
+ */
+export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string[] => {
+  const isYojanaPost = v.category === 'scheme';
+
+  if (isHi && Array.isArray(v.howToApplyHi) && v.howToApplyHi.length > 0) {
+    if (isYojanaPost) return v.howToApplyHi;
+    // Sanitize any SSO occurrences for non-scheme jobs
+    return v.howToApplyHi.map(s => 
+      s.replace(/राजस्थान\s*SSO\s*पोर्टल\s*\(sso\.rajasthan\.gov\.in\)/gi, 'आधिकारिक भर्ती पोर्टल')
+       .replace(/sso\.rajasthan\.gov\.in/gi, 'आधिकारिक वेबसाइट')
+       .replace(/अपनी\s*SSO\s*ID\s*और\s*पासवर्ड/gi, 'अपनी लॉगिन आईडी और पासवर्ड')
+    );
+  }
+  if (!isHi && Array.isArray(v.howToApply) && v.howToApply.length > 0) {
+    if (isYojanaPost) return v.howToApply;
+    return v.howToApply.map(s => 
+      s.replace(/Rajasthan\s*SSO\s*\(sso\.rajasthan\.gov\.in\)/gi, 'Official Recruitment Portal')
+       .replace(/sso\.rajasthan\.gov\.in/gi, 'official website')
+       .replace(/SSO\s*ID/gi, 'Login ID')
+    );
+  }
+
+  const portalHost = v.officialLinks?.officialWebsiteUrl 
+    ? (() => {
+        try {
+          return new URL(v.officialLinks.officialWebsiteUrl).hostname;
+        } catch {
+          return 'आधिकारिक पोर्टल';
+        }
+      })()
+    : 'आधिकारिक योजना पोर्टल';
+
+  if (isYojanaPost) {
+    const schemeName = v.shortTitleHi || v.shortTitle || v.postNameHi || 'संबंधित सरकारी योजना';
+    return isHi
+      ? [
+          `चरण 1: सबसे पहले योजना के आधिकारिक पोर्टल (${portalHost}) या राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) पर जाएं अथवा नजदीकी E-Mitra केंद्र पर संपर्क करें।`,
+          `चरण 2: अपनी SSO ID व पासवर्ड से लॉगिन करें (नए उपयोगकर्ता जन आधार / आधार संख्या से Citizen रजिस्ट्रेशन करें)।`,
+          `चरण 3: डैशबोर्ड पर संबंधित विभाग की "${schemeName}" के आवेदन लिंक का चयन करें।`,
+          'चरण 4: जन आधार संख्या दर्ज कर आवेदक व परिवार के सदस्यों का ई-केवाईसी (OTP / बायोमेट्रिक) सत्यापन करें।',
+          'चरण 5: आवेदन फॉर्म में मांगी गई व्यक्तिगत जानकारी, निवास, पात्रता व आधार-लिंक्ड बैंक खाते का विवरण सही-सही भरें।',
+          'चरण 6: सभी आवश्यक दस्तावेजों (जन आधार, आय/निवास प्रमाण पत्र, पासबुक व योजना संबंधी दस्तावेज) की स्पष्ट PDF/JPG प्रति अपलोड करें।',
+          'चरण 7: भरे गए संपूर्ण आवेदन फॉर्म का पूर्वावलोकन (Preview) ध्यान से जांचें और फाइनल सबमिट (Final Submit) करें।',
+          'चरण 8: आवेदन सबमिट होने के बाद प्राप्त रसीद / आवेदन क्रमांक (Application ID) का प्रिंटआउट भविष्य के लिए सुरक्षित रखें।'
+        ]
+      : [
+          `Step 1: Visit the official scheme portal (${portalHost}), SSO Rajasthan (sso.rajasthan.gov.in), or your nearest E-Mitra center.`,
+          'Step 2: Log in using your SSO / Citizen credentials or complete new registration via Jan Aadhaar / Aadhaar.',
+          `Step 3: Select "${schemeName}" from the active citizen schemes dashboard.`,
+          'Step 4: Verify applicant details via Jan Aadhaar e-KYC and fill in required personal, eligibility, and bank account details.',
+          'Step 5: Upload clear scanned copies of all required scheme documents.',
+          'Step 6: Review the application preview carefully, submit the form online, and print/save the acknowledgment receipt.'
+        ];
+  }
+
+  const isOffline = ((v.postNameHi || '') + (v.titleHi || '') + (v.descriptionHi || '')).includes('ऑफलाइन') || 
+                    (v.selectionProcessHi || []).some(s => s.includes('ऑफलाइन')) ||
+                    (v.id && v.id.includes('air-force'));
+
+  if (isOffline) {
+    return isHi ? [
+      'चरण 1: सबसे पहले आधिकारिक नोटिफिकेशन एवं निर्धारित ऑफलाइन आवेदन पत्र (Application Form PDF) डाउनलोड करें।',
+      'चरण 2: आवेदन फॉर्म को A4 साइज के साफ सफेद पेपर पर स्पष्ट प्रिंट निकालें।',
+      'चरण 3: फॉर्म में आवेदित पद का नाम, श्रेणी, व्यक्तिगत विवरण तथा अधिकतम शैक्षणिक योग्यता का विवरण सही-सही भरें।',
+      'चरण 4: फॉर्म पर निर्धारित स्थान पर अपनी नवीनतम पासपोर्ट साइज फोटो चिपकाएं और उस पर स्व-हस्ताक्षर (Self-Attest) करें।',
+      'चरण 5: सभी आवश्यक दस्तावेजों (10वीं, 12वीं/डिग्री अंकतालिका, जाति, मूल निवास प्रमाण पत्र) की स्वप्रमाणित छायाप्रतियां फॉर्म के साथ संलग्न करें।',
+      'चरण 6: यदि लागू हो तो निर्धारित डाक टिकट लगा हुआ स्वयं का पता लिखा लिफाफा साथ में लगाएं।',
+      'चरण 7: मुख्य लिफाफे के ऊपर बड़े अक्षरों में आवेदित पद का नाम एवं अपनी श्रेणी अवश्य लिखें।',
+      'चरण 8: संपूर्ण आवेदन पत्र को अंतिम तिथि से पूर्व विभाग द्वारा अधिसूचित पते पर पंजीकृत डाक या स्पीड पोस्ट द्वारा भेजें।'
+    ] : [
+      'Step 1: Download the official notification and the offline application form PDF.',
+      'Step 2: Print the application form clearly on clean A4 size paper.',
+      'Step 3: Fill in the applied post name, category, personal details, and highest educational qualification carefully.',
+      'Step 4: Affix your recent passport size photograph and self-attest across it.',
+      'Step 5: Attach self-attested copies of all required educational and category certificates.',
+      'Step 6: Attach a self-addressed stamped envelope if prescribed in the notification.',
+      'Step 7: Superscribe the envelope with the applied post name and category.',
+      'Step 8: Send the complete application by Registered or Speed Post to the designated departmental address before the deadline.'
+    ];
+  }
+
+  if (isHi) {
+    return [
+      `चरण 1: सबसे पहले संबंधित विभाग / भर्ती बोर्ड के आधिकारिक पोर्टल (${portalHost}) पर जाएं।`,
+      'चरण 2: पोर्टल के मुख्य पृष्ठ पर उपलब्ध "Recruitment / ऑनलाइन आवेदन" सेक्शन पर क्लिक करें।',
+      'चरण 3: संबंधित पद/भर्ती के विज्ञापन के सामने दिए गए "Apply Online / फॉर्म भरें" बटन पर क्लिक करें।',
+      'चरण 4: यदि आप नए अभ्यर्थी हैं तो New Registration करें अथवा अपनी यूजर आईडी व पासवर्ड से लॉगिन करें।',
+      'चरण 5: अपनी व्यक्तिगत जानकारी, संपर्क विवरण, श्रेणी तथा अधिकतम शैक्षणिक योग्यता का विवरण ध्यानपूर्वक भरें।',
+      'चरण 6: निर्धारित प्रारूप व आकार (JPG 20-70 KB) में अपनी नवीनतम पासपोर्ट साइज फोटो एवं हस्ताक्षर अपलोड करें।',
+      'चरण 7: अपनी श्रेणी अनुसार निर्धारित ऑनलाइन आवेदन शुल्क का नेट बैंकिंग, डेबिट कार्ड या यूपीआई द्वारा भुगतान करें।',
+      'चरण 8: भरे गए संपूर्ण आवेदन पत्र का पूर्वावलोकन (Preview) जांचें, फाइनल सबमिट करें और प्रिंटआउट भविष्य के लिए सुरक्षित रख लें।'
+    ];
+  } else {
+    return [
+      `Step 1: Visit the official recruitment portal of the department (${portalHost}).`,
+      'Step 2: Click on the "Recruitment / Online Application" link on the homepage.',
+      'Step 3: Select this recruitment and click on the "Apply Online" button.',
+      'Step 4: Register as a new user or log in with your existing credentials.',
+      'Step 5: Fill in your personal details, category, and highest educational qualification accurately.',
+      'Step 6: Upload your latest passport size photograph and signature in the prescribed format and size.',
+      'Step 7: Pay the prescribed examination fee via online payment gateway.',
+      'Step 8: Review the application preview, submit the form, and download/print the final confirmation page.'
+    ];
+  }
+};
+
+export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
+  vacancy,
+  onBack,
+  lang,
+  allVacancies,
+  onSelectOtherVacancy,
+  onDeleteVacancy,
+  onUpdateVacancy,
+  onOpenAdminLogin,
+  isAdmin = false,
+  onSelectCategory,
+  onSearchKeyword,
+}) => {
+  const { isCloudAdmin, user, signInWithGoogle } = useAuth();
+  const [editablePost, setEditablePost] = useState<VacancyItem>(() => normalizePost(vacancy) as VacancyItem);
+  const currentVacancy = editablePost;
+  const setCurrentVacancy = setEditablePost;
+
+  const [isDirectEditMode, setIsDirectEditMode] = useState<boolean>(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [lastSavedTime, setLastSavedTime] = useState<string>('');
+  const [isSavingCloud, setIsSavingCloud] = useState<boolean>(false);
+  const [cloudSyncedOnce, setCloudSyncedOnce] = useState<boolean>(false);
+  const isDirtyRef = React.useRef<boolean>(false);
+  const lastSavedSnapshotRef = React.useRef<string>('');
+
+  const [pdfUploadTargetIndex, setPdfUploadTargetIndex] = useState<number | null>(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
+  const [alertFeedback, setAlertFeedback] = useState<string>('');
+  const [newTagInput, setNewTagInput] = useState<string>('');
+
+  const displayTags = (editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0)
+    ? editablePost.tags
+    : (vacancy.tags && Array.isArray(vacancy.tags) && vacancy.tags.length > 0)
+      ? vacancy.tags
+      : ['#RajasthanVacancy2026', '#SarkariResult2026', '#GovtJobsAlert', '#SarkariBharti'];
+
+  const handleAddTag = () => {
+    const trimmed = newTagInput.trim();
+    if (!trimmed) return;
+    const formatted = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
+    if (!displayTags.includes(formatted)) {
+      const updated = [...displayTags, formatted];
+      const updatedPost = { ...editablePost, tags: updated };
+      setEditablePost(updatedPost);
+      setHasUnsavedChanges(true);
+      if (onUpdateVacancy) onUpdateVacancy(updatedPost);
+      setAlertFeedback(`✅ नया टैग "${formatted}" सफलतापूर्वक जोड़ा गया!`);
+    }
+    setNewTagInput('');
+  };
+
+  const handleRemoveTag = (index: number) => {
+    const updated = displayTags.filter((_, idx) => idx !== index);
+    const updatedPost = { ...editablePost, tags: updated };
+    setEditablePost(updatedPost);
+    setHasUnsavedChanges(true);
+    if (onUpdateVacancy) onUpdateVacancy(updatedPost);
+    setAlertFeedback('❌ टैग हटा दिया गया।');
+  };
+
+  const handleTagClick = (tag: string) => {
+    const clean = tag.replace(/^#/, '');
+    if (onSearchKeyword) {
+      onSearchKeyword(clean);
+      return;
+    }
+    const matching = allVacancies.find(v => v.id !== vacancy.id && (
+      (v.tags && v.tags.some(t => t.toLowerCase().includes(clean.toLowerCase()))) ||
+      v.title.toLowerCase().includes(clean.toLowerCase()) ||
+      (v.titleHi && v.titleHi.toLowerCase().includes(clean.toLowerCase()))
+    ));
+    if (matching) {
+      onSelectOtherVacancy(matching);
+    } else if (onBack) {
+      onBack();
+    }
+  };
+
+  useEffect(() => {
+    // Only reset editablePost from parent prop when switching posts or when not actively dirty-editing
+    if (vacancy.id !== editablePost.id || (!isDirectEditMode && !isDirtyRef.current)) {
+      const normalized = normalizePost(vacancy);
+      setEditablePost(normalized);
+      lastSavedSnapshotRef.current = JSON.stringify(normalized);
+    }
+  }, [vacancy, isDirectEditMode]);
+
+  // 1. Reusable In-Place Word Editable Component (FullPagePostView.tsx)
+  const EditableText: React.FC<{
+    value?: string | number;
+    onChange: (val: string) => void;
+    className?: string;
+    style?: React.CSSProperties;
+    as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'div' | 'p' | 'td';
+    placeholder?: string;
+    titlePrefix?: string;
+    isDate?: boolean;
+  }> = ({
+    value = '',
+    onChange,
+    className = '',
+    style,
+    as: Tag = 'span',
+    placeholder = '...',
+    titlePrefix = 'टेक्स्ट',
+    isDate = false
+  }) => {
+    const strVal = String(value ?? '');
+    const [localVal, setLocalVal] = useState(strVal);
+
+    useEffect(() => {
+      setLocalVal(strVal);
+    }, [strVal]);
+
+    const isIsoOrStandardDate = /^\d{4}-\d{2}-\d{2}/.test(strVal) || /^\d{1,2}-\d{1,2}-\d{4}/.test(strVal);
+    const displayVal = (!isDirectEditMode && (isDate || isIsoOrStandardDate)) ? formatDisplayDate(strVal) : strVal;
+
+    // यदि वर्ड एडिट मोड बंद है तो साधारण टेक्स्ट दिखाएं
+    if (!isDirectEditMode) {
+      return (
+        <Tag className={className} style={style}>
+          {displayVal || placeholder}
+        </Tag>
+      );
+    }
+
+    // वर्ड एडिट मोड चालू होने पर इनपुट / टेक्स्टएरिया दिखाएं
+    if (Tag === 'p' || Tag === 'div') {
+      return (
+        <textarea
+          value={localVal}
+          onChange={(e) => {
+            isDirtyRef.current = true;
+            setHasUnsavedChanges(true);
+            setLocalVal(e.target.value);
+            onChange(e.target.value);
+          }}
+          style={style}
+          placeholder={placeholder}
+          className={`${className} w-full bg-amber-50 text-slate-900 border border-amber-400 rounded p-1.5 focus:ring-2 focus:ring-amber-500 outline-none text-xs sm:text-sm font-medium`}
+          title={`क्लिक करके ${titlePrefix} बदलें`}
+          rows={3}
+        />
+      );
+    }
+
+    return (
+      <input
+        type="text"
+        value={localVal}
+        onChange={(e) => {
+          isDirtyRef.current = true;
+          setHasUnsavedChanges(true);
+          setLocalVal(e.target.value);
+          onChange(e.target.value);
+        }}
+        style={style}
+        placeholder={placeholder}
+        className={`${className} bg-amber-50 text-slate-900 border border-amber-400 rounded px-1.5 py-0.5 focus:ring-2 focus:ring-amber-500 outline-none inline-block w-full font-medium text-xs sm:text-sm`}
+        title={`क्लिक करके ${titlePrefix} बदलें`}
+      />
+    );
+  };
+
+  // 2. Manual & Real-Time Debounced Cloud+Local Save Action
+  const onUpdatePost = onUpdateVacancy;
+  const persistPostUpdates = React.useCallback(async (postToSave: VacancyItem, explicitClick = false) => {
+    setIsSavingCloud(true);
+    let cloudSynced = false;
+    let cloudReason: string | undefined;
+    let cloudMsg: string | undefined;
+
+    try {
+      if (onUpdatePost) {
+        const res = await onUpdatePost(postToSave);
+        if (res && typeof res === 'object') {
+          cloudSynced = !!res.synced;
+          cloudReason = res.reason;
+          cloudMsg = res.message;
+        }
+      }
+
+      lastSavedSnapshotRef.current = JSON.stringify(postToSave);
+      isDirtyRef.current = false;
+      setHasUnsavedChanges(false);
+      setCloudSyncedOnce(cloudSynced);
+      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+      if (cloudSynced) {
+        setAlertFeedback('☁️ सभी फोन और डिवाइस पर परिवर्तन लाइव सेव हो गया!');
+      } else if (cloudReason === 'auth_required') {
+        if (explicitClick) {
+          setAlertFeedback('⚠️ केवल इसी फोन में सेव हुआ! दूसरे फोन में दिखाने के लिए ऊपर "Google लॉगिन करें" बटन दबाएं।');
+        }
+      } else if (cloudMsg) {
+        setAlertFeedback(`⚠️ ${cloudMsg}`);
+      } else if (explicitClick) {
+        setAlertFeedback('✅ परिवर्तन सफलतापूर्वक सहेजे गए!');
+      }
+    } catch (e) {
+      console.error(e);
+      setAlertFeedback('❌ सेव करने में त्रुटि हुई।');
+    } finally {
+      setIsSavingCloud(false);
+    }
+  }, [onUpdatePost]);
+
+  const handleManualSave = () => {
+    void persistPostUpdates(editablePost, true);
+  };
+
+  // Debounced auto-save (1.4s after last Word In-Place Edit Mode keystroke) without cursor reset
+  useEffect(() => {
+    if (!isAdmin || !isDirectEditMode) return;
+    const serialized = JSON.stringify(editablePost);
+    if (!lastSavedSnapshotRef.current) {
+      lastSavedSnapshotRef.current = serialized;
+      return;
+    }
+    if (serialized === lastSavedSnapshotRef.current) return;
+
+    isDirtyRef.current = true;
+    setHasUnsavedChanges(true);
+
+    const timer = window.setTimeout(() => {
+      void persistPostUpdates(editablePost, false);
+    }, 1400);
+
+    return () => window.clearTimeout(timer);
+  }, [editablePost, isAdmin, isDirectEditMode, persistPostUpdates]);
+
+  useEffect(() => {
+    if (alertFeedback) {
+      const timer = setTimeout(() => setAlertFeedback(''), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [alertFeedback]);
+
+  const handleAttachPdfToLink = (idx: number) => {
+    setPdfUploadTargetIndex(idx);
+    setIsPdfModalOpen(true);
+  };
+
+  const handleAddDirectLink = () => {
+    setEditablePost(prev => {
+      const list = [...(prev.directLinks || [])];
+      list.push({
+        label: 'New Important Link / नया लिंक',
+        actionText: 'Click Here',
+        type: 'official',
+        url: 'https://www.rajasthanvacancy.online/'
+      });
+      return { ...prev, directLinks: list };
+    });
+  };
+
+  const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setAlertFeedback('⚠️ कृपया केवल PDF (.pdf) फ़ाइल चुनें।');
+      return;
+    }
+
+    const fileSizeKb = Math.round(file.size / 1024);
+    const fileSizeStr = fileSizeKb > 1024 ? `${(fileSizeKb / 1024).toFixed(2)} MB` : `${fileSizeKb} KB`;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const cleanFileName = file.name.replace(/\.pdf$/i, '');
+
+      setEditablePost(prev => {
+        const list = [...(prev.directLinks || [])];
+        if (pdfUploadTargetIndex !== null && pdfUploadTargetIndex >= 0 && pdfUploadTargetIndex < list.length) {
+          list[pdfUploadTargetIndex] = {
+            ...list[pdfUploadTargetIndex],
+            url: dataUrl,
+            fileName: file.name,
+            fileSize: fileSizeStr,
+            isPdf: true,
+            actionText: list[pdfUploadTargetIndex].actionText || 'Download PDF'
+          };
+        } else {
+          list.push({
+            label: `Download ${cleanFileName} (PDF)`,
+            actionText: 'Download PDF',
+            type: 'notification',
+            url: dataUrl,
+            fileName: file.name,
+            fileSize: fileSizeStr,
+            isPdf: true,
+            isPrimary: true
+          });
+        }
+        return { ...prev, directLinks: list };
+      });
+
+      setAlertFeedback(`✅ PDF फ़ाइल "${file.name}" (${fileSizeStr}) सफलतापूर्वक जोड़ी गई!`);
+      setIsPdfModalOpen(false);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const isHi = lang === 'hi';
+  const postTitle = isHi ? (currentVacancy.titleHi || currentVacancy.title) : currentVacancy.title;
+  const shortJobName = currentVacancy.shortTitleHi || currentVacancy.shortTitle || postTitle.split(':')[0] || 'भर्ती 2026';
+
+  const isOfflinePost = ((editablePost.titleHi || '') + (editablePost.postNameHi || '') + (editablePost.id || '') + (editablePost.department || '')).toLowerCase().includes('ऑफलाइन') ||
+    ((editablePost.title || '') + (editablePost.postName || '') + (editablePost.id || '')).toLowerCase().includes('offline') ||
+    (editablePost.id && editablePost.id.includes('hindi-typist')) ||
+    (editablePost.id && editablePost.id.includes('air-force')) ||
+    Boolean(editablePost.postalAddress);
+
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Unified Integrated Dates (Notification, Apply Start, Apply Last, Fee Last, Admit Card, Exam)
+  const resolvedDates = useMemo(() => resolveJobDates(editablePost), [editablePost]);
+
+  const notificationDateDisplay = formatDisplayDate(resolvedDates.notificationDate);
+  const applyStartDateDisplay = formatDisplayDate(resolvedDates.applyStartDate);
+  const applyLastDateDisplay = formatDisplayDate(resolvedDates.applyLastDate);
+  const admitCardDateDisplay = formatDisplayDate(resolvedDates.admitCardDate);
+  const examDateDisplay = formatDisplayDate(resolvedDates.examDate);
+
+  // Centralized synchronizer that propagates any date change across all sections
+  const updateIntegratedDate = (
+    field: keyof IntegratedJobDates,
+    newVal: string
+  ) => {
+    setEditablePost(prev => {
+      const current = resolveJobDates(prev);
+      const updatedDates: IntegratedJobDates = { ...current, [field]: newVal };
+
+      const labelsMap: Record<keyof IntegratedJobDates, string> = {
+        notificationDate: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)',
+        applyStartDate: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)',
+        applyLastDate: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)',
+        feeLastDate: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)',
+        admitCardDate: 'Admit Card Available (एडमिट कार्ड जारी तिथि)',
+        examDate: 'Exam Date (परीक्षा तिथि)'
+      };
+
+      let updatedList: any[] = [];
+      if (Array.isArray(prev.importantDates) && prev.importantDates.length > 0) {
+        let matched = false;
+        updatedList = prev.importantDates.map((item: any) => {
+          const lbl = String(item?.label || '').toLowerCase();
+          let isMatch = false;
+          if (field === 'notificationDate' && (item?.key === 'notificationDate' || lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('विज्ञप्ति') || lbl.includes('released'))) isMatch = true;
+          if (field === 'applyStartDate' && (item?.key === 'applyStartDate' || lbl.includes('begin') || lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('आवेदन प्रारंभ'))) isMatch = true;
+          if (field === 'applyLastDate' && (item?.key === 'applyLastDate' || lbl.includes('last') || lbl.includes('अंतिम') || lbl.includes('समाप्त'))) isMatch = true;
+          if (field === 'feeLastDate' && (item?.key === 'feeLastDate' || lbl.includes('fee') || lbl.includes('शुल्क'))) isMatch = true;
+          if (field === 'admitCardDate' && (item?.key === 'admitCardDate' || lbl.includes('admit') || lbl.includes('एडमिट') || lbl.includes('प्रवेश पत्र'))) isMatch = true;
+          if (field === 'examDate' && (item?.key === 'examDate' || lbl.includes('exam') || lbl.includes('परीक्षा'))) isMatch = true;
+
+          if (isMatch) {
+            matched = true;
+            return { ...item, key: field, value: newVal };
+          }
+          return item;
+        });
+
+        if (!matched) {
+          updatedList.push({ key: field, label: labelsMap[field], value: newVal });
+        }
+      } else {
+        updatedList = [
+          { key: 'notificationDate', label: labelsMap.notificationDate, value: updatedDates.notificationDate },
+          { key: 'applyStartDate', label: labelsMap.applyStartDate, value: updatedDates.applyStartDate },
+          { key: 'applyLastDate', label: labelsMap.applyLastDate, value: updatedDates.applyLastDate },
+          { key: 'feeLastDate', label: labelsMap.feeLastDate, value: updatedDates.feeLastDate },
+          { key: 'admitCardDate', label: labelsMap.admitCardDate, value: updatedDates.admitCardDate },
+          { key: 'examDate', label: labelsMap.examDate, value: updatedDates.examDate }
+        ];
+      }
+
+      return {
+        ...prev,
+        importantDates: updatedList
+      };
+    });
+  };
+
+  // Section Management State for Admin
+  const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
+  const [newSectionTitle, setNewSectionTitle] = useState('');
+  const [newSectionContent, setNewSectionContent] = useState('');
+  const [newSectionType, setNewSectionType] = useState<'paragraph' | 'bullets' | 'table' | 'alert_box'>('paragraph');
+  const [editingCustomSection, setEditingCustomSection] = useState<CustomPostSection | null>(null);
+
+  const deletedKeys = currentVacancy.deletedSectionKeys || [];
+  const isSectionDeleted = (key: string) => deletedKeys.includes(key);
+
+  const sectionLabels: Record<string, string> = {
+    overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
+    yojana_info: 'योजना का उद्देश्य एवं मुख्य लाभ (Scheme Benefits)',
+    yojana_eligibility: 'योजना पात्रता एवं आय सीमा (Yojana Eligibility)',
+    latest_update: 'लेटेस्ट अपडेट (Latest Update)',
+    latest_news: 'ताज़ा समाचार (Latest News)',
+    dates: 'महत्वपूर्ण तिथियाँ (Important Dates)',
+    post_breakdown: 'पदों का विवरण (Post Breakdown)',
+    qualification: 'शैक्षणिक योग्यता (Eligibility)',
+    age_limit: 'आयु सीमा (Age Limit)',
+    application_fee: 'आवेदन शुल्क (Application Fee)',
+    selection_process: 'चयन / लाभ वितरण प्रक्रिया (Selection / Benefit Process)',
+    postal_address: 'आवेदन भेजने का पता (Postal Address)',
+    salary: 'वेतनमान / सहायता (Salary / Assistance)',
+    teacher_notes: 'स्पेशल नोट्स (Teacher Notes)',
+    documents: 'आवश्यक दस्तावेज (Required Documents)',
+    how_to_apply: 'आवेदन कैसे करें (How to Apply)',
+    important_links: 'महत्वपूर्ण लिंक्स (Important Links)',
+    faqs: 'प्रश्नोत्तर (FAQs)'
+  };
+
+  // Section Table Management Helpers (Add or Delete Table in any box)
+  const getSectionTable = (sectionKey: string) => {
+    if (editablePost.sectionTableMap && editablePost.sectionTableMap[sectionKey]) {
+      return editablePost.sectionTableMap[sectionKey];
+    }
+    return null;
+  };
+
+  const setSectionTable = (sectionKey: string, tableData: any) => {
+    setEditablePost(prev => ({
+      ...prev,
+      sectionTableMap: {
+        ...(prev.sectionTableMap || {}),
+        [sectionKey]: tableData
+      }
+    }));
+  };
+
+  const getSectionTitle = (sectionKey: string, defaultTitle: string) => {
+    if (editablePost.sectionTitleMap && editablePost.sectionTitleMap[sectionKey]) {
+      return editablePost.sectionTitleMap[sectionKey];
+    }
+    return defaultTitle;
+  };
+
+  const setSectionTitle = (sectionKey: string, titleVal: string) => {
+    setEditablePost(prev => ({
+      ...prev,
+      sectionTitleMap: {
+        ...(prev.sectionTitleMap || {}),
+        [sectionKey]: titleVal
+      }
+    }));
+  };
+
+  const handleAddTableToSection = (sectionKey: string) => {
+    const defaultTable = {
+      headers: ['विवरण (Heading 1)', 'जानकारी (Heading 2)'],
+      rows: [
+        ['बिन्दु 1', 'जानकारी यहाँ दर्ज करें'],
+        ['बिन्दु 2', 'जानकारी यहाँ दर्ज करें']
+      ]
+    };
+    setSectionTable(sectionKey, defaultTable);
+    setAlertFeedback('✅ इस बॉक्स में नयी टेबल सफलतापूर्वक जोड़ी गई!');
+  };
+
+  const handleDeleteTableFromSection = (sectionKey: string) => {
+    setSectionTable(sectionKey, null);
+    setAlertFeedback('❌ इस बॉक्स से टेबल हटा दी गई।');
+  };
+
+  const handleDeleteSection = (key: string) => {
+    if (key.startsWith('custom_')) {
+      const customId = key.replace('custom_', '');
+      const updated: VacancyItem = {
+        ...currentVacancy,
+        customSections: (currentVacancy.customSections || []).filter(s => s.id !== customId)
+      };
+      setCurrentVacancy(updated);
+      if (onUpdateVacancy) onUpdateVacancy(updated);
+    } else {
+      if (!deletedKeys.includes(key)) {
+        const updated: VacancyItem = {
+          ...currentVacancy,
+          deletedSectionKeys: [...deletedKeys, key]
+        };
+        setCurrentVacancy(updated);
+        if (onUpdateVacancy) onUpdateVacancy(updated);
+      }
+    }
+  };
+
+  const handleRestoreSection = (key: string) => {
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      deletedSectionKeys: deletedKeys.filter(k => k !== key)
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
+  const handleMoveSectionOrderUp = (index: number) => {
+    if (index <= 0) return;
+    const order = [...activeSectionKeys];
+    const temp = order[index];
+    order[index] = order[index - 1];
+    order[index - 1] = temp;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      sectionOrder: order
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
+  const handleMoveSectionOrderDown = (index: number) => {
+    if (index >= activeSectionKeys.length - 1) return;
+    const order = [...activeSectionKeys];
+    const temp = order[index];
+    order[index] = order[index + 1];
+    order[index + 1] = temp;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      sectionOrder: order
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+  };
+
+  const renderAdminSectionControls = (key: string, label: string) => {
+    const hasTable = Boolean(getSectionTable(key));
+
+    return (
+      <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+        {isDirectEditMode && (
+          <>
+            {!hasTable ? (
+              <button
+                type="button"
+                onClick={() => handleAddTableToSection(key)}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition cursor-pointer"
+                title={`इस ${label} बॉक्स में टेबल जोड़ें`}
+              >
+                <Plus className="w-3 h-3 text-emerald-600" />
+                <span>+ टेबल जोड़ें</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => handleDeleteTableFromSection(key)}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 transition cursor-pointer"
+                title={`इस ${label} बॉक्स से टेबल हटाएं`}
+              >
+                <Trash2 className="w-3 h-3 text-rose-600" />
+                <span>❌ टेबल हटाएं</span>
+              </button>
+            )}
+          </>
+        )}
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => handleDeleteSection(key)}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer"
+            title={`इस ${label} सेक्शन को हटाएं`}
+          >
+            <Trash2 className="w-3 h-3 text-rose-600" />
+            <span>सेक्शन हटाएं</span>
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  const renderCustomTableComponent = (
+    table: { headers: string[]; rows: string[][] },
+    onUpdateTable: (table: { headers: string[]; rows: string[][] } | null) => void,
+    onDeleteTable: () => void
+  ) => {
+    const handleMoveRow = (rowIdx: number, direction: 'up' | 'down') => {
+      const targetIdx = direction === 'up' ? rowIdx - 1 : rowIdx + 1;
+      if (targetIdx < 0 || targetIdx >= table.rows.length) return;
+      const newRows = [...table.rows];
+      const temp = newRows[rowIdx];
+      newRows[rowIdx] = newRows[targetIdx];
+      newRows[targetIdx] = temp;
+      onUpdateTable({ ...table, rows: newRows });
+    };
+
+    return (
+      <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white my-3 shadow-2xs">
+        {isDirectEditMode && (
+          <div className="p-2 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap text-xs">
+            <div className="flex items-center gap-2 font-bold text-slate-700">
+              <span>📊 टेबल कंट्रोल्स:</span>
+              <span>{table.rows.length} रो | {table.headers.length} कॉलम</span>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  const newHeaders = [...table.headers, `कॉलम ${table.headers.length + 1}`];
+                  const newRows = table.rows.map(row => [...row, 'डेटा दर्ज करें']);
+                  onUpdateTable({ headers: newHeaders, rows: newRows });
+                }}
+                className="px-2 py-0.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
+                title="टेबल में नया कॉलम जोड़ें"
+              >
+                <Plus className="w-3 h-3" />
+                <span>+ कॉलम जोड़ें</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const newRow = table.headers.map((_, idx) => `डेटा ${idx + 1}`);
+                  onUpdateTable({ ...table, rows: [...table.rows, newRow] });
+                }}
+                className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
+                title="टेबल में नयी रो जोड़ें"
+              >
+                <Plus className="w-3 h-3" />
+                <span>+ रो जोड़ें</span>
+              </button>
+              <button
+                type="button"
+                onClick={onDeleteTable}
+                className="px-2 py-0.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
+                title="संपूर्ण टेबल हटाएं"
+              >
+                <Trash2 className="w-3 h-3" />
+                <span>❌ टेबल हटाएं</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+          <thead>
+            <tr className="bg-slate-50 border-b border-slate-300">
+              {table.headers.map((h, colIdx) => (
+                <th key={colIdx} className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 last:border-r-0 relative group">
+                  <div className="flex items-center justify-between gap-1">
+                    <EditableText
+                      value={h}
+                      onChange={(val) => {
+                        const newHeaders = [...table.headers];
+                        newHeaders[colIdx] = val;
+                        onUpdateTable({ ...table, headers: newHeaders });
+                      }}
+                      titlePrefix={`कॉलम ${colIdx + 1} शीर्षक`}
+                    />
+                    {isDirectEditMode && table.headers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newHeaders = table.headers.filter((_, i) => i !== colIdx);
+                          const newRows = table.rows.map(r => r.filter((_, i) => i !== colIdx));
+                          onUpdateTable({ headers: newHeaders, rows: newRows });
+                        }}
+                        className="text-rose-500 hover:text-rose-700 text-[10px] font-bold px-1 cursor-pointer"
+                        title="यह कॉलम हटाएं"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </th>
+              ))}
+              {isDirectEditMode && <th className="p-2 border-slate-200 text-center w-28 font-bold text-xs text-slate-600">कंट्रोल्स</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200">
+            {table.rows.map((row, rowIdx) => (
+              <tr key={rowIdx}>
+                {row.map((cell, colIdx) => (
+                  <td key={colIdx} className="p-2.5 sm:p-3 text-slate-800 font-medium border-r border-slate-200 last:border-r-0 bg-white">
+                    <EditableText
+                      value={cell}
+                      onChange={(val) => {
+                        const newRows = [...table.rows];
+                        newRows[rowIdx] = [...newRows[rowIdx]];
+                        newRows[rowIdx][colIdx] = val;
+                        onUpdateTable({ ...table, rows: newRows });
+                      }}
+                      titlePrefix={`सेल (${rowIdx + 1}, ${colIdx + 1})`}
+                    />
+                  </td>
+                ))}
+                {isDirectEditMode && (
+                  <td className="p-2 text-center bg-white border-l border-slate-200">
+                    <div className="flex items-center justify-center gap-1">
+                      {rowIdx > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleMoveRow(rowIdx, 'up')}
+                          className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                          title="रो ऊपर करें"
+                        >
+                          ⬆️
+                        </button>
+                      )}
+                      {rowIdx < table.rows.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleMoveRow(rowIdx, 'down')}
+                          className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                          title="रो नीचे करें"
+                        >
+                          ⬇️
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newRows = table.rows.filter((_, i) => i !== rowIdx);
+                          onUpdateTable({ ...table, rows: newRows });
+                        }}
+                        className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
+                        title="यह रो हटाएं"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const handleAddNewSection = () => {
+    if (!newSectionTitle.trim()) return;
+    const newSec: CustomPostSection = {
+      id: Date.now().toString(),
+      title: newSectionTitle.trim(),
+      titleHi: newSectionTitle.trim(),
+      content: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है।',
+      contentHi: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है。',
+      sectionType: newSectionType
+    };
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      customSections: [...(currentVacancy.customSections || []), newSec]
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+    setNewSectionTitle('');
+    setNewSectionContent('');
+    setIsAddSectionOpen(false);
+  };
+
+  const handleSaveCustomSectionEdit = () => {
+    if (!editingCustomSection) return;
+    const updated: VacancyItem = {
+      ...currentVacancy,
+      customSections: (currentVacancy.customSections || []).map(s =>
+        s.id === editingCustomSection.id ? editingCustomSection : s
+      )
+    };
+    setCurrentVacancy(updated);
+    if (onUpdateVacancy) onUpdateVacancy(updated);
+    setEditingCustomSection(null);
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Dynamic Title & SEO
+    const originalTitle = document.title;
+    const cleanTitle = `${postTitle} - Rajasthan Vacancy 2026`;
+    document.title = cleanTitle;
+
+    // Dynamic Meta Description & OpenGraph Tags
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const originalDesc = metaDesc?.getAttribute('content') || '';
+    const isSchemePost = editablePost.category === 'scheme';
+    const newDesc = isSchemePost
+      ? `${postTitle}: मुख्य लाभ (${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'सरकारी सहायता'}), पात्रता शर्तें, आवश्यक दस्तावेज, अंतिम तिथि एवं ऑनलाइन आवेदन प्रक्रिया।`
+      : `${postTitle}: कुल पद ${editablePost.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+    if (metaDesc) {
+      metaDesc.setAttribute('content', newDesc);
+    }
+
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', cleanTitle);
+
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', newDesc);
+
+    // Dynamic High-CTR Featured Image Thumbnail for WhatsApp, Telegram & Social Sharing
+    const featuredThumbUrl = getJobFeaturedImage(editablePost);
+    let ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage) ogImage.setAttribute('content', featuredThumbUrl);
+    let twImage = document.querySelector('meta[name="twitter:image"]');
+    if (twImage) twImage.setAttribute('content', featuredThumbUrl);
+
+    // Meta keywords & viral tags injection for search engines & web crawlers
+    const activeTagsList = (editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0)
+      ? editablePost.tags.map(t => t.replace(/^#/, ''))
+      : [cleanTitle, editablePost.organization || 'Rajasthan Govt', 'Rajasthan Vacancy 2026', 'Sarkari Result', 'RPSC', 'RSMSSB'];
+    const keywordsStr = activeTagsList.join(', ');
+
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+      metaKeywords = document.createElement('meta');
+      metaKeywords.setAttribute('name', 'keywords');
+      document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.setAttribute('content', keywordsStr);
+
+    let metaNewsKeywords = document.querySelector('meta[name="news_keywords"]');
+    if (!metaNewsKeywords) {
+      metaNewsKeywords = document.createElement('meta');
+      metaNewsKeywords.setAttribute('name', 'news_keywords');
+      document.head.appendChild(metaNewsKeywords);
+    }
+    metaNewsKeywords.setAttribute('content', keywordsStr);
+
+    let metaViral = document.querySelector('meta[name="viral-tags"]');
+    if (!metaViral) {
+      metaViral = document.createElement('meta');
+      metaViral.setAttribute('name', 'viral-tags');
+      document.head.appendChild(metaViral);
+    }
+    metaViral.setAttribute('content', keywordsStr);
+
+    // Dynamic Canonical URL injection for Google Search Indexing (Strict Self-Referential Canonical)
+    const postCanonicalUrl = buildCanonicalUrl({ vacancyId: editablePost.id });
+    applyCanonicalTag(postCanonicalUrl);
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDesc) metaDesc.setAttribute('content', originalDesc);
+    };
+  }, [vacancy.id, postTitle, editablePost]);
+
+  const renderSectionShareButton = (_sectionKey: string, _sectionTitle: string) => null;
+
+  // Previous and Next Post for navigation footer
+  const { prevPost, nextPost } = useMemo(() => {
+    if (!allVacancies || allVacancies.length === 0) return { prevPost: null, nextPost: null };
+    const currentIndex = allVacancies.findIndex(v => v.id === vacancy.id);
+    const listLen = allVacancies.length;
+
+    if (currentIndex === -1 || listLen <= 1) {
+      return { prevPost: null, nextPost: null };
+    }
+
+    const prevIdx = (currentIndex - 1 + listLen) % listLen;
+    const nextIdx = (currentIndex + 1) % listLen;
+
+    return {
+      prevPost: allVacancies[prevIdx],
+      nextPost: allVacancies[nextIdx] !== allVacancies[prevIdx] ? allVacancies[nextIdx] : null
+    };
+  }, [allVacancies, vacancy]);
+
+  // Recent Posts for related opportunities at the bottom of the card (10 items)
+  const recentPosts = useMemo(() => {
+    return [...allVacancies]
+      .filter(v => v.id !== vacancy.id)
+      .sort(compareVacanciesNewestFirst)
+      .slice(0, 10);
+  }, [allVacancies, vacancy]);
+
+  // Documents list (tailored specifically to highest eligibility)
+  const documentsList = useMemo(() => {
+    if (isHi) {
+      if (editablePost.requiredDocumentsHi && Array.isArray(editablePost.requiredDocumentsHi) && editablePost.requiredDocumentsHi.length > 0) {
+        return editablePost.requiredDocumentsHi;
+      }
+      return getHighestEligibilityDocuments(editablePost, true);
+    } else {
+      if (editablePost.requiredDocuments && Array.isArray(editablePost.requiredDocuments) && editablePost.requiredDocuments.length > 0) {
+        return editablePost.requiredDocuments;
+      }
+      return getHighestEligibilityDocuments(editablePost, false);
+    }
+  }, [editablePost, isHi]);
+
+  // How to apply steps (completely free of SSO hardcoding, dynamically adapted)
+  const howToApplySteps = useMemo(() => {
+    return getHowToApplySteps(editablePost, isHi);
+  }, [editablePost, isHi]);
+
+  const isYojana = editablePost.category === 'scheme';
+  const isFlexCategory = editablePost.category === 'news' || editablePost.category === 'scheme';
+
+  // FAQs with fully integrated dates & scheme-aware fallback
+  const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : isYojana ? [
+    {
+      q: `What benefit is provided under ${shortJobName}?`,
+      qHi: `${shortJobName} के अंतर्गत लाभार्थियों को क्या लाभ / सहायता मिलती है?`,
+      a: editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salary || 'Financial assistance and scheme benefits as per official norms.',
+      aHi: `${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'पात्र लाभार्थियों को सरकारी नियमानुसार वित्तीय सहायता एवं योजना लाभ प्रदान किया जाता है।'}`
+    },
+    {
+      q: `Who is eligible to apply for ${shortJobName}?`,
+      qHi: `इस सरकारी योजना के लिए कौन-कौन पात्र (Eligible) हैं?`,
+      a: editablePost.qualificationDetails || 'Permanent residents fulfilling department eligibility norms.',
+      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'राजस्थान के मूल निवासी जो विभाग द्वारा निर्धारित पात्रता एवं आय सीमा की शर्तें पूरी करते हैं।'}`
+    },
+    {
+      q: `What is the last date to apply for ${shortJobName}?`,
+      qHi: `इस योजना में आवेदन करने की अंतिम तिथि क्या है?`,
+      a: `Applications can be submitted from ${applyStartDateDisplay} to ${applyLastDateDisplay}.`,
+      aHi: `योजना के अंतर्गत ऑनलाइन आवेदन ${applyStartDateDisplay} से ${applyLastDateDisplay} तक किए जा सकते हैं।`
+    },
+    {
+      q: `How to apply online for ${shortJobName}?`,
+      qHi: `${shortJobName} के लिए ऑनलाइन आवेदन कैसे करें?`,
+      a: 'Eligible applicants can apply online via the official portal / Rajasthan SSO or nearest E-Mitra center.',
+      aHi: `पात्र आवेदक संबंधित आधिकारिक पोर्टल (${editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'sso.rajasthan.gov.in'}) अथवा नजदीकी E-Mitra केंद्र के माध्यम से ऑनलाइन आवेदन कर सकते हैं।`
+    }
+  ] : [
+    {
+      q: `What is the last date to apply for this vacancy?`,
+      qHi: `इस भर्ती के लिए ऑनलाइन आवेदन की अंतिम तिथि क्या है?`,
+      a: `The last date to submit the application form is ${applyLastDateDisplay}.`,
+      aHi: `ऑनलाइन आवेदन करने की अंतिम तिथि ${applyLastDateDisplay} है। अभ्यर्थी निर्धारित समय से पूर्व अपना आवेदन अवश्य सबमिट कर लें।`
+    },
+    {
+      q: `When did the application process start and notification release?`,
+      qHi: `इस भर्ती का नोटिफिकेशन कब जारी हुआ और आवेदन कब से शुरू हुए?`,
+      a: `Official notification was released on ${notificationDateDisplay} and online application started on ${applyStartDateDisplay}.`,
+      aHi: `आधिकारिक विस्तृत अधिसूचना ${notificationDateDisplay} को जारी की गई थी तथा ऑनलाइन आवेदन की प्रक्रिया ${applyStartDateDisplay} से प्रारंभ है।`
+    },
+    {
+      q: `When will the admit card be available and exam conducted?`,
+      qHi: `एडमिट कार्ड कब जारी होंगे और परीक्षा कब आयोजित होगी?`,
+      a: `Admit card will be released on ${admitCardDateDisplay} and the exam will be held on ${examDateDisplay}.`,
+      aHi: `परीक्षा के एडमिट कार्ड ${admitCardDateDisplay} को जारी किए जाएंगे एवं परीक्षा ${examDateDisplay} को आयोजित की जाएगी।`
+    },
+    {
+      q: `What is the educational qualification required?`,
+      qHi: `इस भर्ती के लिए शैक्षणिक योग्यता क्या है?`,
+      a: `Candidates must possess minimum required educational qualification as per notification.`,
+      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / संबंधित डिग्री उत्तीर्ण होना अनिवार्य है।'}`
+    }
+  ];
+
+  const DEFAULT_SECTION_ORDER = isYojana
+    ? [
+        'overview',
+        'yojana_info',
+        'yojana_eligibility',
+        'latest_news',
+        'dates',
+        'application_fee',
+        'selection_process',
+        'documents',
+        'how_to_apply',
+        'important_links',
+        'faqs'
+      ]
+    : [
+        'overview',
+        'latest_news',
+        'dates',
+        'application_fee',
+        'post_breakdown',
+        'qualification',
+        'age_limit',
+        'selection_process',
+        'postal_address',
+        'documents',
+        'how_to_apply',
+        'important_links',
+        'faqs'
+      ];
+
+  const activeSectionKeys = useMemo(() => {
+    const savedOrder = currentVacancy.sectionOrder;
+    if (!savedOrder || savedOrder.length === 0) return DEFAULT_SECTION_ORDER;
+    const normalizedSaved = savedOrder.map(k => k === 'fee' ? 'application_fee' : k === 'salary' ? 'salary_table' : k);
+    const missing = DEFAULT_SECTION_ORDER.filter(k => !normalizedSaved.includes(k));
+    return [...normalizedSaved, ...missing];
+  }, [currentVacancy.sectionOrder, isYojana]);
+
+  return (
+    <div className="w-full text-[#222222] space-y-3 sm:space-y-4">
+      {/* Top Breadcrumb & Action Toolbar */}
+      <div className="bg-white rounded-lg border border-slate-200 px-3 sm:px-4 py-2.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+        {/* Breadcrumb Trail */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 flex-wrap text-slate-600 font-medium">
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              onBack();
+            }}
+            className="flex items-center gap-1 text-slate-700 hover:text-[#0056b3] transition cursor-pointer font-bold"
+            title="मुख्य पृष्ठ"
+          >
+            <Home className="w-3.5 h-3.5 text-slate-500" />
+            <span>Home</span>
+          </a>
+          <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
+          <a
+            href={`/?category=${encodeURIComponent(normalizeBreadcrumbCategoryKey(editablePost.category))}`}
+            onClick={(e) => {
+              e.preventDefault();
+              if (onSelectCategory) {
+                onSelectCategory(normalizeBreadcrumbCategoryKey(editablePost.category));
+              } else {
+                onBack();
+              }
+            }}
+            className="text-slate-700 hover:text-[#0056b3] transition cursor-pointer font-semibold"
+          >
+            {editablePost.category === 'admit_card' 
+              ? (isHi ? 'एडमिट कार्ड' : 'Admit Card')
+              : editablePost.category === 'result'
+              ? (isHi ? 'रिजल्ट' : 'Result')
+              : editablePost.category === 'answer_key'
+              ? (isHi ? 'उत्तर कुंजी' : 'Answer Key')
+              : editablePost.category === 'syllabus'
+              ? (isHi ? 'सिलेबस' : 'Syllabus')
+              : editablePost.category === 'scheme'
+              ? (isHi ? 'सरकारी योजना' : 'Sarkari Yojana')
+              : editablePost.category === 'news'
+              ? (isHi ? 'लेटेस्ट न्यूज़' : 'Latest News')
+              : editablePost.category === 'exam_date'
+              ? (isHi ? 'परीक्षा तिथि' : 'Exam Dates')
+              : (isHi ? 'लेटेस्ट जॉब्स' : 'Latest Jobs')}
+          </a>
+          <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
+          <span className="text-slate-900 font-bold truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+            {editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
+          </span>
+        </nav>
+
+        {/* URL Inspection & Action Buttons (Admin Only) */}
+        {isAdmin && (
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent('https://www.rajasthanvacancy.online/')}&item_url=${encodeURIComponent(getVacancyShareUrl(editablePost.id))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-[11px] transition"
+              title="Google Search Console URL Inspection में यह पोस्ट जांचें व तुरंत इंडेक्स करवाएं"
+            >
+              <Search className="w-3 h-3 text-blue-600" />
+              <span>GSC Inspect</span>
+              <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition cursor-pointer"
+              title="इस पोस्ट का पूरा URL कॉपी करें"
+            >
+              <Copy className="w-3 h-3" />
+              <span>{copiedLink ? '✓ Copied' : 'Copy URL'}</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Full-Width Clean Card Layout for Optimal Readability */}
+      <div className="w-full max-w-4xl mx-auto min-w-0">
+        {/* Main Article Content Area */}
+        <main className="w-full min-w-0">
+          <article 
+            className="job-detail-card bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-8 border border-slate-200 shadow-xs min-w-0 max-w-full overflow-x-hidden"
+          >
+              {/* Admin Actions Bar (when admin is active) */}
+              {isAdmin && (
+                <div className="mb-4 p-3 bg-slate-100 rounded-lg border border-slate-300 space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 font-bold text-slate-800 flex-wrap">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span>एडमिन कंट्रोल्स (Admin Mode Active)</span>
+                      {isCloudAdmin ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-sky-100 text-sky-900 border border-sky-300 font-semibold">
+                          <Cloud className="w-3 h-3 text-sky-700" />
+                          <span>Cloud Sync Active ({user?.email})</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (onOpenAdminLogin) {
+                              onOpenAdminLogin();
+                            } else {
+                              void signInWithGoogle();
+                            }
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 font-bold cursor-pointer transition"
+                          title="दूसरे फोन में अपडेट दिखाने के लिए Google एडमिन लॉगिन करें"
+                        >
+                          <Cloud className="w-3 h-3 text-rose-700" />
+                          <span>⚠️ केवल लोकल मोड — सभी फोन पर सिंक के लिए Google लॉगिन करें</span>
+                        </button>
+                      )}
+                      {lastSavedTime && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>{cloudSyncedOnce ? `सभी फोन पर सेव्ड (${lastSavedTime})` : `सेव्ड (${lastSavedTime})`}</span>
+                        </span>
+                      )}
+                      {(hasUnsavedChanges || isSavingCloud) && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 border border-amber-300 font-semibold animate-pulse">
+                          <span>{isSavingCloud ? 'क्लाउड में सहेजा जा रहा है...' : 'सहेजा जा रहा है...'}</span>
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={handleManualSave}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-md font-bold text-xs transition cursor-pointer shadow-sm"
+                        title="सभी किए गए बदलाव सहेजे (Save Changes)"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>💾 परिवर्तन सेव करें</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isDirectEditMode && isDirtyRef.current) {
+                            void persistPostUpdates(editablePost, true);
+                          }
+                          setIsDirectEditMode(!isDirectEditMode);
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-bold text-xs transition cursor-pointer shadow-xs ${
+                          isDirectEditMode
+                            ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 ring-2 ring-amber-300'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        }`}
+                        title="पेज पर सीधे शब्दों पर क्लिक करके एडिट करें"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>{isDirectEditMode ? '✓ वर्ड इन-प्लेस एडिट सक्रिय' : '✏️ वर्ड इन-प्लेस एडिट मोड'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddSectionOpen(true)}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 text-white rounded-md font-bold hover:bg-emerald-700 transition cursor-pointer shadow-xs"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>+ नया सेक्शन जोड़ें</span>
+                      </button>
+
+                      {onDeleteVacancy && (
+                        <button
+                          type="button"
+                          onClick={() => onDeleteVacancy(currentVacancy.id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-600 text-white rounded-md font-bold hover:bg-rose-700 transition cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>डिलीट</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Hidden Meta-Data Field for 'Viral Tags' in Admin Panel */}
+                  <div className="pt-2 border-t border-slate-200 mt-2 bg-white/80 p-2.5 rounded-md border border-slate-200">
+                    <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+                      <label className="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                        <Tag className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span>वायरल टैग्स / SEO कीवर्ड्स मेथाडेटा (Admin Meta-Field - Normal Users के लिए हिडन)</span>
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-medium">कॉमा (,) या हैशटैग (#) से अलग करें • ये टैग्स हेड में Hidden keywords meta-tag के रूप में इंजेक्ट होते हैं</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={editablePost.tags ? editablePost.tags.join(', ') : ''}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        const parsed = raw.split(',').map(s => s.trim()).filter(Boolean);
+                        const updated = { ...editablePost, tags: parsed };
+                        isDirtyRef.current = true;
+                        setEditablePost(updated);
+                        setHasUnsavedChanges(true);
+                      }}
+                      onBlur={() => {
+                        if (isDirtyRef.current) {
+                          void persistPostUpdates(editablePost, false);
+                        }
+                      }}
+                      placeholder="#RajasthanVacancy, #RPSC2026, #CET2026, Patwari Bharti, Sarkari Result..."
+                      className="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:border-blue-500 font-mono bg-white text-slate-900 shadow-2xs"
+                    />
+                  </div>
+
+                  {/* Direct Word Edit Guide Banner */}
+                  {isDirectEditMode && (
+                    <div className="p-2.5 bg-amber-50 border border-amber-300 rounded-md text-amber-950 flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">💡</span>
+                        <span className="font-semibold text-xs">
+                          डायरेक्ट वर्ड एडिट मोड चालू है: पेज के शीर्षक, तारीख, पद संख्या या किसी भी टेक्स्ट पर क्लिक करके सीधे टाइप करें। टाइप पूरा होते ही ऑटो-सेव और क्लाउड सिंक (Cloud Sync) हो जाएगा।
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isDirtyRef.current) {
+                            void persistPostUpdates(editablePost, true);
+                          }
+                          setIsDirectEditMode(false);
+                        }}
+                        className="px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-[11px] cursor-pointer"
+                      >
+                        एडिट मोड बंद करें
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Merged Direct Sections Manager & Reorder Bar in Word In-Place Edit Mode */}
+                  {isDirectEditMode && (
+                    <div className="p-3 bg-sky-50 border border-sky-300 rounded-lg space-y-2 text-xs">
+                      <div className="flex items-center justify-between font-bold text-sky-900 border-b border-sky-200 pb-1.5">
+                        <span className="flex items-center gap-1.5">
+                          <span>⚡</span>
+                          <span>डायरेक्ट सेक्शन व पोस्ट मैनेजर (Merged Sections Control & Reorder):</span>
+                        </span>
+                        <span className="bg-sky-200 text-sky-900 px-2 py-0.5 rounded font-extrabold">{activeSectionKeys.length} सेक्शंस</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                        {activeSectionKeys.map((secKey, sIdx) => {
+                          const titleDefault = sectionLabels[secKey] || secKey;
+                          const currentSecTitle = getSectionTitle(secKey, titleDefault);
+                          const isDeleted = isSectionDeleted(secKey);
+
+                          return (
+                            <div key={secKey} className={`flex items-center justify-between gap-2 p-2 rounded border bg-white shadow-2xs ${isDeleted ? 'border-rose-300 bg-rose-50/50' : 'border-slate-200'}`}>
+                              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                <span className="font-black text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 shrink-0">#{sIdx + 1}</span>
+                                <input
+                                  type="text"
+                                  value={currentSecTitle}
+                                  onChange={(e) => setSectionTitle(secKey, e.target.value)}
+                                  className="font-bold text-xs text-slate-900 bg-slate-50 border border-slate-300 rounded px-1.5 py-0.5 w-full focus:bg-white focus:outline-none focus:border-sky-500"
+                                  title="सेक्शन का नाम बदलें"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  disabled={sIdx === 0}
+                                  onClick={() => handleMoveSectionOrderUp(sIdx)}
+                                  className="p-1 bg-slate-100 hover:bg-sky-100 text-slate-700 rounded disabled:opacity-30 cursor-pointer font-bold text-[11px]"
+                                  title="ऊपर ले जाएं"
+                                >
+                                  ⬆️
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={sIdx === activeSectionKeys.length - 1}
+                                  onClick={() => handleMoveSectionOrderDown(sIdx)}
+                                  className="p-1 bg-slate-100 hover:bg-sky-100 text-slate-700 rounded disabled:opacity-30 cursor-pointer font-bold text-[11px]"
+                                  title="नीचे ले जाएं"
+                                >
+                                  ⬇️
+                                </button>
+                                {isDeleted ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRestoreSection(secKey)}
+                                    className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px] cursor-pointer"
+                                    title="वापस लाएं"
+                                  >
+                                    चालू करें
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSection(secKey)}
+                                    className="px-2 py-0.5 bg-rose-600 text-white rounded font-bold text-[10px] cursor-pointer"
+                                    title="सेक्शन हटाएं"
+                                  >
+                                    हटाएं
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Restorable Deleted Sections Notice */}
+                  {deletedKeys.length > 0 && (
+                    <div className="p-2 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between gap-2 flex-wrap text-amber-900">
+                      <div className="flex items-center gap-1.5">
+                        <EyeOff className="w-3.5 h-3.5 text-amber-600" />
+                        <span className="font-semibold">हटाए गए सेक्शंस ({deletedKeys.length}):</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {deletedKeys.map(key => (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => handleRestoreSection(key)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white hover:bg-amber-100 text-slate-800 border border-amber-300 text-[11px] font-bold transition cursor-pointer"
+                            title="इस सेक्शन को वापस लाएं"
+                          >
+                            <RefreshCw className="w-3 h-3 text-emerald-600" />
+                            <span>{sectionLabels[key] ? sectionLabels[key].split('(')[0].trim() : key} पुनः जोड़ें</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Entry Header */}
+              <header className="entry-header border-b border-slate-200 pb-4 mb-5">
+                <EditableText
+                  as="h1"
+                  value={isHi ? (editablePost.titleHi || editablePost.title) : editablePost.title}
+                  onChange={(val) => {
+                    setEditablePost(prev => ({
+                      ...prev,
+                      titleHi: val,
+                      title: val
+                    }));
+                  }}
+                  titlePrefix="शीर्षक (Title)"
+                  className="entry-title font-bold text-slate-900 tracking-tight leading-snug text-[22px] sm:text-[24px]"
+                  style={{
+                    fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
+                    fontSize: 'clamp(22px, 3vw, 24px)',
+                    lineHeight: 1.35
+                  }}
+                />
+
+                {/* Entry Meta */}
+                <div className="entry-meta text-[13px] text-slate-500 mt-2.5 flex items-center gap-2 flex-wrap font-medium">
+                  <span className="posted-on flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    <time className="entry-date published text-slate-600">
+                      {notificationDateDisplay || 'November 11, 2026'}
+                    </time>
+                  </span>
+                  <span className="text-slate-400">by</span>
+                  <span className="byline">
+                    <a
+                      href="/?category=news"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (onSelectCategory) {
+                          onSelectCategory('news');
+                        } else {
+                          onBack();
+                        }
+                      }}
+                      className="font-bold text-[#0073aa] hover:underline cursor-pointer transition"
+                      title={isHi ? 'लेटेस्ट न्यूज़ (Latest News) खोलें' : 'Open Latest News'}
+                    >
+                      RajasthanVacancy
+                    </a>
+                  </span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-700 font-semibold bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-xs">
+                    {vacancy.organization}
+                  </span>
+                </div>
+              </header>
+
+              {/* Featured Header Card - 100% Crystal Clear High-Contrast Dark Emerald UI */}
+              <div className="job-hero-card mb-6 rounded-xl sm:rounded-2xl border border-[#10b981]/60 bg-gradient-to-br from-[#04392e] via-[#06483a] to-[#0a2e26] p-3.5 sm:p-6 shadow-xl text-white min-w-0 max-w-full overflow-hidden">
+                <div className="space-y-3 min-w-0">
+                  <span 
+                    className="inline-block max-w-full break-words bg-[#0a5243] !text-[#a7f3d0] border border-[#10b981]/70 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md shadow-2xs"
+                    style={{ color: '#a7f3d0', backgroundColor: '#0a5243' }}
+                  >
+                    {isYojana
+                      ? (editablePost.departmentHi || editablePost.department || 'सरकारी योजना, राजस्थान सरकार')
+                      : (editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT'))}
+                  </span>
+                  <div>
+                    <EditableText
+                      as="h2"
+                      value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
+                      onChange={(val) => {
+                        setEditablePost(prev => ({
+                          ...prev,
+                          shortTitleHi: val,
+                          shortTitle: val
+                        }));
+                      }}
+                      titlePrefix="संक्षिप्त नाम"
+                      className="headlight text-xl sm:text-2xl font-extrabold !text-white tracking-tight leading-snug drop-shadow-xs"
+                      style={{ color: '#ffffff', fontFamily: "'Noto Sans Devanagari', 'Hind', 'Poppins', sans-serif" }}
+                    />
+                  </div>
+                  <p 
+                    className="!text-[#6ee7b7] text-xs sm:text-sm font-semibold leading-relaxed"
+                    style={{ color: '#6ee7b7' }}
+                  >
+                    {isYojana
+                      ? (isHi
+                          ? 'योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आवश्यक दस्तावेज एवं ऑनलाइन आवेदन प्रक्रिया'
+                          : 'Scheme Objectives, Benefits, Eligibility Criteria, Documents & Application Guide')
+                      : (isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide')}
+                  </p>
+
+                  {/* Centered Total Posts / Scheme Benefit Box */}
+                  {isYojana ? (
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
+                        {isHi ? 'मुख्य लाभ / वित्तीय सहायता (Scheme Benefit)' : 'Scheme Benefit / Assistance'}
+                      </span>
+                      <span 
+                        className="text-xl sm:text-2xl font-black !text-[#facc15] block mt-1 tracking-wide drop-shadow-xs leading-snug"
+                        style={{ color: '#facc15' }}
+                      >
+                        <EditableText
+                          value={
+                            editablePost.yojanaOverview?.maxAnnualAssistance ||
+                            editablePost.salaryHi ||
+                            editablePost.salary ||
+                            editablePost.totalPosts ||
+                            (isHi ? 'सरकारी सहायता व योजना लाभ' : 'Government Scheme Assistance')
+                          }
+                          onChange={(val) => {
+                            setEditablePost(prev => ({ ...prev, salaryHi: val, salary: val }));
+                          }}
+                          titlePrefix="योजना मुख्य लाभ"
+                        />
+                      </span>
+                    </div>
+                  ) : (!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
+                        {isHi ? 'कुल पद / सीटें' : 'Total Posts'}
+                      </span>
+                      <span 
+                        className="text-2xl sm:text-3xl font-black !text-[#facc15] block mt-0.5 tracking-wide drop-shadow-xs"
+                        style={{ color: '#facc15' }}
+                      >
+                        <EditableText
+                          value={editablePost.totalPosts || (isHi ? 'विभिन्न पद' : 'Various Posts')}
+                          onChange={(val) => {
+                            setEditablePost(prev => ({ ...prev, totalPosts: val }));
+                          }}
+                          titlePrefix="कुल पद"
+                        />
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Integrated Key Dates / Yojana Snapshot Grid */}
+                  {isYojana ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
+                      {[
+                        { label: 'राज्य / क्षेत्र', value: editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान', isImportant: false },
+                        { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
+                        { label: 'अंतिम तिथि', value: applyLastDateDisplay, isImportant: true },
+                        { label: 'आवेदन माध्यम', value: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन / E-Mitra', isImportant: false }
+                      ].map((d, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                        >
+                          <span 
+                            className="text-[11px] uppercase font-bold block"
+                            style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                          >
+                            {d.label}
+                          </span>
+                          <span 
+                            className="font-extrabold text-xs sm:text-sm mt-0.5 block break-words"
+                            style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                          >
+                            {d.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : !isFlexCategory && (() => {
+                    const rawDates = [
+                      { label: 'नोटिफिकेशन तिथि', value: notificationDateDisplay, isImportant: false },
+                      { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
+                      { label: 'अंतिम तिथि', value: applyLastDateDisplay, isImportant: true },
+                      { label: 'एडमिट कार्ड', value: admitCardDateDisplay, isImportant: false }
+                    ];
+
+                    const datesToShow = rawDates.filter(d => {
+                      if (!isFlexCategory) return true;
+                      return d.value && d.value !== 'शीघ्र' && d.value !== 'यथासमय घोषित' && d.value !== 'परीक्षा से 7 दिन पूर्व' && d.value.trim() !== '';
+                    });
+
+                    if (datesToShow.length === 0) return null;
+
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
+                        {datesToShow.map((d, idx) => (
+                          <div 
+                            key={idx} 
+                            className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                          >
+                            <span 
+                              className={`text-[11px] uppercase font-bold block`}
+                              style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                            >
+                              {d.label}
+                            </span>
+                            <span 
+                              className={`font-extrabold text-xs sm:text-sm mt-0.5 block`}
+                              style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                            >
+                              {d.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Entry Content Body */}
+              <div 
+                className="entry-content space-y-6 text-[#334155]"
+                style={{
+                  fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+                  fontSize: '12pt',
+                  lineHeight: 1.75
+                }}
+              >
+                {/* Small Normal WhatsApp Alert & Join Bar right above संक्षिप्त विवरण */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 p-3 sm:px-3.5 bg-emerald-50/90 border border-emerald-200/80 rounded-lg text-xs min-w-0">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800 min-w-0">
+                    <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
+                    <span className="text-xs sm:text-sm break-words">
+                      {isYojana
+                        ? (isHi ? 'सरकारी योजनाओं का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant Sarkari Yojana updates on WhatsApp:')
+                        : (isHi ? 'भर्ती का ताज़ा अपडेट सीधे WhatsApp पर पाएं:' : 'Get instant recruitment updates on WhatsApp:')}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
+                    <a
+                      href="https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="आधिकारिक WhatsApp चैनल से जुड़ें"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                      <span>{isHi ? 'WhatsApp चैनल जुड़ें' : 'Join Channel'}</span>
+                    </a>
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="WhatsApp पर शेयर करें (www.rajasthanvacancy.online)"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-[#15803d]" />
+                      <span>{isHi ? 'शेयर करें' : 'Share'}</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer shrink-0"
+                      title="पोस्ट का शेयर लिंक कॉपी करें"
+                    >
+                      {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedLink ? (isHi ? 'कॉपी हुआ' : 'Copied') : (isHi ? 'लिंक कॉपी' : 'Copy Link')}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Opening Lead Paragraphs */}
+                <div className="space-y-3">
+                  <p className="post-item">
+                    <strong>{postTitle}:</strong>{' '}
+                    <EditableText
+                      value={
+                        isYojana
+                          ? (editablePost.briefSummaryHi || editablePost.yojanaGeneralInfo?.descriptionHi || `${editablePost.departmentHi || editablePost.organization || 'राजस्थान सरकार'} द्वारा ${shortJobName} के अंतर्गत पात्र नागरिकों को आर्थिक व कल्याणकारी सहायता प्रदान की जा रही है।`)
+                          : (editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`)
+                      }
+                      onChange={(val) => {
+                        setEditablePost(prev => ({ ...prev, briefSummaryHi: val }));
+                      }}
+                      titlePrefix="संक्षिप्त विवरण सारांश"
+                    />
+                  </p>
+                  <p className="post-item">
+                    {isYojana
+                      ? (isHi
+                          ? `इस सरकारी योजना की ताज़ा अधिसूचना ${notificationDateDisplay} को अपडेट की गई है। योजना के तहत आवेदन ${applyStartDateDisplay} से शुरू हो चुके हैं और पात्र लाभार्थी ${applyLastDateDisplay} तक ${editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन पोर्टल / E-Mitra'} के माध्यम से आवेदन कर सकते हैं। योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आय सीमा, आवश्यक दस्तावेज व आवेदन प्रक्रिया की संपूर्ण जानकारी नीचे दी गई है।`
+                          : `Updated on ${notificationDateDisplay}, applications under this government scheme are open from ${applyStartDateDisplay} to ${applyLastDateDisplay} via ${editablePost.yojanaOverview?.applyMode || 'official online portal / E-Mitra'}. Check scheme benefits, eligibility criteria, required documents, and step-by-step application details below.`)
+                      : (isHi 
+                          ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
+                          : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`)}
+                  </p>
+                </div>
+
+                {/* Top In-Article Ad Section */}
+                <AdSlotWrapper
+                  height={130}
+                  className="my-4"
+                  ariaLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                  skeletonLabel={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                >
+                  <AdSection 
+                    slot="3785509362"
+                    client="ca-pub-3176571184961509"
+                    label={isHi ? 'विज्ञापन (Advertisement)' : 'Advertisement'}
+                    minHeight={90}
+                    embedded
+                  />
+                </AdSlotWrapper>
+
+                {/* Dynamic Reorderable Sections List */}
+                {activeSectionKeys.map((sectionKey) => {
+                  const key = sectionKey === 'fee' ? 'application_fee' : sectionKey === 'salary' ? 'salary_table' : sectionKey;
+
+                  switch (key) {
+                    case 'overview': {
+                      if (isSectionDeleted('overview')) return null;
+
+                      const isPlaceholder = (val: string | undefined, placeholders: string[]) => {
+                        if (!val || !val.trim()) return true;
+                        return placeholders.some(p => val.trim().toLowerCase() === p.toLowerCase());
+                      };
+
+                      const defaultOverviewRows = isYojana
+                        ? [
+                            { label: 'योजना का नाम', val: editablePost.yojanaOverview?.yojanaName || editablePost.postNameHi || editablePost.shortTitleHi || shortJobName, isEdit: true, keyName: 'postNameHi' },
+                            { label: 'संबंधित विभाग / मंत्रालय', val: editablePost.yojanaOverview?.department || editablePost.departmentHi || editablePost.department || editablePost.organization, isEdit: true, keyName: 'departmentHi' },
+                            { label: 'राज्य / क्षेत्र', val: editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान', isEdit: true, keyName: 'jobLocation' },
+                            {
+                              label: 'लाभार्थी वर्ग (Beneficiaries)',
+                              val: editablePost.yojanaOverview?.beneficiaries || editablePost.yojanaOverview?.totalBeneficiariesCount || editablePost.totalPosts || 'पात्र नागरिक / लाभार्थी',
+                              isEdit: true,
+                              keyName: 'totalPosts',
+                              show: !isPlaceholder(String(editablePost.yojanaOverview?.beneficiaries || editablePost.totalPosts || ''), ['विभिन्न पद'])
+                            },
+                            {
+                              label: 'मुख्य लाभ / सहायता राशि',
+                              val: editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.yojanaOverview?.monthlyAssistance || editablePost.salaryHi || editablePost.salary || 'योजना नियमानुसार देय',
+                              isEdit: true,
+                              keyName: 'salaryHi'
+                            },
+                            {
+                              label: 'योजना अपडेट तिथि',
+                              val: resolvedDates.notificationDate,
+                              isDate: true,
+                              dateKey: 'notificationDate',
+                              show: !isPlaceholder(resolvedDates.notificationDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन प्रारंभ तिथि',
+                              val: resolvedDates.applyStartDate,
+                              isDate: true,
+                              dateKey: 'applyStartDate',
+                              show: !isPlaceholder(resolvedDates.applyStartDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन की अंतिम तिथि',
+                              val: resolvedDates.applyLastDate,
+                              isDate: true,
+                              dateKey: 'applyLastDate',
+                              show: !isPlaceholder(resolvedDates.applyLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            {
+                              label: 'आवेदन का माध्यम',
+                              val: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन (SSO पोर्टल / आधिकारिक वेबसाइट / E-Mitra)',
+                              isEdit: true,
+                              keyName: 'applicationMode'
+                            },
+                            ...(editablePost.yojanaOverview?.paymentMode
+                              ? [{ label: 'लाभ वितरण प्रक्रिया (Payment Mode)', val: editablePost.yojanaOverview.paymentMode, isEdit: false }]
+                              : []),
+                            {
+                              label: 'पात्रता सारांश',
+                              val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'राजस्थान मूल निवासी एवं योजना नियमानुसार पात्र',
+                              isEdit: true,
+                              keyName: 'qualificationDetailsHi'
+                            }
+                          ].filter(r => r.show !== false)
+                        : [
+                            { label: 'भर्ती / योजना संस्था', val: editablePost.department || editablePost.organization, isEdit: true, keyName: 'department' },
+                            { label: 'नाम / शीर्षक', val: editablePost.shortTitleHi || editablePost.shortTitle || shortJobName, isEdit: true, keyName: 'shortTitleHi' },
+                            { 
+                              label: 'विज्ञापन संख्या', 
+                              val: editablePost.advtNo || 'विज्ञप्ति अनुसार', 
+                              isEdit: true, 
+                              keyName: 'advtNo',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.advtNo, ['विज्ञप्ति अनुसार', 'शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'घोषित कुल पद / सीटें', 
+                              val: editablePost.totalPosts || 'विभिन्न पद', 
+                              isEdit: true, 
+                              keyName: 'totalPosts',
+                              show: !isFlexCategory || !isPlaceholder(String(editablePost.totalPosts || ''), ['विभिन्न पद', 'विभिन्न'])
+                            },
+                            { 
+                              label: 'नोटिफिकेशन तिथि', 
+                              val: resolvedDates.notificationDate, 
+                              isDate: true, 
+                              dateKey: 'notificationDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.notificationDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
+                            },
+                            { 
+                              label: 'आवेदन शुरू', 
+                              val: resolvedDates.applyStartDate, 
+                              isDate: true, 
+                              dateKey: 'applyStartDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.applyStartDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: isOfflinePost ? 'ऑफलाइन आवेदन की अंतिम तिथि' : 'ऑनलाइन आवेदन की अंतिम तिथि', 
+                              val: resolvedDates.applyLastDate, 
+                              isDate: true, 
+                              dateKey: 'applyLastDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.applyLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'फीस भुगतान अंतिम तिथि', 
+                              val: resolvedDates.feeLastDate, 
+                              isDate: true, 
+                              dateKey: 'feeLastDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.feeLastDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'एडमिट कार्ड जारी तिथि', 
+                              val: resolvedDates.admitCardDate, 
+                              isDate: true, 
+                              dateKey: 'admitCardDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.admitCardDate, ['शीघ्र', 'यथासमय घोषित', 'परीक्षा से 7 दिन पूर्व'])
+                            },
+                            { 
+                              label: 'परीक्षा तिथि', 
+                              val: resolvedDates.examDate, 
+                              isDate: true, 
+                              dateKey: 'examDate',
+                              show: !isFlexCategory || !isPlaceholder(resolvedDates.examDate, ['शीघ्र', 'यथासमय घोषित'])
+                            },
+                            { 
+                              label: 'आवेदन का माध्यम', 
+                              val: editablePost.applicationMode || (isOfflinePost ? 'ऑफलाइन (Speed Post / Registered Post)' : 'ऑनलाइन (Online Portal)'), 
+                              isEdit: true,
+                              keyName: 'applicationMode',
+                              show: !isFlexCategory 
+                            },
+                            { 
+                              label: 'स्थान / कार्यक्षेत्र', 
+                              val: editablePost.jobLocation, 
+                              isEdit: true, 
+                              keyName: 'jobLocation',
+                              show: Boolean(editablePost.jobLocation && editablePost.jobLocation.trim()) 
+                            },
+                            { 
+                              label: 'शैक्षणिक योग्यता / पात्रता', 
+                              val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 
+                              isEdit: true, 
+                              keyName: 'qualificationDetailsHi',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.qualificationDetailsHi || editablePost.qualificationDetails, ['पद अनुसार 10वीं / 12वीं / स्नातक / ITI पास', 'पद अनुसार 10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'])
+                            },
+                            { 
+                              label: 'स्टाइपेंड / वित्तीय सहायता / वेतनमान', 
+                              val: editablePost.salaryHi || editablePost.salary || 'पे-मैट्रिक्स नियमानुसार देय', 
+                              isEdit: true, 
+                              keyName: 'salaryHi',
+                              show: !isFlexCategory || !isPlaceholder(editablePost.salaryHi || editablePost.salary, ['पे-मैट्रिक्स नियमानुसार देय'])
+                            }
+                          ].filter(r => r.show !== false);
+
+                      const overviewRows = Array.isArray(editablePost.overviewRows) && editablePost.overviewRows.length > 0
+                        ? editablePost.overviewRows
+                        : defaultOverviewRows;
+
+                      const handleUpdateOverviewRows = (newRows: any[]) => {
+                        setEditablePost(prev => ({ ...prev, overviewRows: newRows }));
+                      };
+
+                      const handleMoveOverviewRow = (rowIdx: number, direction: 'up' | 'down') => {
+                        const targetIdx = direction === 'up' ? rowIdx - 1 : rowIdx + 1;
+                        if (targetIdx < 0 || targetIdx >= overviewRows.length) return;
+                        const rows = [...overviewRows];
+                        const temp = rows[rowIdx];
+                        rows[rowIdx] = rows[targetIdx];
+                        rows[targetIdx] = temp;
+                        handleUpdateOverviewRows(rows);
+                      };
+
+                      const handleDeleteOverviewRow = (rowIdx: number) => {
+                        const rows = overviewRows.filter((_, i) => i !== rowIdx);
+                        handleUpdateOverviewRows(rows);
+                      };
+
+                      return (
+                        <div key="overview">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('overview', `${shortJobName} का संक्षिप्त विवरण`)}
+                              onChange={(val) => setSectionTitle('overview', val)}
+                              titlePrefix="संक्षिप्त विवरण शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            <div className="flex items-center gap-1.5">
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const rows = [...overviewRows, { label: 'नया विवरण', val: 'जानकारी दर्ज करें', isEdit: true }];
+                                    handleUpdateOverviewRows(rows);
+                                  }}
+                                  className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>+ नई रो</span>
+                                </button>
+                              )}
+                              <a
+                                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95"
+                                title="WhatsApp पर संक्षिप्त विवरण शेयर करें"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                                <span>शेयर करें</span>
+                              </a>
+                              {renderSectionShareButton('overview', `${shortJobName} का संक्षिप्त विवरण`)}
+                              {renderAdminSectionControls('overview', 'संक्षिप्त विवरण')}
+                            </div>
+                          </div>
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-300">
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 w-1/3">विवरण</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800">जानकारी</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                {overviewRows.map((row: any, idx: number) => (
+                                  <tr key={idx} className="border-b border-slate-200 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200 w-1/3">
+                                      <EditableText
+                                        value={row.label}
+                                        onChange={(val) => {
+                                          const rows = [...overviewRows];
+                                          rows[idx] = { ...rows[idx], label: val };
+                                          handleUpdateOverviewRows(rows);
+                                        }}
+                                        titlePrefix="रो शीर्षक"
+                                      />
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 text-slate-700 bg-white font-semibold">
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div className="flex-1">
+                                          {row.isDate ? (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => updateIntegratedDate(row.dateKey as any, val)}
+                                              titlePrefix={row.label}
+                                              isDate={true}
+                                            />
+                                          ) : row.isEdit ? (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => {
+                                                const rows = [...overviewRows];
+                                                rows[idx] = { ...rows[idx], val: val };
+                                                if (row.keyName) {
+                                                  setEditablePost(prev => ({ ...prev, [row.keyName]: val }));
+                                                }
+                                                handleUpdateOverviewRows(rows);
+                                              }}
+                                              titlePrefix={row.label}
+                                            />
+                                          ) : (
+                                            <EditableText
+                                              value={row.val as string}
+                                              onChange={(val) => {
+                                                const rows = [...overviewRows];
+                                                rows[idx] = { ...rows[idx], val: val };
+                                                handleUpdateOverviewRows(rows);
+                                              }}
+                                              titlePrefix={row.label}
+                                            />
+                                          )}
+                                        </div>
+                                        {isDirectEditMode && (
+                                          <div className="flex items-center gap-1 shrink-0 ml-2">
+                                            {idx > 0 && (
+                                              <button
+                                                type="button"
+                                                onClick={() => handleMoveOverviewRow(idx, 'up')}
+                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                title="रो ऊपर करें"
+                                              >
+                                                ⬆️
+                                              </button>
+                                            )}
+                                            {idx < overviewRows.length - 1 && (
+                                              <button
+                                                type="button"
+                                                onClick={() => handleMoveOverviewRow(idx, 'down')}
+                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                title="रो नीचे करें"
+                                              >
+                                                ⬇️
+                                              </button>
+                                            )}
+                                            <button
+                                              type="button"
+                                              onClick={() => handleDeleteOverviewRow(idx)}
+                                              className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
+                                              title="यह रो हटाएं"
+                                            >
+                                              🗑️
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">आधिकारिक वेबसाइट / पोर्टल</td>
+                                  <td className="p-2.5 sm:p-3 bg-white">
+                                    <a 
+                                      href={editablePost.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                                    >
+                                      {editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'rajasthan.gov.in'}
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    case 'yojana_info': {
+                      if (!isYojana || isSectionDeleted('yojana_info')) return null;
+                      const genInfo = editablePost.yojanaGeneralInfo;
+                      const headingText = genInfo?.headingHi || `${shortJobName} क्या है? (योजना का उद्देश्य एवं मुख्य लाभ)`;
+                      const descText = genInfo?.descriptionHi || editablePost.descriptionHi || editablePost.briefSummaryHi;
+                      const objText = genInfo?.objectiveHi;
+                      const benefitText = genInfo?.benefitsSummaryHi || editablePost.salaryHi || editablePost.salary;
+                      const keyPoints = genInfo?.keyPointsHi || [];
+
+                      if (!descText && !objText && !benefitText && keyPoints.length === 0) return null;
+
+                      return (
+                        <div key="yojana_info" className="space-y-3">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <h2
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {headingText}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderAdminSectionControls('yojana_info', 'योजना के लाभ')}
+                            </div>
+                          </div>
+
+                          <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-lg p-3.5 sm:p-4 space-y-2.5 text-slate-800" style={{ fontSize: '12pt' }}>
+                            {descText && (
+                              <p className="post-item leading-relaxed whitespace-pre-line">{descText}</p>
+                            )}
+                            {objText && (
+                              <p className="post-item leading-relaxed">
+                                <strong className="text-emerald-900">योजना का मुख्य उद्देश्य: </strong>
+                                {objText}
+                              </p>
+                            )}
+                            {benefitText && (
+                              <p className="post-item leading-relaxed">
+                                <strong className="text-emerald-900">प्रमुख वित्तीय सहायता / लाभ: </strong>
+                                {benefitText}
+                              </p>
+                            )}
+                            {keyPoints.length > 0 && (
+                              <ul className="list-disc pl-5 space-y-1.5 pt-1 text-slate-700">
+                                {keyPoints.map((pt, i) => (
+                                  <li key={i}>{pt}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                          {getSectionTable('yojana_info') && renderCustomTableComponent(
+                            getSectionTable('yojana_info')!,
+                            (updatedTable) => setSectionTable('yojana_info', updatedTable),
+                            () => handleDeleteTableFromSection('yojana_info')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'yojana_eligibility': {
+                      if (!isYojana || isSectionDeleted('yojana_eligibility')) return null;
+                      const elig = editablePost.yojanaEligibility;
+                      const headingText = elig?.headingHi || `${shortJobName} के लिए पात्रता शर्तें (Eligibility & Income Limit)`;
+                      const criteriaList = (elig?.criteriaHi && elig.criteriaHi.length > 0)
+                        ? elig.criteriaHi
+                        : [
+                            `मूल निवास: आवेदक ${editablePost.yojanaOverview?.state || editablePost.jobLocation || 'राजस्थान'} राज्य का स्थायी / मूल निवासी होना चाहिए।`,
+                            editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'विभाग द्वारा अधिसूचित पात्रता शर्तें पूर्ण करता हो।',
+                            editablePost.ageLimit?.min
+                              ? `आयु सीमा: आवेदक की आयु ${editablePost.ageLimit.min} से ${editablePost.ageLimit.max || 60} वर्ष के मध्य होनी चाहिए।`
+                              : 'आवेदक के पास स्वयं का जन आधार कार्ड, आधार कार्ड व आधार-लिंक्ड बैंक खाता होना आवश्यक है।'
+                          ];
+                      const incomeList = elig?.incomeLimitHi || [];
+
+                      return (
+                        <div key="yojana_eligibility" className="space-y-2.5">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <h2
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {headingText}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderAdminSectionControls('yojana_eligibility', 'योजना पात्रता')}
+                            </div>
+                          </div>
+
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {criteriaList.map((crit, idx) => (
+                              <li key={idx}>{crit}</li>
+                            ))}
+                          </ul>
+
+                          {incomeList.length > 0 && (
+                            <div className="mt-2.5 p-3 rounded-md bg-slate-50 border border-slate-200 space-y-1">
+                              <div className="font-bold text-slate-900 text-sm">पारिवारिक आय सीमा नियम (Income Limit):</div>
+                              <ul className="list-disc pl-5 space-y-1 text-slate-700 text-sm">
+                                {incomeList.map((inc, idx) => (
+                                  <li key={idx}>{inc}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {getSectionTable('yojana_eligibility') && renderCustomTableComponent(
+                            getSectionTable('yojana_eligibility')!,
+                            (updatedTable) => setSectionTable('yojana_eligibility', updatedTable),
+                            () => handleDeleteTableFromSection('yojana_eligibility')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'latest_update':
+                      return null;
+
+                    case 'latest_news': {
+                      if (isSectionDeleted('latest_news')) return null;
+                      const newsList = Array.isArray(editablePost?.latestNews) ? editablePost.latestNews : [];
+                      if (isFlexCategory && newsList.length === 0) return null;
+
+                      return (
+                        <div key="latest_news" className="my-4 border border-slate-300 bg-white rounded-md shadow-2xs overflow-hidden">
+                          <div className="bg-slate-100 text-slate-800 px-3 sm:px-4 py-2.5 flex items-center justify-between flex-wrap gap-2 border-b border-slate-200">
+                            <div className="flex items-center gap-2">
+                              <Bell className="w-4 h-4 text-slate-600 inline-block" />
+                              <h2 className="font-bold uppercase tracking-wide text-slate-900" style={{ fontSize: '11.5pt' }}>
+                                <span>{shortJobName} Latest News (ताज़ा समाचार)</span>
+                              </h2>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {renderSectionShareButton('latest_news', `${shortJobName} ताज़ा समाचार`)}
+                              <span className="text-[11px] font-bold bg-white text-slate-700 border border-slate-200 px-2 py-0.5 rounded shadow-2xs">
+                                {newsList.length} अपडेट्स
+                              </span>
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newItem = {
+                                      id: `news-${Date.now()}`,
+                                      date: new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+                                      badge: 'नया अपडेट',
+                                      headline: 'नया समाचार शीर्षक यहां लिखें',
+                                      details: 'समाचार का विवरण यहां लिखें। अभ्यर्थी नियमित रूप से पोर्टल चेक करते रहें।',
+                                      isHighlighted: false
+                                    };
+                                    setEditablePost({
+                                      ...editablePost,
+                                      latestNews: [newItem, ...newsList]
+                                    });
+                                  }}
+                                  className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>+ समाचार जोड़ें</span>
+                                </button>
+                              )}
+                              {renderAdminSectionControls('latest_news', 'ताज़ा समाचार')}
+                            </div>
+                          </div>
+
+                          <div className="p-3 sm:p-4 divide-y divide-slate-100 space-y-3 bg-white">
+                            {newsList.map((news: any, idx: number) => (
+                              <div 
+                                key={news.id || idx} 
+                                className="p-3 rounded border border-slate-200 bg-white"
+                              >
+                                <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[10.5px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                      <EditableText
+                                        value={news.badge || 'अपडेट'}
+                                        onChange={(val) => {
+                                          const list = [...newsList];
+                                          list[idx] = { ...list[idx], badge: val };
+                                          setEditablePost({ ...editablePost, latestNews: list });
+                                        }}
+                                        className="text-slate-700 font-bold"
+                                        titlePrefix="बैज"
+                                      />
+                                    </span>
+                                    <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                                      <Calendar className="w-3 h-3 text-slate-400" />
+                                      <EditableText
+                                        value={news.date || 'अक्टूबर 2026'}
+                                        onChange={(val) => {
+                                          const list = [...newsList];
+                                          list[idx] = { ...list[idx], date: val };
+                                          setEditablePost({ ...editablePost, latestNews: list });
+                                        }}
+                                        className="font-medium text-slate-600"
+                                        titlePrefix="दिनांक"
+                                      />
+                                    </span>
+                                  </div>
+
+                                  {isDirectEditMode && (
+                                    <div className="flex items-center gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const list = newsList.filter((_: any, i: number) => i !== idx);
+                                          setEditablePost({ ...editablePost, latestNews: list });
+                                        }}
+                                        className="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-bold cursor-pointer"
+                                        title="समाचार हटाएं"
+                                      >
+                                        🗑️ हटाएं
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <h3 className="font-bold text-slate-900 mb-1 leading-snug" style={{ fontSize: '11.5pt' }}>
+                                  <EditableText
+                                    value={news.headline}
+                                    onChange={(val) => {
+                                      const list = [...newsList];
+                                      list[idx] = { ...list[idx], headline: val };
+                                      setEditablePost({ ...editablePost, latestNews: list });
+                                    }}
+                                    className="text-slate-900 font-bold"
+                                    titlePrefix="हेडलाइन"
+                                  />
+                                </h3>
+
+                                <div className="text-slate-700 leading-relaxed" style={{ fontSize: '12pt' }}>
+                                  <EditableText
+                                    value={news.details}
+                                    onChange={(val) => {
+                                      const list = [...newsList];
+                                      list[idx] = { ...list[idx], details: val };
+                                      setEditablePost({ ...editablePost, latestNews: list });
+                                    }}
+                                    as="span"
+                                    className="text-slate-700"
+                                    titlePrefix="विवरण"
+                                  />
+                                </div>
+                              </div>
+                            ))}
+
+                            {newsList.length === 0 && (
+                              <div className="p-3 text-center text-slate-500 text-sm">
+                                फिलहाल कोई ताज़ा समाचार नहीं है।
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    case 'dates': {
+                      if (isSectionDeleted('dates')) return null;
+                      const rawDatesList = Array.isArray(editablePost?.importantDates) ? editablePost.importantDates : [];
+                      const datesList = isFlexCategory
+                        ? rawDatesList.filter((d: any) => d.value && d.value.trim() !== '' && d.value !== 'शीघ्र' && d.value !== 'यथासमय घोषित')
+                        : rawDatesList;
+
+                      if (isFlexCategory && datesList.length === 0) return null;
+
+                      return (
+                        <div key="dates" className="space-y-2">
+                          <div className="flex items-center justify-between gap-2 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} Important Dates
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('dates', `${shortJobName} Important Dates`)}
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const list = [...rawDatesList, { key: `custom_${Date.now()}`, label: 'नयी तिथि विवरण', value: 'शीघ्र' }];
+                                    setEditablePost({ ...editablePost, importantDates: list });
+                                  }}
+                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>+ रो जोड़ें</span>
+                                </button>
+                              )}
+                              {renderAdminSectionControls('dates', 'Important Dates')}
+                            </div>
+                          </div>
+
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <tbody>
+                                {datesList.map((date: any, idx: number) => (
+                                  <tr key={idx} className="border-b border-slate-300 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
+                                      <EditableText
+                                        value={date.label}
+                                        onChange={(val) => {
+                                          const list = [...rawDatesList];
+                                          list[idx] = { ...list[idx], label: val };
+                                          setEditablePost({ ...editablePost, importantDates: list });
+                                        }}
+                                        className="font-bold text-slate-800"
+                                      />
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
+                                      <EditableText
+                                        value={date.value}
+                                        onChange={(val) => {
+                                          const list = [...rawDatesList];
+                                          list[idx] = { ...list[idx], value: val };
+                                          setEditablePost({ ...editablePost, importantDates: list });
+                                        }}
+                                        className="font-semibold text-slate-800"
+                                      />
+                                    </td>
+                                    {isDirectEditMode && (
+                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const list = rawDatesList.filter((_: any, i: number) => i !== idx);
+                                            setEditablePost({ ...editablePost, importantDates: list });
+                                          }}
+                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
+                                          title="यह तिथि रो हटाएं"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </td>
+                                    )}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    case 'application_fee': {
+                      if (isSectionDeleted('fee') || isSectionDeleted('application_fee')) return null;
+                      const rawFeeList = Array.isArray(editablePost?.applicationFee) ? editablePost.applicationFee : [];
+                      const feeList = isFlexCategory
+                        ? rawFeeList.filter((f: any) => f.amount && f.amount.trim() !== '')
+                        : rawFeeList;
+
+                      if (isFlexCategory && feeList.length === 0) return null;
+
+                      return (
+                        <div key="application_fee" className="space-y-2 pt-2">
+                          <div className="flex items-center justify-between gap-2 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {isYojana ? `${shortJobName} आवेदन शुल्क (Application Fee)` : `${shortJobName} Application Fee`}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('fee', `${shortJobName} Application Fee`)}
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const list = [...rawFeeList, { category: 'नयी श्रेणी', amount: '₹0/-' }];
+                                    setEditablePost({ ...editablePost, applicationFee: list });
+                                  }}
+                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>+ रो जोड़ें</span>
+                                </button>
+                              )}
+                              {renderAdminSectionControls('fee', 'Application Fee')}
+                            </div>
+                          </div>
+
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <tbody>
+                                {feeList.map((fee: any, idx: number) => (
+                                  <tr key={idx} className="border-b border-slate-300 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
+                                      <EditableText
+                                        value={fee.category}
+                                        onChange={(val) => {
+                                          const list = [...rawFeeList];
+                                          list[idx] = { ...list[idx], category: val };
+                                          setEditablePost({ ...editablePost, applicationFee: list });
+                                        }}
+                                        className="font-bold text-slate-800"
+                                      />
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
+                                      <EditableText
+                                        value={fee.amount}
+                                        onChange={(val) => {
+                                          const list = [...rawFeeList];
+                                          list[idx] = { ...list[idx], amount: val };
+                                          setEditablePost({ ...editablePost, applicationFee: list });
+                                        }}
+                                        className="font-semibold text-slate-800"
+                                      />
+                                    </td>
+                                    {isDirectEditMode && (
+                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const list = rawFeeList.filter((_: any, i: number) => i !== idx);
+                                            setEditablePost({ ...editablePost, applicationFee: list });
+                                          }}
+                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
+                                          title="यह शुल्क रो हटाएं"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </td>
+                                    )}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    case 'post_breakdown':
+                      return !isSectionDeleted('post_breakdown') && vacancy.postBreakdown && vacancy.postBreakdown.length > 0 && (
+                        <div key="post_breakdown">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} पदों / सीटों का विवरण
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('post_breakdown', `${shortJobName} पदों का विवरण`)}
+                              {isDirectEditMode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentList = editablePost.postBreakdown || vacancy.postBreakdown || [];
+                                    const list = [...currentList, { postNameHi: 'नया पद / ट्रेड', postName: 'New Post', postsCount: '10', qualification: 'Educational Qualification', qualificationHi: 'शैक्षणिक योग्यता दर्ज करें' }];
+                                    setEditablePost({ ...editablePost, postBreakdown: list });
+                                  }}
+                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                  <span>+ रो जोड़ें</span>
+                                </button>
+                              )}
+                              {renderAdminSectionControls('post_breakdown', 'पद विवरण')}
+                            </div>
+                          </div>
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-300">
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">क्रमांक</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">पद / ट्रेड नाम</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">कुल पद</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800">योग्यता</th>
+                                  {isDirectEditMode && <th className="p-2 text-center w-10 text-xs font-bold text-slate-600">हटाएं</th>}
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                {(editablePost.postBreakdown || vacancy.postBreakdown || []).map((pb: any, idx: number) => (
+                                  <tr key={idx}>
+                                    <td className="p-2.5 sm:p-3 text-center border-r border-slate-200 bg-white">{idx + 1}</td>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-800 border-r border-slate-200 bg-white">
+                                      <EditableText
+                                        value={isHi ? (pb.postNameHi || pb.postName) : (pb.postName || pb.postNameHi)}
+                                        onChange={(val) => {
+                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
+                                          list[idx] = { ...list[idx], postNameHi: val, postName: val };
+                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
+                                        }}
+                                        titlePrefix="पद नाम"
+                                      />
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-900 border-r border-slate-200 bg-white">
+                                      <EditableText
+                                        value={pb.postsCount}
+                                        onChange={(val) => {
+                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
+                                          list[idx] = { ...list[idx], postsCount: val };
+                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
+                                        }}
+                                        titlePrefix="पद संख्या"
+                                      />
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
+                                      <EditableText
+                                        value={isHi ? (pb.qualificationHi || pb.qualification) : (pb.qualification || pb.qualificationHi)}
+                                        onChange={(val) => {
+                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
+                                          list[idx] = { ...list[idx], qualificationHi: val, qualification: val };
+                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
+                                        }}
+                                        titlePrefix="योग्यता"
+                                      />
+                                    </td>
+                                    {isDirectEditMode && (
+                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const list = (editablePost.postBreakdown || vacancy.postBreakdown || []).filter((_: any, i: number) => i !== idx);
+                                            setEditablePost({ ...editablePost, postBreakdown: list });
+                                          }}
+                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
+                                          title="यह पद रो हटाएं"
+                                        >
+                                          🗑️
+                                        </button>
+                                      </td>
+                                    )}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+
+                    case 'qualification': {
+                      if (isSectionDeleted('qualification') || isYojana) return null;
+                      const qualText = vacancy.qualificationDetailsHi || vacancy.qualificationDetails;
+                      if (isFlexCategory && !qualText) return null;
+
+                      return (
+                        <div key="qualification">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} शैक्षणिक योग्यता
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('qualification', `${shortJobName} शैक्षणिक योग्यता`)}
+                              {renderAdminSectionControls('qualification', 'शैक्षणिक योग्यता')}
+                            </div>
+                          </div>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            <li>
+                              <EditableText
+                                value={(editablePost as any).qualificationNote1 || 'मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote1: val } as any))}
+                                titlePrefix="योग्यता नियम 1"
+                              />
+                            </li>
+                            <li>
+                              <EditableText
+                                value={editablePost.qualificationDetailsHi || editablePost.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
+                                titlePrefix="मुख्य शैक्षणिक योग्यता"
+                              />
+                            </li>
+                            <li>
+                              <EditableText
+                                value={(editablePost as any).qualificationNote2 || 'आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote2: val } as any))}
+                                titlePrefix="योग्यता नियम 2"
+                              />
+                            </li>
+                            <li>
+                              <EditableText
+                                value={(editablePost as any).qualificationNote3 || 'विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।'}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote3: val } as any))}
+                                titlePrefix="योग्यता नियम 3"
+                              />
+                            </li>
+                          </ul>
+                          {getSectionTable('qualification') && renderCustomTableComponent(
+                            getSectionTable('qualification')!,
+                            (updatedTable) => setSectionTable('qualification', updatedTable),
+                            () => handleDeleteTableFromSection('qualification')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'age_limit': {
+                      if (isSectionDeleted('age_limit') || isFlexCategory) return null;
+
+                      const minAgeVal = editablePost.ageLimit?.min || 18;
+                      const maxAgeVal = editablePost.ageLimit?.max || 40;
+                      const asOnDateVal = editablePost.ageLimit?.asOnDate || applyLastDateDisplay || notificationDateDisplay || '2026';
+
+                      return (
+                        <div key="age_limit">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('age_limit', `${shortJobName} Age Limit 2026`)}
+                              onChange={(val) => setSectionTitle('age_limit', val)}
+                              titlePrefix="आयु सीमा शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('age_limit', `${shortJobName} Age Limit`)}
+                              {renderAdminSectionControls('age_limit', 'आयु सीमा')}
+                            </div>
+                          </div>
+
+                          <p className="post-item mb-3 text-slate-800" style={{ fontSize: '12pt' }}>
+                            {editablePost.organization || 'विभाग'} भर्ती के विस्तृत नोटिफिकेशन में सामान्य आयु सीमा{' '}
+                            <strong>
+                              <EditableText
+                                value={minAgeVal}
+                                onChange={(val) => {
+                                  const num = parseInt(val) || 18;
+                                  setEditablePost(prev => ({
+                                    ...prev,
+                                    ageLimit: { ...prev.ageLimit, min: num }
+                                  }));
+                                }}
+                                titlePrefix="न्यूनतम आयु"
+                              />{' '}
+                              से{' '}
+                              <EditableText
+                                value={maxAgeVal}
+                                onChange={(val) => {
+                                  const num = parseInt(val) || 40;
+                                  setEditablePost(prev => ({
+                                    ...prev,
+                                    ageLimit: { ...prev.ageLimit, max: num }
+                                  }));
+                                }}
+                                titlePrefix="अधिकतम आयु"
+                              />{' '}
+                              वर्ष
+                            </strong>{' '}
+                            दी गई है। आयु की गणना{' '}
+                            <strong>
+                              <EditableText
+                                value={asOnDateVal}
+                                onChange={(val) => {
+                                  setEditablePost(prev => ({
+                                    ...prev,
+                                    ageLimit: { ...prev.ageLimit, asOnDate: val }
+                                  }));
+                                }}
+                                titlePrefix="आयु गणना तिथि"
+                              />
+                            </strong>{' '}
+                            को आधार मानकर होगी।
+                          </p>
+
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-300">
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 w-1/2 text-center">विवरण</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 text-center">आयु सीमा / छूट</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">न्यूनतम आयु</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
+                                    <EditableText
+                                      value={`${minAgeVal} वर्ष`}
+                                      onChange={(val) => {
+                                        const num = parseInt(val) || minAgeVal;
+                                        setEditablePost(prev => ({
+                                          ...prev,
+                                          ageLimit: { ...prev.ageLimit, min: num }
+                                        }));
+                                      }}
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">सामान्य अधिकतम आयु</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
+                                    <EditableText
+                                      value={`${maxAgeVal} वर्ष`}
+                                      onChange={(val) => {
+                                        const num = parseInt(val) || maxAgeVal;
+                                        setEditablePost(prev => ({
+                                          ...prev,
+                                          ageLimit: { ...prev.ageLimit, max: num }
+                                        }));
+                                      }}
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">OBC-NCL को छूट</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
+                                    <EditableText
+                                      value={(editablePost as any).obcRelaxationHi || 'अधिकतम आयु में 3 वर्ष'}
+                                      onChange={(val) => setEditablePost(prev => ({ ...prev, obcRelaxationHi: val } as any))}
+                                      titlePrefix="OBC छूट"
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">SC/ST को छूट</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
+                                    <EditableText
+                                      value={(editablePost as any).scstRelaxationHi || 'अधिकतम आयु में 5 वर्ष'}
+                                      onChange={(val) => setEditablePost(prev => ({ ...prev, scstRelaxationHi: val } as any))}
+                                      titlePrefix="SC/ST छूट"
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">भूतपूर्व सैनिक और अन्य पात्र श्रेणियाँ</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
+                                    <EditableText
+                                      value={(editablePost as any).otherRelaxationHi || 'विज्ञापन के नियमानुसार'}
+                                      onChange={(val) => setEditablePost(prev => ({ ...prev, otherRelaxationHi: val } as any))}
+                                      titlePrefix="अन्य श्रेणी छूट"
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    case 'selection_process': {
+                      if (isSectionDeleted('selection_process') || (isFlexCategory && !isYojana)) return null;
+                      const defaultSelectionSteps = isYojana
+                        ? [
+                            'आधिकारिक योजना पोर्टल / SSO / E-Mitra के माध्यम से ऑनलाइन आवेदन जमा करना।',
+                            'संबंधित विभाग / नोडल अधिकारी द्वारा पात्रता एवं दस्तावेजों का सत्यापन।',
+                            'पात्र लाभार्थियों की स्वीकृत सूची जारी होना व DBT / कार्ड के माध्यम से लाभ प्रदान करना।'
+                          ]
+                        : [
+                            'लिखित परीक्षा अथवा शैक्षणिक प्राप्तांकों की मेरिट सूची (Merit List)।',
+                            'मूल दस्तावेजों का भौतिक सत्यापन (Document Verification)।',
+                            'चिकित्सीय परीक्षण (Medical Fitness Examination)।',
+                            'अंतिम चयन सूची का प्रकाशन।'
+                          ];
+                      const stepsList = (Array.isArray(editablePost.selectionProcessHi) && editablePost.selectionProcessHi.length > 0)
+                        ? editablePost.selectionProcessHi
+                        : defaultSelectionSteps;
+
+                      if (isFlexCategory && (!stepsList || stepsList.length === 0)) return null;
+
+                      return (
+                        <div key="selection_process">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {isYojana ? `${shortJobName} सत्यापन एवं लाभ प्राप्ति प्रक्रिया` : 'चयन प्रक्रिया और मेरिट की गणना'}
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('selection_process', isYojana ? `${shortJobName} लाभ प्राप्ति प्रक्रिया` : `${shortJobName} चयन प्रक्रिया`)}
+                              {renderAdminSectionControls('selection_process', isYojana ? 'लाभ प्राप्ति प्रक्रिया' : 'चयन प्रक्रिया')}
+                            </div>
+                          </div>
+                          <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
+                            {isYojana
+                              ? 'इस योजना के अंतर्गत आवेदन सत्यापन तथा लाभ वितरण निम्नलिखित चरणों के अनुसार किया जाता है:'
+                              : 'इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:'}
+                          </p>
+                          <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {stepsList.map((step, idx) => (
+                              <li key={idx}>
+                                <EditableText
+                                  value={step}
+                                  onChange={(val) => {
+                                    const list = [...stepsList];
+                                    list[idx] = val;
+                                    setEditablePost(prev => ({ ...prev, selectionProcessHi: list }));
+                                  }}
+                                  titlePrefix={`चयन चरण ${idx + 1}`}
+                                />
+                              </li>
+                            ))}
+                          </ol>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...stepsList, `चरण ${stepsList.length + 1}: नया चयन चरण दर्ज करें`];
+                                setEditablePost({ ...editablePost, selectionProcessHi: list });
+                              }}
+                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mt-2 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ नया चरण जोड़ें</span>
+                            </button>
+                          )}
+                          {getSectionTable('selection_process') && renderCustomTableComponent(
+                            getSectionTable('selection_process')!,
+                            (updatedTable) => setSectionTable('selection_process', updatedTable),
+                            () => handleDeleteTableFromSection('selection_process')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'postal_address':
+                      return (editablePost.postalAddress || editablePost.postalAddressHi || isOfflinePost) && !isSectionDeleted('postal_address') && (
+                        <div key="postal_address">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} Offline Form Send Address (आवेदन भेजने का पता)
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('postal_address', `${shortJobName} आवेदन भेजने का पता`)}
+                              {renderAdminSectionControls('postal_address', 'आवेदन भेजने का पता')}
+                            </div>
+                          </div>
+                          <div className="p-3 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5 min-w-0 overflow-hidden">
+                            <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                              अभ्यर्थी पूर्ण रूप से भरे हुए ऑफलाइन आवेदन फॉर्म को सभी आवश्यक स्वप्रमाणित दस्तावेजों के साथ नीचे दिए गए आधिकारिक पते पर पंजीकृत डाक (Registered Post) अथवा स्पीड पोस्ट (Speed Post) द्वारा भेजें:
+                            </p>
+                            <div className="p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed min-w-0 overflow-hidden" style={{ fontSize: '12pt' }}>
+                              <p className="font-mono text-slate-900 select-all break-words">
+                                <EditableText
+                                  value={editablePost.postalAddressHi || editablePost.postalAddress || 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, postalAddressHi: val, postalAddress: val }))}
+                                  titlePrefix="डाक का पता"
+                                />
+                              </p>
+                            </div>
+                            <div className="text-slate-700 space-y-1 min-w-0" style={{ fontSize: '12pt' }}>
+                              <p>
+                                <strong>लिफाफे के ऊपर क्या लिखें (Envelope Superscription):</strong>
+                              </p>
+                              <p className="p-2 bg-slate-50 border border-slate-200 rounded font-mono text-slate-900 font-semibold select-all break-words">
+                                <EditableText
+                                  value={editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, envelopeNoteHi: val }))}
+                                  titlePrefix="लिफाफा विवरण"
+                                />
+                              </p>
+                              <p className="text-slate-600 text-xs sm:text-sm">
+                                • आवेदन फॉर्म निर्धारित अंतिम तिथि ({applyLastDateDisplay}) शाम 5:00 बजे तक संबंधित पते पर अवश्य पहुंच जाना चाहिए।
+                              </p>
+                            </div>
+                          </div>
+                          {getSectionTable('postal_address') && renderCustomTableComponent(
+                            getSectionTable('postal_address')!,
+                            (updatedTable) => setSectionTable('postal_address', updatedTable),
+                            () => handleDeleteTableFromSection('postal_address')
+                          )}
+                        </div>
+                      );
+
+                    case 'documents': {
+                      if (isSectionDeleted('documents')) return null;
+                      if (isFlexCategory && (!documentsList || documentsList.length === 0)) return null;
+
+                      return (
+                        <div key="documents">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              आवेदन के लिए आवश्यक दस्तावेज
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('documents', `${shortJobName} आवश्यक दस्तावेज`)}
+                              {renderAdminSectionControls('documents', 'आवश्यक दस्तावेज')}
+                            </div>
+                          </div>
+                          <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
+                            {isYojana
+                              ? 'योजना के अंतर्गत ऑनलाइन आवेदन करने से पूर्व लाभार्थी निम्नलिखित आवश्यक दस्तावेज तैयार रखें:'
+                              : 'ऑनलाइन फॉर्म भरने से पूर्व अभ्यर्थी पद की अधिकतम योग्यता अनुसार निम्नलिखित दस्तावेज तैयार रखें:'}
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '12pt' }}>
+                            {documentsList.map((doc, i) => (
+                              <li key={i} className="group">
+                                {isDirectEditMode ? (
+                                  <div className="flex items-center gap-2">
+                                    <EditableText
+                                      value={doc}
+                                      onChange={(val) => {
+                                        const list = [...documentsList];
+                                        list[i] = val;
+                                        setEditablePost({ ...editablePost, requiredDocumentsHi: list });
+                                      }}
+                                      className="flex-1 font-medium text-slate-800"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const list = documentsList.filter((_, idx) => idx !== i);
+                                        setEditablePost({ ...editablePost, requiredDocumentsHi: list });
+                                      }}
+                                      className="text-rose-500 hover:text-rose-700 text-xs px-1 cursor-pointer"
+                                      title="यह दस्तावेज हटाएं"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span>{doc}</span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...documentsList, 'नया आवश्यक शैक्षणिक/श्रेणी दस्तावेज'];
+                                setEditablePost({ ...editablePost, requiredDocumentsHi: list });
+                              }}
+                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mb-3 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ नया दस्तावेज जोड़ें</span>
+                            </button>
+                          )}
+
+                          {!isFlexCategory && (
+                            <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
+                              <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                                <thead>
+                                  <tr className="bg-slate-50 border-b border-slate-300">
+                                    <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">दस्तावेज</th>
+                                    <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">निर्धारित प्रारूप</th>
+                                    <th className="p-2.5 sm:p-3 font-bold text-slate-800">आकार (Size)</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-200">
+                                  <tr>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white border-r border-slate-200">पासपोर्ट साइज फोटो</td>
+                                    <td className="p-2.5 sm:p-3 border-r border-slate-200 text-slate-700 bg-white">JPG / JPEG, 20 से 70 KB</td>
+                                    <td className="p-2.5 sm:p-3 text-slate-700 bg-white">3.5 × 3.5 सेमी</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white border-r border-slate-200">हस्ताक्षर (Signature)</td>
+                                    <td className="p-2.5 sm:p-3 border-r border-slate-200 text-slate-700 bg-white">JPG / JPEG, 20 से 30 KB</td>
+                                    <td className="p-2.5 sm:p-3 text-slate-700 bg-white">3.5 × 2.5 सेमी</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                          {getSectionTable('documents') && renderCustomTableComponent(
+                            getSectionTable('documents')!,
+                            (updatedTable) => setSectionTable('documents', updatedTable),
+                            () => handleDeleteTableFromSection('documents')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'how_to_apply': {
+                      if (isSectionDeleted('how_to_apply')) return null;
+                      if (isFlexCategory && (!howToApplySteps || howToApplySteps.length === 0)) return null;
+
+                      return (
+                        <div key="how_to_apply">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} के लिए आवेदन कैसे करें?
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('how_to_apply', `${shortJobName} आवेदन कैसे करें`)}
+                              {renderAdminSectionControls('how_to_apply', 'आवेदन कैसे करें')}
+                            </div>
+                          </div>
+                          <ol className="list-decimal pl-5 space-y-2 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {howToApplySteps.map((step, idx) => (
+                              <li key={idx} className="group">
+                                {isDirectEditMode ? (
+                                  <div className="flex items-center gap-2">
+                                    <EditableText
+                                      value={step}
+                                      onChange={(val) => {
+                                        const list = [...howToApplySteps];
+                                        list[idx] = val;
+                                        setEditablePost({ ...editablePost, howToApplyHi: list });
+                                      }}
+                                      className="flex-1 font-medium text-slate-800"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const list = howToApplySteps.filter((_, i) => i !== idx);
+                                        setEditablePost({ ...editablePost, howToApplyHi: list });
+                                      }}
+                                      className="text-rose-500 hover:text-rose-700 text-xs px-1 cursor-pointer"
+                                      title="यह चरण हटाएं"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span>{step}</span>
+                                )}
+                              </li>
+                            ))}
+                          </ol>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...howToApplySteps, `चरण ${howToApplySteps.length + 1}: नया चरण दर्ज करें`];
+                                setEditablePost({ ...editablePost, howToApplyHi: list });
+                              }}
+                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mt-2 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ नया चरण जोड़ें</span>
+                            </button>
+                          )}
+                          {getSectionTable('how_to_apply') && renderCustomTableComponent(
+                            getSectionTable('how_to_apply')!,
+                            (updatedTable) => setSectionTable('how_to_apply', updatedTable),
+                            () => handleDeleteTableFromSection('how_to_apply')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'important_links':
+                      return !isSectionDeleted('important_links') && (
+                        <div key="important_links" className="space-y-2 pt-2">
+                          {/* Middle Ad Section above Important Direct Links */}
+                          <AdSlotWrapper
+                            height={130}
+                            className="my-3"
+                            ariaLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                            skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                          >
+                            <AdSection 
+                              slot="3785509362"
+                              client="ca-pub-3176571184961509"
+                              label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                              minHeight={90}
+                              embedded
+                            />
+                          </AdSlotWrapper>
+                          <div className="flex items-center justify-between gap-2 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} Important Links
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('important_links', `${shortJobName} Important Links`)}
+                              {isDirectEditMode && (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setPdfUploadTargetIndex(null);
+                                      setIsPdfModalOpen(true);
+                                    }}
+                                    className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                  >
+                                    <FileText className="w-3 h-3" />
+                                    <span>+ 📄 PDF</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={handleAddDirectLink}
+                                    className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                    <span>+ लिंक</span>
+                                  </button>
+                                </div>
+                              )}
+                              {renderAdminSectionControls('important_links', 'महत्वपूर्ण लिंक्स')}
+                            </div>
+                          </div>
+
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                               <tbody>
+                                <tr className="border-b border-slate-300">
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
+                                    {isYojana ? `${shortJobName} आवेदन प्रारंभ (Scheme Apply Start)` : `Start ${shortJobName} form (आवेदन प्रारंभ)`}
+                                  </td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
+                                    {applyStartDateDisplay}
+                                  </td>
+                                </tr>
+
+                                {(Array.isArray(editablePost?.directLinks) ? editablePost.directLinks : []).map((link: any, idx: number) => {
+                                  const rawUrl = typeof link.url === 'string' ? link.url.trim() : '';
+                                  const isDeadUrl =
+                                    !rawUrl ||
+                                    rawUrl === '#' ||
+                                    rawUrl.includes('sarkariresult12.vercel.app/#');
+                                  const resolvedUrl = isDeadUrl
+                                    ? (editablePost.officialLinks?.officialWebsiteUrl?.trim() || 'https://rajasthan.gov.in')
+                                    : rawUrl;
+
+                                  // Detect internal portal post links (?vacancy=slug) so they open smoothly in-app
+                                  let internalVacancySlug: string | null = null;
+                                  try {
+                                    if (
+                                      resolvedUrl.startsWith('/?') ||
+                                      resolvedUrl.startsWith('?vacancy=') ||
+                                      resolvedUrl.includes('rajasthanvacancy.online/?vacancy=')
+                                    ) {
+                                      const parsed = new URL(resolvedUrl, 'https://www.rajasthanvacancy.online');
+                                      internalVacancySlug = parsed.searchParams.get('vacancy');
+                                    }
+                                  } catch {
+                                    internalVacancySlug = null;
+                                  }
+
+                                  const isActualPdfUrl = Boolean(
+                                    resolvedUrl.startsWith('data:application/pdf') ||
+                                    /\.pdf(\?.*)?$/i.test(resolvedUrl)
+                                  );
+
+                                  const handleMoveDirectLink = (direction: 'up' | 'down') => {
+                                    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+                                    setEditablePost(prev => {
+                                      const links = [...(prev.directLinks || [])];
+                                      if (targetIdx < 0 || targetIdx >= links.length) return prev;
+                                      const temp = links[idx];
+                                      links[idx] = links[targetIdx];
+                                      links[targetIdx] = temp;
+                                      return { ...prev, directLinks: links };
+                                    });
+                                  };
+
+                                  const handleDeleteDirectLink = () => {
+                                    setEditablePost(prev => {
+                                      const links = [...(prev.directLinks || [])];
+                                      links.splice(idx, 1);
+                                      return { ...prev, directLinks: links };
+                                    });
+                                  };
+
+                                  const linksArr = editablePost.directLinks || [];
+                                  const internalTarget = internalVacancySlug
+                                    ? allVacancies.find(
+                                        (v) => v.id === internalVacancySlug || v.id.toLowerCase() === internalVacancySlug!.toLowerCase()
+                                      )
+                                    : undefined;
+
+                                  return (
+                                    <tr key={idx} className="border-b border-slate-300 last:border-b-0">
+                                      <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
+                                        <EditableText
+                                          value={link.label}
+                                          onChange={(newVal) => {
+                                            setEditablePost(prev => {
+                                              const list = [...(prev.directLinks || [])];
+                                              list[idx] = { ...list[idx], label: newVal };
+                                              return { ...prev, directLinks: list };
+                                            });
+                                          }}
+                                          className="font-bold text-slate-800"
+                                        />
+                                      </td>
+                                      <td className="p-2.5 sm:p-3 font-semibold w-1/2 bg-white">
+                                        <div className="flex flex-col gap-1.5 w-full">
+                                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                                            <div className="flex items-center gap-1.5">
+                                              {isDirectEditMode ? (
+                                                <input
+                                                  type="text"
+                                                  value={link.actionText || 'Click Here'}
+                                                  onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setEditablePost(prev => {
+                                                      const list = [...(prev.directLinks || [])];
+                                                      list[idx] = { ...list[idx], actionText: val };
+                                                      return { ...prev, directLinks: list };
+                                                    });
+                                                  }}
+                                                  className="bg-amber-50 text-blue-700 font-bold border border-amber-300 rounded px-1.5 py-0.5 text-xs w-28 focus:ring-1 focus:ring-amber-500 outline-none"
+                                                  title="बटन का नाम (जैसे: Click Here / Download)"
+                                                />
+                                              ) : internalTarget ? (
+                                                <a
+                                                  href={`/?vacancy=${encodeURIComponent(internalTarget.id)}`}
+                                                  onClick={(e) => {
+                                                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                                                    e.preventDefault();
+                                                    onSelectOtherVacancy(internalTarget);
+                                                  }}
+                                                  className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1 cursor-pointer"
+                                                >
+                                                  <span>{link.actionText || 'Click Here'}</span>
+                                                </a>
+                                              ) : (
+                                                <a
+                                                  href={resolvedUrl}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  download={isActualPdfUrl ? (link.fileName || `${(link.label || 'file').replace(/\s+/g, '_')}.pdf`) : undefined}
+                                                  className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
+                                                >
+                                                  <span>{link.actionText || 'Click Here'}</span>
+                                                </a>
+                                              )}
+
+                                              {isDirectEditMode && (
+                                                <a
+                                                  href={resolvedUrl}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="text-slate-400 hover:text-blue-600 p-0.5"
+                                                  title="इस लिंक को नए टैब में खोलकर जांचें"
+                                                >
+                                                  <ExternalLink className="w-3.5 h-3.5" />
+                                                </a>
+                                              )}
+                                            </div>
+                                          <div className="flex items-center gap-1.5 ml-auto">
+                                            {isDirectEditMode && (
+                                              <>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => handleAttachPdfToLink(idx)}
+                                                  className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold px-1.5 py-0.5 rounded cursor-pointer"
+                                                  title="PDF फ़ाइल बदलें"
+                                                >
+                                                  📄 PDF
+                                                </button>
+                                                {idx > 0 && (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleMoveDirectLink('up')}
+                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                    title="लिंक ऊपर करें"
+                                                  >
+                                                    ⬆️
+                                                  </button>
+                                                )}
+                                                {idx < linksArr.length - 1 && (
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => handleMoveDirectLink('down')}
+                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
+                                                    title="लिंक नीचे करें"
+                                                  >
+                                                    ⬇️
+                                                  </button>
+                                                )}
+                                                <button
+                                                  type="button"
+                                                  onClick={handleDeleteDirectLink}
+                                                  className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
+                                                  title="यह लिंक हटाएं"
+                                                >
+                                                  🗑️
+                                                </button>
+                                              </>
+                                            )}
+                                          </div>
+                                        </div>
+                                        {isDirectEditMode && (
+                                            <div className="flex items-center gap-1.5 w-full mt-1 pt-1 border-t border-slate-100">
+                                              <span className="text-[10px] font-bold text-slate-500 shrink-0">URL:</span>
+                                              <input
+                                                type="url"
+                                                value={link.url || ''}
+                                                onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setEditablePost(prev => {
+                                                    const list = [...(prev.directLinks || [])];
+                                                    list[idx] = { ...list[idx], url: val };
+                                                    return { ...prev, directLinks: list };
+                                                  });
+                                                }}
+                                                placeholder="वेब लिंक (URL) दर्ज करें जैसे: https://..."
+                                                className="bg-amber-50 text-slate-900 border border-amber-300 rounded px-1.5 py-0.5 text-[11px] font-mono w-full focus:ring-1 focus:ring-amber-500 outline-none"
+                                                title="इस लिंक का वेब पता (URL) बदलें"
+                                              />
+                                            </div>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                                {isDirectEditMode && (
+                                  <tr className="bg-slate-50 border-t border-slate-300">
+                                    <td colSpan={2} className="p-2.5 text-center bg-slate-50">
+                                      <button
+                                        type="button"
+                                        onClick={handleAddDirectLink}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-bold text-xs shadow-xs cursor-pointer transition"
+                                      >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        <span>+ नया लिंक जोड़ें (Add Important Link)</span>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+
+                    case 'faqs': {
+                      if (isSectionDeleted('faqs')) return null;
+                      if (isFlexCategory && (!faqList || faqList.length === 0)) return null;
+
+                      return (
+                        <div key="faqs">
+                          <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+                            <h2 
+                              className="headlight font-bold text-slate-900"
+                              style={{ 
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            >
+                              {shortJobName} FAQs
+                            </h2>
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('faqs', `${shortJobName} FAQs`)}
+                              {renderAdminSectionControls('faqs', 'FAQs')}
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            {faqList.map((faq, idx) => (
+                              <div 
+                                key={idx} 
+                                className="bg-white border border-slate-200 rounded-md p-3.5 sm:p-4 transition"
+                              >
+                                <h3 
+                                  className="headlight font-bold text-slate-900 text-sm mb-1.5 flex items-start gap-2"
+                                  style={{ fontSize: '11.5pt' }}
+                                >
+                                  <span className="text-slate-500 font-bold">Q.</span>
+                                  <EditableText
+                                    value={isHi ? (faq.qHi || faq.q) : faq.q}
+                                    onChange={(val) => {
+                                      const currentFaqs = editablePost.faqs && editablePost.faqs.length > 0 ? editablePost.faqs : faqList;
+                                      const list = [...currentFaqs];
+                                      list[idx] = { ...list[idx], qHi: val, q: val };
+                                      setEditablePost(prev => ({ ...prev, faqs: list }));
+                                    }}
+                                    titlePrefix="प्रश्न"
+                                  />
+                                </h3>
+                                <div className="text-slate-700 text-xs sm:text-sm pl-4 border-l-2 border-slate-300 mt-2">
+                                  <p className="post-item" style={{ fontSize: '12pt' }}>
+                                    <EditableText
+                                      value={isHi ? (faq.aHi || faq.a) : faq.a}
+                                      onChange={(val) => {
+                                        const currentFaqs = editablePost.faqs && editablePost.faqs.length > 0 ? editablePost.faqs : faqList;
+                                        const list = [...currentFaqs];
+                                        list[idx] = { ...list[idx], aHi: val, a: val };
+                                        setEditablePost(prev => ({ ...prev, faqs: list }));
+                                      }}
+                                      titlePrefix="उत्तर"
+                                    />
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        {getSectionTable('faqs') && renderCustomTableComponent(
+                          getSectionTable('faqs')!,
+                          (updatedTable) => setSectionTable('faqs', updatedTable),
+                          () => handleDeleteTableFromSection('faqs')
+                        )}
+                        </div>
+                      );
+                    }
+
+                    default: {
+                      if (sectionKey.startsWith('custom_')) {
+                        const customId = sectionKey.replace('custom_', '');
+                        const customSec = (editablePost.customSections || []).find(s => s.id === customId);
+                        if (!customSec) return null;
+
+                        const customTable = customSec.tableData || getSectionTable(sectionKey);
+
+                        return (
+                          <div key={sectionKey} className="space-y-2 pt-2">
+                            <div className="flex items-center justify-between gap-2">
+                              <h2 
+                                className="headlight font-bold text-slate-900"
+                                style={{ 
+                                  fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                  fontSize: '11.5pt',
+                                  color: '#0f172a'
+                                }}
+                              >
+                                <EditableText
+                                  value={customSec.titleHi || customSec.title}
+                                  onChange={(val) => {
+                                    const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, title: val, titleHi: val } : s);
+                                    setEditablePost(prev => ({ ...prev, customSections: list }));
+                                  }}
+                                  titlePrefix="सेक्शन शीर्षक"
+                                />
+                              </h2>
+                              <div className="flex items-center gap-1.5">
+                                {renderAdminSectionControls(sectionKey, customSec.title)}
+                              </div>
+                            </div>
+
+                            {customSec.contentHi || customSec.content ? (
+                              <div className="text-slate-700 text-xs sm:text-sm">
+                                <EditableText
+                                  value={customSec.contentHi || customSec.content}
+                                  onChange={(val) => {
+                                    const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, content: val, contentHi: val } : s);
+                                    setEditablePost(prev => ({ ...prev, customSections: list }));
+                                  }}
+                                  as="p"
+                                  titlePrefix="सेक्शन सामग्री"
+                                />
+                              </div>
+                            ) : null}
+
+                            {customTable && renderCustomTableComponent(
+                              customTable,
+                              (updatedTable) => {
+                                const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, tableData: updatedTable || undefined } : s);
+                                setEditablePost(prev => ({ ...prev, customSections: list }));
+                                setSectionTable(sectionKey, updatedTable);
+                              },
+                              () => {
+                                const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, tableData: undefined } : s);
+                                setEditablePost(prev => ({ ...prev, customSections: list }));
+                                handleDeleteTableFromSection(sectionKey);
+                              }
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }
+                  }
+                })}
+              </div>
+
+              {/* Trending Viral Tags / SEO Related Searches Card - Hidden for normal user, accessible only to admin */}
+              {isAdmin ? (
+                <section className="bg-gradient-to-r from-slate-50 via-blue-50/40 to-slate-50 rounded-xl p-4 sm:p-5 border border-blue-200/80 my-6 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-blue-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0">
+                        <Flame className="w-4 h-4 fill-rose-600 text-rose-600 animate-bounce" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                          <span>{isHi ? 'वायरल टैग्स (Admin View)' : 'Viral Tags (Admin View)'}</span>
+                          <span className="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            {isHi ? 'केवल एडमिन' : 'Admin Only'}
+                          </span>
+                        </h3>
+                        <p className="text-[11px] text-slate-500">
+                          {isHi ? 'यह सेक्शन सामान्य यूजर्स के लिए छिपा हुआ है, केवल एडमिन मोड में दिखाई देता है।' : 'Hidden for normal users, visible only in admin mode for SEO tag management.'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Direct Edit Mode: Admin Tag Input */}
+                    {isDirectEditMode && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <input
+                          type="text"
+                          value={newTagInput}
+                          onChange={(e) => setNewTagInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddTag();
+                            }
+                          }}
+                          placeholder="नया वायरल टैग लिखें (उदा. #CET2026)"
+                          className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-none focus:border-blue-500 w-44"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddTag}
+                          className="text-xs font-bold bg-[#0056b3] text-white px-3 py-1.5 rounded-md hover:bg-blue-800 transition cursor-pointer"
+                        >
+                          + जोड़ें
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Viral Tags Badges Cloud */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {displayTags.map((tag, idx) => {
+                      const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+                      return (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white hover:bg-blue-50 text-[#0056b3] border border-blue-200 hover:border-blue-400 shadow-2xs group"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleTagClick(cleanTag)}
+                            className="inline-flex items-center gap-1.5 cursor-pointer text-left focus:outline-none"
+                            title={`${cleanTag} से संबंधित अन्य भर्तियां खोजें`}
+                          >
+                            <Tag className="w-3.5 h-3.5 text-[#0056b3]/70 group-hover:text-blue-700 shrink-0" />
+                            <span className="group-hover:underline underline-offset-2">{cleanTag}</span>
+                          </button>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTag(idx)}
+                              className="ml-1 text-slate-400 hover:text-rose-600 transition p-0.5 rounded cursor-pointer"
+                              title="टैग हटाएं"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </section>
+              ) : (
+                /* Hidden for normal user, available semantically for search bots without UI footprint */
+                <div className="hidden" aria-hidden="true" data-post-tags={displayTags.join(', ')}></div>
+              )}
+
+              {/* Entry Footer Meta: Categories, Tags & Post Navigation */}
+              <footer className="entry-meta border-t border-slate-200 pt-5 mt-8">
+                {/* Categories Tagging */}
+                <div className="flex items-center gap-2 mb-3 flex-wrap text-xs font-semibold">
+                  <Folder className="w-4 h-4 text-[#0056b3]" />
+                  <span className="text-slate-700 font-bold">Categories:</span>
+                  <a
+                    href={isYojana ? '/?category=scheme' : '/?category=latest_job'}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.(isYojana ? 'scheme' : 'latest_job');
+                    }}
+                    className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
+                    style={{ color: '#0056b3' }}
+                  >
+                    {isYojana ? 'Sarkari Yojana' : 'Latest Job'}
+                  </a>
+                  <span className="text-slate-400">,</span>
+                  <a
+                    href="/?category=news"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.('news');
+                    }}
+                    className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
+                    style={{ color: '#0056b3' }}
+                  >
+                    Latest News
+                  </a>
+                  <span className="text-slate-400">,</span>
+                  <a
+                    href={`/?category=${encodeURIComponent(normalizeBreadcrumbCategoryKey(vacancy.category))}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectCategory?.(normalizeBreadcrumbCategoryKey(vacancy.category));
+                    }}
+                    className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
+                    style={{ color: '#0056b3' }}
+                  >
+                    {vacancy.organization || 'RSMSSB'}
+                  </a>
+                </div>
+
+                {/* Tags Metadata Line - Only visible for admin, hidden for normal user */}
+                {isAdmin && (
+                  <div className="flex items-center gap-2 mb-6 flex-wrap text-xs font-semibold">
+                    <Tag className="w-4 h-4 text-[#0056b3]" />
+                    <span className="text-slate-700 font-bold">Tags (Admin):</span>
+                    {displayTags.slice(0, 6).map((tag, idx) => {
+                      const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
+                      return (
+                        <React.Fragment key={idx}>
+                          <button
+                            type="button"
+                            onClick={() => handleTagClick(cleanTag)}
+                            className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
+                            style={{ color: '#0056b3' }}
+                          >
+                            {cleanTag}
+                          </button>
+                          {idx < Math.min(displayTags.length, 6) - 1 && <span className="text-slate-400">,</span>}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Post Navigation: Previous & Next Post Links */}
+                <nav className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+                  {prevPost ? (
+                    <a
+                      href={`/?vacancy=${prevPost.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectOtherVacancy(prevPost);
+                      }}
+                      className="text-left p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs block"
+                    >
+                      <span className="text-[11px] font-bold text-[#0056b3] uppercase flex items-center gap-1 group-hover:text-blue-800">
+                        <ChevronLeft className="w-3.5 h-3.5 text-[#0056b3]" />
+                        <span>Previous Post</span>
+                      </span>
+                      <p 
+                        className="post-item font-semibold text-xs sm:text-sm text-[#0056b3] group-hover:text-blue-800 group-hover:underline line-clamp-2 mt-1"
+                        style={{ color: '#0056b3' }}
+                      >
+                        {isHi ? (prevPost.titleHi || prevPost.title) : prevPost.title}
+                      </p>
+                    </a>
+                  ) : <div />}
+
+                  {nextPost ? (
+                    <a
+                      href={`/?vacancy=${nextPost.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectOtherVacancy(nextPost);
+                      }}
+                      className="text-right p-3.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer group shadow-2xs block"
+                    >
+                      <span className="text-[11px] font-bold text-[#0056b3] uppercase flex items-center justify-end gap-1 group-hover:text-blue-800">
+                        <span>Next Post</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-[#0056b3]" />
+                      </span>
+                      <p 
+                        className="post-item font-semibold text-xs sm:text-sm text-[#0056b3] group-hover:text-blue-800 group-hover:underline line-clamp-2 mt-1"
+                        style={{ color: '#0056b3' }}
+                      >
+                        {isHi ? (nextPost.titleHi || nextPost.title) : nextPost.title}
+                      </p>
+                    </a>
+                  ) : <div />}
+                </nav>
+              </footer>
+
+              {/* Bottom Post Ad Section */}
+              <AdSlotWrapper
+                height={130}
+                className="my-5"
+                ariaLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+                skeletonLabel={isHi ? 'विज्ञापन' : 'Advertisement'}
+              >
+                <AdSection 
+                  slot="3785509362"
+                  client="ca-pub-3176571184961509"
+                  label={isHi ? 'विज्ञापन' : 'Advertisement'}
+                  minHeight={90}
+                  embedded
+                />
+              </AdSlotWrapper>
+
+              {/* Recent Posts section at the bottom of the card matching user screenshot */}
+              {recentPosts.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-slate-200">
+                  <h3 
+                    className="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight mb-5"
+                    style={{
+                      fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
+                      color: '#111827',
+                      fontWeight: 700
+                    }}
+                  >
+                    Recent Posts
+                  </h3>
+                  <div className="space-y-4">
+                    {recentPosts.slice(0, 8).map((rp) => (
+                      <div key={rp.id} className="block">
+                        <a
+                          href={`/?vacancy=${encodeURIComponent(rp.id)}`}
+                          onClick={(e) => {
+                            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                            e.preventDefault();
+                            onSelectOtherVacancy(rp);
+                          }}
+                          className="post-title-link text-[16.5px] sm:text-[18px] font-semibold leading-snug cursor-pointer block transition-colors no-underline"
+                          style={{
+                            fontFamily: "'Mangal', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif",
+                            color: '#0066cc',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          {isHi ? (rp.titleHi || rp.title) : rp.title}
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AdSense at the absolute bottom of the post */}
+              <div className="w-full mt-[20px] pt-[20px] border-t border-slate-200">
+                <AdSlotWrapper
+                  height={290}
+                  className="w-full mb-0"
+                  ariaLabel={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                  skeletonLabel={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                >
+                  <AdSection 
+                    slot="3785509362"
+                    client="ca-pub-3176571184961509"
+                    label={isHi ? 'विज्ञापन (Google AdSense)' : 'Google AdSense Advertisement'}
+                    minHeight={250}
+                    embedded
+                  />
+                </AdSlotWrapper>
+              </div>
+            </article>
+          </main>
+        </div>
+
+      {/* Modal 1: Add New Section to Post */}
+      {isAddSectionOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 bg-sky-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PlusCircle className="w-5 h-5 text-white" />
+                <h3 className="font-bold text-base">नया सेक्शन जोड़ें (Add Custom Section)</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setIsAddSectionOpen(false)}
+                className="text-white/80 hover:text-white p-1 rounded transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Quick suggestions */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">सुझाए गए सेक्शन शीर्षक:</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'परीक्षा पैटर्न व सिलेबस',
+                    'कट ऑफ मार्क्स एवं न्यूनतम अंक',
+                    'दस्तावेज सत्यापन प्रक्रिया',
+                    'शारीरिक दक्षता परीक्षा (PET/PST)',
+                    'विशेष दिशा-निर्देश एवं नियम'
+                  ].map((sug) => (
+                    <button
+                      key={sug}
+                      type="button"
+                      onClick={() => setNewSectionTitle(sug)}
+                      className="text-[11px] px-2.5 py-1 rounded bg-slate-100 hover:bg-sky-50 hover:text-sky-700 border border-slate-200 font-medium transition cursor-pointer"
+                    >
+                      + {sug}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन का नाम (Section Title) *</label>
+                <input
+                  type="text"
+                  required
+                  value={newSectionTitle}
+                  onChange={(e) => setNewSectionTitle(e.target.value)}
+                  placeholder="उदा. परीक्षा पैटर्न एवं विस्तृत सिलेबस"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:border-sky-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">फॉर्मेट प्रकार (Display Style)</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('paragraph')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'paragraph' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    पैराग्राफ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('bullets')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'bullets' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    बिंदुवार सूची
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewSectionType('alert_box')}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      newSectionType === 'alert_box' ? 'bg-sky-50 border-sky-600 text-sky-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    हाईलाइट बॉक्स
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन सामग्री (Content) *</label>
+                <textarea
+                  rows={5}
+                  required
+                  value={newSectionContent}
+                  onChange={(e) => setNewSectionContent(e.target.value)}
+                  placeholder={
+                    newSectionType === 'bullets' 
+                      ? "प्रत्येक लाइन एक बिंदु के रूप में दिखेगी:\n- भाग 1: सामान्य ज्ञान (50 अंक)\n- भाग 2: राजस्थान का इतिहास एवं भूगोल (50 अंक)\n- भाग 3: गणित एवं रीजनिंग (50 अंक)" 
+                      : "सेक्शन का विस्तृत विवरण यहाँ लिखें..."
+                  }
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-sky-600 font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsAddSectionOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+                <button
+                  type="button"
+                  disabled={!newSectionTitle.trim()}
+                  onClick={handleAddNewSection}
+                  className="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>सेक्शन जोड़ें व सेव करें</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 2: Edit Custom Section */}
+      {editingCustomSection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-5 py-4 bg-amber-600 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-white" />
+                <h3 className="font-bold text-base">कस्टम सेक्शन संपादित करें (Edit Section)</h3>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setEditingCustomSection(null)}
+                className="text-white/80 hover:text-white p-1 rounded transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सेक्शन का नाम (Section Title) *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingCustomSection.titleHi || editingCustomSection.title}
+                  onChange={(e) => setEditingCustomSection({
+                    ...editingCustomSection,
+                    title: e.target.value,
+                    titleHi: e.target.value
+                  })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:border-amber-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">फॉर्मेट प्रकार</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'paragraph' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'paragraph' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    पैराग्राफ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'bullets' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'bullets' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    बिंदुवार सूची
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCustomSection({ ...editingCustomSection, sectionType: 'alert_box' })}
+                    className={`p-2 rounded-lg text-xs font-bold border text-center transition cursor-pointer ${
+                      editingCustomSection.sectionType === 'alert_box' ? 'bg-amber-50 border-amber-600 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    हाईलाइट बॉक्स
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">सामग्री (Content) *</label>
+                <textarea
+                  rows={6}
+                  required
+                  value={editingCustomSection.contentHi || editingCustomSection.content}
+                  onChange={(e) => setEditingCustomSection({
+                    ...editingCustomSection,
+                    content: e.target.value,
+                    contentHi: e.target.value
+                  })}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:border-amber-600 font-mono"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setEditingCustomSection(null)}
+                  className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCustomSectionEdit}
+                  className="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>परिवर्तन सेव करें (Update Post)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PDF Upload Modal */}
+      {isPdfModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-300 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 bg-rose-700 text-white">
+              <div className="flex items-center gap-2 font-black text-sm">
+                <FileText className="w-4 h-4" />
+                <span>
+                  {pdfUploadTargetIndex !== null ? 'मौजूदा लिंक के लिए PDF अपलोड करें' : 'नया PDF डॉक्यूमेंट जोड़ें'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPdfModalOpen(false)}
+                className="text-white hover:bg-rose-800 p-1 rounded cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded text-xs text-rose-900 space-y-1">
+                <p className="font-bold">📄 PDF फाइल अपलोड निर्देश:</p>
+                <p>कंप्यूटर या मोबाइल से कोई भी आधिकारिक PDF (नोटिफिकेशन, सिलेबस, रिजल्ट, फॉर्म) चुनें। यह तुरंत लिंक के साथ अटैच होकर डाउनलोड करने योग्य बन जाएगी।</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  PDF फ़ाइल चुनें (.pdf)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={handlePdfFileChange}
+                  className="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer border border-slate-300 rounded p-1 bg-slate-50"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsPdfModalOpen(false)}
+                  className="px-3 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-300 cursor-pointer"
+                >
+                  रद्द करें
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Real-time Alert Feedback Notification */}
+      {alertFeedback && (
+        <div className="fixed bottom-5 right-5 z-50 bg-emerald-800 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-bold flex items-center gap-2 border border-emerald-600 animate-in slide-in-from-bottom-2 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+          <span>{alertFeedback}</span>
+          <button
+            type="button"
+            onClick={() => setAlertFeedback('')}
+            className="ml-2 hover:bg-emerald-700 p-0.5 rounded cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};

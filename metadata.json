@@ -1,0 +1,6 @@
+{
+  "name": "Rajasthan Vacancy - Govt Job Alerts & Recruitment Portal",
+  "description": "Aggregator for Rajasthan & Central Government job alerts, RSMSSB, RPSC, Rajasthan Police, REET, admit cards, answer keys, results, and exam notifications with searchable database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

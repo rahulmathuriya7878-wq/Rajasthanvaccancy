@@ -1,0 +1,317 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Mangal';
+  src: local('Mangal'), local('Mangal Regular'), local('mangal');
+  font-display: swap;
+}
+
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', 'Mangal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #222222;
+    background-color: #ffffff;
+  }
+
+  /* Main Page & Post H1 Title - Balanced 22px to 26px Bold */
+  h1, .post-title {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    font-size: clamp(21px, 3vw, 25px);
+    font-weight: 800;
+    line-height: 1.35;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+  }
+
+  /* Section Headings H2 / H3 - Balanced 18px to 21px Bold */
+  h2, .headlight, .headline {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    font-size: clamp(18px, 2.5vw, 21px);
+    font-weight: 700;
+    line-height: 1.4;
+    color: #0f172a;
+  }
+
+  h3 {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 600;
+    line-height: 1.4;
+    color: #0f172a;
+  }
+
+  h4, h5, h6 {
+    font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+}
+
+/* Authentic Job Post Title Link - 12pt Font Size & Clean Blue Link */
+.post-title-link {
+  font-size: 12pt !important;
+  color: #0066cc !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  transition: color 0.15s ease-in-out;
+}
+
+.post-title-link:hover {
+  color: #004085 !important;
+  text-decoration: none !important;
+}
+
+/* Headlight / Headline Utility Classes */
+.headlight,
+.headline {
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  font-size: clamp(18px, 2.5vw, 21px);
+  line-height: 1.4;
+}
+
+/* Paragraph & Normal Post Body Text - 12pt */
+p, .post-item, .entry-content p, .entry-content li {
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif;
+  font-size: 12pt !important;
+  line-height: 1.65;
+  color: #222222;
+}
+
+@layer base {
+  /* Hyperlinks - Zero-specificity base color so Tailwind utilities (text-white, etc.) always take precedence */
+  :where(a:not(.no-link-color)) {
+    color: #0073aa;
+  }
+}
+
+/* Post Content & Body Formatting Rules */
+.entry-content {
+  font-family: 'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif !important;
+  font-size: 12pt;
+  line-height: 1.65;
+  color: #222222;
+}
+
+.entry-content strong,
+.entry-content b {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* 1. पोस्ट की H2 सबहेडिंग */
+.entry-content h2 {
+  font-size: 22px !important;
+  line-height: 1.3 !important;
+  font-weight: 600 !important;
+  color: #0f172a;
+}
+
+/* मोबाइल पर चौड़ी टेबल से पेज न टूटे इसके लिए स्क्रॉल सपोर्ट */
+.entry-content .wp-block-table,
+.entry-content .overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0;
+}
+
+/* 2. टेबल का मुख्य लेआउट और बॉर्डर */
+.entry-content table,
+.entry-content .wp-block-table table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e2e8f0 !important;
+  background-color: #ffffff;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* टेबल हेडर (TH) और डेटा सेल (TD) की पैडिंग व बॉर्डर */
+.entry-content table th,
+.entry-content table td {
+  border: 1px solid #e2e8f0 !important;
+  padding: 12px 14px !important;
+  text-align: left;
+  vertical-align: top;
+  color: #222222;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* हेडर रो को अलग और स्पष्ट दिखाने के लिए */
+.entry-content table th,
+.entry-content table thead tr {
+  background-color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+/* हर दूसरी रो में हल्का बैकग्राउंड (Zebra Striping) */
+.entry-content table tbody tr:nth-child(odd) td {
+  background-color: #ffffff !important;
+}
+
+.entry-content table tbody tr:nth-child(even),
+.entry-content table tbody tr:nth-child(even) td {
+  background-color: #f8fafc !important;
+}
+
+/* 3. पोस्ट का मेटाडेटा (तारीख और लेखक) */
+.entry-header .entry-meta,
+.entry-meta {
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+/* Main Job Card Containers - Overflow Prevention & Text Wrapping */
+.job-section-card,
+.job-detail-card,
+.job-hero-card,
+.job-archive-card,
+.inside-article {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.job-section-card .post-title-link,
+.job-archive-card .post-title-link,
+.job-detail-card .entry-content a,
+.job-detail-card .font-mono {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* मोबाइल और टैबलेट स्क्रीन (768px या उससे कम) के लिए कार्ड पैडिंग व लेआउट समायोजन */
+@media (max-width: 768px) {
+  .entry-content h2 {
+    font-size: 20px !important;
+  }
+  .entry-content table,
+  .entry-content .wp-block-table table,
+  .entry-content table th,
+  .entry-content table td {
+    font-size: 14px !important;
+  }
+  .entry-content table th,
+  .entry-content table td {
+    padding: 9px 10px !important;
+  }
+
+  .job-section-card {
+    border-radius: 10px;
+  }
+  .job-section-card-header {
+    padding: 12px 12px 6px 12px !important;
+  }
+  .job-section-card-body {
+    padding: 10px 12px 14px 12px !important;
+  }
+
+  .job-detail-card {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+  .job-hero-card {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+  .job-archive-card,
+  .inside-article {
+    padding: 14px 12px !important;
+  }
+}
+
+/* छोटे मोबाइल फोन (480px या उससे कम) के लिए अतिरिक्त सुरक्षा */
+@media (max-width: 480px) {
+  .job-section-card-header {
+    padding: 10px 10px 6px 10px !important;
+  }
+  .job-section-card-body {
+    padding: 8px 10px 12px 10px !important;
+  }
+  .job-detail-card {
+    padding: 12px 10px !important;
+    border-radius: 10px !important;
+  }
+  .job-hero-card {
+    padding: 12px 10px !important;
+  }
+  .entry-content .wp-block-table,
+  .entry-content .overflow-x-auto {
+    margin: 14px 0;
+    max-width: 100%;
+  }
+  .entry-content table th,
+  .entry-content table td {
+    padding: 8px 8px !important;
+    font-size: 13.5px !important;
+  }
+}
+
+/* Mobile Table & Touch Optimization */
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 200s linear infinite !important;
+  animation-duration: 200s !important;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

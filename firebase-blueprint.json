@@ -1,0 +1,216 @@
+{
+  "entities": {
+    "VacancyOverride": {
+      "title": "VacancyOverride",
+      "description": "Cloud-synced override or deletion record for a vacancy/yojana post edited via Word In-Place Edit Mode, shared in real-time across all devices.",
+      "type": "object",
+      "properties": {
+        "vacancyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Canonical vacancy identifier matching the document ID."
+        },
+        "isDeleted": {
+          "type": "boolean",
+          "description": "When true, hides/removes the post across all devices."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500,
+          "description": "English title summary for auditing and indexing."
+        },
+        "titleHi": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500,
+          "description": "Hindi title summary for auditing and indexing."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "enum": [
+            "latest_job",
+            "admit_card",
+            "result",
+            "answer_key",
+            "syllabus",
+            "scheme",
+            "upcoming",
+            "ugc_net",
+            "exam_date",
+            "news"
+          ],
+          "description": "Vacancy category."
+        },
+        "payload": {
+          "type": "object",
+          "description": "Native Firestore Map containing sanitized VacancyItem fields edited by admin."
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Firebase Auth UID of the verified admin who performed the write."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the override document was first created (immutable)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest update."
+        }
+      },
+      "required": [
+        "vacancyId",
+        "isDeleted",
+        "title",
+        "titleHi",
+        "category",
+        "payload",
+        "updatedByUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private authenticated user profile document isolated by userId.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SavedVacancy": {
+      "title": "SavedVacancy",
+      "description": "User-bookmarked vacancy item owned strictly by userId.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "vacancyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "vacancyTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "vacancyId",
+        "vacancyTitle",
+        "category",
+        "createdAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Trusted admin allowlist document keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/vacancy_overrides/{vacancyId}": {
+      "schema": {
+        "$ref": "#/entities/VacancyOverride"
+      },
+      "description": "Publicly readable, admin-only writable vacancy edits and deletions made via Word In-Place Edit Mode."
+    },
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private user profiles accessible only by the owner or verified admin."
+    },
+    "/saved_vacancies/{saveId}": {
+      "schema": {
+        "$ref": "#/entities/SavedVacancy"
+      },
+      "description": "Per-user saved/bookmarked vacancies restricted to the owning user."
+    },
+    "/admins/{userId}": {
+      "schema": {
+        "$ref": "#/entities/AdminRecord"
+      },
+      "description": "Trusted admin UID registry manageable only by bootstrapped or existing verified admins."
+    }
+  }
+}

@@ -1,0 +1,170 @@
+'use client';
+
+import React, { useEffect, useRef } from 'react';
+
+declare global {
+  interface Window {
+    adsbygoogle?: Array<Record<string, unknown>>;
+  }
+}
+
+export interface AdSectionProps {
+  /** AdSense Slot ID */
+  slot?: string;
+  /** AdSense Client ID (defaults to NEXT_PUBLIC_ADSENSE_CLIENT_ID) */
+  client?: string;
+  /** Responsive ad format */
+  format?: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
+  /** Custom wrapper styling */
+  className?: string;
+  /** Optional label shown above ad (e.g., 'Advertisement' / 'विज्ञापन') */
+  label?: string;
+  /** Minimum height to prevent layout shifts (CLS) */
+  minHeight?: string | number;
+  /** Enable full width responsive behavior */
+  responsive?: boolean;
+  /** Optional inline styles for the outer ad container */
+  style?: React.CSSProperties;
+  /** Set true when rendered inside AdSlotWrapper so outer border/margin/bg are handled by the fixed-height wrapper */
+  embedded?: boolean;
+}
+
+/**
+ * Reusable AdSection Component
+ * Safely waits for container width > 0 before pushing to adsbygoogle
+ * to prevent "TagError: adsbygoogle.push() error: No slot size for availableWidth=0".
+ */
+export const AdSection: React.FC<AdSectionProps> = ({
+  slot = '3785509362',
+  client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-3176571184961509',
+  format = 'auto',
+  className = '',
+  label = 'विज्ञापन (Advertisement)',
+  minHeight = '90px',
+  responsive = true,
+  style,
+  embedded = false,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const adRef = useRef<HTMLModElement>(null);
+  const isPushed = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    isPushed.current = false;
+    let observer: ResizeObserver | null = null;
+
+    // 1. Inject AdSense script into document head only if no adsbygoogle script exists yet
+    const existingScript = document.querySelector(
+      'script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]'
+    );
+
+    if (!existingScript && client && client !== 'ca-pub-0000000000000000') {
+      const scriptTag = document.createElement('script');
+      scriptTag.id = 'google-adsense-script';
+      scriptTag.async = true;
+      scriptTag.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`;
+      scriptTag.crossOrigin = 'anonymous';
+      document.head.appendChild(scriptTag);
+    }
+
+    // 2. Helper to safely push ad only when container has non-zero availableWidth (without forcing synchronous reflow)
+    const tryPushAd = (observedWidth?: number): boolean => {
+      if (isPushed.current || !adRef.current || !containerRef.current) {
+        return false;
+      }
+
+      // Skip if AdSense already processed this <ins> element
+      const status = adRef.current.getAttribute('data-adsbygoogle-status');
+      const adStatus = adRef.current.getAttribute('data-ad-status');
+      if (status || adStatus) {
+        isPushed.current = true;
+        return true;
+      }
+
+      const width = typeof observedWidth === 'number' ? observedWidth : containerRef.current.clientWidth;
+      if (width <= 0) {
+        return false;
+      }
+
+      try {
+        window.adsbygoogle = window.adsbygoogle || [];
+        window.adsbygoogle.push({});
+        isPushed.current = true;
+        return true;
+      } catch (err) {
+        // Silence TagError if slot was already initialized or width transiently changed
+        isPushed.current = true;
+        return true;
+      }
+    };
+
+    let rafId: number | null = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      observer = new ResizeObserver((entries) => {
+        const entryWidth = entries[0]?.contentRect?.width ?? 0;
+        if (entryWidth > 0 && tryPushAd(entryWidth)) {
+          observer?.disconnect();
+          observer = null;
+        }
+      });
+      observer.observe(containerRef.current);
+    } else {
+      rafId = window.requestAnimationFrame(() => {
+        tryPushAd();
+      });
+    }
+
+    return () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [client, slot]);
+
+  const resolvedMinHeight = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
+  const resolvedSlot = /^\d+$/.test(String(slot).trim()) ? String(slot).trim() : '3785509362';
+
+  return (
+    <div
+      ref={containerRef}
+      className={
+        embedded
+          ? `w-full min-w-[250px] h-full overflow-hidden px-2.5 py-2 text-center flex flex-col justify-center ${className}`
+          : `w-full min-w-[250px] my-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 sm:p-3 text-center transition-all shadow-2xs ${className}`
+      }
+      style={{ minHeight: resolvedMinHeight, ...style }}
+    >
+      {label && !embedded && (
+        <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-600 text-center mb-1 select-none">
+          {label}
+        </div>
+      )}
+
+      <div
+        className="block w-full overflow-hidden"
+        style={{ minHeight: resolvedMinHeight }}
+      >
+        <ins
+          ref={adRef}
+          className="adsbygoogle"
+          style={{
+            display: 'block',
+            width: '100%',
+            minWidth: '250px',
+            minHeight: resolvedMinHeight,
+          }}
+          data-ad-client={client}
+          data-ad-slot={resolvedSlot}
+          data-ad-format={format}
+          data-full-width-responsive={responsive ? 'true' : 'false'}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default AdSection;
