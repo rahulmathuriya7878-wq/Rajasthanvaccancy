@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
+    "build": "NODE_ENV=production next build && NODE_ENV=production opennextjs-cloudflare build --skipNextBuild",
     "start": "next start -H 0.0.0.0 -p 3000",
-    "cf:build": "NODE_ENV=production opennextjs-cloudflare build",
-    "cf:preview": "NODE_ENV=production opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "NODE_ENV=production opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:build": "NODE_ENV=production next build && NODE_ENV=production opennextjs-cloudflare build --skipNextBuild",
+    "cf:preview": "npm run build && opennextjs-cloudflare preview",
+    "cf:deploy": "npm run build && opennextjs-cloudflare deploy",
     "clean": "rm -rf .next .open-next .wrangler dist",
     "lint": "tsc --noEmit"
   },
