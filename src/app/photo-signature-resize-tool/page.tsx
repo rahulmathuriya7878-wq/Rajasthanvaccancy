@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, CheckCircle2, HelpCircle } from 'lucide-react';
 import { PhotoSignResizeTool } from '@/components/PhotoSignResizeTool';
+import { DEFAULT_PRODUCTION_ORIGIN as SITE_URL } from '@/utils/seoCanonical';
 
-const CANONICAL_URL = 'https://www.rajasthanvacancy.online/photo-signature-resize-tool';
+const CANONICAL_URL = `${SITE_URL}/photo-signature-resize-tool`;
 
 export const metadata: Metadata = {
   title: 'Photo & Signature Resize Tool Online Free (20KB, 50KB) - SSC, UPSC, RPSC, RSSB | Rajasthan Vacancy',
@@ -31,14 +32,14 @@ export const metadata: Metadata = {
     title: 'Photo & Signature Resize Tool Online Free — SSC, UPSC, Rajasthan Exams',
     description:
       'सरकारी नौकरी फॉर्म (RPSC, RSSB, SSO, SSC, UPSC, Railway) के लिए पासपोर्ट फोटो और हस्ताक्षर का सटीक साइज़ (KB व Pixel) तुरंत बनाएं।',
-    images: [{ url: 'https://www.rajasthanvacancy.online/og-preview.png' }],
+    images: [{ url: `${SITE_URL}/og-preview.png` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Photo & Signature Resize Tool Online Free — Rajasthan Vacancy',
     description:
       'Resize Passport Photo (20KB–50KB) & Signature (10KB–20KB) for Rajasthan SSO, RPSC, RSSB, SSC, UPSC & Railway forms.',
-    images: ['https://www.rajasthanvacancy.online/og-preview.png'],
+    images: [`${SITE_URL}/og-preview.png`],
   },
 };
 
@@ -79,7 +80,7 @@ const TOOL_SCHEMA_JSON_LD = {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.rajasthanvacancy.online/',
+          item: `${SITE_URL}/`,
         },
         {
           '@type': 'ListItem',

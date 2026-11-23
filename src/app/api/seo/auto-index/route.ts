@@ -48,7 +48,7 @@ async function runAutoIndex(customUrls: string[]) {
 
   try {
     const indexNowPayload = {
-      host: 'www.rajasthanvacancy.online',
+      host: new URL(baseUrl).host,
       key: 'rajasthanvacancyindexnow2026',
       keyLocation: `${baseUrl}/rajasthanvacancyindexnow2026.txt`,
       urlList,

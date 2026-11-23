@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { PortalHomeClient } from '@/components/PortalHomeClient';
 import { INITIAL_VACANCIES } from '@/data/mockVacancies';
 import { filterActivePostsWithinDays } from '@/utils/dateUtils';
-import { getJobFeaturedImage } from '@/utils/thumbnailGenerator';
+import { getSocialOgImageUrl } from '@/utils/shareUtils';
 import {
   DEFAULT_PRODUCTION_ORIGIN as CANONICAL_ORIGIN,
   getBreadcrumbCategoryLabel,
@@ -96,7 +96,7 @@ export async function generateMetadata({
         matched.briefSummaryHi ||
         `${postTitle}: कुल पद ${matched.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
       const canonical = `${CANONICAL_ORIGIN}/?vacancy=${encodeURIComponent(matched.id)}`;
-      const thumbUrl = getJobFeaturedImage(matched);
+      const ogImageUrl = getSocialOgImageUrl(matched);
 
       return {
         title,
@@ -104,17 +104,19 @@ export async function generateMetadata({
         alternates: { canonical },
         robots: { index: true, follow: true },
         openGraph: {
+          siteName: 'Rajasthan Vacancy',
+          locale: 'hi_IN',
           title,
           description,
           url: canonical,
           type: 'article',
-          images: [{ url: thumbUrl }],
+          images: [{ url: ogImageUrl, width: 1200, height: 630, alt: postTitle }],
         },
         twitter: {
           card: 'summary_large_image',
           title,
           description,
-          images: [thumbUrl],
+          images: [ogImageUrl],
         },
       };
     }

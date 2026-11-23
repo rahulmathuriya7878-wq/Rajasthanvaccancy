@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { LanguageMode, VacancyItem } from '../types';
 import { resolveJobSchemaDates } from '../utils/dateUtils';
-import { buildCanonicalUrl } from '../utils/seoCanonical';
+import { buildCanonicalUrl, DEFAULT_PRODUCTION_ORIGIN } from '../utils/seoCanonical';
 
 export interface UseDynamicJobSchemaOptions {
   vacancy: VacancyItem | null;
@@ -26,7 +26,7 @@ export function useDynamicJobSchema({
 
     const isHi = lang === 'hi';
     const canonicalUrl = buildCanonicalUrl({ vacancyId: vacancy.id });
-    const baseOrigin = (origin || 'https://www.rajasthanvacancy.online').replace(/\/+$/, '');
+    const baseOrigin = (origin || DEFAULT_PRODUCTION_ORIGIN).replace(/\/+$/, '');
     const title = isHi ? vacancy.titleHi || vacancy.title : vacancy.title;
     const description =
       (isHi

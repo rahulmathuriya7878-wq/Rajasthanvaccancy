@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import { 
   Calendar, 
   ShieldCheck, 
@@ -35,7 +36,13 @@ import { AdSlotWrapper } from './AdSlotWrapper';
 import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
-import { generateHindiShareText, getVacancyShareUrl } from '../utils/shareUtils';
+import {
+  copyTextToClipboard,
+  getTelegramShareUrl,
+  getVacancyShareUrl,
+  getWhatsAppShareUrl,
+  SHARE_BASE_URL,
+} from '../utils/shareUtils';
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -1451,7 +1458,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         {isAdmin && (
           <div className="flex items-center gap-2 shrink-0">
             <a
-              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent('https://www.rajasthanvacancy.online/')}&item_url=${encodeURIComponent(getVacancyShareUrl(editablePost.id))}`}
+              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent(`${SHARE_BASE_URL}/`)}&item_url=${encodeURIComponent(getVacancyShareUrl(editablePost.id))}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-[11px] transition"
@@ -1463,10 +1470,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             </a>
             <button
               type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
-                setCopiedLink(true);
-                setTimeout(() => setCopiedLink(false), 2000);
+              onClick={async () => {
+                const ok = await copyTextToClipboard(getVacancyShareUrl(editablePost.id));
+                if (ok) {
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }
               }}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition cursor-pointer"
               title="इस पोस्ट का पूरा URL कॉपी करें"
@@ -1974,21 +1983,33 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       <span>{isHi ? 'WhatsApp चैनल जुड़ें' : 'Join Channel'}</span>
                     </a>
                     <a
-                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                      href={getWhatsAppShareUrl(editablePost)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
-                      title="WhatsApp पर शेयर करें (www.rajasthanvacancy.online)"
+                      title={`WhatsApp पर शेयर करें (${SHARE_BASE_URL})`}
                     >
                       <Share2 className="w-3.5 h-3.5 text-[#15803d]" />
-                      <span>{isHi ? 'शेयर करें' : 'Share'}</span>
+                      <span>{isHi ? 'WhatsApp शेयर' : 'WhatsApp'}</span>
+                    </a>
+                    <a
+                      href={getTelegramShareUrl(editablePost)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[#0088cc] hover:bg-[#0077b3] text-white font-bold text-xs rounded-md shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                      title="Telegram पर शेयर करें"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-white" />
+                      <span>{isHi ? 'Telegram' : 'Telegram'}</span>
                     </a>
                     <button
                       type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(getVacancyShareUrl(editablePost.id));
-                        setCopiedLink(true);
-                        setTimeout(() => setCopiedLink(false), 2000);
+                      onClick={async () => {
+                        const ok = await copyTextToClipboard(getVacancyShareUrl(editablePost.id));
+                        if (ok) {
+                          setCopiedLink(true);
+                          setTimeout(() => setCopiedLink(false), 2000);
+                        }
                       }}
                       className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-xs rounded-md shadow-2xs transition cursor-pointer shrink-0"
                       title="पोस्ट का शेयर लिंक कॉपी करें"
@@ -2252,7 +2273,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 </button>
                               )}
                               <a
-                                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(generateHindiShareText(editablePost))}`}
+                                href={getWhatsAppShareUrl(editablePost)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95"
@@ -3541,7 +3562,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                       resolvedUrl.startsWith('?vacancy=') ||
                                       resolvedUrl.includes('rajasthanvacancy.online/?vacancy=')
                                     ) {
-                                      const parsed = new URL(resolvedUrl, 'https://www.rajasthanvacancy.online');
+                                      const parsed = new URL(resolvedUrl, SHARE_BASE_URL);
                                       internalVacancySlug = parsed.searchParams.get('vacancy');
                                     }
                                   } catch {
@@ -3581,7 +3602,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     : undefined;
 
                                   return (
-                                    <tr key={idx} className="border-b border-slate-300 last:border-b-0">
+                                    <tr key={idx} className="border-b border-slate-300">
                                       <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
                                         <EditableText
                                           value={link.label}
@@ -3718,6 +3739,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     </tr>
                                   );
                                 })}
+                                {!(Array.isArray(editablePost?.directLinks) && editablePost.directLinks.some((l: any) => typeof l?.url === 'string' && l.url.includes('photo-signature-resize-tool'))) && (
+                                  <tr className="border-b border-slate-300 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
+                                      {isHi
+                                        ? 'Photo & Signature Resize Tool (फोटो व हस्ताक्षर रीसाइज़)'
+                                        : 'Photo & Signature Resize Tool (20KB–50KB)'}
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 font-semibold w-1/2 bg-white">
+                                      <Link
+                                        href="/photo-signature-resize-tool"
+                                        className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
+                                        title="ऑनलाइन फॉर्म के लिए पासपोर्ट फोटो और सिग्नेचर रीसाइज़ करें"
+                                      >
+                                        <span>{isHi ? 'Click Here (Resize Tool)' : 'Click Here'}</span>
+                                      </Link>
+                                    </td>
+                                  </tr>
+                                )}
                                 {isDirectEditMode && (
                                   <tr className="bg-slate-50 border-t border-slate-300">
                                     <td colSpan={2} className="p-2.5 text-center bg-slate-50">

@@ -7,10 +7,16 @@
  * 2. Unifies URL formats: canonicalizes ?vacancy=id across sitemaps, RSS, pushState, and social shares.
  * 3. Sanitizes tracking parameters (utm_*, fbclid, gclid, etc.) from canonical links.
  * 4. Ensures exactly one <link rel="canonical"> tag in <head>.
- * 5. Enforces the single authoritative production domain (www.rajasthanvacancy.online).
+ * 5. Enforces the single authoritative production domain from NEXT_PUBLIC_SITE_URL (default: https://rajasthanvacancy.online).
  */
 
-export const DEFAULT_PRODUCTION_ORIGIN = 'https://www.rajasthanvacancy.online';
+const RAW_SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://rajasthanvacancy.online')
+  .trim()
+  .replace(/\/+$/, '');
+
+export const DEFAULT_PRODUCTION_ORIGIN = /^https?:\/\//i.test(RAW_SITE_URL)
+  ? RAW_SITE_URL
+  : `https://${RAW_SITE_URL}`;
 
 /**
  * Always return the single authoritative production canonical origin

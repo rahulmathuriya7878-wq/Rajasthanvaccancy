@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { VacancyDetailPage } from './VacancyDetailPage';
 import { VacancyItem, LanguageMode } from '../types';
 import { buildCanonicalUrl, applyCanonicalTag } from '../utils/seoCanonical';
-import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
+import { getSocialOgImageUrl } from '../utils/shareUtils';
 
 /**
  * useDocumentHeadMeta
@@ -54,15 +54,15 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
     const postCanonicalUrl = buildCanonicalUrl({ vacancyId: vacancy.id });
     applyCanonicalTag(postCanonicalUrl);
 
-    // High-CTR Canvas Thumbnail for Social Sharing Preview (WhatsApp, Telegram, Twitter)
-    const featuredThumbUrl = getJobFeaturedImage(vacancy);
+    // Valid HTTPS OpenGraph image for Social Sharing Preview (WhatsApp, Telegram, Twitter)
+    const socialOgImage = getSocialOgImageUrl(vacancy);
     let ogImage = document.querySelector('meta[property="og:image"]');
     if (!ogImage) {
       ogImage = document.createElement('meta');
       ogImage.setAttribute('property', 'og:image');
       document.head.appendChild(ogImage);
     }
-    ogImage.setAttribute('content', featuredThumbUrl);
+    ogImage.setAttribute('content', socialOgImage);
 
     let twImage = document.querySelector('meta[name="twitter:image"]');
     if (!twImage) {
@@ -70,7 +70,7 @@ export function useDocumentHeadMeta(vacancy?: VacancyItem | null, lang: Language
       twImage.setAttribute('name', 'twitter:image');
       document.head.appendChild(twImage);
     }
-    twImage.setAttribute('content', featuredThumbUrl);
+    twImage.setAttribute('content', socialOgImage);
 
     // Meta keywords with all viral tags for search crawlers (hidden from UI)
     const rawTags = (vacancy.tags && vacancy.tags.length > 0)

@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import FloatingSocialButtons from '@/components/FloatingSocialButtons';
 import { PortalShellExtras } from '@/components/PortalShellExtras';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DEFAULT_PRODUCTION_ORIGIN as SITE_URL } from '@/utils/seoCanonical';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -16,7 +17,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.rajasthanvacancy.online'),
+  metadataBase: new URL(SITE_URL),
   title: 'Rajasthan Vacancy 2026 - Latest Govt Jobs, RPSC, RSMSSB & Sarkari Result Portal',
   description:
     'Rajasthan Vacancy 2026: Latest Rajasthan & Central Govt job alerts, RSMSSB, RPSC, Rajasthan Police, Patwari, REET, Pashu Parichar, Admit Cards, Answer Keys, and Sarkari Results.',
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   alternates: {
-    canonical: 'https://www.rajasthanvacancy.online/',
+    canonical: `${SITE_URL}/`,
     types: {
       'application/rss+xml': [
         { url: '/rss.xml', title: 'Rajasthan Vacancy 2026 RSS Feed' },
@@ -58,15 +59,15 @@ export const metadata: Metadata = {
     title: 'Rajasthan Vacancy 2026 - Govt Job Notifications, Admit Cards & Sarkari Results',
     description:
       'Rajasthan & Central Govt job alerts 2026: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Pashu Parichar, Admit Card, Answer Key & Sarkari Results.',
-    url: 'https://www.rajasthanvacancy.online/',
-    images: [{ url: 'https://www.rajasthanvacancy.online/og-preview.png' }],
+    url: `${SITE_URL}/`,
+    images: [{ url: `${SITE_URL}/og-preview.png` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Rajasthan Vacancy 2026 - Govt Job Notifications & Sarkari Results',
     description:
       'Rajasthan & Central Govt job alerts: RSMSSB, RPSC, Rajasthan Police, REET, Patwari, Admit Card, Answer Key & Sarkari Result.',
-    images: ['https://www.rajasthanvacancy.online/og-preview.png'],
+    images: [`${SITE_URL}/og-preview.png`],
   },
   other: {
     'google-site-verification': [
@@ -83,8 +84,8 @@ const BASE_GRAPH_JSON_LD = {
   '@graph': [
     {
       '@type': 'WebSite',
-      '@id': 'https://www.rajasthanvacancy.online/#website',
-      url: 'https://www.rajasthanvacancy.online/',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
       name: 'Rajasthan Vacancy - Sarkari Job Alerts & Recruitment Portal',
       description:
         'Latest Rajasthan Government Job Notifications, Admit Cards, Results, Syllabus, and Sarkari Yojana.',
@@ -93,14 +94,14 @@ const BASE_GRAPH_JSON_LD = {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: 'https://www.rajasthanvacancy.online/?search={search_term_string}',
+          urlTemplate: `${SITE_URL}/?search={search_term_string}`,
         },
         'query-input': 'required name=search_term_string',
       },
     },
     {
       '@type': 'WebApplication',
-      '@id': 'https://www.rajasthanvacancy.online/#application',
+      '@id': `${SITE_URL}/#application`,
       name: 'Rajasthan Vacancy Portal',
       applicationCategory: 'EducationalApplication',
       operatingSystem: 'All',

@@ -77,7 +77,12 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 301);
   }
 
-  if (!isLocalHost && hostname === 'rajasthanvacancy.online') {
+  const canonicalHost = new URL(CANONICAL_ORIGIN).hostname.toLowerCase();
+  const alternateHost = canonicalHost.startsWith('www.')
+    ? canonicalHost.slice(4)
+    : `www.${canonicalHost}`;
+
+  if (!isLocalHost && hostname === alternateHost && hostname !== canonicalHost) {
     const target = new URL(`${nextUrl.pathname}${nextUrl.search}`, CANONICAL_ORIGIN);
     return NextResponse.redirect(target, 301);
   }

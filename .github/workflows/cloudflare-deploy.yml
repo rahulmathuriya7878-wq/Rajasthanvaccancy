@@ -14,6 +14,7 @@ concurrency:
 env:
   NODE_ENV: production
   NEXT_TELEMETRY_DISABLED: '1'
+  NEXT_PUBLIC_SITE_URL: 'https://rajasthanvacancy.online'
 
 jobs:
   build-and-deploy:

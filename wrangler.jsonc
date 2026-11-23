@@ -17,6 +17,9 @@
       "service": "rajasthanvaccancy"
     }
   ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://rajasthanvacancy.online"
+  },
   "observability": {
     "enabled": true
   }

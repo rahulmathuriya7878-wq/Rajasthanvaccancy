@@ -12,7 +12,7 @@ import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from '../uti
 import { useDynamicBreadcrumbSchema } from '../hooks/useDynamicBreadcrumbSchema';
 import { useDynamicJobSchema } from '../hooks/useDynamicJobSchema';
 import { useDynamicFaqSchema } from '../hooks/useDynamicFaqSchema';
-import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
+import { getSocialOgImageUrl } from '../utils/shareUtils';
 import {
   AUTO_DELETE_MAX_AGE_DAYS,
   compareVacanciesNewestFirst,
@@ -343,11 +343,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
 
         const combinedDeleted = Array.from(new Set([...deletedIdsRef.current, ...remoteDeleted]));
-        let mergedSnapshot: VacancyItem[] = [];
-        setVacancies((prev) => {
-          mergedSnapshot = mergeVacanciesWithCloud(prev, overrides, combinedDeleted);
-          return mergedSnapshot;
-        });
+        const mergedSnapshot = mergeVacanciesWithCloud(vacanciesRef.current, overrides, combinedDeleted);
+        vacanciesRef.current = mergedSnapshot;
+        setVacancies(mergedSnapshot);
 
         const currentSelected = selectedVacancyRef.current;
         if (currentSelected) {
@@ -367,9 +365,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const vacancyParam =
               params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
             if (vacancyParam) {
+              const lowerParam = vacancyParam.toLowerCase();
               const cloudMatch =
                 overrides[vacancyParam] ||
-                mergedSnapshot.find((v) => v.id.toLowerCase() === vacancyParam.toLowerCase());
+                Object.values(overrides).find((v) => v.id?.toLowerCase() === lowerParam) ||
+                mergedSnapshot.find((v) => v.id.toLowerCase() === lowerParam);
               if (cloudMatch && !combinedDeleted.includes(cloudMatch.id)) {
                 isUnresolvedInitialUrlRef.current = false;
                 setIsInitialNotFound(false);
@@ -519,11 +519,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const twDesc = document.querySelector('meta[name="twitter:description"]');
         if (twDesc) twDesc.setAttribute('content', descText);
 
-        const featuredThumb = getJobFeaturedImage(selectedVacancy);
+        const socialOgImage = getSocialOgImageUrl(selectedVacancy);
         const ogImg = document.querySelector('meta[property="og:image"]');
-        if (ogImg) ogImg.setAttribute('content', featuredThumb);
+        if (ogImg) ogImg.setAttribute('content', socialOgImage);
         const twImg = document.querySelector('meta[name="twitter:image"]');
-        if (twImg) twImg.setAttribute('content', featuredThumb);
+        if (twImg) twImg.setAttribute('content', socialOgImage);
       } else if (selectedCategory !== 'ALL') {
         if (currentVacancyId) {
           url.searchParams.delete('vacancy');
