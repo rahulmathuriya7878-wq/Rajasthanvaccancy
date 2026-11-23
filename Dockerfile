@@ -1,13 +1,16 @@
+# syntax=docker/dockerfile:1
 # Stage 1: Build the application
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ENV NEXT_TELEMETRY_DISABLED=1
+
 COPY package*.json ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm npm install
 
 COPY . .
-RUN npm run build
+RUN --mount=type=cache,target=/app/.next/cache npm run build:next
 
 # Stage 2: Production runner for Google Cloud Run
 FROM node:22-alpine AS runner
