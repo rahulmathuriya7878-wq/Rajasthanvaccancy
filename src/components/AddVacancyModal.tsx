@@ -26,6 +26,7 @@ import type {
   DirectLinkItem,
   JobStatusType,
   LanguageMode,
+  PostBreakdownItem,
   QualificationType,
   VacancyItem,
 } from '../types';
@@ -45,6 +46,21 @@ interface ExtraLinkRow {
   actionText: string;
   url: string;
   isPdf: boolean;
+}
+
+interface PostBreakdownRow {
+  id: string;
+  postNameHi: string;
+  categoryOrSubjectHi: string;
+  postsCount: string;
+  qualificationHi: string;
+  payLevel: string;
+}
+
+interface FaqRow {
+  id: string;
+  qHi: string;
+  aHi: string;
 }
 
 const VALID_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
@@ -187,6 +203,14 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
   const [isHot, setIsHot] = useState(true);
   const [isNew, setIsNew] = useState(true);
 
+  // Section 6: Detailed / Expanded Post Content (Post Breakdown, How to Apply, Documents, Offline Postal Address, FAQs)
+  const [postBreakdownRows, setPostBreakdownRows] = useState<PostBreakdownRow[]>([]);
+  const [howToApplyText, setHowToApplyText] = useState('');
+  const [requiredDocsText, setRequiredDocsText] = useState('');
+  const [postalAddressHi, setPostalAddressHi] = useState('');
+  const [envelopeNoteHi, setEnvelopeNoteHi] = useState('');
+  const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
+
   // Submission & Auth state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleSigningIn, setIsGoogleSigningIn] = useState(false);
@@ -249,6 +273,47 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
 
   const removeExtraLink = (id: string) => {
     setExtraLinks((prev) => prev.filter((row) => row.id !== id));
+  };
+
+  const addPostBreakdownRow = () => {
+    setPostBreakdownRows((prev) => [
+      ...prev,
+      {
+        id: `post-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        postNameHi: '',
+        categoryOrSubjectHi: '',
+        postsCount: '',
+        qualificationHi: '',
+        payLevel: '',
+      },
+    ]);
+  };
+
+  const updatePostBreakdownRow = (id: string, patch: Partial<PostBreakdownRow>) => {
+    setPostBreakdownRows((prev) => prev.map((row) => (row.id === id ? { ...row, ...patch } : row)));
+  };
+
+  const removePostBreakdownRow = (id: string) => {
+    setPostBreakdownRows((prev) => prev.filter((row) => row.id !== id));
+  };
+
+  const addFaqRow = () => {
+    setFaqRows((prev) => [
+      ...prev,
+      {
+        id: `faq-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        qHi: '',
+        aHi: '',
+      },
+    ]);
+  };
+
+  const updateFaqRow = (id: string, patch: Partial<FaqRow>) => {
+    setFaqRows((prev) => prev.map((row) => (row.id === id ? { ...row, ...patch } : row)));
+  };
+
+  const removeFaqRow = (id: string) => {
+    setFaqRows((prev) => prev.filter((row) => row.id !== id));
   };
 
   const handleInlineGoogleLogin = async () => {
@@ -376,6 +441,38 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
     const parsedAgeMin = Number.isFinite(Number(ageMin)) && Number(ageMin) > 0 ? Number(ageMin) : 18;
     const parsedAgeMax = Number.isFinite(Number(ageMax)) && Number(ageMax) >= parsedAgeMin ? Number(ageMax) : 40;
 
+    const parsedPostBreakdown: PostBreakdownItem[] = postBreakdownRows
+      .filter((row) => row.postNameHi.trim())
+      .map((row) => ({
+        postName: row.postNameHi.trim(),
+        postNameHi: row.postNameHi.trim(),
+        categoryOrSubject: row.categoryOrSubjectHi.trim() || undefined,
+        categoryOrSubjectHi: row.categoryOrSubjectHi.trim() || undefined,
+        postsCount: row.postsCount.trim() || 'विभिन्न',
+        qualification: row.qualificationHi.trim() || finalQualDetails,
+        qualificationHi: row.qualificationHi.trim() || finalQualDetails,
+        payLevel: row.payLevel.trim() || undefined,
+      }));
+
+    const parsedHowToApply = howToApplyText
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const parsedRequiredDocs = requiredDocsText
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const parsedFaqs = faqRows
+      .filter((f) => f.qHi.trim() && f.aHi.trim())
+      .map((f) => ({
+        q: f.qHi.trim(),
+        qHi: f.qHi.trim(),
+        a: f.aHi.trim(),
+        aHi: f.aHi.trim(),
+      }));
+
     return {
       id: finalSlug,
       title: finalTitleEn,
@@ -428,6 +525,15 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
       descriptionHi: autoDescriptionHi,
       briefSummary: finalTitleEn,
       briefSummaryHi: autoSummaryHi,
+      postBreakdown: parsedPostBreakdown.length > 0 ? parsedPostBreakdown : undefined,
+      howToApply: parsedHowToApply.length > 0 ? parsedHowToApply : undefined,
+      howToApplyHi: parsedHowToApply.length > 0 ? parsedHowToApply : undefined,
+      requiredDocuments: parsedRequiredDocs.length > 0 ? parsedRequiredDocs : undefined,
+      requiredDocumentsHi: parsedRequiredDocs.length > 0 ? parsedRequiredDocs : undefined,
+      postalAddress: postalAddressHi.trim() || undefined,
+      postalAddressHi: postalAddressHi.trim() || undefined,
+      envelopeNoteHi: envelopeNoteHi.trim() || undefined,
+      faqs: parsedFaqs.length > 0 ? parsedFaqs : undefined,
       addedAtMs: Date.now(),
       updatedAt: todayIso,
       createdAt: todayIso,
@@ -1223,6 +1329,193 @@ export const AddVacancyModal: React.FC<AddVacancyModalProps> = ({
                 <span>{isHi ? 'हाइलाइट / ट्रेंडिंग पोस्ट (Hot / Trending)' : 'Mark as Hot / Trending'}</span>
               </label>
             </div>
+          </section>
+
+          {/* Section 6: Expanded / Detailed Post Sections (Post Breakdown, How to Apply, Documents, Offline Address & FAQs) */}
+          <section className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 space-y-5 shadow-2xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#15803d]" />
+                <h3 className="text-sm font-extrabold text-slate-900">
+                  {isHi
+                    ? '6. विस्तृत पोस्ट सेक्शंस (पदवार तालिका, आवेदन प्रक्रिया, दस्तावेज़ व FAQs - वैकल्पिक)'
+                    : '6. Detailed Post Sections (Post Breakdown, How to Apply, Documents & FAQs - Optional)'}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={addPostBreakdownRow}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{isHi ? 'पद पंक्ति जोड़ें' : 'Add Post Row'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={addFaqRow}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{isHi ? 'FAQ जोड़ें' : 'Add FAQ'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Post-wise Breakdown Dynamic Rows */}
+            {postBreakdownRows.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="text-xs font-bold text-slate-700">
+                  {isHi ? 'पदवार / क्षेत्रवार रिक्ति विवरण (Post-wise Vacancy Table)' : 'Post-wise Vacancy Breakdown'}
+                </div>
+                {postBreakdownRows.map((row) => (
+                  <div
+                    key={row.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-slate-50 border border-slate-200 rounded-lg p-2.5"
+                  >
+                    <input
+                      type="text"
+                      value={row.postNameHi}
+                      onChange={(e) => updatePostBreakdownRow(row.id, { postNameHi: e.target.value })}
+                      placeholder="पद का नाम (उदा. राशन डीलर - जोधपुर ग्रामीण)"
+                      className="sm:col-span-3 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <input
+                      type="text"
+                      value={row.categoryOrSubjectHi}
+                      onChange={(e) => updatePostBreakdownRow(row.id, { categoryOrSubjectHi: e.target.value })}
+                      placeholder="क्षेत्र / श्रेणी / विषय"
+                      className="sm:col-span-2 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <input
+                      type="text"
+                      value={row.postsCount}
+                      onChange={(e) => updatePostBreakdownRow(row.id, { postsCount: e.target.value })}
+                      placeholder="पद (उदा. 14)"
+                      className="sm:col-span-2 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <input
+                      type="text"
+                      value={row.qualificationHi}
+                      onChange={(e) => updatePostBreakdownRow(row.id, { qualificationHi: e.target.value })}
+                      placeholder="योग्यता (स्नातक + RSCIT)"
+                      className="sm:col-span-2 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <input
+                      type="text"
+                      value={row.payLevel}
+                      onChange={(e) => updatePostBreakdownRow(row.id, { payLevel: e.target.value })}
+                      placeholder="वेतन / पे लेवल"
+                      className="sm:col-span-2 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePostBreakdownRow(row.id)}
+                      aria-label="Remove post row"
+                      className="sm:col-span-1 p-1.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 flex items-center justify-center cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* How to Apply & Required Documents */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isHi ? 'आवेदन कैसे करें (प्रति लाइन एक चरण - How to Apply)' : 'How to Apply (one step per line)'}
+                </label>
+                <textarea
+                  rows={4}
+                  value={howToApplyText}
+                  onChange={(e) => setHowToApplyText(e.target.value)}
+                  placeholder={'आधिकारिक नोटिफिकेशन PDF ध्यानपूर्वक पढ़ें।\nऑनलाइन / ऑफलाइन आवेदन फॉर्म सही जानकारी के साथ भरें।\nआवश्यक दस्तावेज़ संलग्न कर अंतिम तिथि से पूर्व जमा करें।'}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-[#15803d]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isHi ? 'आवश्यक दस्तावेज़ (प्रति लाइन एक दस्तावेज़ - Documents)' : 'Required Documents (one per line)'}
+                </label>
+                <textarea
+                  rows={4}
+                  value={requiredDocsText}
+                  onChange={(e) => setRequiredDocsText(e.target.value)}
+                  placeholder={'10वीं / 12वीं / स्नातक की अंकतालिका\nआधार कार्ड व मूल निवास प्रमाण पत्र\nजाति प्रमाण पत्र एवं पासपोर्ट साइज फोटो'}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-[#15803d]"
+                />
+              </div>
+            </div>
+
+            {/* Offline Form Postal Address & Envelope Note */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isHi ? 'ऑफलाइन आवेदन भेजने का पता (यदि ऑफलाइन भर्ती हो)' : 'Offline Postal Address (if Offline)'}
+                </label>
+                <input
+                  type="text"
+                  value={postalAddressHi}
+                  onChange={(e) => setPostalAddressHi(e.target.value)}
+                  placeholder="उदा. कार्यालय जिला रसद अधिकारी (जोधपुर), कलेक्ट्रेट परिसर, जोधपुर"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-[#15803d]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isHi ? 'लिफाफा / विशेष नोट (Envelope / Submission Note)' : 'Envelope / Submission Note'}
+                </label>
+                <input
+                  type="text"
+                  value={envelopeNoteHi}
+                  onChange={(e) => setEnvelopeNoteHi(e.target.value)}
+                  placeholder="उदा. आवेदन फॉर्म शाम 6:00 बजे तक व्यक्तिगत रूप से या पंजीकृत डाक से जमा करें"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 focus:outline-none focus:border-[#15803d]"
+                />
+              </div>
+            </div>
+
+            {/* FAQs Dynamic Rows */}
+            {faqRows.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="text-xs font-bold text-slate-700">
+                  {isHi ? 'अक्सर पूछे जाने वाले प्रश्न (FAQs - Google SEO हेतु)' : 'Frequently Asked Questions (FAQs)'}
+                </div>
+                {faqRows.map((faq) => (
+                  <div
+                    key={faq.id}
+                    className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start bg-slate-50 border border-slate-200 rounded-lg p-2.5"
+                  >
+                    <input
+                      type="text"
+                      value={faq.qHi}
+                      onChange={(e) => updateFaqRow(faq.id, { qHi: e.target.value })}
+                      placeholder="प्रश्न (उदा. आवेदन की अंतिम तिथि क्या है?)"
+                      className="sm:col-span-5 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <input
+                      type="text"
+                      value={faq.aHi}
+                      onChange={(e) => updateFaqRow(faq.id, { aHi: e.target.value })}
+                      placeholder="उत्तर (उदा. आवेदन की अंतिम तिथि 26 नवंबर 2026 है।)"
+                      className="sm:col-span-6 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-xs text-slate-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFaqRow(faq.id)}
+                      aria-label="Remove FAQ"
+                      className="sm:col-span-1 p-1.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 flex items-center justify-center cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Footer Action Buttons (inside form for Enter submit, sticky at bottom) */}

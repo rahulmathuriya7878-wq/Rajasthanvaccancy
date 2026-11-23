@@ -45,6 +45,14 @@ export const PortalShellExtras: React.FC = () => {
             isOpen={isAdminLoginOpen}
             onClose={() => setIsAdminLoginOpen(false)}
             lang={lang}
+            onOpenAddVacancy={() => {
+              setIsAdminLoginOpen(false);
+              setIsAddVacancyOpen(true);
+            }}
+            onOpenUrlIndexation={() => {
+              setIsAdminLoginOpen(false);
+              setIsUrlIndexationOpen(true);
+            }}
           />
         </Suspense>
       )}

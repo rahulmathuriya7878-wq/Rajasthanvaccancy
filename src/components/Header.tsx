@@ -282,12 +282,19 @@ export const Header: React.FC<HeaderProps> = ({
               {isAdmin && (
                 <div className="flex items-center gap-1.5">
                   <button
-                    onClick={() => toggleAdminMode(false)}
+                    type="button"
+                    onClick={() => {
+                      if (portal) {
+                        portal.setIsAdminLoginOpen(true);
+                      } else {
+                        toggleAdminMode(false);
+                      }
+                    }}
                     className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-emerald-700"
-                    title="Admin Mode Active"
+                    title={isHi ? 'एडमिन पैनल खोलें' : 'Open Admin Panel'}
                   >
                     <ShieldCheck className="w-3.5 h-3.5 text-white" />
-                    <span className="text-[11px] font-extrabold">{isHi ? 'Admin Active' : 'Admin'}</span>
+                    <span className="text-[11px] font-extrabold">{isHi ? 'Admin Panel' : 'Admin'}</span>
                   </button>
                 </div>
               )}

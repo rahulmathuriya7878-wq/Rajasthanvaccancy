@@ -2,12 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  subscribeVacancyOverrides,
-  saveVacancyOverrideToCloud,
-  markVacancyDeletedInCloud,
-  type CloudSyncResult,
-} from '../services/vacancyCloudSync';
+import type { CloudSyncResult } from '../services/vacancyCloudSync';
 import { buildCanonicalUrl, applyCanonicalTag, getCanonicalOrigin } from '../utils/seoCanonical';
 import { useDynamicBreadcrumbSchema } from '../hooks/useDynamicBreadcrumbSchema';
 import { useDynamicJobSchema } from '../hooks/useDynamicJobSchema';
@@ -333,62 +328,78 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   }, [vacancies, alertJobIds, lang, showToast]);
 
-  // Real-time Firestore listener for vacancy_overrides across all devices
+  // Real-time Firestore listener for vacancy_overrides across all devices (client-only dynamic import for Cloudflare Workers SSR safety)
   useEffect(() => {
-    const unsubscribe = subscribeVacancyOverrides(
-      ({ overrides, deletedIds: remoteDeleted }) => {
-        if (remoteDeleted.length > 0) {
-          setDeletedIds((prev) => {
-            const combined = Array.from(new Set([...prev, ...remoteDeleted]));
-            deletedIdsRef.current = combined;
-            return combined.length === prev.length ? prev : combined;
-          });
-        }
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
 
-        const combinedDeleted = Array.from(new Set([...deletedIdsRef.current, ...remoteDeleted]));
-        const mergedSnapshot = mergeVacanciesWithCloud(vacanciesRef.current, overrides, combinedDeleted);
-        vacanciesRef.current = mergedSnapshot;
-        setVacancies(mergedSnapshot);
+    (async () => {
+      try {
+        const { subscribeVacancyOverrides } = await import('../services/vacancyCloudSync');
+        if (!isMounted) return;
 
-        const currentSelected = selectedVacancyRef.current;
-        if (currentSelected) {
-          if (combinedDeleted.includes(currentSelected.id)) {
-            setSelectedVacancy(null);
-          } else if (overrides[currentSelected.id]) {
-            const updatedCurrent = overrides[currentSelected.id];
-            setSelectedVacancy(updatedCurrent);
-            try {
-              localStorage.setItem(`raj_offline_job_${updatedCurrent.id}`, JSON.stringify(updatedCurrent));
-            } catch {}
-          }
-        } else if (isUnresolvedInitialUrlRef.current) {
-          try {
-            const params = new URLSearchParams(window.location.search);
-            const cleanPath = window.location.pathname.replace(/^\/|\/+$/g, '');
-            const vacancyParam =
-              params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
-            if (vacancyParam) {
-              const lowerParam = vacancyParam.toLowerCase();
-              const cloudMatch =
-                overrides[vacancyParam] ||
-                Object.values(overrides).find((v) => v.id?.toLowerCase() === lowerParam) ||
-                mergedSnapshot.find((v) => v.id.toLowerCase() === lowerParam);
-              if (cloudMatch && !combinedDeleted.includes(cloudMatch.id)) {
-                isUnresolvedInitialUrlRef.current = false;
-                setIsInitialNotFound(false);
-                setSelectedVacancy(cloudMatch);
-                setActivePolicyView(null);
-              }
+        unsubscribe = subscribeVacancyOverrides(
+          ({ overrides, deletedIds: remoteDeleted }) => {
+            if (!isMounted) return;
+            if (remoteDeleted.length > 0) {
+              setDeletedIds((prev) => {
+                const combined = Array.from(new Set([...prev, ...remoteDeleted]));
+                deletedIdsRef.current = combined;
+                return combined.length === prev.length ? prev : combined;
+              });
             }
-          } catch {}
-        }
-      },
-      (err) => {
-        console.warn('Firestore real-time vacancy override listener warning:', err);
-      }
-    );
 
-    return () => unsubscribe();
+            const combinedDeleted = Array.from(new Set([...deletedIdsRef.current, ...remoteDeleted]));
+            const mergedSnapshot = mergeVacanciesWithCloud(vacanciesRef.current, overrides, combinedDeleted);
+            vacanciesRef.current = mergedSnapshot;
+            setVacancies(mergedSnapshot);
+
+            const currentSelected = selectedVacancyRef.current;
+            if (currentSelected) {
+              if (combinedDeleted.includes(currentSelected.id)) {
+                setSelectedVacancy(null);
+              } else if (overrides[currentSelected.id]) {
+                const updatedCurrent = overrides[currentSelected.id];
+                setSelectedVacancy(updatedCurrent);
+                try {
+                  localStorage.setItem(`raj_offline_job_${updatedCurrent.id}`, JSON.stringify(updatedCurrent));
+                } catch {}
+              }
+            } else if (isUnresolvedInitialUrlRef.current) {
+              try {
+                const params = new URLSearchParams(window.location.search);
+                const cleanPath = window.location.pathname.replace(/^\/|\/+$/g, '');
+                const vacancyParam =
+                  params.get('vacancy') || (cleanPath && cleanPath !== '' && !cleanPath.includes('.') ? cleanPath : null);
+                if (vacancyParam) {
+                  const lowerParam = vacancyParam.toLowerCase();
+                  const cloudMatch =
+                    overrides[vacancyParam] ||
+                    Object.values(overrides).find((v) => v.id?.toLowerCase() === lowerParam) ||
+                    mergedSnapshot.find((v) => v.id.toLowerCase() === lowerParam);
+                  if (cloudMatch && !combinedDeleted.includes(cloudMatch.id)) {
+                    isUnresolvedInitialUrlRef.current = false;
+                    setIsInitialNotFound(false);
+                    setSelectedVacancy(cloudMatch);
+                    setActivePolicyView(null);
+                  }
+                }
+              } catch {}
+            }
+          },
+          (err) => {
+            console.warn('Firestore real-time vacancy override listener warning:', err);
+          }
+        );
+      } catch (err) {
+        console.warn('Failed to initialize Firestore listener:', err);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+      if (unsubscribe) unsubscribe();
+    };
   }, [mergeVacanciesWithCloud]);
 
   const hydrateInitialParams = useCallback(
@@ -767,6 +778,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         localStorage.setItem(`raj_offline_job_${updatedJob.id}`, JSON.stringify(updatedJob));
       } catch {}
 
+      const { saveVacancyOverrideToCloud } = await import('../services/vacancyCloudSync');
       const cloudResult = await saveVacancyOverrideToCloud(updatedJob);
       if (cloudResult.synced) {
         showToast(lang === 'hi' ? '☁️ पोस्ट अपडेट सभी फोन पर लाइव सेव हो गया!' : 'Post synced live across all phones!');
@@ -798,6 +810,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setVacancies((prev) => prev.filter((v) => v.id !== id));
       setSelectedVacancy(null);
 
+      const { markVacancyDeletedInCloud } = await import('../services/vacancyCloudSync');
       const cloudResult = await markVacancyDeletedInCloud(id, targetJob);
       if (cloudResult.synced) {
         showToast(lang === 'hi' ? '🗑️ पोस्ट सभी फोन से सफलतापूर्वक डिलीट कर दी गई!' : '🗑️ Post deleted across all devices!');
