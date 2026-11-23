@@ -160,7 +160,7 @@ const HINDI_MONTH_MAP: Record<string, number> = {
  * Parses ISO dates (YYYY-MM-DD), DD/MM/YYYY, Hindi dates ("13 नवंबर 2026"),
  * or "अभी-अभी / Just Now" strings into comparable epoch milliseconds.
  */
-export const parseVacancyTimestamp = (val?: string | null): number => {
+const parseVacancyTimestamp = (val?: string | null): number => {
   if (!val || typeof val !== 'string') return 0;
   const trimmed = val.trim();
   if (!trimmed) return 0;
@@ -423,7 +423,7 @@ export const isYojanaPost = (v?: ExpirablePostLike | null): boolean => {
 /**
  * Resolves the effective publish/update timestamp (UTC epoch ms) for a post.
  */
-export const getPostPublishedTimestamp = (v?: ExpirablePostLike | null): number => {
+const getPostPublishedTimestamp = (v?: ExpirablePostLike | null): number => {
   if (!v) return 0;
   if (typeof v.addedAtMs === 'number' && Number.isFinite(v.addedAtMs) && v.addedAtMs > 0) {
     return v.addedAtMs;

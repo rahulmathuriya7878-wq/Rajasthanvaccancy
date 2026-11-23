@@ -10,7 +10,7 @@ import {
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import type { CategoryType, VacancyItem } from '../types';
 
-export const VACANCY_OVERRIDES_COLLECTION = 'vacancy_overrides';
+const VACANCY_OVERRIDES_COLLECTION = 'vacancy_overrides';
 
 const VALID_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
 const VALID_CATEGORIES: ReadonlySet<string> = new Set([

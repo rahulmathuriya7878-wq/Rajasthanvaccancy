@@ -185,6 +185,47 @@
         "email",
         "createdAt"
       ]
+    },
+    "UserAlertPreferences": {
+      "title": "UserAlertPreferences",
+      "description": "Per-user customizable job alert saved searches, notification delivery preferences, and read notification IDs owned strictly by userId.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "savedAlerts": {
+          "type": "array",
+          "description": "Up to 25 saved search alert rule objects (keywords, categories, organizations, qualifications, location, minPosts, enabled)."
+        },
+        "preferences": {
+          "type": "object",
+          "description": "Notification delivery preference settings (inAppEnabled, inAppBannerPopup, browserPushEnabled, digestFrequency, notifyOnStatusChange, quietMode)."
+        },
+        "readNotificationIds": {
+          "type": "array",
+          "description": "Up to 200 read notification IDs for cross-device unread sync."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "savedAlerts",
+        "preferences",
+        "readNotificationIds",
+        "createdAt",
+        "updatedAt"
+      ]
     }
   },
   "firestore": {
@@ -211,6 +252,12 @@
         "$ref": "#/entities/AdminRecord"
       },
       "description": "Trusted admin UID registry manageable only by bootstrapped or existing verified admins."
+    },
+    "/user_alert_preferences/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserAlertPreferences"
+      },
+      "description": "Owner-scoped saved job search criteria and in-app/browser notification preferences."
     }
   }
 }

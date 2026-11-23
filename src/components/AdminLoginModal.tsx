@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   ShieldCheck,
   X,
@@ -12,6 +13,7 @@ import {
   LogOut,
   CheckCircle2,
   Loader2,
+  LayoutDashboard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LanguageMode } from '../types';
@@ -34,10 +36,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onOpenUrlIndexation,
 }) => {
   const isHi = lang === 'hi';
-  const { user, isAdmin, isCloudAdmin, signInWithGoogle, loginWithPassword, logout } = useAuth();
+  const { user, isAdmin, isCloudAdmin, signInWithGoogle, loginWithPasscode, logout } = useAuth();
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [passcodeLoading, setPasscodeLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -59,17 +62,25 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginWithPassword(passwordInput)) {
-      setPasswordInput('');
-      setErrorMsg('');
-      if (onSuccess) onSuccess();
-      if (!onOpenAddVacancy) {
-        onClose();
+    setErrorMsg('');
+    setPasscodeLoading(true);
+    try {
+      const res = await loginWithPasscode(passwordInput);
+      if (res.ok) {
+        setPasswordInput('');
+        if (onSuccess) onSuccess();
+        if (!onOpenAddVacancy) {
+          onClose();
+        }
+      } else {
+        setErrorMsg(
+          res.error || (isHi ? 'कृपया सही पासकोड दर्ज करें' : 'Please enter a valid admin passcode')
+        );
       }
-    } else {
-      setErrorMsg(isHi ? 'कृपया सही पासवर्ड दर्ज करें' : 'Please enter a valid password');
+    } finally {
+      setPasscodeLoading(false);
     }
   };
 
@@ -173,14 +184,23 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
               {/* Direct Quick Actions */}
               <div className="space-y-2.5 pt-1">
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className="no-link-color w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 !text-white font-extrabold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm no-underline"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+                  <span>{isHi ? 'प्रो एडमिन डैशबोर्ड खोलें (/admin)' : 'Open Full Admin Dashboard (/admin)'}</span>
+                </Link>
+
                 {onOpenAddVacancy && (
                   <button
                     type="button"
                     onClick={onOpenAddVacancy}
-                    className="w-full py-3 px-4 rounded-xl bg-[#15803d] hover:bg-[#166534] text-white font-extrabold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#15803d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <PlusCircle className="w-4 h-4" />
-                    <span>{isHi ? 'नई भर्ती / पोस्ट जोड़ें (Add New Post)' : 'Add New Vacancy / Post'}</span>
+                    <span>{isHi ? 'क्विक नई भर्ती फॉर्म (Modal)' : 'Quick Add Vacancy Modal'}</span>
                   </button>
                 )}
 
@@ -278,9 +298,19 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
+                  disabled={passcodeLoading}
+                  className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 disabled:opacity-60 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <span>{isHi ? 'पासवर्ड से एडमिन मोड खोलें (केवल लोकल)' : 'Unlock Local Admin Mode'}</span>
+                  {passcodeLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>
+                    {passcodeLoading
+                      ? isHi
+                        ? 'सत्यापित हो रहा है...'
+                        : 'Verifying...'
+                      : isHi
+                        ? 'पासकोड से एडमिन मोड खोलें'
+                        : 'Unlock Admin Mode'}
+                  </span>
                 </button>
               </form>
             </>

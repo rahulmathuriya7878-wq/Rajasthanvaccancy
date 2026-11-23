@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from '@/lib/adminAuth';
 import { INITIAL_VACANCIES } from '@/data/mockVacancies';
 import { filterActivePostsWithinDays } from '@/utils/dateUtils';
 import { DEFAULT_PRODUCTION_ORIGIN as CANONICAL_ORIGIN, normalizeBreadcrumbCategoryKey } from '@/utils/seoCanonical';
@@ -54,12 +55,42 @@ const NOISE_QUERY_PARAMS = new Set([
   '_ga',
 ]);
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
   const rawHost = (request.headers.get('host') || '').toLowerCase();
   const hostname = rawHost.split(':')[0];
   const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
   const rawPath = nextUrl.pathname || '/';
+
+  // Enforce middleware session / bearer auth check on protected /api/admin/* routes
+  if (rawPath.startsWith('/api/admin/') && rawPath !== '/api/admin/session') {
+    const authHeader = request.headers.get('authorization') || '';
+    const hasBearer = authHeader.toLowerCase().startsWith('bearer ') && authHeader.length > 25;
+    if (!hasBearer) {
+      const sessionCookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+      const validSession = await verifyAdminSessionToken(sessionCookie);
+      if (!validSession) {
+        return NextResponse.json(
+          { ok: false, error: 'Unauthorized: Admin sign-in required.' },
+          { status: 401, headers: { 'X-Robots-Tag': 'noindex, nofollow' } }
+        );
+      }
+    }
+    const res = NextResponse.next();
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    res.headers.set('X-Content-Type-Options', 'nosniff');
+    return res;
+  }
+
+  // Dedicated /admin panel routes: skip public slug redirects and always prevent search indexing
+  if (rawPath === '/admin' || rawPath.startsWith('/admin/')) {
+    const res = NextResponse.next();
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    res.headers.set('X-Content-Type-Options', 'nosniff');
+    res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    return res;
+  }
 
   // Skip API routes, Next.js internals, and static files with extensions (except /index.html)
   if (

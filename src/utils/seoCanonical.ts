@@ -144,7 +144,7 @@ export function normalizeBreadcrumbCategoryKey(categoryKey?: string | null): str
  * - Job Post: [Home, Category, Job]
  * - Policy Page: [Home, Policy]
  */
-export function buildBreadcrumbSchema(input: BreadcrumbTrailInput = {}) {
+function buildBreadcrumbSchema(input: BreadcrumbTrailInput = {}) {
   const origin = (input.origin || getCanonicalOrigin()).replace(/\/+$/, '');
   const lang = input.lang || 'hi';
   const homeName = lang === 'hi' ? 'मुख्य पृष्ठ (Home)' : 'Home';

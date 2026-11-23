@@ -6,11 +6,12 @@ import {
   ChevronRight, 
   Search, 
   ExternalLink,
-  Tag,
   Trash2,
-  ShieldCheck
+  ShieldCheck,
+  BellRing
 } from 'lucide-react';
-import { VacancyItem, LanguageMode } from '../types';
+import { VacancyItem, LanguageMode, CategoryType } from '../types';
+import { useOptionalNotifications } from '../context/NotificationContext';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
 
@@ -46,6 +47,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   onDeleteVacancy,
 }) => {
   const isHi = lang === 'hi';
+  const notif = useOptionalNotifications();
 
   // 10 recent posts for the authentic GeneratePress sidebar
   const recentPosts = [...allVacancies]
@@ -110,13 +112,34 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onClearCategory}
-          className="self-start md:self-center px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>{isHi ? 'सभी अपडेट्स देखें' : 'View All Updates'}</span>
-        </button>
+        <div className="flex items-center gap-2 self-start md:self-center flex-wrap shrink-0">
+          {notif && (
+            <button
+              type="button"
+              onClick={() =>
+                notif.openSaveSearchBuilder({
+                  name: searchQuery.trim()
+                    ? `${searchQuery.trim()} · ${isHi ? categoryTitleHi : categoryTitle}`
+                    : `${isHi ? categoryTitleHi : categoryTitle} Alert`,
+                  categories: [categoryKey as CategoryType],
+                  keywords: searchQuery.trim() ? [searchQuery.trim()] : [],
+                })
+              }
+              className="px-3.5 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <BellRing className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{isHi ? 'इस श्रेणी का अलर्ट सेट करें' : 'Create Alert for Category'}</span>
+            </button>
+          )}
+
+          <button
+            onClick={onClearCategory}
+            className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>{isHi ? 'सभी अपडेट्स देखें' : 'View All Updates'}</span>
+          </button>
+        </div>
       </div>
 
       {/* 2-Column Desktop Grid Layout (70% Main Archive List, 30% Right Sidebar) */}
@@ -128,15 +151,13 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
               {vacancies.map((item) => {
                 const title = isHi ? (item.titleHi || item.title) : item.title;
                 const date = formatDisplayDate(item.updatedAt || item.importantDates?.notificationDate || item.createdAt);
-                const excerpt = isHi ? (item.briefSummaryHi || item.briefSummary) : item.briefSummary;
-                const categoryLabel = isHi ? categoryTitleHi : categoryTitle;
 
                 return (
                   <article 
                     key={item.id}
                     className="inside-article job-archive-card bg-white p-3.5 sm:p-5 border border-slate-200 shadow-xs rounded-md hover:border-slate-300 transition-all min-w-0 max-w-full overflow-hidden"
                   >
-                    <header className="entry-header mb-3">
+                    <header className="entry-header">
                       {isAdmin && (
                         <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded flex items-center justify-between text-xs">
                           <span className="font-bold text-amber-900 flex items-center gap-1">
@@ -201,60 +222,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                         )}
                       </div>
                     </header>
-
-                    {excerpt && (
-                      <div className="entry-summary text-slate-800 text-[15px] leading-relaxed mb-4 post-item">
-                        <p className="line-clamp-3">
-                          {excerpt} …{' '}
-                          <a
-                            href={`/?vacancy=${encodeURIComponent(item.id)}`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              onSelectVacancy(item);
-                            }}
-                            className="text-blue-600 hover:text-blue-800 hover:underline font-bold cursor-pointer inline-flex items-center"
-                          >
-                            {categoryKey === 'scheme' ? (isHi ? 'योजना विवरण पढ़ें »' : 'View Scheme »') : 'Read more »'}
-                          </a>
-                        </p>
-                        {categoryKey === 'scheme' && (
-                          <div className="mt-2.5 pt-2.5 border-t border-slate-100 text-xs text-slate-600 flex items-center gap-2 flex-wrap">
-                            {(item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary) && (
-                              <span>
-                                <strong className="text-emerald-800">{isHi ? 'मुख्य लाभ:' : 'Benefit:'}</strong>{' '}
-                                {item.yojanaOverview?.maxAnnualAssistance || item.salaryHi || item.salary}
-                              </span>
-                            )}
-                            {(item.departmentHi || item.department) && (
-                              <>
-                                <span aria-hidden="true" className="text-slate-300">·</span>
-                                <span>
-                                  <strong className="text-slate-800">{isHi ? 'विभाग:' : 'Dept:'}</strong>{' '}
-                                  {isHi ? (item.departmentHi || item.department) : item.department}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    <footer className="entry-meta border-t border-slate-100 pt-3 flex items-center justify-between text-xs text-[#575760] flex-wrap gap-2">
-                      <div className="cat-links flex items-center gap-1.5">
-                        <Tag className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="text-slate-500 font-medium">{categoryLabel}</span>
-                        {item.organization && (
-                          <span className="text-slate-400">, {item.organization}</span>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() => onSelectVacancy(item)}
-                        className="comments-link text-slate-600 hover:text-blue-600 flex items-center gap-1 cursor-pointer font-medium hover:underline"
-                      >
-                        <span>{categoryKey === 'scheme' ? (isHi ? 'पात्रता व आवेदन देखें' : 'Eligibility & Apply') : 'Leave a comment'}</span>
-                      </button>
-                    </footer>
                   </article>
                 );
               })}

@@ -13,10 +13,13 @@ import {
   Landmark,
   MessageCircle,
   Globe,
-  PlusCircle
+  PlusCircle,
+  Bell,
+  BellRing
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOptionalPortal } from '../context/PortalContext';
+import { useOptionalNotifications } from '../context/NotificationContext';
 import { LanguageMode, VacancyItem } from '../types';
 import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
@@ -43,6 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { isAdmin, toggleAdminMode } = useAuth();
   const portal = useOptionalPortal();
+  const notif = useOptionalNotifications();
   const lang = langProp ?? portal?.lang ?? 'hi';
   const onGoHome = onGoHomeProp ?? portal?.handleGoHome;
   const latestVacancies = latestVacanciesProp ?? portal?.vacancies ?? [];
@@ -232,6 +236,33 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Header Navigation Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Regular User Job Alerts & Notification Center Button */}
+              {notif && (
+                <button
+                  type="button"
+                  onClick={() => notif.openNotificationDrawer('inbox')}
+                  className="relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-[#15803d] hover:text-[#15803d] text-slate-800 font-semibold text-xs transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                  aria-label={
+                    isHi
+                      ? `जॉब अलर्ट नोटिफिकेशन${notif.unreadCount > 0 ? ` (${notif.unreadCount} अपठित)` : ''}`
+                      : `Job Alert Notifications${notif.unreadCount > 0 ? ` (${notif.unreadCount} unread)` : ''}`
+                  }
+                  title={isHi ? 'जॉब अलर्ट और सेव्ड सर्च नोटिफिकेशन' : 'Job Alerts & Saved Search Notifications'}
+                >
+                  {notif.unreadCount > 0 ? (
+                    <BellRing className="w-4 h-4 text-[#15803d] shrink-0" aria-hidden="true" />
+                  ) : (
+                    <Bell className="w-4 h-4 text-slate-700 shrink-0" aria-hidden="true" />
+                  )}
+                  <span className="hidden sm:inline">{isHi ? 'जॉब अलर्ट' : 'Job Alerts'}</span>
+                  {notif.unreadCount > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-md bg-[#15803d] text-white text-[10px] font-bold tabular-nums leading-none">
+                      {notif.unreadCount > 99 ? '99+' : notif.unreadCount}
+                    </span>
+                  )}
+                </button>
+              )}
+
               {/* Mobile Menu Toggle Button matching '≡ Menu' from screenshot */}
               <button
                 type="button"
@@ -369,6 +400,26 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                   <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-bold">
                     GSC
+                  </span>
+                </button>
+              )}
+
+              {/* Regular User Custom Job Alerts trigger in Mobile Menu */}
+              {notif && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    notif.openNotificationDrawer('alerts');
+                  }}
+                  className="mt-1 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-between transition cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <BellRing className="w-4 h-4 text-[#15803d]" />
+                    <span>{isHi ? 'कस्टम जॉब अलर्ट सेट करें' : 'Custom Job Alerts'}</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-[#15803d] tabular-nums">
+                    {notif.savedAlerts.filter((a) => a.enabled).length} {isHi ? 'सक्रिय' : 'Active'}
                   </span>
                 </button>
               )}

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { lazy, Suspense, useEffect, useMemo, useRef } from 'react';
+import { BellRing } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getPortalSectionTitle, usePortal, type PolicyViewType } from '../context/PortalContext';
+import { useOptionalNotifications } from '../context/NotificationContext';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import { FastUpdatesGrid } from './FastUpdatesGrid';
 
@@ -56,6 +58,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
   initialOpenIndexation = false,
 }) => {
   const { isAdmin } = useAuth();
+  const notif = useOptionalNotifications();
   const {
     lang,
     vacancies,
@@ -211,10 +214,39 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
         </Suspense>
       ) : (
         <div className="space-y-4">
-          <div className="pt-1 pb-1">
+          <div className="pt-1 pb-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Rajasthan Vacancy 2026
             </h1>
+            {notif && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() =>
+                    notif.openSaveSearchBuilder({
+                      keywords: searchQuery.trim() ? [searchQuery.trim()] : [],
+                      categories: ['latest_job'],
+                    })
+                  }
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:border-[#15803d] hover:text-[#15803d] text-slate-800 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <BellRing className="w-3.5 h-3.5 text-[#15803d] shrink-0" aria-hidden="true" />
+                  <span>
+                    {searchQuery.trim()
+                      ? lang === 'hi'
+                        ? `"${searchQuery.trim()}" के लिए अलर्ट सेव करें`
+                        : `Save Alert for "${searchQuery.trim()}"`
+                      : notif.savedAlerts.filter((a) => a.enabled).length > 0
+                        ? lang === 'hi'
+                          ? `मेरे जॉब अलर्ट (${notif.savedAlerts.filter((a) => a.enabled).length} सक्रिय)`
+                          : `My Job Alerts (${notif.savedAlerts.filter((a) => a.enabled).length} active)`
+                        : lang === 'hi'
+                          ? 'कस्टम जॉब अलर्ट बनाएं'
+                          : 'Create Custom Job Alert'}
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
           <FastUpdatesGrid
             vacancies={filteredVacancies}

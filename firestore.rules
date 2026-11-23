@@ -133,6 +133,48 @@ service cloud.firestore {
         data.createdAt is timestamp;
     }
 
+    function isValidUserAlertPreferences(data, userId) {
+      return data.keys().hasAll([
+          'userId',
+          'savedAlerts',
+          'preferences',
+          'readNotificationIds',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'userId',
+          'savedAlerts',
+          'preferences',
+          'readNotificationIds',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        isValidId(data.userId) &&
+        data.userId == userId &&
+        data.userId == request.auth.uid &&
+        data.savedAlerts is list &&
+        data.savedAlerts.size() <= 25 &&
+        (data.savedAlerts.size() == 0 || data.savedAlerts[0] is map) &&
+        data.preferences is map &&
+        data.preferences.keys().hasOnly([
+          'inAppEnabled',
+          'inAppBannerPopup',
+          'browserPushEnabled',
+          'digestFrequency',
+          'notifyOnStatusChange',
+          'quietMode'
+        ]) &&
+        data.readNotificationIds is list &&
+        data.readNotificationIds.size() <= 200 &&
+        (
+          data.readNotificationIds.size() == 0 ||
+          (data.readNotificationIds[0] is string && data.readNotificationIds[0].size() <= 160)
+        ) &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
     // 1. Publicly readable Vacancy Overrides (Word In-Place Edit Mode & Admin Deletions)
     // Contains only public job posting content (zero PII). Writes restricted strictly to verified admins.
     match /vacancy_overrides/{vacancyId} {
@@ -231,7 +273,38 @@ service cloud.firestore {
       allow delete: if isVerifiedUser() && isValidId(userId) && isAdmin();
     }
 
-    // 5. Startup Connection Health Check (read-only single doc)
+    // 5. Per-User Saved Search Job Alerts & Notification Preferences (strictly owner-scoped)
+    match /user_alert_preferences/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if false;
+      allow create: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isOwner(userId) &&
+        isValidUserAlertPreferences(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isValidUserAlertPreferences(incoming(), userId) &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          isAdmin() ||
+          (
+            isOwner(userId) &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'savedAlerts',
+              'preferences',
+              'readNotificationIds',
+              'updatedAt'
+            ])
+          )
+        );
+      allow delete: if isVerifiedUser() && isValidId(userId) && (isOwner(userId) || isAdmin());
+    }
+
+    // 6. Startup Connection Health Check (read-only single doc)
     match /test/{docId} {
       allow get: if docId == 'connection';
       allow list, write: if false;

@@ -203,7 +203,7 @@ function generateSvgFallback(options: ThumbnailOptions): string {
  * Uses high-contrast typography, official gradient styles, category banners,
  * and key metrics overlay (Total Posts & Organization) to maximize click-through rate.
  */
-export function generateJobThumbnail(options: ThumbnailOptions): string {
+function generateJobThumbnail(options: ThumbnailOptions): string {
   const width = options.width || 800;
   const height = options.height || 600;
   const cacheKey = `${options.title}_${options.category}_${options.totalPosts}_${width}x${height}`;
@@ -424,8 +424,8 @@ export function getJobFeaturedImage(
   customOptions?: Partial<ThumbnailOptions>
 ): string {
   // If post already has a custom featured image specified, use it
-  if ((vacancy as any).featuredImage) return (vacancy as any).featuredImage;
-  if ((vacancy as any).imageUrl) return (vacancy as any).imageUrl;
+  if (vacancy.featuredImage) return vacancy.featuredImage;
+  if (vacancy.imageUrl) return vacancy.imageUrl;
   if (vacancy.seoSettings?.ogImageUrl) return vacancy.seoSettings.ogImageUrl;
 
   const title = vacancy.titleHi || vacancy.title;

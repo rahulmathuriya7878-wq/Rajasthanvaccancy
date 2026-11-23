@@ -3,10 +3,8 @@ import Script from 'next/script';
 import '@/index.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { PortalProvider } from '@/context/PortalContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import FloatingSocialButtons from '@/components/FloatingSocialButtons';
-import { PortalShellExtras } from '@/components/PortalShellExtras';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { PortalLayoutChrome } from '@/components/PortalLayoutChrome';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DEFAULT_PRODUCTION_ORIGIN as SITE_URL } from '@/utils/seoCanonical';
 
@@ -126,7 +124,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
         />
         <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
         <script
@@ -144,15 +142,9 @@ export default function RootLayout({
         <ErrorBoundary>
           <AuthProvider>
             <PortalProvider>
-              <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-white">
-                <Header />
-                <main className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 pt-3 pb-8 flex-1 bg-white">
-                  {children}
-                </main>
-                <Footer />
-                <FloatingSocialButtons />
-                <PortalShellExtras />
-              </div>
+              <NotificationProvider>
+                <PortalLayoutChrome>{children}</PortalLayoutChrome>
+              </NotificationProvider>
             </PortalProvider>
           </AuthProvider>
         </ErrorBoundary>

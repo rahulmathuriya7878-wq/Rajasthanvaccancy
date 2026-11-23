@@ -3,7 +3,7 @@ import { resolveJobDates, formatDateDDMMYYYY } from './dateUtils';
 import { DEFAULT_PRODUCTION_ORIGIN } from './seoCanonical';
 
 export const SHARE_BASE_URL = DEFAULT_PRODUCTION_ORIGIN;
-export const DEFAULT_OG_IMAGE_URL = `${SHARE_BASE_URL}/og-preview.png`;
+const DEFAULT_OG_IMAGE_URL = `${SHARE_BASE_URL}/og-preview.png`;
 
 export function getVacancyShareUrl(vacancyId?: string): string {
   if (!vacancyId) return `${SHARE_BASE_URL}/`;
@@ -18,8 +18,8 @@ export function getVacancyShareUrl(vacancyId?: string): string {
 export function getSocialOgImageUrl(vacancy?: VacancyItem | null): string {
   const candidates = [
     vacancy?.seoSettings?.ogImageUrl,
-    (vacancy as { featuredImage?: string } | null | undefined)?.featuredImage,
-    (vacancy as { imageUrl?: string } | null | undefined)?.imageUrl,
+    vacancy?.featuredImage,
+    vacancy?.imageUrl,
   ];
 
   for (const raw of candidates) {
@@ -44,7 +44,7 @@ export function getSocialOgImageUrl(vacancy?: VacancyItem | null): string {
  * Standard Format across all posts:
  * https://www.rajasthanvacancy.online/?vacancy=[post-slug]
  */
-export function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
+function generateHindiShareText(item: VacancyItem, customUrl?: string): string {
   const cleanId = (item.id || '').replace(/^\/+|\/+$/g, '').trim();
   const isPreviewHost = Boolean(
     customUrl &&
@@ -67,12 +67,12 @@ export function generateHindiShareText(item: VacancyItem, customUrl?: string): s
   const resolved = resolveJobDates(item);
   const rawStartDate =
     resolved.applyStartDate ||
-    (item.importantDates as any)?.applyStartDate ||
+    item.importantDates?.applyStartDate ||
     item.createdAt ||
     '2026-10-25';
   const rawLastDate =
     resolved.applyLastDate ||
-    (item.importantDates as any)?.applyLastDate ||
+    item.importantDates?.applyLastDate ||
     '2026-11-09';
 
   const startDateText = formatDateDDMMYYYY(rawStartDate, 'शीघ्र');
