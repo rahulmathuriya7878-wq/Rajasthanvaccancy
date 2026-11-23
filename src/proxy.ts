@@ -145,7 +145,7 @@ export function proxy(request: NextRequest) {
   const isPreviewMirrorHost =
     hostname.endsWith('.run.app') ||
     hostname.endsWith('.pages.dev') ||
-    hostname.endsWith('.vercel.app');
+    hostname.endsWith('.workers.dev');
   if (isPreviewMirrorHost) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }

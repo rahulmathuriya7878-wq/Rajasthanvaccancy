@@ -3528,10 +3528,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                                 {(Array.isArray(editablePost?.directLinks) ? editablePost.directLinks : []).map((link: any, idx: number) => {
                                   const rawUrl = typeof link.url === 'string' ? link.url.trim() : '';
-                                  const isDeadUrl =
-                                    !rawUrl ||
-                                    rawUrl === '#' ||
-                                    rawUrl.includes('sarkariresult12.vercel.app/#');
+                                  const isDeadUrl = !rawUrl || rawUrl === '#';
                                   const resolvedUrl = isDeadUrl
                                     ? (editablePost.officialLinks?.officialWebsiteUrl?.trim() || 'https://rajasthan.gov.in')
                                     : rawUrl;

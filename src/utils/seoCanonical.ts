@@ -7,7 +7,7 @@
  * 2. Unifies URL formats: canonicalizes ?vacancy=id across sitemaps, RSS, pushState, and social shares.
  * 3. Sanitizes tracking parameters (utm_*, fbclid, gclid, etc.) from canonical links.
  * 4. Ensures exactly one <link rel="canonical"> tag in <head>.
- * 5. Dynamically adapts to production domain (rajasthanvacancy.com or vercel.app).
+ * 5. Enforces the single authoritative production domain (www.rajasthanvacancy.online).
  */
 
 export const DEFAULT_PRODUCTION_ORIGIN = 'https://www.rajasthanvacancy.online';

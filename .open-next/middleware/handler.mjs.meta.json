@@ -1,0 +1,4988 @@
+{
+  "inputs": {
+    "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js": {
+      "bytes": 2404,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/error.js": {
+      "bytes": 1037,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/adapters/logger.js": {
+      "bytes": 2449,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/error.js",
+          "kind": "import-statement",
+          "original": "../utils/error.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/requestCache.js": {
+      "bytes": 869,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/promise.js": {
+      "bytes": 4944,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/requestCache.js",
+          "kind": "import-statement",
+          "original": "./requestCache"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/cookie/dist/index.js": {
+      "bytes": 12004,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/http/util.js": {
+      "bytes": 3743,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/converters/utils.js": {
+      "bytes": 730,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/util.js",
+          "kind": "import-statement",
+          "original": "../../http/util.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/converters/edge.js": {
+      "bytes": 3690,
+      "imports": [
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/cookie/dist/index.js",
+          "kind": "import-statement",
+          "original": "cookie"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/util.js",
+          "kind": "import-statement",
+          "original": "../../http/util.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/converters/utils.js",
+          "kind": "import-statement",
+          "original": "./utils.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/wrappers/cloudflare-edge.js": {
+      "bytes": 1833,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@smithy/types/dist-cjs/index.js": {
+      "bytes": 3349,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js": {
+      "bytes": 5412,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js": {
+      "bytes": 21665,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/client/index.js": {
+      "bytes": 45590,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/submodules/account-id-endpoint/index.js": {
+      "bytes": 2312,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:crypto": {
+      "bytes": 88,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:fs": {
+      "bytes": 84,
+      "imports": [
+        {
+          "path": "node:fs",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:os": {
+      "bytes": 84,
+      "imports": [
+        {
+          "path": "node:os",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:path": {
+      "bytes": 86,
+      "imports": [
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:fs/promises": {
+      "bytes": 93,
+      "imports": [
+        {
+          "path": "node:fs/promises",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:http": {
+      "bytes": 86,
+      "imports": [
+        {
+          "path": "node:http",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/config/index.js": {
+      "bytes": 29410,
+      "imports": [
+        {
+          "path": "node-builtins:node:os",
+          "kind": "require-call",
+          "original": "node:os"
+        },
+        {
+          "path": "node-builtins:node:path",
+          "kind": "require-call",
+          "original": "node:path"
+        },
+        {
+          "path": "node-builtins:node:crypto",
+          "kind": "require-call",
+          "original": "node:crypto"
+        },
+        {
+          "path": "node-builtins:node:fs/promises",
+          "kind": "require-call",
+          "original": "node:fs/promises"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node-builtins:node:http",
+          "kind": "require-call",
+          "original": "node:http"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js": {
+      "bytes": 33630,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:stream": {
+      "bytes": 88,
+      "imports": [
+        {
+          "path": "node:stream",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js": {
+      "bytes": 62572,
+      "imports": [
+        {
+          "path": "node-builtins:node:crypto",
+          "kind": "require-call",
+          "original": "node:crypto"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node-builtins:node:fs",
+          "kind": "require-call",
+          "original": "node:fs"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:zlib": {
+      "bytes": 86,
+      "imports": [
+        {
+          "path": "node:zlib",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js": {
+      "bytes": 18654,
+      "imports": [
+        {
+          "path": "node-builtins:node:fs",
+          "kind": "require-call",
+          "original": "node:fs"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node-builtins:node:crypto",
+          "kind": "require-call",
+          "original": "node:crypto"
+        },
+        {
+          "path": "node-builtins:node:zlib",
+          "kind": "require-call",
+          "original": "node:zlib"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/event-streams/index.js": {
+      "bytes": 37833,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js": {
+      "bytes": 113707,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/event-streams/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/event-streams"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/obliterator/iterator.js": {
+      "bytes": 1769,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/obliterator/foreach.js": {
+      "bytes": 3536,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/mnemonist/utils/typed-arrays.js": {
+      "bytes": 3971,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/mnemonist/utils/iterables.js": {
+      "bytes": 2019,
+      "imports": [
+        {
+          "path": "node_modules/obliterator/foreach.js",
+          "kind": "require-call",
+          "original": "obliterator/foreach"
+        },
+        {
+          "path": "node_modules/mnemonist/utils/typed-arrays.js",
+          "kind": "require-call",
+          "original": "./typed-arrays.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/mnemonist/lru-cache.js": {
+      "bytes": 10165,
+      "imports": [
+        {
+          "path": "node_modules/obliterator/iterator.js",
+          "kind": "require-call",
+          "original": "obliterator/iterator"
+        },
+        {
+          "path": "node_modules/obliterator/foreach.js",
+          "kind": "require-call",
+          "original": "obliterator/foreach"
+        },
+        {
+          "path": "node_modules/mnemonist/utils/typed-arrays.js",
+          "kind": "require-call",
+          "original": "./utils/typed-arrays.js"
+        },
+        {
+          "path": "node_modules/mnemonist/utils/iterables.js",
+          "kind": "require-call",
+          "original": "./utils/iterables.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/endpoint-cache/dist-cjs/index.js": {
+      "bytes": 1590,
+      "imports": [
+        {
+          "path": "node_modules/mnemonist/lru-cache.js",
+          "kind": "require-call",
+          "original": "mnemonist/lru-cache"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-endpoint-discovery/dist-cjs/index.js": {
+      "bytes": 7789,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@aws-sdk/endpoint-cache/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/endpoint-cache"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws/lambda-invoke-store/dist-cjs/invoke-store.js": {
+      "bytes": 4237,
+      "imports": [
+        {
+          "path": "node:async_hooks",
+          "kind": "dynamic-import",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/index.js": {
+      "bytes": 13540,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js": {
+      "bytes": 34655,
+      "imports": [
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:process": {
+      "bytes": 89,
+      "imports": [
+        {
+          "path": "node:process",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/bowser/es5.js": {
+      "bytes": 35142,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js": {
+      "bytes": 36467,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@aws/lambda-invoke-store/dist-cjs/invoke-store.js",
+          "kind": "require-call",
+          "original": "@aws/lambda-invoke-store"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        },
+        {
+          "path": "node-builtins:node:os",
+          "kind": "require-call",
+          "original": "node:os"
+        },
+        {
+          "path": "node-builtins:node:process",
+          "kind": "require-call",
+          "original": "node:process"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/bowser/es5.js",
+          "kind": "require-call",
+          "original": "bowser"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-host-header/dist-cjs/index.js": {
+      "bytes": 371,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js": {
+      "bytes": 251,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-recursion-detection/dist-cjs/index.js": {
+      "bytes": 359,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-user-agent/dist-cjs/index.js": {
+      "bytes": 434,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/config-resolver/dist-cjs/index.js": {
+      "bytes": 3456,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/middleware-content-length/dist-cjs/index.js": {
+      "bytes": 699,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js": {
+      "bytes": 1520,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/middleware-retry/dist-cjs/index.js": {
+      "bytes": 3225,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/smithy-client/dist-cjs/index.js": {
+      "bytes": 10851,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/signature-v4/dist-cjs/index.js": {
+      "bytes": 24122,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js": {
+      "bytes": 16945,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/signature-v4/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/signature-v4"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/types/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/types"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/core/dist-cjs/submodules/cbor/index.js": {
+      "bytes": 82887,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/transport/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/transport"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/xml-builder/dist-cjs/index.js": {
+      "bytes": 10663,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js": {
+      "bytes": 61374,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/cbor/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/cbor"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@aws-sdk/xml-builder/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/xml-builder"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/index.js": {
+      "bytes": 3069,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-middleware/dist-cjs/index.js": {
+      "bytes": 449,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/auth/httpAuthSchemeProvider.js": {
+      "bytes": 1912,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@smithy/util-middleware/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-middleware"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/tslib/tslib.js": {
+      "bytes": 23913,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/package.json": {
+      "bytes": 3962,
+      "imports": []
+    },
+    "node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js": {
+      "bytes": 1663,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js": {
+      "bytes": 15218,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node-builtins:node:http",
+          "kind": "require-call",
+          "original": "node:http"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:https": {
+      "bytes": 87,
+      "imports": [
+        {
+          "path": "node:https",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:http2": {
+      "bytes": 87,
+      "imports": [
+        {
+          "path": "node:http2",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/node-http-handler/dist-cjs/index.js": {
+      "bytes": 34828,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node-builtins:node:https",
+          "kind": "require-call",
+          "original": "node:https"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node-builtins:node:http2",
+          "kind": "require-call",
+          "original": "node:http2"
+        },
+        {
+          "path": "node-builtins:node:http",
+          "kind": "require-call",
+          "original": "node:http"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js": {
+      "bytes": 7337,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node-builtins:node:fs/promises",
+          "kind": "require-call",
+          "original": "node:fs/promises"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sso-oidc/index.js": {
+      "bytes": 27285,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/token-providers/dist-cjs/index.js": {
+      "bytes": 7716,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node-builtins:node:fs",
+          "kind": "require-call",
+          "original": "node:fs"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sso-oidc/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/sso-oidc"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sso-oidc/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/sso-oidc"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sso/index.js": {
+      "bytes": 20000,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/loadSso-BGYXHf8s.js": {
+      "bytes": 183,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sso/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/sso"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js": {
+      "bytes": 8232,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/token-providers/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/token-providers"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/loadSso-BGYXHf8s.js",
+          "kind": "require-call",
+          "original": "./loadSso-BGYXHf8s.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/nested-clients/node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js": {
+      "bytes": 8084,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/signature-v4/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/signature-v4"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sts/index.js": {
+      "bytes": 38664,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/signature-v4-multi-region"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/signin/index.js": {
+      "bytes": 24900,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/httpAuthSchemes"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-login/dist-cjs/index.js": {
+      "bytes": 13108,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node-builtins:node:crypto",
+          "kind": "require-call",
+          "original": "node:crypto"
+        },
+        {
+          "path": "node-builtins:node:fs",
+          "kind": "require-call",
+          "original": "node:fs"
+        },
+        {
+          "path": "node-builtins:node:os",
+          "kind": "require-call",
+          "original": "node:os"
+        },
+        {
+          "path": "node-builtins:node:path",
+          "kind": "require-call",
+          "original": "node:path"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/signin/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/signin"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:child_process": {
+      "bytes": 95,
+      "imports": [
+        {
+          "path": "node:child_process",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node-builtins:node:util": {
+      "bytes": 86,
+      "imports": [
+        {
+          "path": "node:util",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js": {
+      "bytes": 3257,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node-builtins:node:child_process",
+          "kind": "require-call",
+          "original": "node:child_process"
+        },
+        {
+          "path": "node-builtins:node:util",
+          "kind": "require-call",
+          "original": "node:util"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js": {
+      "bytes": 2636,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node-builtins:node:fs",
+          "kind": "require-call",
+          "original": "node:fs"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sts/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/sts"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js": {
+      "bytes": 11576,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-http"
+        },
+        {
+          "path": "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/credential-provider-imds"
+        },
+        {
+          "path": "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/credential-provider-imds"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-env"
+        },
+        {
+          "path": "node_modules/@aws-sdk/nested-clients/dist-cjs/submodules/sts/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/nested-clients/sts"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-login/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-login"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-process"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-sso"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-web-identity"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js": {
+      "bytes": 7182,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-env"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/credential-provider-imds"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-http"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-sso"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-ini"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-process"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-web-identity"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js": {
+      "bytes": 503,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/hash-node/dist-cjs/index.js": {
+      "bytes": 250,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/node-config-provider/dist-cjs/index.js": {
+      "bytes": 271,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-body-length-node/dist-cjs/index.js": {
+      "bytes": 295,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js": {
+      "bytes": 316,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-retry/dist-cjs/index.js": {
+      "bytes": 2887,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/retry/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/retry"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/dynamodb-codec/dist-cjs/index.js": {
+      "bytes": 10639,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/url-parser/dist-cjs/index.js": {
+      "bytes": 274,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-base64/dist-cjs/index.js": {
+      "bytes": 400,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-utf8/dist-cjs/index.js": {
+      "bytes": 532,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-endpoints/dist-cjs/index.js": {
+      "bytes": 1412,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/endpoints/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/endpoints"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/util-endpoints/dist-cjs/index.js": {
+      "bytes": 10649,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/url-parser/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/url-parser"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/endpoint/ruleset.js": {
+      "bytes": 7185,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/endpoint/endpointResolver.js": {
+      "bytes": 954,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-endpoints"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/endpoint/ruleset.js",
+          "kind": "require-call",
+          "original": "./ruleset"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/runtimeConfig.shared.js": {
+      "bytes": 2259,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@aws-sdk/dynamodb-codec/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/dynamodb-codec"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/url-parser/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/url-parser"
+        },
+        {
+          "path": "node_modules/@smithy/util-base64/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-base64"
+        },
+        {
+          "path": "node_modules/@smithy/util-utf8/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-utf8"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/endpoint/endpointResolver.js",
+          "kind": "require-call",
+          "original": "./endpoint/endpointResolver"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/runtimeConfig.js": {
+      "bytes": 4375,
+      "imports": [
+        {
+          "path": "node_modules/tslib/tslib.js",
+          "kind": "require-call",
+          "original": "tslib"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/package.json",
+          "kind": "require-call",
+          "original": "../package.json"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/account-id-endpoint/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/account-id-endpoint"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-node"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-endpoint-discovery/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-endpoint-discovery"
+        },
+        {
+          "path": "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-user-agent-node"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/hash-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/hash-node"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/node-config-provider/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-config-provider"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/util-body-length-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-body-length-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-defaults-mode-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-retry"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/runtimeConfig.shared.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig.shared"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js": {
+      "bytes": 824,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/protocol-http/dist-cjs/index.js": {
+      "bytes": 1270,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-waiter/dist-cjs/index.js": {
+      "bytes": 745,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js": {
+      "bytes": 167351,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/account-id-endpoint/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/account-id-endpoint"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-endpoint-discovery/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-endpoint-discovery"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-host-header/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-host-header"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-logger"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-recursion-detection/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-recursion-detection"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-user-agent/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-user-agent"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-content-length/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-content-length"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-endpoint"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/runtimeConfig.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig"
+        },
+        {
+          "path": "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/region-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/protocol-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/protocol-http"
+        },
+        {
+          "path": "node_modules/@smithy/util-waiter/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-waiter"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/adapters/util.js": {
+      "bytes": 1208,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/tagCache/constants.js": {
+      "bytes": 969,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/tagCache/dynamodb.js": {
+      "bytes": 9086,
+      "imports": [
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js",
+          "kind": "import-statement",
+          "original": "@aws-sdk/client-dynamodb"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/util.js",
+          "kind": "import-statement",
+          "original": "../../adapters/util"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/tagCache/constants.js",
+          "kind": "import-statement",
+          "original": "./constants"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@aws-sdk/middleware-sdk-sqs/dist-cjs/index.js": {
+      "bytes": 6026,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/auth/httpAuthSchemeProvider.js": {
+      "bytes": 1867,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@smithy/util-middleware/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-middleware"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/package.json": {
+      "bytes": 3873,
+      "imports": []
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/endpoint/ruleset.js": {
+      "bytes": 2579,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/endpoint/endpointResolver.js": {
+      "bytes": 811,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-endpoints"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/endpoint/ruleset.js",
+          "kind": "require-call",
+          "original": "./ruleset"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/runtimeConfig.shared.js": {
+      "bytes": 2073,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/url-parser/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/url-parser"
+        },
+        {
+          "path": "node_modules/@smithy/util-base64/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-base64"
+        },
+        {
+          "path": "node_modules/@smithy/util-utf8/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-utf8"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/endpoint/endpointResolver.js",
+          "kind": "require-call",
+          "original": "./endpoint/endpointResolver"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/runtimeConfig.js": {
+      "bytes": 3874,
+      "imports": [
+        {
+          "path": "node_modules/tslib/tslib.js",
+          "kind": "require-call",
+          "original": "tslib"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/package.json",
+          "kind": "require-call",
+          "original": "../package.json"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-node"
+        },
+        {
+          "path": "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-user-agent-node"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/hash-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/hash-node"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/node-config-provider/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-config-provider"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/util-body-length-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-body-length-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-defaults-mode-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-retry"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/runtimeConfig.shared.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig.shared"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-sqs/dist-cjs/index.js": {
+      "bytes": 59407,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-host-header/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-host-header"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-logger"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-recursion-detection/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-recursion-detection"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-sqs/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-sqs"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-user-agent/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-user-agent"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-content-length/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-content-length"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-endpoint"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/runtimeConfig.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig"
+        },
+        {
+          "path": "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/region-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/protocol-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/protocol-http"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/queue/sqs.js": {
+      "bytes": 1257,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/client-sqs/dist-cjs/index.js",
+          "kind": "import-statement",
+          "original": "@aws-sdk/client-sqs"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@aws-sdk/middleware-sdk-s3/node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js": {
+      "bytes": 8084,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/signature-v4/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/signature-v4"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/core/dist-cjs/submodules/util/index.js": {
+      "bytes": 2029,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js": {
+      "bytes": 45629,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/signature-v4-multi-region"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/config/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/config"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/util/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/util"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-expect-continue/dist-cjs/index.js": {
+      "bytes": 359,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3/s3"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/checksums/dist-cjs/submodules/crc/index.js": {
+      "bytes": 4572,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/checksums/dist-cjs/submodules/flexible-checksums/index.js": {
+      "bytes": 19620,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/client"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        },
+        {
+          "path": "node_modules/@aws-sdk/checksums/dist-cjs/submodules/crc/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/checksums/crc"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/client/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/client"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-flexible-checksums/dist-cjs/index.js": {
+      "bytes": 1906,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/checksums/dist-cjs/submodules/flexible-checksums/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/checksums/flexible-checksums"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/index.js": {
+      "bytes": 3032,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3/s3"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/eventstream-serde-config-resolver/dist-cjs/index.js": {
+      "bytes": 349,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/event-streams/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/event-streams"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js": {
+      "bytes": 6282,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3"
+        },
+        {
+          "path": "node_modules/@smithy/signature-v4/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/signature-v4"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/endpoint/ruleset.js": {
+      "bytes": 31697,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/endpoint/endpointResolver.js": {
+      "bytes": 1155,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-endpoints"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/endpoint/ruleset.js",
+          "kind": "require-call",
+          "original": "./ruleset"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/auth/httpAuthSchemeProvider.js": {
+      "bytes": 5895,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/signature-v4-multi-region"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-endpoint"
+        },
+        {
+          "path": "node_modules/@smithy/util-middleware/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-middleware"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/endpoint/endpointResolver.js",
+          "kind": "require-call",
+          "original": "../endpoint/endpointResolver"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/package.json": {
+      "bytes": 5062,
+      "imports": []
+    },
+    "node_modules/@aws-sdk/middleware-bucket-endpoint/dist-cjs/index.js": {
+      "bytes": 1895,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3/s3"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/eventstream-serde-node/dist-cjs/index.js": {
+      "bytes": 513,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/event-streams/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/event-streams"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/hash-stream-node/dist-cjs/index.js": {
+      "bytes": 466,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/checksum/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/checksum"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@smithy/util-stream/dist-cjs/index.js": {
+      "bytes": 1693,
+      "imports": [
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/serde/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/serde"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/runtimeConfig.shared.js": {
+      "bytes": 2882,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/signature-v4-multi-region"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/url-parser/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/url-parser"
+        },
+        {
+          "path": "node_modules/@smithy/util-base64/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-base64"
+        },
+        {
+          "path": "node_modules/@smithy/util-stream/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-stream"
+        },
+        {
+          "path": "node_modules/@smithy/util-utf8/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-utf8"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/endpoint/endpointResolver.js",
+          "kind": "require-call",
+          "original": "./endpoint/endpointResolver"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/runtimeConfig.js": {
+      "bytes": 5468,
+      "imports": [
+        {
+          "path": "node_modules/tslib/tslib.js",
+          "kind": "require-call",
+          "original": "tslib"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/package.json",
+          "kind": "require-call",
+          "original": "../package.json"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-node"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-bucket-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-bucket-endpoint"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-flexible-checksums/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-flexible-checksums"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3"
+        },
+        {
+          "path": "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-user-agent-node"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/eventstream-serde-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/eventstream-serde-node"
+        },
+        {
+          "path": "node_modules/@smithy/hash-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/hash-node"
+        },
+        {
+          "path": "node_modules/@smithy/hash-stream-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/hash-stream-node"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/node-config-provider/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-config-provider"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/util-body-length-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-body-length-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-defaults-mode-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-retry"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/runtimeConfig.shared.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig.shared"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-ssec/dist-cjs/index.js": {
+      "bytes": 359,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3/s3"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/middleware-location-constraint/dist-cjs/index.js": {
+      "bytes": 368,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3/s3"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-s3/dist-cjs/index.js": {
+      "bytes": 265040,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-expect-continue/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-expect-continue"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-flexible-checksums/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-flexible-checksums"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-host-header/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-host-header"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-logger"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-recursion-detection/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-recursion-detection"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-sdk-s3"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-user-agent/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-user-agent"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/eventstream-serde-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/eventstream-serde-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-content-length/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-content-length"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-endpoint"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/runtimeConfig.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig"
+        },
+        {
+          "path": "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/region-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/protocol-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/protocol-http"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-ssec/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-ssec"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-location-constraint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-location-constraint"
+        },
+        {
+          "path": "node_modules/@smithy/util-waiter/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-waiter"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/incrementalCache/s3.js": {
+      "bytes": 1759,
+      "imports": [
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/index.js",
+          "kind": "import-statement",
+          "original": "@aws-sdk/client-s3"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/util.js",
+          "kind": "import-statement",
+          "original": "../../adapters/util"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/imageLoader/s3.js": {
+      "bytes": 1120,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/client-s3/dist-cjs/index.js",
+          "kind": "import-statement",
+          "original": "@aws-sdk/client-s3"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/error.js",
+          "kind": "import-statement",
+          "original": "../../utils/error.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/originResolver/pattern-env.js": {
+      "bytes": 2315,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/assetResolver/dummy.js": {
+      "bytes": 152,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/auth/httpAuthSchemeProvider.js": {
+      "bytes": 1894,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@smithy/util-middleware/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-middleware"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-lambda/package.json": {
+      "bytes": 4064,
+      "imports": []
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/endpoint/ruleset.js": {
+      "bytes": 2398,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/endpoint/endpointResolver.js": {
+      "bytes": 811,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-endpoints"
+        },
+        {
+          "path": "node_modules/@smithy/util-endpoints/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-endpoints"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/endpoint/ruleset.js",
+          "kind": "require-call",
+          "original": "./ruleset"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/runtimeConfig.shared.js": {
+      "bytes": 2052,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/protocols/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core/protocols"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/url-parser/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/url-parser"
+        },
+        {
+          "path": "node_modules/@smithy/util-base64/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-base64"
+        },
+        {
+          "path": "node_modules/@smithy/util-utf8/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-utf8"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/endpoint/endpointResolver.js",
+          "kind": "require-call",
+          "original": "./endpoint/endpointResolver"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/runtimeConfig.js": {
+      "bytes": 4007,
+      "imports": [
+        {
+          "path": "node_modules/tslib/tslib.js",
+          "kind": "require-call",
+          "original": "tslib"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/package.json",
+          "kind": "require-call",
+          "original": "../package.json"
+        },
+        {
+          "path": "node_modules/@aws-sdk/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/core"
+        },
+        {
+          "path": "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/credential-provider-node"
+        },
+        {
+          "path": "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/util-user-agent-node"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/eventstream-serde-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/eventstream-serde-node"
+        },
+        {
+          "path": "node_modules/@smithy/hash-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/hash-node"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/node-config-provider/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-config-provider"
+        },
+        {
+          "path": "node_modules/@smithy/node-http-handler/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/node-http-handler"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@smithy/util-body-length-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-body-length-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-defaults-mode-node"
+        },
+        {
+          "path": "node_modules/@smithy/util-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-retry"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/runtimeConfig.shared.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig.shared"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@aws-sdk/client-lambda/dist-cjs/index.js": {
+      "bytes": 217671,
+      "imports": [
+        {
+          "path": "node_modules/@aws-sdk/middleware-host-header/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-host-header"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-logger"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-recursion-detection/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-recursion-detection"
+        },
+        {
+          "path": "node_modules/@aws-sdk/middleware-user-agent/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/middleware-user-agent"
+        },
+        {
+          "path": "node_modules/@smithy/config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core"
+        },
+        {
+          "path": "node_modules/@smithy/core/dist-cjs/submodules/schema/index.js",
+          "kind": "require-call",
+          "original": "@smithy/core/schema"
+        },
+        {
+          "path": "node_modules/@smithy/eventstream-serde-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/eventstream-serde-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-content-length/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-content-length"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-endpoint"
+        },
+        {
+          "path": "node_modules/@smithy/middleware-retry/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/middleware-retry"
+        },
+        {
+          "path": "node_modules/@smithy/smithy-client/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/smithy-client"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/auth/httpAuthSchemeProvider.js",
+          "kind": "require-call",
+          "original": "./auth/httpAuthSchemeProvider"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/runtimeConfig.js",
+          "kind": "require-call",
+          "original": "./runtimeConfig"
+        },
+        {
+          "path": "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@aws-sdk/region-config-resolver"
+        },
+        {
+          "path": "node_modules/@smithy/protocol-http/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/protocol-http"
+        },
+        {
+          "path": "node_modules/@smithy/util-waiter/dist-cjs/index.js",
+          "kind": "require-call",
+          "original": "@smithy/util-waiter"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/warmer/aws-lambda.js": {
+      "bytes": 2322,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        },
+        {
+          "path": "node_modules/@aws-sdk/client-lambda/dist-cjs/index.js",
+          "kind": "dynamic-import",
+          "original": "@aws-sdk/client-lambda"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/stream.js": {
+      "bytes": 1617,
+      "imports": [
+        {
+          "path": "node:stream/web",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/proxyExternalRequest/fetch.js": {
+      "bytes": 1388,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/stream.js",
+          "kind": "import-statement",
+          "original": "../../utils/stream.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/overrides/cdnInvalidation/dummy.js": {
+      "bytes": 110,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/resolve.js": {
+      "bytes": 3026,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/converters/edge.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/converters/edge.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/wrappers/cloudflare-edge.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/wrappers/cloudflare-edge.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/tagCache/dynamodb.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/tagCache/dynamodb.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/queue/sqs.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/queue/sqs.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/incrementalCache/s3.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/incrementalCache/s3.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/imageLoader/s3.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/imageLoader/s3.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/originResolver/pattern-env.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/originResolver/pattern-env.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/assetResolver/dummy.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/assetResolver/dummy.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/warmer/aws-lambda.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/warmer/aws-lambda.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/proxyExternalRequest/fetch.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/proxyExternalRequest/fetch.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/cdnInvalidation/dummy.js",
+          "kind": "dynamic-import",
+          "original": "../overrides/cdnInvalidation/dummy.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/createGenericHandler.js": {
+      "bytes": 835,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/resolve.js",
+          "kind": "import-statement",
+          "original": "./resolve"
+        },
+        {
+          "path": "./open-next.config.mjs",
+          "kind": "dynamic-import",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/adapters/config/index.js": {
+      "bytes": 14832,
+      "imports": [
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../logger"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/http/openNextResponse.js": {
+      "bytes": 12573,
+      "imports": [
+        {
+          "path": "node:stream",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../utils/cacheHeaders"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/util.js",
+          "kind": "import-statement",
+          "original": "./util"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/binary.js": {
+      "bytes": 1720,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/i18n/accept-header.js": {
+      "bytes": 3428,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js": {
+      "bytes": 5401,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/stream.js",
+          "kind": "import-statement",
+          "original": "../../../utils/stream.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../../adapters/logger.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/util.js",
+          "kind": "import-statement",
+          "original": "../util.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/accept-header.js",
+          "kind": "import-statement",
+          "original": "./accept-header"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/queue.js": {
+      "bytes": 2202,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/util.js": {
+      "bytes": 17009,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:querystring",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/openNextResponse.js",
+          "kind": "import-statement",
+          "original": "../../http/openNextResponse.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/util.js",
+          "kind": "import-statement",
+          "original": "../../http/util.js"
+        },
+        {
+          "path": "node:stream/web",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/binary.js",
+          "kind": "import-statement",
+          "original": "../../utils/binary.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../../utils/cacheHeaders.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js",
+          "kind": "import-statement",
+          "original": "./i18n/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/queue.js",
+          "kind": "import-statement",
+          "original": "./queue.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/normalize-path.js": {
+      "bytes": 2108,
+      "imports": [
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/semver.js": {
+      "bytes": 1999,
+      "imports": [],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/cache.js": {
+      "bytes": 7564,
+      "imports": [
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "./cacheHeaders"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/semver.js",
+          "kind": "import-statement",
+          "original": "./semver"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/utils/routeCacheKey.js": {
+      "bytes": 7768,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/semver.js",
+          "kind": "import-statement",
+          "original": "./semver.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js": {
+      "bytes": 3201,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../adapters/config/index.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/cacheInterceptor.js": {
+      "bytes": 24122,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/normalize-path.js",
+          "kind": "import-statement",
+          "original": "../../utils/normalize-path.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/stream.js",
+          "kind": "import-statement",
+          "original": "../../utils/stream.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/binary.js",
+          "kind": "import-statement",
+          "original": "../../utils/binary.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cache.js",
+          "kind": "import-statement",
+          "original": "../../utils/cache.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../../utils/cacheHeaders.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/routeCacheKey.js",
+          "kind": "import-statement",
+          "original": "../../utils/routeCacheKey.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js",
+          "kind": "import-statement",
+          "original": "./i18n"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/queue.js",
+          "kind": "import-statement",
+          "original": "./queue"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js",
+          "kind": "import-statement",
+          "original": "./routeMatcher"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/path-to-regexp/dist/index.js": {
+      "bytes": 15883,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/matcher.js": {
+      "bytes": 26508,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/path-to-regexp/dist/index.js",
+          "kind": "import-statement",
+          "original": "path-to-regexp"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/normalize-path.js",
+          "kind": "import-statement",
+          "original": "../../utils/normalize-path.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/stream.js",
+          "kind": "import-statement",
+          "original": "../../utils/stream.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js",
+          "kind": "import-statement",
+          "original": "./i18n"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js",
+          "kind": "import-statement",
+          "original": "./routeMatcher"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/util.js",
+          "kind": "import-statement",
+          "original": "./util"
+        }
+      ],
+      "format": "esm"
+    },
+    "node-builtins:node:worker_threads": {
+      "bytes": 96,
+      "imports": [
+        {
+          "path": "node:worker_threads",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/cloudflare/dist/cli/templates/shims/throw.js": {
+      "bytes": 42,
+      "imports": [],
+      "format": "esm"
+    },
+    "node-builtins:node:url": {
+      "bytes": 85,
+      "imports": [
+        {
+          "path": "node:url",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js": {
+      "bytes": 2428,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage-instance.js": {
+      "bytes": 479,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js",
+          "kind": "require-call",
+          "original": "./async-local-storage"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage.external.js": {
+      "bytes": 399,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage-instance.js",
+          "kind": "require-call",
+          "original": "./action-async-storage-instance"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage-instance.js": {
+      "bytes": 496,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js",
+          "kind": "require-call",
+          "original": "./async-local-storage"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage.external.js": {
+      "bytes": 419,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage-instance.js",
+          "kind": "require-call",
+          "original": "./after-task-async-storage-instance"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage-instance.js": {
+      "bytes": 469,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js",
+          "kind": "require-call",
+          "original": "./async-local-storage"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage.external.js": {
+      "bytes": 387,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage-instance.js",
+          "kind": "require-call",
+          "original": "./work-async-storage-instance"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage-instance.js": {
+      "bytes": 491,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js",
+          "kind": "require-call",
+          "original": "./async-local-storage"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/invariant-error.js": {
+      "bytes": 494,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js": {
+      "bytes": 7941,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage-instance.js",
+          "kind": "require-call",
+          "original": "./work-unit-async-storage-instance"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/invariant-error.js",
+          "kind": "require-call",
+          "original": "../../shared/lib/invariant-error"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/runtime-reacts.external.js": {
+      "bytes": 1040,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/.next/server/chunks/[externals]__062x9jksalfny._.js": {
+      "bytes": 1105,
+      "imports": [
+        {
+          "path": "node-builtins:node:crypto",
+          "kind": "require-call",
+          "original": "crypto"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/action-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/after-task-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/runtime-reacts.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/runtime-reacts.external.js"
+        },
+        {
+          "path": "node-builtins:node:stream",
+          "kind": "require-call",
+          "original": "node:stream"
+        },
+        {
+          "path": "node-builtins:node:path",
+          "kind": "require-call",
+          "original": "path"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/build/adapter/setup-node-env.external.js": {
+      "bytes": 668,
+      "imports": []
+    },
+    ".open-next/middleware/node_modules/next/dist/server/response-cache/types.js": {
+      "bytes": 1245,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/lru-cache.js": {
+      "bytes": 6486,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/memory-cache.external.js": {
+      "bytes": 2238,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/response-cache/types.js",
+          "kind": "require-call",
+          "original": "../../response-cache/types"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/lru-cache.js",
+          "kind": "require-call",
+          "original": "../lru-cache"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/ensure-leading-slash.js": {
+      "bytes": 524,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/sorted-routes.js": {
+      "bytes": 9399,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/segment.js": {
+      "bytes": 3112,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/app-paths.js": {
+      "bytes": 2677,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/ensure-leading-slash.js",
+          "kind": "require-call",
+          "original": "../../page-path/ensure-leading-slash"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/segment.js",
+          "kind": "require-call",
+          "original": "../../segment"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/interception-routes.js": {
+      "bytes": 6970,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
+          "kind": "require-call",
+          "original": "./app-paths"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/is-dynamic.js": {
+      "bytes": 832,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/interception-routes.js",
+          "kind": "require-call",
+          "original": "./interception-routes"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/index.js": {
+      "bytes": 766,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/sorted-routes.js",
+          "kind": "require-call",
+          "original": "./sorted-routes"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/is-dynamic.js",
+          "kind": "require-call",
+          "original": "./is-dynamic"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/utils.js": {
+      "bytes": 6037,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/normalize-page-path.js": {
+      "bytes": 983,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/ensure-leading-slash.js",
+          "kind": "require-call",
+          "original": "./ensure-leading-slash"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/index.js",
+          "kind": "require-call",
+          "original": "../router/utils"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/utils.js",
+          "kind": "require-call",
+          "original": "../utils"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/shared/lib/i18n/normalize-locale-path.js": {
+      "bytes": 1885,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/normalizers/normalizers.js": {
+      "bytes": 568,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/normalizers/wrap-normalizer-fn.js": {
+      "bytes": 344,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/normalizers/underscore-normalizer.js": {
+      "bytes": 388,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/normalizers/built/app/app-pathname-normalizer.js": {
+      "bytes": 1782,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
+          "kind": "require-call",
+          "original": "../../../../shared/lib/router/utils/app-paths"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/normalizers/normalizers.js",
+          "kind": "require-call",
+          "original": "../../normalizers"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/normalizers/wrap-normalizer-fn.js",
+          "kind": "require-call",
+          "original": "../../wrap-normalizer-fn"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/normalizers/underscore-normalizer.js",
+          "kind": "require-call",
+          "original": "../../underscore-normalizer"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/route-kind.js": {
+      "bytes": 1029,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/compiled/hash.js/sha256/256.js": {
+      "bytes": 8590,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/route-cache-key.js": {
+      "bytes": 3329,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/normalize-page-path.js",
+          "kind": "require-call",
+          "original": "../../shared/lib/page-path/normalize-page-path"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/i18n/normalize-locale-path.js",
+          "kind": "require-call",
+          "original": "../../shared/lib/i18n/normalize-locale-path"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/invariant-error.js",
+          "kind": "require-call",
+          "original": "../../shared/lib/invariant-error"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/normalizers/built/app/app-pathname-normalizer.js",
+          "kind": "require-call",
+          "original": "../normalizers/built/app/app-pathname-normalizer"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/route-kind.js",
+          "kind": "require-call",
+          "original": "../route-kind"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/compiled/hash.js/sha256/256.js",
+          "kind": "require-call",
+          "original": "next/dist/compiled/hash.js/sha256"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/shared-cache-controls.external.js": {
+      "bytes": 3627,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/route-cache-key.js",
+          "kind": "require-call",
+          "original": "../route-cache-key"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/shared/lib/i18n/normalize-locale-path.js",
+          "kind": "require-call",
+          "original": "../../../shared/lib/i18n/normalize-locale-path"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/route-kind.js",
+          "kind": "require-call",
+          "original": "../../route-kind"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/tags-manifest.external.js": {
+      "bytes": 1671,
+      "imports": [],
+      "format": "cjs"
+    },
+    ".open-next/middleware/node_modules/next/dist/server/lib/router-utils/instrumentation-globals.external.js": {
+      "bytes": 101,
+      "imports": [],
+      "format": "cjs"
+    },
+    "node-builtins:node:async_hooks": {
+      "bytes": 93,
+      "imports": [
+        {
+          "path": "node:async_hooks",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/.next/server/chunks/[root-of-the-server]__1rljp6ibfciql._.js": {
+      "bytes": 458884,
+      "imports": [
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/build/adapter/setup-node-env.external.js",
+          "kind": "require-call",
+          "original": "next/dist/build/adapter/setup-node-env.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/memory-cache.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/lib/incremental-cache/memory-cache.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/shared-cache-controls.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/lib/incremental-cache/shared-cache-controls.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/tags-manifest.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/lib/incremental-cache/tags-manifest.external.js"
+        },
+        {
+          "path": ".open-next/middleware/node_modules/next/dist/server/lib/router-utils/instrumentation-globals.external.js",
+          "kind": "require-call",
+          "original": "next/dist/server/lib/router-utils/instrumentation-globals.external.js"
+        },
+        {
+          "path": "node-builtins:node:async_hooks",
+          "kind": "require-call",
+          "original": "node:async_hooks"
+        },
+        {
+          "path": "node-builtins:node:path",
+          "kind": "require-call",
+          "original": "node:path"
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/.next/server/chunks/[turbopack]_runtime.js": {
+      "bytes": 39219,
+      "imports": [
+        {
+          "path": "node-builtins:node:worker_threads",
+          "kind": "require-call",
+          "original": "worker_threads"
+        },
+        {
+          "path": "node_modules/@opennextjs/cloudflare/dist/cli/templates/shims/throw.js",
+          "kind": "dynamic-import",
+          "original": "next/dist/compiled/@vercel/og/index.edge.js"
+        },
+        {
+          "path": "node-builtins:node:path",
+          "kind": "require-call",
+          "original": "path"
+        },
+        {
+          "path": "node-builtins:node:url",
+          "kind": "require-call",
+          "original": "url"
+        },
+        {
+          "path": "node-builtins:node:url",
+          "kind": "require-call",
+          "original": "url"
+        },
+        {
+          "path": ".open-next/middleware/.next/server/chunks/[externals]__062x9jksalfny._.js",
+          "kind": "require-call",
+          "original": "/app/applet/.open-next/middleware/.next/server/chunks/[externals]__062x9jksalfny._.js"
+        },
+        {
+          "path": ".open-next/middleware/.next/server/chunks/[root-of-the-server]__1rljp6ibfciql._.js",
+          "kind": "require-call",
+          "original": "/app/applet/.open-next/middleware/.next/server/chunks/[root-of-the-server]__1rljp6ibfciql._.js"
+        },
+        {
+          "path": ".open-next/middleware/.next/server/chunks/[turbopack]_runtime.js",
+          "kind": "require-call",
+          "original": "/app/applet/.open-next/middleware/.next/server/chunks/[turbopack]_runtime.js"
+        },
+        {
+          "path": "<runtime>",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "format": "cjs"
+    },
+    ".open-next/middleware/.next/server/middleware.js": {
+      "bytes": 233,
+      "imports": [
+        {
+          "path": ".open-next/middleware/.next/server/chunks/[turbopack]_runtime.js",
+          "kind": "require-call",
+          "original": "./chunks/[turbopack]_runtime.js"
+        }
+      ],
+      "format": "cjs"
+    },
+    "node_modules/@opennextjs/aws/dist/core/nodeMiddlewareHandler.js": {
+      "bytes": 1057,
+      "imports": [
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:async_hooks",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": ".open-next/middleware/.next/server/middleware.js",
+          "kind": "dynamic-import",
+          "original": "./.next/server/middleware.js"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/middleware.js": {
+      "bytes": 10176,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/http/util.js",
+          "kind": "import-statement",
+          "original": "../../http/util.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../../utils/cacheHeaders.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/stream.js",
+          "kind": "import-statement",
+          "original": "../../utils/stream.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/overrides/converters/utils.js",
+          "kind": "import-statement",
+          "original": "../../overrides/converters/utils.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js",
+          "kind": "import-statement",
+          "original": "./i18n/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/util.js",
+          "kind": "import-statement",
+          "original": "./util.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/nodeMiddlewareHandler.js",
+          "kind": "dynamic-import",
+          "original": "./middleware.mjs"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routing/routeParamPlaceholder.js": {
+      "bytes": 1858,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js",
+          "kind": "import-statement",
+          "original": "./routeMatcher"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/core/routingHandler.js": {
+      "bytes": 12649,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/config/index.js",
+          "kind": "import-statement",
+          "original": "../adapters/config/index.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../utils/cacheHeaders"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/cacheInterceptor.js",
+          "kind": "import-statement",
+          "original": "./routing/cacheInterceptor"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js",
+          "kind": "import-statement",
+          "original": "./routing/i18n"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/matcher.js",
+          "kind": "import-statement",
+          "original": "./routing/matcher"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/middleware.js",
+          "kind": "import-statement",
+          "original": "./routing/middleware"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js",
+          "kind": "import-statement",
+          "original": "./routing/routeMatcher"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/routeParamPlaceholder.js",
+          "kind": "import-statement",
+          "original": "./routing/routeParamPlaceholder"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/util.js",
+          "kind": "import-statement",
+          "original": "./routing/util"
+        }
+      ],
+      "format": "esm"
+    },
+    "node_modules/@opennextjs/aws/dist/adapters/middleware.js": {
+      "bytes": 4314,
+      "imports": [
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js",
+          "kind": "import-statement",
+          "original": "../utils/cacheHeaders.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/utils/promise.js",
+          "kind": "import-statement",
+          "original": "../utils/promise.js"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/adapters/logger.js",
+          "kind": "import-statement",
+          "original": "../adapters/logger"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/createGenericHandler.js",
+          "kind": "import-statement",
+          "original": "../core/createGenericHandler"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/resolve.js",
+          "kind": "import-statement",
+          "original": "../core/resolve"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routing/util.js",
+          "kind": "import-statement",
+          "original": "../core/routing/util"
+        },
+        {
+          "path": "node_modules/@opennextjs/aws/dist/core/routingHandler.js",
+          "kind": "import-statement",
+          "original": "../core/routingHandler"
+        }
+      ],
+      "format": "esm"
+    }
+  },
+  "outputs": {
+    ".open-next/middleware/handler.mjs": {
+      "imports": [
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:stream/web",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:worker_threads",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:url",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:stream",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:async_hooks",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:async_hooks",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "./open-next.config.mjs",
+          "kind": "dynamic-import",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:querystring",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:stream",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:stream/web",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:path",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:buffer",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
+      "exports": [
+        "default",
+        "handler"
+      ],
+      "entryPoint": "node_modules/@opennextjs/aws/dist/adapters/middleware.js",
+      "inputs": {
+        "node_modules/@opennextjs/aws/dist/utils/error.js": {
+          "bytesInOutput": 158
+        },
+        "node_modules/@opennextjs/aws/dist/adapters/logger.js": {
+          "bytesInOutput": 1306
+        },
+        "node_modules/cookie/dist/index.js": {
+          "bytesInOutput": 5494
+        },
+        "node_modules/@opennextjs/aws/dist/http/util.js": {
+          "bytesInOutput": 425
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/converters/utils.js": {
+          "bytesInOutput": 205
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/converters/edge.js": {
+          "bytesInOutput": 1962
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/wrappers/cloudflare-edge.js": {
+          "bytesInOutput": 1200
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/originResolver/pattern-env.js": {
+          "bytesInOutput": 1394
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/assetResolver/dummy.js": {
+          "bytesInOutput": 239
+        },
+        "node_modules/@opennextjs/aws/dist/utils/stream.js": {
+          "bytesInOutput": 678
+        },
+        "node_modules/@opennextjs/aws/dist/overrides/proxyExternalRequest/fetch.js": {
+          "bytesInOutput": 949
+        },
+        "node_modules/path-to-regexp/dist/index.js": {
+          "bytesInOutput": 9194
+        },
+        "node-builtins:node:worker_threads": {
+          "bytesInOutput": 171
+        },
+        "node_modules/@opennextjs/cloudflare/dist/cli/templates/shims/throw.js": {
+          "bytesInOutput": 224
+        },
+        "node-builtins:node:path": {
+          "bytesInOutput": 144
+        },
+        "node-builtins:node:url": {
+          "bytesInOutput": 141
+        },
+        "node-builtins:node:crypto": {
+          "bytesInOutput": 150
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/async-local-storage.js": {
+          "bytesInOutput": 1673
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage-instance.js": {
+          "bytesInOutput": 520
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/action-async-storage.external.js": {
+          "bytesInOutput": 450
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage-instance.js": {
+          "bytesInOutput": 541
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/after-task-async-storage.external.js": {
+          "bytesInOutput": 474
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage-instance.js": {
+          "bytesInOutput": 508
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/work-async-storage.external.js": {
+          "bytesInOutput": 436
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage-instance.js": {
+          "bytesInOutput": 535
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/invariant-error.js": {
+          "bytesInOutput": 495
+        },
+        ".open-next/middleware/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js": {
+          "bytesInOutput": 5028
+        },
+        ".open-next/middleware/node_modules/next/dist/server/runtime-reacts.external.js": {
+          "bytesInOutput": 799
+        },
+        "node-builtins:node:stream": {
+          "bytesInOutput": 150
+        },
+        ".open-next/middleware/.next/server/chunks/[externals]__062x9jksalfny._.js": {
+          "bytesInOutput": 1044
+        },
+        ".open-next/middleware/node_modules/next/dist/build/adapter/setup-node-env.external.js": {
+          "bytesInOutput": 154
+        },
+        ".open-next/middleware/node_modules/next/dist/server/response-cache/types.js": {
+          "bytesInOutput": 1000
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/lru-cache.js": {
+          "bytesInOutput": 2348
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/memory-cache.external.js": {
+          "bytesInOutput": 1661
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/ensure-leading-slash.js": {
+          "bytesInOutput": 410
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/sorted-routes.js": {
+          "bytesInOutput": 4646
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/segment.js": {
+          "bytesInOutput": 1900
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/app-paths.js": {
+          "bytesInOutput": 1620
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/interception-routes.js": {
+          "bytesInOutput": 4621
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/is-dynamic.js": {
+          "bytesInOutput": 698
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/router/utils/index.js": {
+          "bytesInOutput": 599
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/utils.js": {
+          "bytesInOutput": 3214
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/page-path/normalize-page-path.js": {
+          "bytesInOutput": 615
+        },
+        ".open-next/middleware/node_modules/next/dist/shared/lib/i18n/normalize-locale-path.js": {
+          "bytesInOutput": 886
+        },
+        ".open-next/middleware/node_modules/next/dist/server/normalizers/normalizers.js": {
+          "bytesInOutput": 544
+        },
+        ".open-next/middleware/node_modules/next/dist/server/normalizers/wrap-normalizer-fn.js": {
+          "bytesInOutput": 369
+        },
+        ".open-next/middleware/node_modules/next/dist/server/normalizers/underscore-normalizer.js": {
+          "bytesInOutput": 420
+        },
+        ".open-next/middleware/node_modules/next/dist/server/normalizers/built/app/app-pathname-normalizer.js": {
+          "bytesInOutput": 1108
+        },
+        ".open-next/middleware/node_modules/next/dist/server/route-kind.js": {
+          "bytesInOutput": 482
+        },
+        ".open-next/middleware/node_modules/next/dist/compiled/hash.js/sha256/256.js": {
+          "bytesInOutput": 8847
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/route-cache-key.js": {
+          "bytesInOutput": 2058
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/shared-cache-controls.external.js": {
+          "bytesInOutput": 1772
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/incremental-cache/tags-manifest.external.js": {
+          "bytesInOutput": 952
+        },
+        ".open-next/middleware/node_modules/next/dist/server/lib/router-utils/instrumentation-globals.external.js": {
+          "bytesInOutput": 261
+        },
+        "node-builtins:node:async_hooks": {
+          "bytesInOutput": 165
+        },
+        ".open-next/middleware/.next/server/chunks/[root-of-the-server]__1rljp6ibfciql._.js": {
+          "bytesInOutput": 607669
+        },
+        ".open-next/middleware/.next/server/chunks/[turbopack]_runtime.js": {
+          "bytesInOutput": 15646
+        },
+        ".open-next/middleware/.next/server/middleware.js": {
+          "bytesInOutput": 323
+        },
+        "node_modules/@opennextjs/aws/dist/core/nodeMiddlewareHandler.js": {
+          "bytesInOutput": 764
+        },
+        "node_modules/@opennextjs/aws/dist/utils/cacheHeaders.js": {
+          "bytesInOutput": 486
+        },
+        "node_modules/@opennextjs/aws/dist/utils/promise.js": {
+          "bytesInOutput": 1780
+        },
+        "node_modules/@opennextjs/aws/dist/utils/requestCache.js": {
+          "bytesInOutput": 154
+        },
+        "node_modules/@opennextjs/aws/dist/adapters/middleware.js": {
+          "bytesInOutput": 2103
+        },
+        "node_modules/@opennextjs/aws/dist/core/createGenericHandler.js": {
+          "bytesInOutput": 465
+        },
+        "node_modules/@opennextjs/aws/dist/core/resolve.js": {
+          "bytesInOutput": 893
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/util.js": {
+          "bytesInOutput": 2897
+        },
+        "node_modules/@opennextjs/aws/dist/adapters/config/index.js": {
+          "bytesInOutput": 13207
+        },
+        "node_modules/@opennextjs/aws/dist/http/openNextResponse.js": {
+          "bytesInOutput": 61
+        },
+        "node_modules/@opennextjs/aws/dist/utils/binary.js": {
+          "bytesInOutput": 1310
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/i18n/index.js": {
+          "bytesInOutput": 2738
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/i18n/accept-header.js": {
+          "bytesInOutput": 1773
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/queue.js": {
+          "bytesInOutput": 909
+        },
+        "node_modules/@opennextjs/aws/dist/core/routingHandler.js": {
+          "bytesInOutput": 6275
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/cacheInterceptor.js": {
+          "bytesInOutput": 9206
+        },
+        "node_modules/@opennextjs/aws/dist/utils/normalize-path.js": {
+          "bytesInOutput": 510
+        },
+        "node_modules/@opennextjs/aws/dist/utils/cache.js": {
+          "bytesInOutput": 1171
+        },
+        "node_modules/@opennextjs/aws/dist/utils/semver.js": {
+          "bytesInOutput": 737
+        },
+        "node_modules/@opennextjs/aws/dist/utils/routeCacheKey.js": {
+          "bytesInOutput": 2759
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/routeMatcher.js": {
+          "bytesInOutput": 1601
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/matcher.js": {
+          "bytesInOutput": 11286
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/middleware.js": {
+          "bytesInOutput": 4048
+        },
+        "node_modules/@opennextjs/aws/dist/core/routing/routeParamPlaceholder.js": {
+          "bytesInOutput": 517
+        }
+      },
+      "bytes": 771975
+    }
+  }
+}
