@@ -12,7 +12,8 @@ import {
   Megaphone,
   Landmark,
   MessageCircle,
-  Globe
+  Globe,
+  PlusCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOptionalPortal } from '../context/PortalContext';
@@ -27,6 +28,7 @@ interface HeaderProps {
   onSelectCategory?: (category: string) => void;
   selectedCategory?: string;
   onOpenUrlIndexation?: () => void;
+  onOpenAddVacancy?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -37,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectCategory: onSelectCategoryProp,
   selectedCategory: selectedCategoryProp,
   onOpenUrlIndexation: onOpenUrlIndexationProp,
+  onOpenAddVacancy: onOpenAddVacancyProp,
 }) => {
   const { isAdmin, toggleAdminMode } = useAuth();
   const portal = useOptionalPortal();
@@ -47,6 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   const onSelectCategory = onSelectCategoryProp ?? portal?.handleSelectCategory;
   const selectedCategory = selectedCategoryProp ?? portal?.selectedCategory ?? 'ALL';
   const onOpenUrlIndexation = onOpenUrlIndexationProp ?? (portal ? () => portal.setIsUrlIndexationOpen(true) : undefined);
+  const onOpenAddVacancy = onOpenAddVacancyProp ?? (portal ? () => portal.setIsAddVacancyOpen(true) : undefined);
   const isHi = lang === 'hi';
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -242,11 +246,28 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Menu</span>
               </button>
 
+              {/* Add New Vacancy Button (Admin Only) */}
+              {isAdmin && onOpenAddVacancy && (
+                <button
+                  type="button"
+                  onClick={onOpenAddVacancy}
+                  className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95"
+                  title={isHi ? 'नई भर्ती / पोस्ट लाइव जोड़ें' : 'Add New Vacancy (Live Firebase)'}
+                  aria-label="Add New Vacancy"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 text-white shrink-0" />
+                  <span className="font-extrabold text-[11px] sm:text-xs whitespace-nowrap">
+                    {isHi ? '+ नई भर्ती' : '+ Add Post'}
+                  </span>
+                </button>
+              )}
+
               {/* URL Inspection Button (Admin Only) */}
               {isAdmin && onOpenUrlIndexation && (
                 <button
+                  type="button"
                   onClick={onOpenUrlIndexation}
-                  className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95"
+                  className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95"
                   title={isHi ? 'Google Search Console URL Inspection Assistant' : 'URL Inspection Assistant'}
                   aria-label="URL Inspection and Indexation Assistant"
                 >
@@ -305,20 +326,41 @@ export const Header: React.FC<HeaderProps> = ({
                 );
               })}
 
+              {/* Add New Vacancy Button in Mobile Menu (Admin Only) */}
+              {isAdmin && onOpenAddVacancy && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenAddVacancy();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mt-1 px-3 py-2.5 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <PlusCircle className="w-4 h-4" />
+                    <span>{isHi ? 'नई भर्ती / पोस्ट जोड़ें (Live Publish)' : 'Add New Vacancy (Live)'}</span>
+                  </div>
+                  <span className="text-[10px] bg-white text-[#15803d] px-1.5 py-0.5 rounded font-black">
+                    NEW
+                  </span>
+                </button>
+              )}
+
               {/* URL Indexation Button in Mobile Menu (Admin Only) */}
               {isAdmin && onOpenUrlIndexation && (
                 <button
+                  type="button"
                   onClick={() => {
                     onOpenUrlIndexation();
                     setMobileMenuOpen(false);
                   }}
-                  className="mt-1 px-3 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+                  className="mt-1 px-3 py-2 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4" />
                     <span>{isHi ? 'सर्च कंसोल URL इंडेक्सेशन टूल' : 'URL Indexation Assistant'}</span>
                   </div>
-                  <span className="text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded font-bold">
+                  <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-bold">
                     GSC
                   </span>
                 </button>

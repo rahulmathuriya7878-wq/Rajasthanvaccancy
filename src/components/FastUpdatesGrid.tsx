@@ -4,7 +4,9 @@ import React, { useMemo } from 'react';
 import { 
   Bell,
   Trash2,
-  Search
+  Search,
+  PlusCircle,
+  ShieldCheck
 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
@@ -23,6 +25,7 @@ interface FastUpdatesGridProps {
   onToggleAlertMe?: (id: string) => void;
   showAds?: boolean;
   onOpenUrlIndexation?: () => void;
+  onOpenAddVacancy?: () => void;
 }
 
 export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
@@ -36,6 +39,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onToggleAlertMe,
   showAds = true,
   onOpenUrlIndexation,
+  onOpenAddVacancy,
 }) => {
   const isHi = lang === 'hi';
 
@@ -268,33 +272,51 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Quick Google URL Inspection & Auto-Index Banner (Admin Only) */}
-      {isAdmin && onOpenUrlIndexation && (
-        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-xl p-3.5 sm:p-4 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Admin Control Panel Banner: Direct Add New Vacancy & Google URL Inspection (Admin Only) */}
+      {isAdmin && (onOpenAddVacancy || onOpenUrlIndexation) && (
+        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-xl p-3.5 sm:p-4 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shrink-0">
-              <Search className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                <span>Google Search Console URL Inspection & Auto-Index</span>
-                <span className="text-[10px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded">
-                  GSC
+              <div className="font-extrabold text-xs sm:text-sm text-white flex flex-wrap items-center gap-1.5">
+                <span>{isHi ? 'एडमिन पैनल (Admin Live Control Panel)' : 'Admin Live Control Panel'}</span>
+                <span className="text-[10px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded">
+                  FIREBASE LIVE
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300">
-                {isHi ? 'किसी भी पोस्ट को तुरंत Google Search Console में टेस्ट व इंडेक्स करवाएं' : 'Test live URLs and request immediate indexing in Google Search Console'}
+              <p className="text-[11px] text-slate-300 mt-0.5">
+                {isHi
+                  ? 'नई भर्ती, एडमिट कार्ड, रिजल्ट या योजना सीधे लाइव पब्लिश करें या Google में URL इंडेक्स कराएं'
+                  : 'Publish new vacancies directly to Firebase or inspect & index URLs in Google Search Console'}
               </p>
             </div>
           </div>
-          <button
-            onClick={onOpenUrlIndexation}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-            aria-label="Open Google URL Inspection Tool"
-          >
-            <Search className="w-3.5 h-3.5 text-slate-950" />
-            <span>{isHi ? '🔍 URL Inspection खोलें' : '🔍 Open URL Inspection'}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            {onOpenAddVacancy && (
+              <button
+                type="button"
+                onClick={onOpenAddVacancy}
+                className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                aria-label="Add New Vacancy"
+              >
+                <PlusCircle className="w-4 h-4 text-slate-950" />
+                <span>{isHi ? 'नई भर्ती जोड़ें (Add Vacancy)' : 'Add New Vacancy'}</span>
+              </button>
+            )}
+            {onOpenUrlIndexation && (
+              <button
+                type="button"
+                onClick={onOpenUrlIndexation}
+                className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                aria-label="Open Google URL Inspection Tool"
+              >
+                <Search className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{isHi ? 'URL Inspection' : 'URL Inspection'}</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 

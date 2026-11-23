@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { Globe, Crop, ArrowUpRight } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOptionalPortal } from '../context/PortalContext';
 import { LanguageMode, VacancyItem } from '../types';
@@ -88,27 +87,6 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
         )}
-
-        {/* Photo & Signature Resize Tool Dedicated Page Link (just above © 2026 RAJASTHAN JOBS/VACANCY) */}
-        <div className="mb-4 pb-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-          <Link
-            href="/photo-signature-resize-tool"
-            className="no-link-color inline-flex items-center gap-2 text-slate-900 hover:text-[#15803d] font-bold transition no-underline"
-          >
-            <Crop className="w-4 h-4 text-[#15803d] shrink-0" aria-hidden="true" />
-            <span>
-              {isHi
-                ? 'फोटो और सिग्नेचर रीसाइज़ टूल (Photo & Signature Resize Tool)'
-                : 'Photo & Signature Resize Tool'}
-            </span>
-            <ArrowUpRight className="w-4 h-4 text-[#15803d] shrink-0" aria-hidden="true" />
-          </Link>
-          <span className="text-xs sm:text-sm text-slate-600">
-            {isHi
-              ? 'RPSC, RSSB, SSO, SSC, UPSC व रेलवे फॉर्म के लिए (20KB–100KB)'
-              : 'For RPSC, RSSB, SSO, SSC, UPSC & Railway forms'}
-          </span>
-        </div>
 
         {/* Bottom copyright & Policy Links */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 text-slate-600" style={{ fontSize: '12pt' }}>

@@ -11,6 +11,9 @@ const AdminLoginModal = lazy(() =>
 const UrlIndexationModal = lazy(() =>
   import('./UrlIndexationModal').then((m) => ({ default: m.UrlIndexationModal }))
 );
+const AddVacancyModal = lazy(() =>
+  import('./AddVacancyModal').then((m) => ({ default: m.AddVacancyModal }))
+);
 
 export const PortalShellExtras: React.FC = () => {
   const {
@@ -21,6 +24,10 @@ export const PortalShellExtras: React.FC = () => {
     setIsAdminLoginOpen,
     isUrlIndexationOpen,
     setIsUrlIndexationOpen,
+    isAddVacancyOpen,
+    setIsAddVacancyOpen,
+    handleUpdateVacancy,
+    handleSelectVacancy,
   } = usePortal();
 
   return (
@@ -49,6 +56,19 @@ export const PortalShellExtras: React.FC = () => {
             onClose={() => setIsUrlIndexationOpen(false)}
             lang={lang}
             vacancies={vacancies}
+          />
+        </Suspense>
+      )}
+
+      {isAddVacancyOpen && (
+        <Suspense fallback={null}>
+          <AddVacancyModal
+            isOpen={isAddVacancyOpen}
+            onClose={() => setIsAddVacancyOpen(false)}
+            lang={lang}
+            existingVacancies={vacancies}
+            onPublishVacancy={handleUpdateVacancy}
+            onSelectVacancy={handleSelectVacancy}
           />
         </Suspense>
       )}
