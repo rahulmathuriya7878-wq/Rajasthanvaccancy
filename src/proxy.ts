@@ -55,7 +55,7 @@ const NOISE_QUERY_PARAMS = new Set([
   '_ga',
 ]);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { nextUrl } = request;
   const rawHost = (request.headers.get('host') || '').toLowerCase();
   const hostname = rawHost.split(':')[0];

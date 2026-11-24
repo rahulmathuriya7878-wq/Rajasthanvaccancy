@@ -3,44 +3,10 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
-let cachedApp: any = null;
-let cachedDb: any = null;
-let cachedAuth: any = null;
-let cachedGoogleProvider: any = null;
-
-function getFirebaseApp() {
-  if (!cachedApp) {
-    cachedApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  }
-  return cachedApp;
-}
-
-export const db = new Proxy({} as any, {
-  get(_target, prop) {
-    if (!cachedDb) {
-      cachedDb = getFirestore(getFirebaseApp(), firebaseConfig.firestoreDatabaseId);
-    }
-    return cachedDb[prop];
-  }
-});
-
-export const auth = new Proxy({} as any, {
-  get(_target, prop) {
-    if (!cachedAuth) {
-      cachedAuth = getAuth(getFirebaseApp());
-    }
-    return cachedAuth[prop];
-  }
-});
-
-export const googleAuthProvider = new Proxy({} as any, {
-  get(_target, prop) {
-    if (!cachedGoogleProvider) {
-      cachedGoogleProvider = new GoogleAuthProvider();
-    }
-    return cachedGoogleProvider[prop];
-  }
-});
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = getAuth(app);
+export const googleAuthProvider = new GoogleAuthProvider();
 
 export enum OperationType {
   CREATE = 'create',
