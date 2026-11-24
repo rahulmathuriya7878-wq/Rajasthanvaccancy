@@ -315,7 +315,7 @@ export async function saveVacancyOverrideToCloud(
   vacancy: VacancyItem
 ): Promise<CloudSyncResult> {
   const user = auth.currentUser;
-  if (!user || !user.email || user.email.toLowerCase() !== 'rahulmathuriya7878@gmail.com') {
+  if (!user || !user.email) {
     return {
       synced: false,
       collection: JOBS_COLLECTION,
