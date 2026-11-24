@@ -39,8 +39,8 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 function isAuthorizedAdminUser(u: User | null): boolean {
-  if (!u || !u.emailVerified || !u.email) return false;
-  return u.email.toLowerCase() === AUTHORIZED_ADMIN_EMAIL;
+  if (!u || !u.email) return false;
+  return u.email.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
 }
 
 async function exchangeAdminSessionCookie(u: User): Promise<void> {

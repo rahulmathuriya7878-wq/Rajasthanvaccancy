@@ -18,7 +18,7 @@ function sanitizeText(value: unknown, maxLen: number): string {
 }
 
 export async function syncUserProfileToFirestore(user: User): Promise<void> {
-  if (!user || !user.emailVerified || !user.email) return;
+  if (!user || !user.email) return;
   if (!VALID_ID_REGEX.test(user.uid) || user.uid.length > 128) return;
 
   const userPath = `users/${user.uid}`;

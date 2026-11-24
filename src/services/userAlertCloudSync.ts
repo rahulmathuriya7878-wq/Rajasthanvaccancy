@@ -53,7 +53,7 @@ export async function saveUserAlertPreferencesToCloud(
   user: User,
   payload: CloudAlertPreferencesSnapshot
 ): Promise<boolean> {
-  if (!user || !user.emailVerified || !user.uid || !VALID_ID_REGEX.test(user.uid) || user.uid.length > 128) {
+  if (!user || !user.email || !user.uid || !VALID_ID_REGEX.test(user.uid) || user.uid.length > 128) {
     return false;
   }
 

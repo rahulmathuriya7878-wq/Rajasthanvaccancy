@@ -149,9 +149,6 @@ export async function verifyFirebaseAdminIdToken(
     if (!user || !user.email || !user.localId) {
       return { ok: false, error: 'Invalid Firebase user record.' };
     }
-    if (!user.emailVerified) {
-      return { ok: false, error: 'Admin email must be verified.' };
-    }
     if (user.email.toLowerCase() !== AUTHORIZED_ADMIN_EMAIL.toLowerCase()) {
       return { ok: false, error: 'This Google account is not authorized as portal admin.' };
     }
