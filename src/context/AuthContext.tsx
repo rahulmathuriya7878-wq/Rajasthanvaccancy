@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [shouldHydrateFirebaseAuth, setShouldHydrateFirebaseAuth] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Hydrate admin / user sync flags from localStorage after mount to avoid SSR hydration mismatches
+  // Hydrate admin / user sync flags from localStorage after mount & check redirect result
   useEffect(() => {
     try {
       const storedAdmin = localStorage.getItem('raj_admin_active_v1') === 'true';
@@ -81,6 +81,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true);
       }
     } catch {}
+
+    // Check redirect result for mobile / redirect sign in flow
+    (async () => {
+      try {
+        const [{ getRedirectResult }, { auth }, { syncUserProfileToFirestore }] = await Promise.all([
+          import('firebase/auth'),
+          import('../lib/firebase'),
+          import('../services/firebaseUserService'),
+        ]);
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          setUser(result.user);
+          setShouldHydrateFirebaseAuth(true);
+          setIsAdminState(true);
+          try {
+            localStorage.setItem('raj_admin_active_v1', 'true');
+          } catch {}
+          void exchangeAdminSessionCookie(result.user);
+          void syncUserProfileToFirestore(result.user);
+        }
+      } catch {}
+    })();
   }, []);
 
   // Hydrate Firebase Auth session whenever admin mode OR regular user cloud alert sync is active
@@ -145,36 +167,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async (): Promise<GoogleSignInResult> => {
     try {
-      const [{ signInWithPopup }, { auth, googleAuthProvider }, { syncUserProfileToFirestore }] = await Promise.all([
+      const [{ signInWithPopup, signInWithRedirect }, { auth, googleAuthProvider }, { syncUserProfileToFirestore }] = await Promise.all([
         import('firebase/auth'),
         import('../lib/firebase'),
         import('../services/firebaseUserService'),
       ]);
-      const result = await signInWithPopup(auth, googleAuthProvider);
-      if (result.user) {
-        setUser(result.user);
-        setShouldHydrateFirebaseAuth(true);
-        setIsAdminState(true);
-        try {
-          localStorage.setItem('raj_admin_active_v1', 'true');
-        } catch {}
-        await exchangeAdminSessionCookie(result.user);
-        void syncUserProfileToFirestore(result.user);
-        return { ok: true, user: result.user };
+      try {
+        const result = await signInWithPopup(auth, googleAuthProvider);
+        if (result.user) {
+          setUser(result.user);
+          setShouldHydrateFirebaseAuth(true);
+          setIsAdminState(true);
+          try {
+            localStorage.setItem('raj_admin_active_v1', 'true');
+          } catch {}
+          await exchangeAdminSessionCookie(result.user);
+          void syncUserProfileToFirestore(result.user);
+          return { ok: true, user: result.user };
+        }
+      } catch (popupErr: any) {
+        const code = popupErr?.code || '';
+        // If popup is blocked or closed, fallback to redirect sign in
+        if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+          await signInWithRedirect(auth, googleAuthProvider);
+          return { ok: true };
+        }
+        throw popupErr;
       }
       return { ok: false, error: 'Google लॉगिन पूरा नहीं हुआ।' };
     } catch (err: any) {
-      console.error('Google popup sign-in error:', err);
+      console.error('Google sign-in error:', err);
       const code = err?.code || '';
       const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'rajasthanvacancy.online';
       const msg =
         code === 'auth/unauthorized-domain'
-          ? `Firebase Auth में "${currentHost}" डोमेन अभी अनुमति सूची (Authorized Domains) में नहीं है। समाधान: (1) तुरंत लॉगिन के लिए https://ais-pre-xr5evgohw4ejjzuf775vak-300878841095.asia-southeast1.run.app खोलें, या (2) एडमिन पासकोड से लॉगिन करें, या (3) Firebase Console → Authentication → Settings → Authorized domains में "${currentHost}" और "www.${currentHost.replace(/^www\./, '')}" जोड़ें।`
+          ? `Firebase Auth में "${currentHost}" डोमेन अनुमति सूची (Authorized Domains) में नहीं है। समाधान: (1) नीचे दिए गए एडमिन पासकोड का उपयोग करें, या (2) मुख्य ऐप URL (https://ais-pre-xr5evgohw4ejjzuf775vak-300878841095.asia-southeast1.run.app) से लॉगिन करें।`
           : code === 'auth/popup-blocked'
-            ? 'ब्राउज़र ने Google लॉगिन पॉपअप ब्लॉक कर दिया। कृपया पॉपअप की अनुमति दें और पुनः प्रयास करें।'
-            : code === 'auth/popup-closed-by-user'
-              ? 'Google लॉगिन विंडो बंद कर दी गई। क्लाउड सिंक के लिए लॉगिन पूरा करें।'
-              : err?.message || 'Google लॉगिन विफल रहा।';
+            ? 'ब्राउज़र ने पॉपअप ब्लॉक कर दिया। रीडायरेक्ट लॉगिन का प्रयास किया जा रहा है...'
+            : err?.message || 'Google लॉगिन विफल रहा।';
       return { ok: false, error: msg };
     }
   };
