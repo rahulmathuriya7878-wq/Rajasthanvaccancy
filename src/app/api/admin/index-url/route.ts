@@ -56,17 +56,24 @@ export async function POST(request: NextRequest) {
   // 1. IndexNow Instant Indexing API (Bing / Yandex / Seznam / Naver)
   try {
     const host = new URL(DEFAULT_PRODUCTION_ORIGIN).host;
-    const inRes = await fetch('https://api.indexnow.org/indexnow', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({
-        host,
-        key: 'rajasthanvacancyindexnow2026',
-        keyLocation: `${DEFAULT_PRODUCTION_ORIGIN}/rajasthanvacancyindexnow2026.txt`,
-        urlList,
-      }),
-      signal: AbortSignal.timeout(6000),
-    });
+    const ctrlIndex = new AbortController();
+    const tIndex = setTimeout(() => ctrlIndex.abort(), 6000);
+    let inRes: Response;
+    try {
+      inRes = await fetch('https://api.indexnow.org/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({
+          host,
+          key: 'rajasthanvacancyindexnow2026',
+          keyLocation: `${DEFAULT_PRODUCTION_ORIGIN}/rajasthanvacancyindexnow2026.txt`,
+          urlList,
+        }),
+        signal: ctrlIndex.signal,
+      });
+    } finally {
+      clearTimeout(tIndex);
+    }
     results.push({
       service: 'IndexNow Instant API',
       status: inRes.ok ? `Submitted (HTTP ${inRes.status})` : `Queued (HTTP ${inRes.status})`,
@@ -82,7 +89,14 @@ export async function POST(request: NextRequest) {
   // 2. Google Sitemap Ping
   try {
     const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(`${DEFAULT_PRODUCTION_ORIGIN}/sitemap.xml`)}`;
-    const gRes = await fetch(pingUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
+    const ctrlGoogle = new AbortController();
+    const tGoogle = setTimeout(() => ctrlGoogle.abort(), 5000);
+    let gRes: Response;
+    try {
+      gRes = await fetch(pingUrl, { method: 'GET', signal: ctrlGoogle.signal });
+    } finally {
+      clearTimeout(tGoogle);
+    }
     results.push({
       service: 'Google Sitemap Notification',
       status: `HTTP ${gRes.status}`,

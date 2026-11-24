@@ -32,7 +32,13 @@ async function runAutoIndex(customUrls: string[]) {
 
   try {
     const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(`${baseUrl}/sitemap.xml`)}`;
-    await fetch(googlePingUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
+    const ctrl1 = new AbortController();
+    const t1 = setTimeout(() => ctrl1.abort(), 5000);
+    try {
+      await fetch(googlePingUrl, { method: 'GET', signal: ctrl1.signal });
+    } finally {
+      clearTimeout(t1);
+    }
     pings.push({ service: 'Googlebot Sitemap Ping', status: 'Success (HTTP 200)' });
   } catch (err: any) {
     pings.push({ service: 'Googlebot Sitemap Ping', status: 'Dispatched', detail: err.message });
@@ -40,7 +46,13 @@ async function runAutoIndex(customUrls: string[]) {
 
   try {
     const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(`${baseUrl}/sitemap.xml`)}`;
-    await fetch(bingPingUrl, { method: 'GET', signal: AbortSignal.timeout(5000) });
+    const ctrl2 = new AbortController();
+    const t2 = setTimeout(() => ctrl2.abort(), 5000);
+    try {
+      await fetch(bingPingUrl, { method: 'GET', signal: ctrl2.signal });
+    } finally {
+      clearTimeout(t2);
+    }
     pings.push({ service: 'Bingbot Sitemap Ping', status: 'Success (HTTP 200)' });
   } catch (err: any) {
     pings.push({ service: 'Bingbot Sitemap Ping', status: 'Dispatched', detail: err.message });
@@ -54,12 +66,19 @@ async function runAutoIndex(customUrls: string[]) {
       urlList,
     };
 
-    const inRes = await fetch('https://api.indexnow.org/indexnow', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify(indexNowPayload),
-      signal: AbortSignal.timeout(6000),
-    });
+    const ctrl3 = new AbortController();
+    const t3 = setTimeout(() => ctrl3.abort(), 6000);
+    let inRes: Response;
+    try {
+      inRes = await fetch('https://api.indexnow.org/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(indexNowPayload),
+        signal: ctrl3.signal,
+      });
+    } finally {
+      clearTimeout(t3);
+    }
 
     pings.push({
       service: 'IndexNow Instant Multi-Engine API',

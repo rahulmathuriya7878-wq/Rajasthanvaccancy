@@ -28,10 +28,17 @@ export async function GET(req: NextRequest) {
     let schema = 'Valid (WebSite / BreadcrumbList)';
 
     try {
-      const localRes = await fetch(`http://127.0.0.1:${port}${targetPath}`, {
-        headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' },
-        signal: AbortSignal.timeout(5000),
-      });
+      const ctrlInspect = new AbortController();
+      const tInspect = setTimeout(() => ctrlInspect.abort(), 5000);
+      let localRes: Response;
+      try {
+        localRes = await fetch(`http://127.0.0.1:${port}${targetPath}`, {
+          headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' },
+          signal: ctrlInspect.signal,
+        });
+      } finally {
+        clearTimeout(tInspect);
+      }
       const bodyText = await localRes.text();
       httpStatus = localRes.status;
 
