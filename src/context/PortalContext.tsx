@@ -54,8 +54,6 @@ interface PortalContextType {
   setIsAdminLoginOpen: (open: boolean) => void;
   isUrlIndexationOpen: boolean;
   setIsUrlIndexationOpen: (open: boolean) => void;
-  isAddVacancyOpen: boolean;
-  setIsAddVacancyOpen: (open: boolean) => void;
   toastMessage: string | null;
   showToast: (msg: string) => void;
   isInitialNotFound: boolean;
@@ -93,7 +91,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [activePolicyView, setActivePolicyView] = useState<PolicyViewType | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
-  const [isAddVacancyOpen, setIsAddVacancyOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isInitialNotFound, setIsInitialNotFound] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -928,8 +925,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsAdminLoginOpen,
         isUrlIndexationOpen,
         setIsUrlIndexationOpen,
-        isAddVacancyOpen,
-        setIsAddVacancyOpen,
         toastMessage,
         showToast,
         isInitialNotFound,

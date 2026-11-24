@@ -8,7 +8,6 @@ import {
   KeyRound,
   Cloud,
   CloudOff,
-  PlusCircle,
   Search,
   LogOut,
   CheckCircle2,
@@ -23,7 +22,6 @@ interface AdminLoginModalProps {
   onClose: () => void;
   lang: LanguageMode;
   onSuccess?: () => void;
-  onOpenAddVacancy?: () => void;
   onOpenUrlIndexation?: () => void;
 }
 
@@ -32,7 +30,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onClose,
   lang,
   onSuccess,
-  onOpenAddVacancy,
   onOpenUrlIndexation,
 }) => {
   const isHi = lang === 'hi';
@@ -51,9 +48,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
       const res = await signInWithGoogle();
       if (res.ok) {
         if (onSuccess) onSuccess();
-        if (!onOpenAddVacancy) {
-          onClose();
-        }
+        onClose();
       } else {
         setErrorMsg(res.error || (isHi ? 'Google लॉगिन पूरा नहीं हो सका।' : 'Google sign-in failed.'));
       }
@@ -71,9 +66,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
       if (res.ok) {
         setPasswordInput('');
         if (onSuccess) onSuccess();
-        if (!onOpenAddVacancy) {
-          onClose();
-        }
+        onClose();
       } else {
         setErrorMsg(
           res.error || (isHi ? 'कृपया सही पासकोड दर्ज करें' : 'Please enter a valid admin passcode')
@@ -116,8 +109,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               <p className="text-xs text-slate-300">
                 {isAdmin
                   ? isHi
-                    ? 'नई भर्ती जोड़ें, लाइव Firebase पब्लिश करें और URL इंडेक्स कराएं'
-                    : 'Publish new vacancies live to Firebase & manage indexing'
+                    ? 'एडमिन डैशबोर्ड (/admin) खोलें और URL इंडेक्स कराएं'
+                    : 'Open Admin Dashboard (/admin) & manage indexing'
                   : isHi
                     ? 'नई पोस्ट व इन-प्लेस अपडेट सभी फोन पर लाइव करने के लिए लॉगिन करें'
                     : 'Sign in to publish new posts & edits live across all devices'}
@@ -149,8 +142,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     <p className="text-emerald-800 mt-0.5">
                       {user?.email || 'Verified Admin'} —{' '}
                       {isHi
-                        ? 'अब आप सीधे नई भर्ती जोड़कर सभी मोबाइल पर लाइव पब्लिश कर सकते हैं।'
-                        : 'You can now publish new posts directly to all devices.'}
+                        ? 'अब आप /admin डैशबोर्ड से नई पोस्ट सभी मोबाइल पर लाइव पब्लिश कर सकते हैं।'
+                        : 'You can now publish new posts directly from /admin to all devices.'}
                     </p>
                   </div>
                 </div>
@@ -192,17 +185,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                   <span>{isHi ? 'प्रो एडमिन डैशबोर्ड खोलें (/admin)' : 'Open Full Admin Dashboard (/admin)'}</span>
                 </Link>
-
-                {onOpenAddVacancy && (
-                  <button
-                    type="button"
-                    onClick={onOpenAddVacancy}
-                    className="w-full py-2.5 px-4 rounded-xl bg-[#15803d] hover:bg-[#166534] text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>{isHi ? 'क्विक नई भर्ती फॉर्म (Modal)' : 'Quick Add Vacancy Modal'}</span>
-                  </button>
-                )}
 
                 {onOpenUrlIndexation && (
                   <button

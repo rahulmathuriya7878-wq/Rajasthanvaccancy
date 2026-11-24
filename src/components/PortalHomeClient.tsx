@@ -71,7 +71,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     alertJobIds,
     setIsAdminLoginOpen,
     setIsUrlIndexationOpen,
-    setIsAddVacancyOpen,
     handleGoHome,
     handleSelectVacancy,
     handleSelectCategory,
@@ -258,7 +257,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             alertJobIds={alertJobIds}
             onToggleAlertMe={handleToggleAlertMe}
             onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
-            onOpenAddVacancy={() => setIsAddVacancyOpen(true)}
           />
         </div>
       )}
