@@ -18,6 +18,10 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
+  Copy,
+  Check,
+  Code2,
+  Link2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePortal } from '@/context/PortalContext';
@@ -27,6 +31,7 @@ import {
   type WebPConversionResult,
 } from '@/utils/adminPostUtils';
 import { DEFAULT_PRODUCTION_ORIGIN } from '@/utils/seoCanonical';
+import { copyTextToClipboard } from '@/utils/shareUtils';
 import type {
   BoardType,
   CategoryType,
@@ -71,11 +76,11 @@ interface FaqRow {
 const VALID_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
 
 const TABS: { key: BuilderTab; label: string }[] = [
-  { key: 'basic', label: 'Basic Info' },
-  { key: 'dates_fees', label: 'Dates & Fees' },
-  { key: 'links_media', label: 'Links & Media' },
-  { key: 'content', label: 'Content & Tables' },
-  { key: 'seo', label: 'SEO & Indexing' },
+  { key: 'basic', label: '1. Quick Post Form (मुख्य फॉर्म)' },
+  { key: 'dates_fees', label: '2. Extra Dates & Fees' },
+  { key: 'links_media', label: '3. Extra Links & WebP' },
+  { key: 'content', label: '4. Post Tables & FAQs' },
+  { key: 'seo', label: '5. SEO & Indexing' },
 ];
 
 const CATEGORIES: { value: CategoryType; label: string; defaultStatus: JobStatusType }[] = [
@@ -148,8 +153,8 @@ export const PostBuilderClient: React.FC = () => {
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit')?.trim() || null;
 
-  const { isCloudAdmin, getAdminAuthHeaders } = useAuth();
-  const { vacancies, handleUpdateVacancy, showToast } = usePortal();
+  const { user, isCloudAdmin, getAdminAuthHeaders } = useAuth();
+  const { vacancies, handleUpdateVacancy, handleDeleteVacancy, showToast } = usePortal();
 
   const existingPost = useMemo(
     () => (editId ? vacancies.find((v) => v.id === editId) || null : null),
@@ -225,6 +230,8 @@ export const PostBuilderClient: React.FC = () => {
 
   // Submit & Feedback State
   const [savingMode, setSavingMode] = useState<'draft' | 'publish' | null>(null);
+  const [deletingPost, setDeletingPost] = useState(false);
+  const [confirmDeletePost, setConfirmDeletePost] = useState(false);
   const [indexingNow, setIndexingNow] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successInfo, setSuccessInfo] = useState<{
@@ -590,6 +597,78 @@ export const PostBuilderClient: React.FC = () => {
     };
   };
 
+  /**
+   * Maps PostBuilderClient form fields (Title, Slug, Category, Dates, Links, Total Posts,
+   * Qualification, Description) directly to a Firestore `jobs` collection document (`/jobs/{slug}`).
+   */
+  const mapFormFieldsToFirestoreJob = (targetStatus: JobStatusType = status) => {
+    const vacancyPayload = buildPayload(targetStatus);
+    const qualSummary = [
+      vacancyPayload.qualification.join(', '),
+      vacancyPayload.qualificationDetailsHi || vacancyPayload.qualificationDetails,
+    ]
+      .filter(Boolean)
+      .join(' — ');
+
+    return {
+      collection: 'jobs',
+      docPath: `jobs/${vacancyPayload.id}`,
+      data: {
+        jobId: vacancyPayload.id,
+        slug: vacancyPayload.id,
+        title: vacancyPayload.title,
+        titleHi: vacancyPayload.titleHi,
+        category: vacancyPayload.category,
+        totalPosts: String(vacancyPayload.totalPosts ?? 'विभिन्न पद'),
+        qualification: qualSummary || 'As per notification',
+        dates: {
+          startDate: vacancyPayload.importantDates?.applyStartDate || '',
+          lastDate: vacancyPayload.importantDates?.applyLastDate || '',
+          notificationDate: vacancyPayload.importantDates?.notificationDate || todayIso,
+          examDate:
+            vacancyPayload.importantDates?.examDate ||
+            vacancyPayload.importantDates?.admitCardDate ||
+            '',
+        },
+        links: {
+          applyOnlineUrl: vacancyPayload.officialLinks?.applyOnlineUrl || '',
+          notificationPdfUrl: vacancyPayload.officialLinks?.notificationPdfUrl || '',
+          officialWebsiteUrl: vacancyPayload.officialLinks?.officialWebsiteUrl || '',
+        },
+        description: vacancyPayload.descriptionHi || vacancyPayload.description || '',
+        status: vacancyPayload.status,
+        payload: vacancyPayload,
+        updatedByUid: user?.uid || 'admin',
+        createdAt: existingPost?.createdAt || todayIso,
+        updatedAt: todayIso,
+      },
+    };
+  };
+
+  const handleDeleteCurrentJob = async () => {
+    if (!existingPost) return;
+    setDeletingPost(true);
+    setErrorMsg('');
+    try {
+      const deletingId = existingPost.id;
+      await handleDeleteVacancy(deletingId);
+      try {
+        const headers = await getAdminAuthHeaders();
+        await fetch('/api/admin/revalidate', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ slug: deletingId }),
+        });
+      } catch {}
+      setConfirmDeletePost(false);
+      router.push('/admin');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete job post.');
+    } finally {
+      setDeletingPost(false);
+    }
+  };
+
   const handleSaveOrPublish = async (mode: 'draft' | 'publish') => {
     setErrorMsg('');
     setSuccessInfo(null);
@@ -691,6 +770,187 @@ export const PostBuilderClient: React.FC = () => {
     }
   };
 
+  const [codeFormatTab, setCodeFormatTab] = useState<'json' | 'markdown'>('json');
+  const [copiedCodeType, setCopiedCodeType] = useState<'json' | 'markdown' | null>(null);
+
+  const getStartDateValue = (): string => {
+    const found = dateRows.find((r) => {
+      const k = r.key.toLowerCase();
+      return k.includes('start') || k.includes('begin');
+    });
+    return found?.value || '';
+  };
+
+  const setStartDateValue = (val: string) => {
+    setDateRows((prev) => {
+      const idx = prev.findIndex((r) => {
+        const k = r.key.toLowerCase();
+        return k.includes('start') || k.includes('begin');
+      });
+      if (idx >= 0) {
+        return prev.map((r, i) => (i === idx ? { ...r, value: val } : r));
+      }
+      return [...prev, { id: makeRowId('d'), key: 'Apply Start Date', value: val }];
+    });
+  };
+
+  const getLastDateValue = (): string => {
+    const found = dateRows.find((r) => {
+      const k = r.key.toLowerCase();
+      return k.includes('last') || k.includes('closing');
+    });
+    return found?.value || '';
+  };
+
+  const setLastDateValue = (val: string) => {
+    setDateRows((prev) => {
+      const idx = prev.findIndex((r) => {
+        const k = r.key.toLowerCase();
+        return k.includes('last') || k.includes('closing');
+      });
+      if (idx >= 0) {
+        return prev.map((r, i) => (i === idx ? { ...r, value: val } : r));
+      }
+      return [...prev, { id: makeRowId('d'), key: 'Apply Last Date', value: val }];
+    });
+  };
+
+  const buildMarkdownOutput = (): string => {
+    const payload = buildPayload(status);
+    const catObj = CATEGORIES.find((c) => c.value === payload.category);
+    const lines: string[] = [
+      `# ${payload.titleHi || payload.title}`,
+      payload.title && payload.title !== payload.titleHi ? `**${payload.title}**` : '',
+      '',
+      `- **URL Slug:** \`${payload.id}\``,
+      `- **कैटेगरी (Category):** ${catObj?.label || payload.category}`,
+      `- **विभाग / बोर्ड (Department):** ${payload.departmentHi || payload.department} (${payload.organization})`,
+      `- **कुल पद (Total Posts):** ${payload.totalPosts}`,
+      `- **योग्यता (Qualification):** ${payload.qualification.join(', ')} — ${payload.qualificationDetailsHi || payload.qualificationDetails}`,
+      `- **आवेदन शुरू तिथि (Start Date):** ${payload.importantDates?.applyStartDate || '—'}`,
+      `- **अंतिम तिथि (Last Date):** ${payload.importantDates?.applyLastDate || '—'}`,
+      '',
+      '## पूरा विवरण (Detailed Description)',
+      payload.descriptionHi || payload.description || '',
+      '',
+      '## महत्वपूर्ण लिंक्स (Important Links)',
+      `| लिंक का नाम | URL |`,
+      `| :--- | :--- |`,
+      payload.officialLinks?.applyOnlineUrl
+        ? `| **Apply Online (ऑनलाइन आवेदन)** | ${payload.officialLinks.applyOnlineUrl} |`
+        : '',
+      payload.officialLinks?.notificationPdfUrl
+        ? `| **Notification PDF (आधिकारिक नोटिफिकेशन)** | ${payload.officialLinks.notificationPdfUrl} |`
+        : '',
+      payload.officialLinks?.officialWebsiteUrl
+        ? `| **Official Website (आधिकारिक वेबसाइट)** | ${payload.officialLinks.officialWebsiteUrl} |`
+        : '',
+    ];
+    return lines.filter((l, i, arr) => !(l === '' && arr[i - 1] === '')).join('\n').trim();
+  };
+
+  const handleCopyGeneratedCode = async (type: 'json' | 'markdown') => {
+    const text =
+      type === 'json'
+        ? JSON.stringify(mapFormFieldsToFirestoreJob(status).data, null, 2)
+        : buildMarkdownOutput();
+    const ok = await copyTextToClipboard(text);
+    if (ok) {
+      setCopiedCodeType(type);
+      showToast(
+        type === 'json'
+          ? 'Firestore jobs JSON कोड कॉपी हो गया!'
+          : 'तैयार Markdown कोड कॉपी हो गया!'
+      );
+      window.setTimeout(() => setCopiedCodeType(null), 2500);
+    } else {
+      showToast('कोड कॉपी करने में समस्या आई।');
+    }
+  };
+
+  const renderCodeGeneratorPanel = () => {
+    const mappedJob = mapFormFieldsToFirestoreJob(status);
+    const codeText =
+      codeFormatTab === 'json'
+        ? JSON.stringify(mappedJob.data, null, 2)
+        : buildMarkdownOutput();
+
+    return (
+      <div className="bg-white border border-neutral-200 rounded-xl p-4 sm:p-5 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Code2 className="w-4 h-4 text-[#15803d]" />
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-neutral-900">
+                Firestore `jobs` Collection Mapper &amp; 1-Click JSON / Markdown Copy
+              </h3>
+              <p className="text-[11px] text-neutral-500 font-mono">
+                Target Path: /{mappedJob.docPath} · Auto-mapped from Title, Slug, Category, Dates &amp; Links
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="inline-flex p-0.5 bg-neutral-100 rounded-lg border border-neutral-200">
+              <button
+                type="button"
+                onClick={() => setCodeFormatTab('json')}
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer ${
+                  codeFormatTab === 'json'
+                    ? 'bg-white text-neutral-900 shadow-2xs'
+                    : 'text-neutral-600 hover:text-neutral-900'
+                }`}
+              >
+                jobs JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => setCodeFormatTab('markdown')}
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer ${
+                  codeFormatTab === 'markdown'
+                    ? 'bg-white text-neutral-900 shadow-2xs'
+                    : 'text-neutral-600 hover:text-neutral-900'
+                }`}
+              >
+                Markdown
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void handleCopyGeneratedCode('json')}
+              className="px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+            >
+              {copiedCodeType === 'json' ? (
+                <Check className="w-3.5 h-3.5" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{copiedCodeType === 'json' ? 'JSON Copied!' : 'Copy JSON'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => void handleCopyGeneratedCode('markdown')}
+              className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+            >
+              {copiedCodeType === 'markdown' ? (
+                <Check className="w-3.5 h-3.5 text-[#15803d]" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{copiedCodeType === 'markdown' ? 'MD Copied!' : 'Copy Markdown'}</span>
+            </button>
+          </div>
+        </div>
+
+        <pre className="w-full max-h-64 overflow-auto rounded-lg bg-neutral-950 text-neutral-100 p-3.5 text-xs font-mono leading-relaxed select-all">
+          {codeText}
+        </pre>
+      </div>
+    );
+  };
+
   const renderGoogleSnippetPreview = () => (
     <div className="bg-white border border-neutral-200 rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between">
@@ -760,17 +1020,51 @@ export const PostBuilderClient: React.FC = () => {
             {existingPost ? 'Edit Recruitment Post' : 'New Recruitment Post Builder'}
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5 font-mono">
-            {existingPost ? `Editing ID: ${existingPost.id}` : 'Structured Schema · Live Firestore Publish · On-Demand Revalidation'}
+            {existingPost
+              ? `Firestore Path: /jobs/${existingPost.id}`
+              : `Firestore Target: /jobs/${effectiveSlug} · Live Sync & Revalidation`}
           </p>
         </div>
         {existingPost && (
-          <button
-            type="button"
-            onClick={() => router.push('/admin/posts/new')}
-            className="self-start sm:self-auto px-3 py-1.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-700 cursor-pointer whitespace-nowrap"
-          >
-            Start Fresh Post
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {confirmDeletePost ? (
+              <div className="inline-flex items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={deletingPost}
+                  onClick={() => void handleDeleteCurrentJob()}
+                  className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                >
+                  {deletingPost ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  <span>{deletingPost ? 'Deleting...' : 'Confirm Delete'}</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={deletingPost}
+                  onClick={() => setConfirmDeletePost(false)}
+                  className="px-2.5 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-medium text-neutral-700 cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmDeletePost(true)}
+                className="px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Job Post</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => router.push('/admin/posts/new')}
+              className="px-3 py-1.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-700 cursor-pointer whitespace-nowrap"
+            >
+              Start Fresh Post
+            </button>
+          </div>
         )}
       </div>
 
@@ -788,8 +1082,8 @@ export const PostBuilderClient: React.FC = () => {
             <CheckCircle2 className="w-4 h-4 text-[#15803d] shrink-0" />
             <span>
               {successInfo.synced
-                ? 'Published live to Firebase Firestore'
-                : 'Saved locally (sign in with Google Admin for cloud sync)'}
+                ? `Saved & synced to Firestore /jobs/${successInfo.slug}`
+                : 'Saved locally (sign in with Google Admin for Firestore /jobs sync)'}
               {successInfo.revalidated ? ' · Cache revalidated' : ''}
               {successInfo.indexed ? ' · Indexing dispatched' : ''}
             </span>
@@ -843,12 +1137,14 @@ export const PostBuilderClient: React.FC = () => {
       {/* Main 2-Column Split: Editor Left + Sticky Live SERP Preview Right (Desktop) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-8 bg-white border border-neutral-200 rounded-xl p-5 sm:p-6 space-y-5">
-          {/* TAB 1: BASIC INFO */}
+          {/* TAB 1: ALL-IN-ONE QUICK POST FORM (BASIC INFO + DATES + LINKS + RICH TEXT EDITOR) */}
           {activeTab === 'basic' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Category</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    कैटेगरी ड्रॉपडाउन (Category) *
+                  </label>
                   <select
                     value={category}
                     onChange={(e) => {
@@ -869,7 +1165,9 @@ export const PostBuilderClient: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Publish Status</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    पब्लिश स्थिति (Publish Status)
+                  </label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as JobStatusType)}
@@ -887,13 +1185,19 @@ export const PostBuilderClient: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                  Hindi Post Title (हिंदी शीर्षक) *
+                  पोस्ट का शीर्षक — हिंदी (Hindi Post Title) *
                 </label>
                 <input
                   type="text"
                   maxLength={500}
                   value={titleHi}
-                  onChange={(e) => setTitleHi(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setTitleHi(val);
+                    if (!slugTouched && !titleEn.trim()) {
+                      setSlug(makeSlug(val));
+                    }
+                  }}
                   placeholder="जोधपुर राशन डीलर भर्ती 2026: 14 दुकानों के लिए आवेदन शुरू"
                   className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
                 />
@@ -901,7 +1205,7 @@ export const PostBuilderClient: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                  English Post Title (SEO &amp; Slug) *
+                  पोस्ट का शीर्षक — English (SEO Title &amp; Auto Slug) *
                 </label>
                 <input
                   type="text"
@@ -918,17 +1222,19 @@ export const PostBuilderClient: React.FC = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-semibold text-neutral-700">URL Slug (Auto-Generated)</label>
-                  {slugTouched && !existingPost && titleEn.trim() && (
+                  <label className="text-xs font-semibold text-neutral-700">
+                    URL स्लग (Slug - टाइटल से अपने आप बनता है)
+                  </label>
+                  {slugTouched && !existingPost && (titleEn.trim() || titleHi.trim()) && (
                     <button
                       type="button"
                       onClick={() => {
-                        setSlug(makeSlug(titleEn));
+                        setSlug(makeSlug(titleEn.trim() || titleHi.trim()));
                         setSlugTouched(false);
                       }}
                       className="text-xs font-semibold text-[#15803d] hover:underline cursor-pointer"
                     >
-                      Regenerate
+                      टाइटल से फिर बनाएँ (Regenerate)
                     </button>
                   )}
                 </div>
@@ -946,14 +1252,30 @@ export const PostBuilderClient: React.FC = () => {
                 />
                 {duplicateSlug && (
                   <p className="text-xs text-amber-700 font-medium mt-1">
-                    A post with this slug already exists — saving will overwrite it.
+                    इस स्लग (Slug) की पोस्ट पहले से मौजूद है — सेव करने पर यह अपडेट हो जाएगी।
                   </p>
                 )}
               </div>
 
+              {/* Total Posts, Board, Department, Qualification */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Board / Authority</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    कुल पद (Total Posts) *
+                  </label>
+                  <input
+                    type="text"
+                    value={totalPosts}
+                    onChange={(e) => setTotalPosts(e.target.value)}
+                    placeholder="14 पद (या 2500)"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    बोर्ड / संस्था (Board / Authority)
+                  </label>
                   <select
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value as BoardType)}
@@ -968,61 +1290,199 @@ export const PostBuilderClient: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Department Name</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    विभाग का नाम (Department Name)
+                  </label>
                   <input
                     type="text"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    placeholder="Food & Civil Supplies Dept, Jodhpur"
+                    placeholder="खाद्य एवं नागरिक आपूर्ति विभाग, जोधपुर"
                     className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
                   />
                 </div>
+              </div>
+
+              {/* Qualification Selector & Details */}
+              <div className="border-t border-neutral-200 pt-4 space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    योग्यता चुनें (Qualification) *
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUALIFICATIONS.map((q) => {
+                      const active = qualifications.includes(q);
+                      return (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() =>
+                            setQualifications((prev) =>
+                              prev.includes(q)
+                                ? prev.length > 1
+                                  ? prev.filter((item) => item !== q)
+                                  : prev
+                                : [...prev, q]
+                            )
+                          }
+                          className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
+                            active
+                              ? 'bg-[#15803d] text-white border-[#15803d]'
+                              : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50'
+                          }`}
+                        >
+                          {q}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Total Posts</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    योग्यता विवरण (Qualification Details)
+                  </label>
                   <input
                     type="text"
-                    value={totalPosts}
-                    onChange={(e) => setTotalPosts(e.target.value)}
-                    placeholder="14 Posts"
+                    value={qualificationDetails}
+                    onChange={(e) => setQualificationDetails(e.target.value)}
+                    placeholder="उदा. 12वीं पास / स्नातक + कंप्यूटर ज्ञान (RSCIT)"
                     className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
                   />
                 </div>
+              </div>
 
+              {/* Start Date & Last Date */}
+              <div className="border-t border-neutral-200 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Post Name</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    आवेदन शुरू तिथि (Application Start Date)
+                  </label>
                   <input
                     type="text"
-                    value={postName}
-                    onChange={(e) => setPostName(e.target.value)}
-                    placeholder="Ration Dealer / Patwari"
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                    value={getStartDateValue()}
+                    onChange={(e) => setStartDateValue(e.target.value)}
+                    placeholder="2026-11-23 या 23 नवंबर 2026"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm font-mono text-neutral-900 focus:outline-none focus:border-[#15803d]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Application Mode</label>
-                  <select
-                    value={applicationMode}
-                    onChange={(e) => setApplicationMode(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 bg-white focus:outline-none focus:border-[#15803d]"
-                  >
-                    <option value="Online (ऑनलाइन)">Online (ऑनलाइन)</option>
-                    <option value="Offline (ऑफलाइन)">Offline (ऑफलाइन)</option>
-                    <option value="Online & Offline">Online &amp; Offline</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Advt No. / Location</label>
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+                    आवेदन अंतिम तिथि (Application Last Date) *
+                  </label>
                   <input
                     type="text"
-                    value={advtNo}
-                    onChange={(e) => setAdvtNo(e.target.value)}
-                    placeholder="Advt 04/2026"
-                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                    value={getLastDateValue()}
+                    onChange={(e) => setLastDateValue(e.target.value)}
+                    placeholder="2026-12-20 या 20 दिसंबर 2026"
+                    className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-sm font-mono text-neutral-900 focus:outline-none focus:border-[#15803d]"
                   />
                 </div>
+              </div>
+
+              {/* Important Links (Apply Online, Notification PDF, Official Website) */}
+              <div className="border-t border-neutral-200 pt-4 space-y-3">
+                <h2 className="text-xs font-bold text-neutral-900 uppercase tracking-wider">
+                  महत्वपूर्ण लिंक्स (Important Links)
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                      Apply Online लिंक
+                    </label>
+                    <input
+                      type="url"
+                      value={applyOnlineUrl}
+                      onChange={(e) => setApplyOnlineUrl(e.target.value)}
+                      placeholder="https://sso.rajasthan.gov.in/"
+                      className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-xs font-mono text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                      Notification PDF लिंक
+                    </label>
+                    <input
+                      type="url"
+                      value={notificationPdfUrl}
+                      onChange={(e) => setNotificationPdfUrl(e.target.value)}
+                      placeholder="https://.../notification.pdf"
+                      className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-xs font-mono text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                      Official Website लिंक
+                    </label>
+                    <input
+                      type="url"
+                      value={officialWebsiteUrl}
+                      onChange={(e) => setOfficialWebsiteUrl(e.target.value)}
+                      placeholder="https://rssb.rajasthan.gov.in/"
+                      className="w-full px-3 py-2 rounded-lg border border-neutral-300 text-xs font-mono text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Rich Text / Markdown Editor */}
+              <div className="border-t border-neutral-200 pt-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                  <label className="text-xs font-semibold text-neutral-700">
+                    पूरा विवरण लिखने के लिए Rich Text / Markdown एडिटर
+                  </label>
+                  <div className="flex items-center gap-1 bg-neutral-100 p-1 rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => insertFormat('**', '**')}
+                      title="Bold (**text**)"
+                      className="p-1.5 rounded hover:bg-white text-neutral-700 cursor-pointer"
+                    >
+                      <Bold className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormat('\n## ')}
+                      title="Heading (## Heading)"
+                      className="p-1.5 rounded hover:bg-white text-neutral-700 cursor-pointer"
+                    >
+                      <Heading2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormat('\n• ')}
+                      title="Bullet List"
+                      className="p-1.5 rounded hover:bg-white text-neutral-700 cursor-pointer"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormat('\n1. ')}
+                      title="Numbered List"
+                      className="p-1.5 rounded hover:bg-white text-neutral-700 cursor-pointer"
+                    >
+                      <ListOrdered className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertFormat('[लिंक टेक्स्ट](https://', ')')}
+                      title="Insert Markdown Link"
+                      className="p-1.5 rounded hover:bg-white text-neutral-700 cursor-pointer"
+                    >
+                      <Link2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  ref={descriptionRef}
+                  rows={6}
+                  value={descriptionHi}
+                  onChange={(e) => setDescriptionHi(e.target.value)}
+                  placeholder="यहाँ भर्ती या योजना का पूरा विवरण, पात्रता, चयन प्रक्रिया और आवेदन के निर्देश Markdown या Rich Text में लिखें..."
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm text-neutral-900 leading-relaxed focus:outline-none focus:border-[#15803d]"
+                />
               </div>
             </div>
           )}
@@ -1799,17 +2259,33 @@ export const PostBuilderClient: React.FC = () => {
         </div>
       </div>
 
+      {/* Generated JSON & Markdown Code (1-Click Copy) */}
+      {renderCodeGeneratorPanel()}
+
       {/* Compact Sticky Bottom Action Bar (<= 56px height, mobile thumb friendly) */}
       <div className="fixed bottom-0 left-0 right-0 lg:left-64 h-14 bg-white border-t border-neutral-200 px-4 sm:px-6 flex items-center justify-between gap-3 z-40">
         <div className="text-xs text-neutral-500 truncate hidden sm:block font-mono">
           /{effectiveSlug}
         </div>
-        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button
+            type="button"
+            onClick={() => void handleCopyGeneratedCode('json')}
+            className="px-3 py-2 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+          >
+            {copiedCodeType === 'json' ? (
+              <Check className="w-3.5 h-3.5 text-[#15803d]" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+            <span>{copiedCodeType === 'json' ? 'Copied!' : 'Copy JSON'}</span>
+          </button>
+
           <button
             type="button"
             disabled={savingMode !== null}
             onClick={() => void handleSaveOrPublish('draft')}
-            className="flex-1 sm:flex-initial px-4 py-2 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-800 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             {savingMode === 'draft' ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1823,7 +2299,7 @@ export const PostBuilderClient: React.FC = () => {
             type="button"
             disabled={savingMode !== null}
             onClick={() => void handleSaveOrPublish('publish')}
-            className="flex-1 sm:flex-initial px-5 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+            className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
             {savingMode === 'publish' ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -17,6 +17,7 @@ import {
   Check,
   Loader2,
   X,
+  Copy,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePortal } from '@/context/PortalContext';
@@ -26,6 +27,7 @@ import {
   isExpiringWithinDays,
 } from '@/utils/adminPostUtils';
 import { compareVacanciesNewestFirst } from '@/utils/dateUtils';
+import { copyTextToClipboard } from '@/utils/shareUtils';
 import type { CategoryType, JobStatusType, VacancyItem } from '@/types';
 
 const CATEGORY_TABS: { key: 'ALL' | CategoryType; label: string }[] = [
@@ -256,27 +258,46 @@ export const AdminDashboardClient: React.FC = () => {
     await triggerRevalidate();
   };
 
+  const handleCopyPostJson = async (item: VacancyItem) => {
+    const jsonCode = JSON.stringify(item, null, 2);
+    const ok = await copyTextToClipboard(jsonCode);
+    if (ok) {
+      showToast(`JSON कोड कॉपी हो गया (${item.id})`);
+    } else {
+      showToast('JSON कॉपी करने में समस्या आई।');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Heading */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 tracking-tight">
-            Recruitment Publishing Dashboard
+            एडमिन डैशबोर्ड (Recruitment Publishing Dashboard)
           </h1>
           <p className="text-sm text-neutral-600 mt-0.5">
-            Manage live Firebase vacancies, deadlines, SEO readiness, and instant search indexing.
+            नई पोस्ट बनाएँ, पुरानी पोस्ट एडिट या डिलीट करें, Firebase क्लाउड में सेव करें या 1-क्लिक में JSON/Markdown कॉपी करें।
           </p>
         </div>
-        <button
-          type="button"
-          disabled={revalidating}
-          onClick={handleManualRevalidate}
-          className="self-start sm:self-auto px-3.5 py-2 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${revalidating ? 'animate-spin' : ''}`} aria-hidden="true" />
-          <span>{revalidating ? 'Revalidating...' : 'Revalidate Cache'}</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Link
+            href="/admin/posts/new"
+            className="px-3.5 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors no-underline whitespace-nowrap"
+          >
+            <FilePlus2 className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>+ नई पोस्ट बनाएँ (Create Post)</span>
+          </Link>
+          <button
+            type="button"
+            disabled={revalidating}
+            onClick={handleManualRevalidate}
+            className="px-3.5 py-2 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-800 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${revalidating ? 'animate-spin' : ''}`} aria-hidden="true" />
+            <span>{revalidating ? 'Revalidating...' : 'Revalidate Cache'}</span>
+          </button>
+        </div>
       </div>
 
       {/* 3 Dashboard Quick Widgets (Single-Elevation Hairline Grid) */}
@@ -611,12 +632,22 @@ export const AdminDashboardClient: React.FC = () => {
                         <div className="inline-flex items-center justify-end gap-1">
                           <Link
                             href={`/admin/posts/new?edit=${encodeURIComponent(item.id)}`}
-                            title="Edit in Post Builder"
+                            title="Edit Post (पोस्ट एडिट करें)"
                             aria-label={`Edit ${item.title}`}
                             className="p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
                           >
                             <Pencil className="w-4 h-4" />
                           </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => void handleCopyPostJson(item)}
+                            title="Copy JSON (1-Click JSON कॉपी करें)"
+                            aria-label={`Copy JSON for ${item.title}`}
+                            className="p-2 rounded-md text-neutral-600 hover:text-[#15803d] hover:bg-emerald-50 transition-colors cursor-pointer"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
 
                           <button
                             type="button"

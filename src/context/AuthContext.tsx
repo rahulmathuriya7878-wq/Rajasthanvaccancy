@@ -175,12 +175,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err: any) {
       console.error('Google popup sign-in error:', err);
       const code = err?.code || '';
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'rajasthanvacancy.online';
       const msg =
-        code === 'auth/popup-blocked'
-          ? 'ब्राउज़र ने Google लॉगिन पॉपअप ब्लॉक कर दिया। कृपया पॉपअप की अनुमति दें और पुनः प्रयास करें।'
-          : code === 'auth/popup-closed-by-user'
-            ? 'Google लॉगिन विंडो बंद कर दी गई। क्लाउड सिंक के लिए लॉगिन पूरा करें।'
-            : err?.message || 'Google लॉगिन विफल रहा।';
+        code === 'auth/unauthorized-domain'
+          ? `Firebase Auth में "${currentHost}" डोमेन अभी अनुमति सूची (Authorized Domains) में नहीं है। समाधान: (1) तुरंत लॉगिन के लिए https://ais-pre-xr5evgohw4ejjzuf775vak-300878841095.asia-southeast1.run.app खोलें, या (2) एडमिन पासकोड से लॉगिन करें, या (3) Firebase Console → Authentication → Settings → Authorized domains में "${currentHost}" और "www.${currentHost.replace(/^www\./, '')}" जोड़ें।`
+          : code === 'auth/popup-blocked'
+            ? 'ब्राउज़र ने Google लॉगिन पॉपअप ब्लॉक कर दिया। कृपया पॉपअप की अनुमति दें और पुनः प्रयास करें।'
+            : code === 'auth/popup-closed-by-user'
+              ? 'Google लॉगिन विंडो बंद कर दी गई। क्लाउड सिंक के लिए लॉगिन पूरा करें।'
+              : err?.message || 'Google लॉगिन विफल रहा।';
       return { ok: false, error: msg };
     }
   };
@@ -213,12 +216,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { ok: false, error: 'Google sign-in did not complete.' };
     } catch (err: any) {
       const code = err?.code || '';
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'rajasthanvacancy.online';
       const msg =
-        code === 'auth/popup-blocked'
-          ? 'Please allow browser popups to sync job alerts with Google.'
-          : code === 'auth/popup-closed-by-user'
-            ? 'Sign-in window closed.'
-            : err?.message || 'Unable to sign in right now.';
+        code === 'auth/unauthorized-domain'
+          ? `Domain "${currentHost}" is not yet added to Firebase Authorized Domains. Your job alerts remain saved on this device automatically.`
+          : code === 'auth/popup-blocked'
+            ? 'Please allow browser popups to sync job alerts with Google.'
+            : code === 'auth/popup-closed-by-user'
+              ? 'Sign-in window closed.'
+              : err?.message || 'Unable to sign in right now.';
       return { ok: false, error: msg };
     }
   };

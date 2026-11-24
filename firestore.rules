@@ -62,6 +62,65 @@ service cloud.firestore {
         ];
     }
 
+    function isValidJobPost(data, jobId) {
+      return data.keys().hasAll([
+          'jobId',
+          'slug',
+          'title',
+          'titleHi',
+          'category',
+          'totalPosts',
+          'qualification',
+          'dates',
+          'links',
+          'description',
+          'status',
+          'payload',
+          'updatedByUid',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'jobId',
+          'slug',
+          'title',
+          'titleHi',
+          'category',
+          'totalPosts',
+          'qualification',
+          'dates',
+          'links',
+          'description',
+          'status',
+          'payload',
+          'updatedByUid',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        isValidId(data.jobId) &&
+        data.jobId == jobId &&
+        isValidId(data.slug) &&
+        data.slug == jobId &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 500 &&
+        data.titleHi is string && data.titleHi.size() >= 1 && data.titleHi.size() <= 500 &&
+        isValidCategory(data.category) &&
+        data.totalPosts is string && data.totalPosts.size() >= 1 && data.totalPosts.size() <= 120 &&
+        data.qualification is string && data.qualification.size() >= 1 && data.qualification.size() <= 500 &&
+        data.dates is map &&
+        data.dates.keys().hasOnly(['startDate', 'lastDate', 'notificationDate', 'examDate']) &&
+        data.links is map &&
+        data.links.keys().hasOnly(['applyOnlineUrl', 'notificationPdfUrl', 'officialWebsiteUrl']) &&
+        data.description is string && data.description.size() <= 20000 &&
+        data.status is string && data.status.size() >= 1 && data.status.size() <= 64 &&
+        data.payload is map &&
+        data.updatedByUid is string &&
+        data.updatedByUid.size() >= 1 &&
+        data.updatedByUid.size() <= 128 &&
+        data.updatedByUid == request.auth.uid &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
     function isValidVacancyOverride(data, vacancyId) {
       return data.keys().hasAll([
           'vacancyId',
@@ -173,6 +232,41 @@ service cloud.firestore {
         ) &&
         data.createdAt is timestamp &&
         data.updatedAt is timestamp;
+    }
+
+    // 0. Publicly readable Jobs Collection (PostBuilderClient CRUD - zero PII, admin-only writes)
+    match /jobs/{jobId} {
+      allow get: if isValidId(jobId);
+      allow list: if resource.data.jobId is string && resource.data.jobId.size() <= 128;
+      allow create: if isVerifiedUser() &&
+        isValidId(jobId) &&
+        isValidJobPost(incoming(), jobId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+      allow update: if isVerifiedUser() &&
+        isValidId(jobId) &&
+        isValidJobPost(incoming(), jobId) &&
+        incoming().jobId == existing().jobId &&
+        incoming().slug == existing().slug &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'title',
+          'titleHi',
+          'category',
+          'totalPosts',
+          'qualification',
+          'dates',
+          'links',
+          'description',
+          'status',
+          'payload',
+          'updatedByUid',
+          'updatedAt'
+        ]) &&
+        isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(jobId) && isAdmin();
     }
 
     // 1. Publicly readable Vacancy Overrides (Word In-Place Edit Mode & Admin Deletions)

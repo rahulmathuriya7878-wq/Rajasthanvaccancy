@@ -226,9 +226,135 @@
         "createdAt",
         "updatedAt"
       ]
+    },
+    "JobPost": {
+      "title": "JobPost",
+      "description": "Structured recruitment job post stored in the jobs Firestore collection, mapped directly from PostBuilderClient form fields (Title, Slug, Category, Dates, Links, Description).",
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Canonical job document ID matching the URL slug."
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "URL-friendly slug generated from the job title."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "English post title."
+        },
+        "titleHi": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Hindi post title."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "enum": [
+            "latest_job",
+            "admit_card",
+            "result",
+            "answer_key",
+            "syllabus",
+            "scheme",
+            "upcoming",
+            "ugc_net",
+            "exam_date",
+            "news"
+          ],
+          "description": "Job post category."
+        },
+        "totalPosts": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Total number of posts."
+        },
+        "qualification": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Required qualification summary."
+        },
+        "dates": {
+          "type": "object",
+          "description": "Structured map of important dates (startDate, lastDate, notificationDate, examDate)."
+        },
+        "links": {
+          "type": "object",
+          "description": "Structured map of official links (applyOnlineUrl, notificationPdfUrl, officialWebsiteUrl)."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 20000,
+          "description": "Rich text / Markdown detailed description of the job post."
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Publication status (active, upcoming, admit_card_out, result_declared, answer_key_out, closed)."
+        },
+        "payload": {
+          "type": "object",
+          "description": "Complete VacancyItem native Firestore Map for portal rendering."
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Firebase Auth UID of the verified admin who saved or updated the job."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the job post was first created (immutable)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest update."
+        }
+      },
+      "required": [
+        "jobId",
+        "slug",
+        "title",
+        "titleHi",
+        "category",
+        "totalPosts",
+        "qualification",
+        "dates",
+        "links",
+        "description",
+        "status",
+        "payload",
+        "updatedByUid",
+        "createdAt",
+        "updatedAt"
+      ]
     }
   },
   "firestore": {
+    "/jobs/{jobId}": {
+      "schema": {
+        "$ref": "#/entities/JobPost"
+      },
+      "description": "Publicly readable, admin-only writable job posts collection managed via PostBuilderClient."
+    },
     "/vacancy_overrides/{vacancyId}": {
       "schema": {
         "$ref": "#/entities/VacancyOverride"
@@ -261,3 +387,4 @@
     }
   }
 }
+

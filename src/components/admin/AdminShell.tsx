@@ -217,46 +217,24 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         className="min-h-screen bg-neutral-50 flex items-center justify-center p-4"
         style={{ fontFamily: "'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif" }}
       >
-        <div className="w-full max-w-md bg-white border border-neutral-200 rounded-xl p-6 sm:p-8 space-y-6">
+        <div className="w-full max-w-md bg-white border border-neutral-200 rounded-xl p-6 sm:p-8 space-y-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#15803d]">
               <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-              <span>Protected Admin Workspace</span>
+              <span>सुरक्षित एडमिन डैशबोर्ड (Protected Admin Panel)</span>
             </div>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Rajasthan Vacancy Admin
+              Rajasthan Vacancy Admin (/admin)
             </h1>
-            <p className="text-sm text-neutral-600 leading-relaxed">
-              Sign in with your verified Google Admin account to publish vacancies live to Firebase, revalidate pages, and submit URLs for indexing.
+            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+              नई पोस्ट जोड़ने, एडिट/डिलीट करने और JSON/Markdown जनरेट करने के लिए अपना एडमिन पासवर्ड/पिन दर्ज करें या Google एडमिन से लॉगिन करें।
             </p>
-          </div>
-
-          <button
-            type="button"
-            disabled={signingIn || loading}
-            onClick={handleGoogleSignIn}
-            className="w-full py-3 px-4 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
-          >
-            {signingIn ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-            <span>{signingIn ? 'Signing in...' : 'Sign in with Google Admin'}</span>
-          </button>
-
-          {loginError && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800">
-              {loginError}
-            </div>
-          )}
-
-          <div className="relative flex items-center py-1">
-            <div className="flex-grow border-t border-neutral-200" />
-            <span className="px-3 text-xs text-neutral-400">or passcode</span>
-            <div className="flex-grow border-t border-neutral-200" />
           </div>
 
           <form onSubmit={handlePasscodeSignIn} className="space-y-3">
             <div>
               <label htmlFor="admin-passcode-input" className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                Admin Passcode
+                एडमिन पासवर्ड / पिन (Admin Password / PIN from .env)
               </label>
               <div className="relative">
                 <KeyRound className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -268,23 +246,48 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
                     setPasscode(e.target.value);
                     setLoginError('');
                   }}
-                  placeholder="Enter admin passcode"
+                  placeholder=".env में सेट किया गया पासवर्ड/पिन डालें"
                   className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-neutral-300 bg-white text-sm text-neutral-900 focus:outline-none focus:border-[#15803d]"
                 />
               </div>
+              <p className="text-[11px] text-neutral-500 mt-1 font-mono">
+                Set via .env: ADMIN_PANEL_PASSCODE / ADMIN_PASSWORD / ADMIN_PIN
+              </p>
             </div>
             <button
               type="submit"
               disabled={signingIn}
-              className="w-full py-2.5 px-4 rounded-lg border border-neutral-300 hover:bg-neutral-100 text-neutral-900 text-xs font-semibold transition-colors cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
             >
-              Unlock Workspace
+              {signingIn ? 'जाँच हो रही है...' : 'पासवर्ड / पिन से लॉगिन करें (Unlock Admin)'}
             </button>
           </form>
 
+          <div className="relative flex items-center py-0.5">
+            <div className="flex-grow border-t border-neutral-200" />
+            <span className="px-3 text-xs text-neutral-400">या क्लाउड सिंक के लिए (or Firebase Cloud)</span>
+            <div className="flex-grow border-t border-neutral-200" />
+          </div>
+
+          <button
+            type="button"
+            disabled={signingIn || loading}
+            onClick={handleGoogleSignIn}
+            className="w-full py-2.5 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          >
+            {signingIn ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4 text-[#15803d]" />}
+            <span>{signingIn ? 'Signing in...' : 'Sign in with Google Admin (Live Firebase)'}</span>
+          </button>
+
+          {loginError && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800 leading-relaxed">
+              {loginError}
+            </div>
+          )}
+
           <div className="pt-2 border-t border-neutral-200 flex items-center justify-between text-xs text-neutral-500">
             <Link href="/" className="hover:text-neutral-900 hover:underline no-underline text-neutral-600">
-              Back to Public Portal
+              ← मुख्य वेबसाइट पर वापस जाएँ (Back to Portal)
             </Link>
             <span>noindex protected</span>
           </div>

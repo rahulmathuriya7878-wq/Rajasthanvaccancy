@@ -58,11 +58,28 @@ export async function POST(request: NextRequest) {
   }
 
   // Optional server-side environment passcode verification (never hardcoded)
-  const configuredPasscode = process.env.ADMIN_PANEL_PASSCODE?.trim();
+  const configuredPasscode = (
+    process.env.ADMIN_PANEL_PASSCODE ||
+    process.env.ADMIN_PASSWORD ||
+    process.env.ADMIN_PIN
+  )?.trim();
   const submittedPasscode = typeof body.passcode === 'string' ? body.passcode.trim() : '';
-  if (configuredPasscode && submittedPasscode) {
+  if (submittedPasscode) {
+    if (!configuredPasscode) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            'पासवर्ड/पिन सर्वर की .env फाइल में सेट नहीं है। कृपया .env में ADMIN_PANEL_PASSCODE (या ADMIN_PASSWORD / ADMIN_PIN) सेट करें, या Google एडमिन से लॉगिन करें।',
+        },
+        { status: 401 }
+      );
+    }
     if (!timingSafeEqualStrings(submittedPasscode, configuredPasscode)) {
-      return NextResponse.json({ ok: false, error: 'Invalid admin passcode.' }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: 'गलत एडमिन पासवर्ड/पिन (Invalid admin passcode).' },
+        { status: 401 }
+      );
     }
     const sessionToken = await createAdminSessionToken({
       email: AUTHORIZED_ADMIN_EMAIL,
@@ -79,7 +96,7 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(
-    { ok: false, error: 'Sign in with your verified Google Admin account to start an admin session.' },
+    { ok: false, error: 'Sign in with your verified Google Admin account or enter your .env admin passcode.' },
     { status: 401 }
   );
 }

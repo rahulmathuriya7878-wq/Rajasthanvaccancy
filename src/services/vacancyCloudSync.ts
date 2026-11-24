@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   onSnapshot,
@@ -10,6 +11,7 @@ import {
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import type { CategoryType, VacancyItem } from '../types';
 
+export const JOBS_COLLECTION = 'jobs';
 const VACANCY_OVERRIDES_COLLECTION = 'vacancy_overrides';
 
 const VALID_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
@@ -26,6 +28,37 @@ const VALID_CATEGORIES: ReadonlySet<string> = new Set([
   'news',
 ]);
 
+export interface FirestoreJobDatesMap {
+  startDate: string;
+  lastDate: string;
+  notificationDate: string;
+  examDate: string;
+}
+
+export interface FirestoreJobLinksMap {
+  applyOnlineUrl: string;
+  notificationPdfUrl: string;
+  officialWebsiteUrl: string;
+}
+
+export interface FirestoreJobDocument {
+  jobId: string;
+  slug: string;
+  title: string;
+  titleHi: string;
+  category: CategoryType;
+  totalPosts: string;
+  qualification: string;
+  dates: FirestoreJobDatesMap;
+  links: FirestoreJobLinksMap;
+  description: string;
+  status: string;
+  payload: Record<string, unknown>;
+  updatedByUid: string;
+  createdAt: unknown;
+  updatedAt: unknown;
+}
+
 export interface CloudVacancyOverridesMap {
   overrides: Record<string, VacancyItem>;
   deletedIds: string[];
@@ -33,6 +66,8 @@ export interface CloudVacancyOverridesMap {
 
 export interface CloudSyncResult {
   synced: boolean;
+  collection?: string;
+  docId?: string;
   reason?: 'auth_required' | 'permission_denied' | 'invalid_id' | 'quota_exceeded' | 'error';
   message?: string;
 }
@@ -106,16 +141,131 @@ function sanitizeString(val: unknown, maxLen: number): string {
   return s.length > maxLen ? s.slice(0, maxLen) : s;
 }
 
+/**
+ * Maps a VacancyItem (or PostBuilderClient form payload) into the strict schema
+ * of the Firestore `jobs` collection (`/jobs/{jobId}`).
+ */
+export function mapVacancyToFirestoreJobDoc(
+  vacancy: VacancyItem,
+  updatedByUid: string,
+  existingCreatedAt?: unknown
+): FirestoreJobDocument {
+  const jobId = sanitizeString(vacancy.id, 128).trim();
+  const title = sanitizeString(vacancy.title || vacancy.titleHi || jobId, 500).trim() || jobId;
+  const titleHi = sanitizeString(vacancy.titleHi || vacancy.title || jobId, 500).trim() || jobId;
+  const totalPosts =
+    sanitizeString(vacancy.totalPosts ?? 'विभिन्न पद', 120).trim() || 'विभिन्न पद';
+  const qualLevels = Array.isArray(vacancy.qualification) ? vacancy.qualification.join(', ') : '';
+  const qualDetail = vacancy.qualificationDetailsHi || vacancy.qualificationDetails || '';
+  const qualification =
+    sanitizeString(
+      qualLevels && qualDetail ? `${qualLevels} — ${qualDetail}` : qualLevels || qualDetail || 'As per notification',
+      500
+    ).trim() || 'As per notification';
+
+  const imp = vacancy.importantDates || {};
+  const dates: FirestoreJobDatesMap = {
+    startDate: sanitizeString(imp.applyStartDate || '', 120),
+    lastDate: sanitizeString(imp.applyLastDate || '', 120),
+    notificationDate: sanitizeString(imp.notificationDate || '', 120),
+    examDate: sanitizeString(imp.examDate || imp.admitCardDate || '', 120),
+  };
+
+  const links: FirestoreJobLinksMap = {
+    applyOnlineUrl: sanitizeString(vacancy.officialLinks?.applyOnlineUrl || '', 500),
+    notificationPdfUrl: sanitizeString(vacancy.officialLinks?.notificationPdfUrl || '', 500),
+    officialWebsiteUrl: sanitizeString(vacancy.officialLinks?.officialWebsiteUrl || '', 500),
+  };
+
+  const sanitizedPayload = encodeValueForFirestore({
+    ...vacancy,
+    id: jobId,
+    updatedAt: new Date().toISOString().split('T')[0],
+  }) as Record<string, unknown>;
+
+  return {
+    jobId,
+    slug: jobId,
+    title,
+    titleHi,
+    category: sanitizeCategory(vacancy.category),
+    totalPosts,
+    qualification,
+    dates,
+    links,
+    description: sanitizeString(vacancy.descriptionHi || vacancy.description || '', 20000),
+    status: sanitizeString(vacancy.status || 'active', 64) || 'active',
+    payload: sanitizedPayload,
+    updatedByUid,
+    createdAt: existingCreatedAt || serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+}
+
 export function subscribeVacancyOverrides(
   onUpdate: (data: CloudVacancyOverridesMap) => void,
   onError?: (err: Error) => void
 ): Unsubscribe {
-  const colRef = collection(db, VACANCY_OVERRIDES_COLLECTION);
-  return onSnapshot(
-    colRef,
+  let jobsMap: Record<string, VacancyItem> = {};
+  let overridesMap: Record<string, VacancyItem> = {};
+  let deletedIdsList: string[] = [];
+
+  const emitMerged = () => {
+    const mergedOverrides: Record<string, VacancyItem> = {
+      ...overridesMap,
+      ...jobsMap,
+    };
+    const deletedSet = new Set(deletedIdsList);
+    for (const delId of deletedSet) {
+      delete mergedOverrides[delId];
+    }
+    onUpdate({
+      overrides: mergedOverrides,
+      deletedIds: Array.from(deletedSet),
+    });
+  };
+
+  const jobsColRef = collection(db, JOBS_COLLECTION);
+  const unsubJobs = onSnapshot(
+    jobsColRef,
     (snapshot) => {
-      const overrides: Record<string, VacancyItem> = {};
-      const deletedIds: string[] = [];
+      const nextJobs: Record<string, VacancyItem> = {};
+      snapshot.forEach((docSnap) => {
+        const raw = docSnap.data();
+        const jobId = typeof raw.jobId === 'string' ? raw.jobId : docSnap.id;
+        if (!jobId) return;
+
+        if (raw.payload && typeof raw.payload === 'object') {
+          const decoded = decodeValueFromFirestore(raw.payload) as VacancyItem;
+          if (decoded && typeof decoded === 'object') {
+            nextJobs[jobId] = {
+              ...decoded,
+              id: jobId,
+              title: typeof raw.title === 'string' && raw.title ? raw.title : decoded.title,
+              titleHi: typeof raw.titleHi === 'string' && raw.titleHi ? raw.titleHi : decoded.titleHi,
+              category: sanitizeCategory(typeof raw.category === 'string' ? raw.category : decoded.category),
+            };
+          }
+        }
+      });
+      jobsMap = nextJobs;
+      emitMerged();
+    },
+    (error) => {
+      try {
+        handleFirestoreError(error, OperationType.LIST, JOBS_COLLECTION);
+      } catch (wrappedErr) {
+        if (onError) onError(wrappedErr as Error);
+      }
+    }
+  );
+
+  const overridesColRef = collection(db, VACANCY_OVERRIDES_COLLECTION);
+  const unsubOverrides = onSnapshot(
+    overridesColRef,
+    (snapshot) => {
+      const nextOverrides: Record<string, VacancyItem> = {};
+      const nextDeleted: string[] = [];
 
       snapshot.forEach((docSnap) => {
         const raw = docSnap.data();
@@ -123,14 +273,14 @@ export function subscribeVacancyOverrides(
         if (!vacancyId) return;
 
         if (raw.isDeleted === true) {
-          deletedIds.push(vacancyId);
+          nextDeleted.push(vacancyId);
           return;
         }
 
         if (raw.payload && typeof raw.payload === 'object') {
           const decoded = decodeValueFromFirestore(raw.payload) as VacancyItem;
           if (decoded && typeof decoded === 'object') {
-            overrides[vacancyId] = {
+            nextOverrides[vacancyId] = {
               ...decoded,
               id: vacancyId,
             };
@@ -138,7 +288,9 @@ export function subscribeVacancyOverrides(
         }
       });
 
-      onUpdate({ overrides, deletedIds });
+      overridesMap = nextOverrides;
+      deletedIdsList = nextDeleted;
+      emitMerged();
     },
     (error) => {
       try {
@@ -148,8 +300,17 @@ export function subscribeVacancyOverrides(
       }
     }
   );
+
+  return () => {
+    unsubJobs();
+    unsubOverrides();
+  };
 }
 
+/**
+ * Saves or updates a job post directly in the Firestore `jobs` collection (`/jobs/{jobId}`)
+ * and keeps `/vacancy_overrides/{jobId}` synchronized.
+ */
 export async function saveVacancyOverrideToCloud(
   vacancy: VacancyItem
 ): Promise<CloudSyncResult> {
@@ -157,62 +318,76 @@ export async function saveVacancyOverrideToCloud(
   if (!user || !user.emailVerified) {
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: 'auth_required',
       message: 'Google एडमिन लॉगिन आवश्यक है ताकि अपडेट सभी फोन पर दिखे।',
     };
   }
 
-  const vacancyId = sanitizeString(vacancy.id, 128).trim();
-  if (!vacancyId || !VALID_ID_REGEX.test(vacancyId)) {
+  const jobId = sanitizeString(vacancy.id, 128).trim();
+  if (!jobId || !VALID_ID_REGEX.test(jobId)) {
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: 'invalid_id',
-      message: 'अमान्य पोस्ट ID।',
+      message: 'अमान्य पोस्ट ID (Slug)।',
     };
   }
 
-  const docPath = `${VACANCY_OVERRIDES_COLLECTION}/${vacancyId}`;
-  const docRef = doc(db, VACANCY_OVERRIDES_COLLECTION, vacancyId);
-
-  const sanitizedPayload = encodeValueForFirestore({
-    ...vacancy,
-    id: vacancyId,
-    updatedAt: new Date().toISOString().split('T')[0],
-  }) as Record<string, unknown>;
+  const jobDocPath = `${JOBS_COLLECTION}/${jobId}`;
+  const jobDocRef = doc(db, JOBS_COLLECTION, jobId);
 
   try {
-    let existingCreatedAt: unknown = null;
+    let existingJobCreatedAt: unknown = null;
     try {
-      const existingSnap = await getDoc(docRef);
-      if (existingSnap.exists()) {
-        existingCreatedAt = existingSnap.data()?.createdAt || null;
+      const existingJobSnap = await getDoc(jobDocRef);
+      if (existingJobSnap.exists()) {
+        existingJobCreatedAt = existingJobSnap.data()?.createdAt || null;
       }
     } catch (readErr) {
-      handleFirestoreError(readErr, OperationType.GET, docPath);
+      handleFirestoreError(readErr, OperationType.GET, jobDocPath);
     }
 
-    const record = {
-      vacancyId,
-      isDeleted: false,
-      title: sanitizeString(vacancy.title || vacancy.titleHi || vacancyId, 500),
-      titleHi: sanitizeString(vacancy.titleHi || vacancy.title || vacancyId, 500),
-      category: sanitizeCategory(vacancy.category),
-      payload: sanitizedPayload,
-      updatedByUid: user.uid,
-      createdAt: existingCreatedAt || serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    };
+    const jobRecord = mapVacancyToFirestoreJobDoc(vacancy, user.uid, existingJobCreatedAt);
+    await setDoc(jobDocRef, jobRecord);
 
-    await setDoc(docRef, record);
-    return { synced: true };
+    // Also keep vacancy_overrides synchronized for backward compatibility
+    const overridePath = `${VACANCY_OVERRIDES_COLLECTION}/${jobId}`;
+    const overrideRef = doc(db, VACANCY_OVERRIDES_COLLECTION, jobId);
+    try {
+      let existingOverrideCreatedAt: unknown = null;
+      const existingOverrideSnap = await getDoc(overrideRef);
+      if (existingOverrideSnap.exists()) {
+        existingOverrideCreatedAt = existingOverrideSnap.data()?.createdAt || null;
+      }
+      await setDoc(overrideRef, {
+        vacancyId: jobId,
+        isDeleted: false,
+        title: jobRecord.title,
+        titleHi: jobRecord.titleHi,
+        category: jobRecord.category,
+        payload: jobRecord.payload,
+        updatedByUid: user.uid,
+        createdAt: existingOverrideCreatedAt || serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (overrideErr) {
+      try {
+        handleFirestoreError(overrideErr, OperationType.WRITE, overridePath);
+      } catch {
+        // Primary jobs collection write succeeded
+      }
+    }
+
+    return {
+      synced: true,
+      collection: JOBS_COLLECTION,
+      docId: jobId,
+    };
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : String(error);
     try {
-      handleFirestoreError(
-        error,
-        OperationType.WRITE,
-        docPath
-      );
+      handleFirestoreError(error, OperationType.WRITE, jobDocPath);
     } catch {
       // Structured error logged via handleFirestoreError
     }
@@ -220,6 +395,7 @@ export async function saveVacancyOverrideToCloud(
     if (rawMessage.toLowerCase().includes('quota exceeded')) {
       return {
         synced: false,
+        collection: JOBS_COLLECTION,
         reason: 'quota_exceeded',
         message: 'Firestore दैनिक कोटा समाप्त हो गया है। कल पुनः प्रयास करें।',
       };
@@ -231,6 +407,7 @@ export async function saveVacancyOverrideToCloud(
     ) {
       return {
         synced: false,
+        collection: JOBS_COLLECTION,
         reason: 'permission_denied',
         message: 'क्लाउड अपडेट की अनुमति केवल अधिकृत एडमिन Google खाते (rahulmathuriya7878@gmail.com) को है।',
       };
@@ -238,12 +415,17 @@ export async function saveVacancyOverrideToCloud(
 
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: 'error',
       message: rawMessage,
     };
   }
 }
 
+/**
+ * Deletes a job post from the Firestore `jobs` collection (`/jobs/{jobId}`)
+ * and marks it deleted in `/vacancy_overrides/{jobId}` so even built-in posts are hidden across devices.
+ */
 export async function markVacancyDeletedInCloud(
   vacancyIdRaw: string,
   existingVacancy?: VacancyItem
@@ -252,56 +434,71 @@ export async function markVacancyDeletedInCloud(
   if (!user || !user.emailVerified) {
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: 'auth_required',
       message: 'पोस्ट को सभी फोन से हटाने के लिए Google एडमिन लॉगिन आवश्यक है।',
     };
   }
 
-  const vacancyId = sanitizeString(vacancyIdRaw, 128).trim();
-  if (!vacancyId || !VALID_ID_REGEX.test(vacancyId)) {
+  const jobId = sanitizeString(vacancyIdRaw, 128).trim();
+  if (!jobId || !VALID_ID_REGEX.test(jobId)) {
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: 'invalid_id',
       message: 'अमान्य पोस्ट ID।',
     };
   }
 
-  const docPath = `${VACANCY_OVERRIDES_COLLECTION}/${vacancyId}`;
-  const docRef = doc(db, VACANCY_OVERRIDES_COLLECTION, vacancyId);
+  const jobDocPath = `${JOBS_COLLECTION}/${jobId}`;
+  const jobDocRef = doc(db, JOBS_COLLECTION, jobId);
 
   try {
-    let existingCreatedAt: unknown = null;
+    await deleteDoc(jobDocRef);
+
+    // Also record deletion tombstone in vacancy_overrides so default initial posts stay deleted
+    const overridePath = `${VACANCY_OVERRIDES_COLLECTION}/${jobId}`;
+    const overrideRef = doc(db, VACANCY_OVERRIDES_COLLECTION, jobId);
     try {
-      const existingSnap = await getDoc(docRef);
+      let existingCreatedAt: unknown = null;
+      const existingSnap = await getDoc(overrideRef);
       if (existingSnap.exists()) {
         existingCreatedAt = existingSnap.data()?.createdAt || null;
       }
-    } catch (readErr) {
-      handleFirestoreError(readErr, OperationType.GET, docPath);
+      await setDoc(overrideRef, {
+        vacancyId: jobId,
+        isDeleted: true,
+        title: sanitizeString(existingVacancy?.title || jobId, 500),
+        titleHi: sanitizeString(existingVacancy?.titleHi || jobId, 500),
+        category: sanitizeCategory(existingVacancy?.category),
+        payload: {},
+        updatedByUid: user.uid,
+        createdAt: existingCreatedAt || serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (overrideErr) {
+      try {
+        handleFirestoreError(overrideErr, OperationType.WRITE, overridePath);
+      } catch {
+        // Primary delete from jobs succeeded
+      }
     }
 
-    await setDoc(docRef, {
-      vacancyId,
-      isDeleted: true,
-      title: sanitizeString(existingVacancy?.title || vacancyId, 500),
-      titleHi: sanitizeString(existingVacancy?.titleHi || vacancyId, 500),
-      category: sanitizeCategory(existingVacancy?.category),
-      payload: {},
-      updatedByUid: user.uid,
-      createdAt: existingCreatedAt || serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-
-    return { synced: true };
+    return {
+      synced: true,
+      collection: JOBS_COLLECTION,
+      docId: jobId,
+    };
   } catch (error) {
     const rawMessage = error instanceof Error ? error.message : String(error);
     try {
-      handleFirestoreError(error, OperationType.WRITE, docPath);
+      handleFirestoreError(error, OperationType.DELETE, jobDocPath);
     } catch {
       // Structured error logged
     }
     return {
       synced: false,
+      collection: JOBS_COLLECTION,
       reason: rawMessage.toLowerCase().includes('permission') ? 'permission_denied' : 'error',
       message: rawMessage,
     };
