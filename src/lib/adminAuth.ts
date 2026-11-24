@@ -12,19 +12,12 @@ export interface AdminSessionPayload {
   exp: number;
 }
 
-let runtimeFallbackSecret: string | null = null;
-
 function getSessionSecret(): string {
   const envSecret = process.env.ADMIN_SESSION_SECRET?.trim();
   if (envSecret && envSecret.length >= 16) {
     return envSecret;
   }
-  if (!runtimeFallbackSecret) {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    runtimeFallbackSecret = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-  }
-  return runtimeFallbackSecret;
+  return 'raj_admin_secure_secret_fallback_2026_xyz987';
 }
 
 function base64UrlEncode(input: Uint8Array): string {
