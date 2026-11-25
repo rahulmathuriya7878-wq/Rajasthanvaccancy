@@ -61,12 +61,16 @@ const FAQ_ITEMS = [
     a: 'UPSC आवेदन में फोटो और सिग्नेचर दोनों का न्यूनतम पिक्सेल 350 × 350 और अधिकतम 1000 × 1000 पिक्सेल तथा फ़ाइल साइज़ 20 KB से 300 KB के बीच JPG फ़ॉर्मेट में होना आवश्यक है।',
   },
   {
-    q: 'क्या मोबाइल से खींची गई सिग्नेचर फोटो का बैकग्राउंड सफ़ेद किया जा सकता है?',
-    a: 'हाँ, टूल में "हस्ताक्षर (Signature)" मोड चुनकर "सफ़ेद बैकग्राउंड साफ़ करें (Clean White Signature Background)" विकल्प चालू करें। इससे कागज़ की हल्की छाया हट जाएगी और आपके हस्ताक्षर साफ़ व गहरे दिखाई देंगे।',
+    q: 'क्या इस टूल से बाएं अंगूठे का निशान (Left Thumb Impression - LTI) भी रीसाइज़ किया जा सकता है?',
+    a: 'जी हाँ, आप टूल में "अंगूठे का निशान (Thumb)" मोड चुनकर बैंकिंग (IBPS, SBI), SSC या रेलवे फॉर्म के लिए अंगूठे के निशान को 20 KB से 50 KB और सटीक 200 × 200 पिक्सेल में रीसाइज़ कर सकते हैं।',
+  },
+  {
+    q: 'क्या इस टूल से 4x6 इंच फोटो पेपर पर 8 पासपोर्ट फोटो की प्रिंटेबल शीट बना सकते हैं?',
+    a: 'हाँ, फोटो रीसाइज़ करने के बाद नीचे "6/8 फोटो प्रिंट शीट बनाएं" बटन पर क्लिक करें। यह टूल तुरंत 4x6 इंच साइज की प्रिंटेबल शीट बना देगा जिसे आप सीधे किसी भी प्रिंटर या सीएससी/ई-मित्र केंद्र पर प्रिंट करवा सकते हैं।',
   },
   {
     q: 'क्या इस टूल से फोटो के नीचे नाम और फोटो खींचने की तारीख (DOP) लिखी जा सकती है?',
-    a: 'हाँ, पासपोर्ट फोटो मोड में "फोटो के नीचे नाम और तारीख लिखें" विकल्प चुनकर आप अभ्यर्थी का नाम और Date of Photo (DOP) सीधे फोटो के नीचे जोड़ सकते हैं।',
+    a: 'हाँ, पासपोर्ट फोटो मोड में "फोटो के नीचे नाम और तारीख जोड़ें (Name & DOP Strip)" विकल्प चुनकर आप अभ्यर्थी का नाम और Date of Photo (DOP) सीधे फोटो के नीचे 1-क्लिक में जोड़ सकते हैं।',
   },
 ];
 
@@ -197,6 +201,7 @@ export default function PhotoSignatureResizeToolPage() {
                   <th className="py-3 px-3.5 font-bold">परीक्षा / बोर्ड (Exam / Board)</th>
                   <th className="py-3 px-3.5 font-bold">पासपोर्ट फोटो (Photo Size)</th>
                   <th className="py-3 px-3.5 font-bold">हस्ताक्षर (Signature Size)</th>
+                  <th className="py-3 px-3.5 font-bold">अंगूठा निशान (Thumb LTI)</th>
                   <th className="py-3 px-3.5 font-bold">फ़ॉर्मेट</th>
                 </tr>
               </thead>
@@ -211,6 +216,9 @@ export default function PhotoSignatureResizeToolPage() {
                   <td className="py-3 px-3.5 text-slate-700">
                     20 KB – 50 KB · 280 × 80 px (7 × 2 cm)
                   </td>
+                  <td className="py-3 px-3.5 text-slate-700">
+                    20 KB – 50 KB · 200 × 200 px
+                  </td>
                   <td className="py-3 px-3.5 font-medium text-slate-800">JPG / JPEG</td>
                 </tr>
                 <tr className="hover:bg-slate-50/80">
@@ -222,6 +230,9 @@ export default function PhotoSignatureResizeToolPage() {
                   </td>
                   <td className="py-3 px-3.5 text-slate-700">
                     10 KB – 20 KB · 4.0 × 2.0 cm (~315 × 157 px)
+                  </td>
+                  <td className="py-3 px-3.5 text-slate-700">
+                    20 KB – 50 KB (यदि मांगा जाए)
                   </td>
                   <td className="py-3 px-3.5 font-medium text-slate-800">JPEG</td>
                 </tr>
@@ -235,6 +246,9 @@ export default function PhotoSignatureResizeToolPage() {
                   <td className="py-3 px-3.5 text-slate-700">
                     20 KB – 300 KB · 350 × 350 से 1000 × 1000 px
                   </td>
+                  <td className="py-3 px-3.5 text-slate-700">
+                    लागू नहीं / NA
+                  </td>
                   <td className="py-3 px-3.5 font-medium text-slate-800">JPG</td>
                 </tr>
                 <tr className="hover:bg-slate-50/80">
@@ -247,6 +261,9 @@ export default function PhotoSignatureResizeToolPage() {
                   <td className="py-3 px-3.5 text-slate-700">
                     30 KB – 70 KB · 50 × 20 mm (~394 × 157 px)
                   </td>
+                  <td className="py-3 px-3.5 text-slate-700">
+                    20 KB – 50 KB · 3x3 cm
+                  </td>
                   <td className="py-3 px-3.5 font-medium text-slate-800">JPG / JPEG</td>
                 </tr>
                 <tr className="hover:bg-slate-50/80">
@@ -258,6 +275,9 @@ export default function PhotoSignatureResizeToolPage() {
                   </td>
                   <td className="py-3 px-3.5 text-slate-700">
                     10 KB – 20 KB · 140 × 60 px
+                  </td>
+                  <td className="py-3 px-3.5 text-slate-700">
+                    20 KB – 50 KB · 240 × 240 px (3 × 3 cm)
                   </td>
                   <td className="py-3 px-3.5 font-medium text-slate-800">JPG / JPEG</td>
                 </tr>

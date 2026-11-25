@@ -14,7 +14,8 @@ import {
   MessageCircle,
   Globe,
   Bell,
-  BellRing
+  BellRing,
+  FilePlus2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOptionalPortal } from '../context/PortalContext';
@@ -292,6 +293,15 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Admin Controls */}
               {isAdmin && (
                 <div className="flex items-center gap-1.5">
+                  <a
+                    href="/admin/posts/new"
+                    className="no-link-color px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] !text-white font-extrabold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs whitespace-nowrap no-underline"
+                    title={isHi ? 'नई भर्ती पोस्ट बनाएं' : 'Create New Post'}
+                  >
+                    <FilePlus2 className="w-3.5 h-3.5 text-white" />
+                    <span className="text-[11px] font-black">{isHi ? '+ New Post' : '+ New Post'}</span>
+                  </a>
+
                   <button
                     type="button"
                     onClick={() => {
@@ -301,10 +311,10 @@ export const Header: React.FC<HeaderProps> = ({
                         toggleAdminMode(false);
                       }
                     }}
-                    className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-emerald-700"
+                    className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer hover:bg-slate-900"
                     title={isHi ? 'एडमिन पैनल खोलें' : 'Open Admin Panel'}
                   >
-                    <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="text-[11px] font-extrabold">{isHi ? 'Admin Panel' : 'Admin'}</span>
                   </button>
                 </div>
@@ -344,24 +354,42 @@ export const Header: React.FC<HeaderProps> = ({
                 );
               })}
 
-              {/* URL Indexation Button in Mobile Menu (Admin Only) */}
-              {isAdmin && onOpenUrlIndexation && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onOpenUrlIndexation();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="mt-1 px-3 py-2 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-4 h-4" />
-                    <span>{isHi ? 'सर्च कंसोल URL इंडेक्सेशन टूल' : 'URL Indexation Assistant'}</span>
-                  </div>
-                  <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-bold">
-                    GSC
-                  </span>
-                </button>
+              {/* Admin Actions in Mobile Menu */}
+              {isAdmin && (
+                <>
+                  <a
+                    href="/admin/posts/new"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="no-link-color mt-1 px-3 py-2.5 rounded-lg bg-[#15803d] text-white font-extrabold text-xs flex items-center justify-between transition shadow-xs cursor-pointer no-underline"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FilePlus2 className="w-4 h-4 text-white" />
+                      <span>{isHi ? '+ नई भर्ती पोस्ट जोड़ें (New Post)' : '+ Create New Post'}</span>
+                    </div>
+                    <span className="text-[10px] bg-white text-emerald-800 px-1.5 py-0.5 rounded font-black">
+                      BUILDER
+                    </span>
+                  </a>
+
+                  {onOpenUrlIndexation && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onOpenUrlIndexation();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="mt-1 px-3 py-2 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-between transition shadow-xs cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        <span>{isHi ? 'सर्च कंसोल URL इंडेक्सेशन टूल' : 'URL Indexation Assistant'}</span>
+                      </div>
+                      <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-bold">
+                        GSC
+                      </span>
+                    </button>
+                  )}
+                </>
               )}
 
               {/* Regular User Custom Job Alerts trigger in Mobile Menu */}

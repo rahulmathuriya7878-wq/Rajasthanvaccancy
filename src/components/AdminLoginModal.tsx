@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Loader2,
   LayoutDashboard,
+  FilePlus2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LanguageMode } from '../types';
@@ -178,9 +179,18 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               {/* Direct Quick Actions */}
               <div className="space-y-2.5 pt-1">
                 <Link
+                  href="/admin/posts/new"
+                  onClick={onClose}
+                  className="no-link-color w-full py-3 px-4 rounded-xl bg-[#15803d] hover:bg-[#166534] !text-white font-extrabold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm no-underline active:scale-98"
+                >
+                  <FilePlus2 className="w-4 h-4 text-white" />
+                  <span>{isHi ? '+ नई पोस्ट जोड़ें (New Post Builder)' : '+ Create New Post'}</span>
+                </Link>
+
+                <Link
                   href="/admin"
                   onClick={onClose}
-                  className="no-link-color w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 !text-white font-extrabold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm no-underline"
+                  className="no-link-color w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 !text-white font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-xs no-underline"
                 >
                   <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                   <span>{isHi ? 'प्रो एडमिन डैशबोर्ड खोलें (/admin)' : 'Open Full Admin Dashboard (/admin)'}</span>
