@@ -773,18 +773,7 @@ export const PhotoSignResizeTool: React.FC = () => {
               )}
             </div>
 
-            {sourceToken === 0 && (
-              <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] text-slate-500">तुरंत टेस्ट करने के लिए:</span>
-                <button
-                  type="button"
-                  onClick={handleLoadSample}
-                  className="text-xs font-bold text-[#15803d] hover:underline cursor-pointer"
-                >
-                  सैंपल इमेज से टेस्ट करें (Try Sample)
-                </button>
-              </div>
-            )}
+
           </div>
 
           {errorMsg && (
@@ -881,23 +870,7 @@ export const PhotoSignResizeTool: React.FC = () => {
                 />
               </div>
 
-              {/* Quick KB Buttons */}
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {[15, 20, 30, 48, 50, 70, 95, 150].map((kbVal) => (
-                  <button
-                    key={kbVal}
-                    type="button"
-                    onClick={() => setMaxKbPreset(kbVal)}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition tabular-nums cursor-pointer ${
-                      maxKb === kbVal
-                        ? 'bg-[#15803d] text-white border-[#15803d]'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-                    }`}
-                  >
-                    {kbVal} KB
-                  </button>
-                ))}
-              </div>
+
             </div>
 
             {/* Simple Checkboxes for Signature Clean or Photo Strip */}
