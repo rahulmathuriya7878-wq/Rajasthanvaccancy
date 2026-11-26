@@ -69,6 +69,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     selectedVacancy,
     activePolicyView,
     alertJobIds,
+    isLoading,
     setIsAdminLoginOpen,
     setIsUrlIndexationOpen,
     handleGoHome,
@@ -209,6 +210,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             setSearchQuery={setSearchQuery}
             isAdmin={isAdmin}
             onDeleteVacancy={handleDeleteVacancy}
+            isLoading={isLoading}
           />
         </Suspense>
       ) : (
@@ -257,6 +259,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             alertJobIds={alertJobIds}
             onToggleAlertMe={handleToggleAlertMe}
             onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
+            isLoading={isLoading}
           />
         </div>
       )}

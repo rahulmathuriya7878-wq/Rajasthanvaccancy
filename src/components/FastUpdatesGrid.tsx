@@ -24,6 +24,7 @@ interface FastUpdatesGridProps {
   onToggleAlertMe?: (id: string) => void;
   showAds?: boolean;
   onOpenUrlIndexation?: () => void;
+  isLoading?: boolean;
 }
 
 export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
@@ -37,8 +38,29 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onToggleAlertMe,
   showAds = true,
   onOpenUrlIndexation,
+  isLoading = false,
 }) => {
   const isHi = lang === 'hi';
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-white rounded-lg border border-slate-300 shadow-xs overflow-hidden animate-pulse">
+              <div className="h-12 bg-[#15803d]/70 w-full" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-slate-200 rounded w-11/12" />
+                <div className="h-4 bg-slate-200 rounded w-4/5" />
+                <div className="h-3 bg-slate-200 rounded w-3/4" />
+                <div className="h-3 bg-slate-200 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Memoize all 6 category buckets & newest-first sorting so unrelated UI updates stay instant
   const { row1Sections, row2Sections } = useMemo(() => {
