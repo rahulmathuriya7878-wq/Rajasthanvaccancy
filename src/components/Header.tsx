@@ -233,6 +233,63 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Header Navigation Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Browser Push Subscribe Button */}
+              {notif && notif.browserPermission !== 'unsupported' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      notif.browserPermission === 'granted' &&
+                      notif.preferences.browserPushEnabled
+                    ) {
+                      notif.openNotificationDrawer('preferences');
+                    } else if (notif.browserPermission === 'granted') {
+                      notif.updatePreferences({ browserPushEnabled: true });
+                    } else if (notif.browserPermission === 'denied') {
+                      notif.openNotificationDrawer('preferences');
+                    } else {
+                      void notif.requestBrowserPushPermission();
+                    }
+                  }}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer whitespace-nowrap shrink-0 shadow-2xs ${
+                    notif.browserPermission === 'granted' &&
+                    notif.preferences.browserPushEnabled
+                      ? 'bg-emerald-50 text-[#15803d] border border-emerald-300 hover:bg-emerald-100'
+                      : 'bg-[#15803d] hover:bg-[#166534] text-white border border-[#15803d]'
+                  }`}
+                  aria-label={
+                    notif.browserPermission === 'granted' &&
+                    notif.preferences.browserPushEnabled
+                      ? isHi
+                        ? 'पुश नोटिफिकेशन सक्रिय हैं'
+                        : 'Push Notifications Subscribed'
+                      : isHi
+                        ? 'नई भर्तियों के पुश नोटिफिकेशन के लिए सब्सक्राइब करें'
+                        : 'Subscribe to Push Notifications for new job alerts'
+                  }
+                  title={
+                    notif.browserPermission === 'granted' &&
+                    notif.preferences.browserPushEnabled
+                      ? isHi
+                        ? 'ब्राउज़र पुश अलर्ट सक्रिय हैं — सेटिंग्स देखें'
+                        : 'Browser push alerts active — view settings'
+                      : isHi
+                        ? 'नई भर्तियों के ब्राउज़र पुश नोटिफिकेशन चालू करें'
+                        : 'Enable browser push notifications for new job alerts'
+                  }
+                >
+                  <BellRing className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                  <span>
+                    {notif.browserPermission === 'granted' &&
+                    notif.preferences.browserPushEnabled
+                      ? isHi
+                        ? 'Subscribed'
+                        : 'Subscribed'
+                      : 'Subscribe'}
+                  </span>
+                </button>
+              )}
+
               {/* Regular User Job Alerts & Notification Center Button */}
               {notif && (
                 <button

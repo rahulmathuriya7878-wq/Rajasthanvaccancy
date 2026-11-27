@@ -140,7 +140,7 @@ export async function proxy(request: NextRequest) {
       }
 
       if (cleanPath && !cleanPath.includes('.') && cleanPath !== 'photo-signature-resize-tool') {
-        const matchedId = ACTIVE_VACANCY_SLUG_MAP.get(lowerPath);
+        const matchedId = ACTIVE_VACANCY_SLUG_MAP.get(lowerPath) || (lowerPath === 'rajasthan-cet-12th-level-admit-card-2026' ? 'rajasthan-cet-admit-card-2026' : null);
         if (matchedId) {
           const target = nextUrl.clone();
           target.pathname = '/';

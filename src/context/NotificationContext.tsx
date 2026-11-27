@@ -515,10 +515,33 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setBrowserPermission(result);
       if (result === 'granted') {
         setPreferences((prev) => ({ ...prev, browserPushEnabled: true }));
+        setSavedAlerts((prev) => {
+          if (prev.some((a) => a.enabled)) {
+            return prev.map((a) => ({ ...a, notifyBrowserPush: true }));
+          }
+          const defaultAlert: SavedSearchAlert = {
+            id: `alert_push_sub_${Date.now()}`,
+            name:
+              lang === 'hi'
+                ? 'सभी नई सरकारी भर्ती अलर्ट (All Job Alerts)'
+                : 'All New Job Alerts',
+            keywords: [],
+            organizations: [],
+            categories: ['latest_job', 'admit_card', 'result', 'exam_date'],
+            qualifications: [],
+            locationQuery: '',
+            minPosts: 0,
+            enabled: true,
+            notifyInApp: true,
+            notifyBrowserPush: true,
+            createdAt: new Date().toISOString(),
+          };
+          return [defaultAlert, ...prev];
+        });
         showToast(
           lang === 'hi'
-            ? 'ब्राउज़र नोटिफिकेशन सक्रिय हो गए हैं'
-            : 'Browser notifications enabled'
+            ? '✅ सब्सक्राइब्ड! नई भर्तियों के ब्राउज़र पुश नोटिफिकेशन सक्रिय हो गए हैं'
+            : '✅ Subscribed! Browser push notifications enabled for new job alerts'
         );
       } else {
         setPreferences((prev) => ({ ...prev, browserPushEnabled: false }));

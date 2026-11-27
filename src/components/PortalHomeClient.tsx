@@ -221,6 +221,61 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             </h1>
             {notif && (
               <div className="flex items-center gap-2 flex-wrap">
+                {notif.browserPermission !== 'unsupported' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (
+                        notif.browserPermission === 'granted' &&
+                        notif.preferences.browserPushEnabled
+                      ) {
+                        notif.openNotificationDrawer('preferences');
+                      } else if (notif.browserPermission === 'granted') {
+                        notif.updatePreferences({ browserPushEnabled: true });
+                      } else if (notif.browserPermission === 'denied') {
+                        notif.openNotificationDrawer('preferences');
+                      } else {
+                        void notif.requestBrowserPushPermission();
+                      }
+                    }}
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap shadow-xs ${
+                      notif.browserPermission === 'granted' &&
+                      notif.preferences.browserPushEnabled
+                        ? 'bg-emerald-50 text-[#15803d] border border-emerald-300 hover:bg-emerald-100'
+                        : 'bg-[#15803d] hover:bg-[#166534] text-white border border-[#15803d]'
+                    }`}
+                    title={
+                      notif.browserPermission === 'granted' &&
+                      notif.preferences.browserPushEnabled
+                        ? lang === 'hi'
+                          ? 'ब्राउज़र पुश नोटिफिकेशन सक्रिय हैं — प्राथमिकताएं प्रबंधित करें'
+                          : 'Browser Push Notifications Active — Manage Preferences'
+                        : lang === 'hi'
+                          ? 'नई सरकारी भर्तियों के ब्राउज़र पुश नोटिफिकेशन चालू करने के लिए सब्सक्राइब करें'
+                          : 'Subscribe to enable browser push notifications for new job alerts'
+                    }
+                  >
+                    <BellRing
+                      className={`w-3.5 h-3.5 shrink-0 ${
+                        notif.browserPermission === 'granted' &&
+                        notif.preferences.browserPushEnabled
+                          ? 'text-[#15803d]'
+                          : 'text-white'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span>
+                      {notif.browserPermission === 'granted' &&
+                      notif.preferences.browserPushEnabled
+                        ? lang === 'hi'
+                          ? '✓ सब्सक्राइब्ड (Push Active)'
+                          : '✓ Subscribed (Push Active)'
+                        : lang === 'hi'
+                          ? 'Subscribe (पुश अलर्ट चालू करें)'
+                          : 'Subscribe to Job Alerts'}
+                    </span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() =>

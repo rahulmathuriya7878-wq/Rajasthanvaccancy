@@ -740,101 +740,14 @@ export const SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = {
   updatedAt: '2026-11-08'
 };
 
-export const RAJASTHAN_CET_2027_UPDATED_RECRUITMENT: VacancyItem = {
-  id: 'rajasthan-cet-2027-updated-recruitment',
-  title: 'Rajasthan CET 2027 Notification & Exam Schedule: Common Eligibility Test for Graduate & 12th Level Updates',
-  titleHi: '🔥 राजस्थान CET 2027 (समान पात्रता परीक्षा) नया नोटिफिकेशन, स्नातक व 12वीं स्तर की परीक्षा तिथियां और स्कोर कार्ड अपडेट',
-  shortTitle: 'Rajasthan CET 2027 Notification',
-  shortTitleHi: 'राजस्थान CET 2027 नया नोटिफिकेशन',
-  organization: 'RSMSSB',
-  department: 'Rajasthan Subordinate and Ministerial Services Selection Board (RSSB / RSMSSB)',
-  departmentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB), जयपुर',
-  advtNo: 'RSSB/CET-2027/Updated-Notif',
-  category: 'latest_job',
-  tags: [
-    'rajasthan cet 2027',
-    'cet notification 2027',
-    'cet graduate level 2027',
-    'cet 12th level 2027',
-    'rsmssb cet updates',
-    'sso rajasthan',
-    'rajasthan govt jobs 2027'
-  ],
-  isTrending: true,
-  isHighDemand: true,
-  isHot: true,
-  isNew: true,
-  clicksCount: 34200,
-  savesCount: 11200,
-  totalPosts: 'विभिन्न पद (Patwari, LDC, VDO आदि हेतु अनिवार्य)',
-  postName: 'Common Eligibility Test (CET Graduate & Senior Secondary Level) 2027',
-  postNameHi: 'समान पात्रता परीक्षा (CET स्नातक एवं सीनियर सेकेंडरी 12वीं स्तर) 2027',
-  qualification: ['12th', 'Graduate'],
-  qualificationDetails: 'Senior Secondary (12th Class) Pass for 12th Level CET; Bachelor Degree (Graduation) from a recognized University for Graduate Level CET.',
-  qualificationDetailsHi: '12वीं स्तर CET हेतु किसी भी मान्यता प्राप्त बोर्ड से 12वीं कक्षा पास; स्नातक स्तर CET हेतु किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक डिग्री (Graduation) उत्तीर्ण।',
-  briefSummary: 'Rajasthan Subordinate and Ministerial Services Selection Board (RSSB) has updated the Common Eligibility Test (CET) 2027 notification details, validity rules, and exam schedule for Graduate and Senior Secondary levels. CET score card is mandatory for all Rajasthan Group-C state examinations.',
-  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB) द्वारा समान पात्रता परीक्षा (CET) 2027 के नए सत्र का अपडेट जारी किया गया है। राजस्थान में पटवारी, ग्राम विकास अधिकारी (VDO), कनिष्ठ सहायक (LDC), जूनियर अकाउंटेंट, पर्यवेक्षक (Supervisor) और अन्य तृतीय श्रेणी (Group-C) की भर्तियों में शामिल होने के लिए CET स्कोर कार्ड होना अनिवार्य है। बोर्ड द्वारा परीक्षा तिथियां, पात्रता नियम और ऑनलाइन आवेदन प्रक्रिया की विस्तृत जानकारी sso.rajasthan.gov.in पर उपलब्ध कराई गई है।',
-  description: 'Complete recruitment details for Rajasthan CET 2027 including syllabus, exam pattern, validity of score card, age limit, educational qualification, and official SSO portal application links.',
-  descriptionHi: 'प्रिय अभ्यर्थियों,\n\nराजस्थान में सरकारी नौकरी पाने का सपना देख रहे युवाओं के लिए सबसे महत्वपूर्ण परीक्षा **समान पात्रता परीक्षा (CET) 2027** का आधिकारिक अपडेट जारी कर दिया गया है। राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा आयोजित होने वाली इस परीक्षा के माध्यम से राज्य की विभिन्न नॉन-टेक्निकल पदों पर भर्तियां की जाती हैं।\n\n📌 CET 2027 के मुख्य बिंदु:\n• परीक्षा का नाम: समान पात्रता परीक्षा (CET) 2027\n• बोर्ड का नाम: राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB)\n• परीक्षा श्रेणियां:\n  1. **स्नातक स्तर (Graduate Level CET)**: पटवारी, प्लाटून कमांडर, जूनियर अकाउंटेंट, तहसील भू-अभिलेख निरीक्षक आदि।\n  2. **सीनियर सेकेंडरी / 12वीं स्तर (12th Level CET)**: कनिष्ठ सहायक (LDC), क्लार्क ग्रेड-II, जमादार, कांस्टेबल आदि।\n\n🎯 आयु सीमा (Age Limit):\n• न्यूनतम आयु: 18 वर्ष\n• अधिकतम आयु: 40 वर्ष (आरक्षित वर्गों को राजस्थान सरकार के नियमानुसार ऊपरी आयु सीमा में छूट देय है।)\n\n📊 CET स्कोर कार्ड की विशेषता:\n• CET परीक्षा पास करने वाले अभ्यर्थियों को स्कोर कार्ड जारी किया जाता है जिसकी वैधता अवधि 1 वर्ष होती है।\n• मुख्य परीक्षाओं में शामिल होने के लिए CET स्कोर या कटऑफ मार्क्स के आधार पर शॉर्टलिस्टिंग की जाती है।',
-  jobLocation: 'Rajasthan (All Districts)',
-  salary: 'As per respective Rajasthan Govt Post Pay Scale (Level-3 to Level-10)',
-  salaryHi: 'चयनित पदों के नियमानुसार वेतनमान (पे-मैट्रिक्स लेवल-3 से लेवल-10 तक)',
-  applicationMode: 'Online via Rajasthan SSO Portal (sso.rajasthan.gov.in)',
-  ageLimit: {
-    min: 18,
-    max: 40,
-    asOnDate: '2027-01-01',
-    relaxationNotes: 'Age 18 to 40 years. Upper age relaxation as per Rajasthan Govt rules for SC, ST, OBC, EWS, MBC, and Women candidates.',
-    relaxationNotesHi: 'न्यूनतम 18 वर्ष एवं अधिकतम 40 वर्ष। राजस्थान सरकार के नियमानुसार एससी, एसटी, ओबीसी, ईडब्ल्यूएस, एमबीसी तथा महिला अभ्यर्थियों को ऊपरी आयु सीमा में विशेष छूट।'
-  },
-  applicationFee: [
-    { category: 'General / Creamy Layer OBC / Other State', amount: '₹600/-' },
-    { category: 'Rajasthan BC / MBC / EWS / SC / ST / PwD', amount: '₹400/-' },
-    { category: 'One Time Registration (OTR)', amount: 'SSO OTR Portal के माध्यम से निर्धारित शुल्क' }
-  ],
-  importantDates: {
-    notificationDate: '2026-11-25',
-    applyStartDate: 'शीघ्र घोषित (Soon)',
-    applyLastDate: 'शीघ्र घोषित (Soon)',
-    feeLastDate: 'शीघ्र घोषित (Soon)',
-    admitCardDate: 'परीक्षा से 7 दिन पूर्व',
-    examDate: 'वर्ष 2027 (निर्धारित कैलेंडर के अनुसार)'
-  },
-  selectionProcess: [
-    'Common Eligibility Test (CET Written Exam)',
-    'Score Card Issuance (Validity 1 Year)',
-    'Shortlisting for Respective Main Examinations (Patwari, LDC, etc.)',
-    'Document Verification & Medical'
-  ],
-  selectionProcessHi: [
-    'समान पात्रता परीक्षा (CET लिखित परीक्षा - वस्तुनिष्ठ प्रकार)',
-    'CET स्कोर कार्ड जारी होना (वैधता 1 वर्ष)',
-    'संबंधित मुख्य परीक्षाओं (पटवारी, एलडीसी आदि) हेतु कटऑफ के आधार पर शॉर्टलिस्टिंग',
-    'दस्तावेज सत्यापन एवं चिकित्सा परीक्षण'
-  ],
-  directLinks: [
-    { label: 'Rajasthan SSO Portal (Apply Online)', actionText: 'Apply via SSO', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
-    { label: 'RSSB Official Website (Exam Calendar)', actionText: 'RSSB Portal', url: 'https://rssb.rajasthan.gov.in/' },
-    { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
-    { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
-  ],
-  officialLinks: {
-    applyOnlineUrl: 'https://sso.rajasthan.gov.in/',
-    notificationPdfUrl: 'https://rssb.rajasthan.gov.in/',
-    officialWebsiteUrl: 'https://rssb.rajasthan.gov.in/'
-  },
-  status: 'active',
-  createdAt: '2026-11-25',
-  updatedAt: '2026-11-25'
-};
-
 export const EIGHT_LATEST_VACANCIES: VacancyItem[] = [
-  RAJASTHAN_CET_2027_UPDATED_RECRUITMENT,
   CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY,
   RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY,
   DSSSB_SWEEPER_CHOWKIDAR_RECRUITMENT_2026_VACANCY,
   INDIAN_ARMY_TES_57_RECRUITMENT_2026_VACANCY,
   IBPS_SO_RECRUITMENT_2026_VACANCY,
   RAJASTHAN_POLICE_CONSTABLE_RECRUITMENT_2026_VACANCY,
-  RAJASTHAN_HIGH_COURT_CLERK_RECRUITMENT_2026_VACANCY
+  RAJASTHAN_HIGH_COURT_CLERK_RECRUITMENT_2026_VACANCY,
+  SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY
 ];
+

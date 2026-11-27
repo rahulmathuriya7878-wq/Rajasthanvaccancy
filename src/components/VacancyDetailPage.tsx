@@ -1267,6 +1267,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const isYojana = editablePost.category === 'scheme';
   const isFlexCategory = editablePost.category === 'news' || editablePost.category === 'scheme';
+  const isAdmitOrResult = 
+    editablePost.category === 'admit_card' || 
+    editablePost.category === 'result' || 
+    editablePost.status === 'admit_card_out' || 
+    editablePost.status === 'result_declared';
 
   // FAQs with fully integrated dates & scheme-aware fallback
   const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : isYojana ? [
@@ -1326,10 +1331,24 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         'overview',
         'yojana_info',
         'yojana_eligibility',
-        'latest_news',
         'dates',
         'application_fee',
         'selection_process',
+        'documents',
+        'how_to_apply',
+        'important_links',
+        'faqs'
+      ]
+    : isAdmitOrResult
+    ? [
+        'overview',
+        'latest_news',
+        'dates',
+        'application_fee',
+        'post_breakdown',
+        'qualification',
+        'selection_process',
+        'postal_address',
         'documents',
         'how_to_apply',
         'important_links',
@@ -2236,7 +2255,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return null;
 
                     case 'latest_news': {
-                      if (isSectionDeleted('latest_news')) return null;
+                      if (isYojana || isSectionDeleted('latest_news')) return null;
                       const newsList = Array.isArray(editablePost?.latestNews) ? editablePost.latestNews : [];
                       if (isFlexCategory && newsList.length === 0) return null;
 
@@ -2724,7 +2743,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }
 
                     case 'age_limit': {
-                      if (isSectionDeleted('age_limit') || isFlexCategory) return null;
+                      if (isSectionDeleted('age_limit') || isFlexCategory || isAdmitOrResult) return null;
 
                       const minAgeVal = editablePost.ageLimit?.min || 18;
                       const maxAgeVal = editablePost.ageLimit?.max || 40;

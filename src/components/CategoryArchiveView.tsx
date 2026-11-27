@@ -51,7 +51,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   const isHi = lang === 'hi';
   const notif = useOptionalNotifications();
 
-  if (isLoading) {
+  if (isLoading && vacancies.length === 0) {
     return (
       <div className="space-y-4 animate-pulse">
         <div className="h-10 bg-slate-200 rounded-lg w-1/3 mb-4" />

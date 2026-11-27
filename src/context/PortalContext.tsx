@@ -94,13 +94,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isInitialNotFound, setIsInitialNotFound] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 350);
-    return () => clearTimeout(timer);
-  }, []);
 
   const isUnresolvedInitialUrlRef = useRef<boolean>(false);
   const deletedIdsRef = useRef<string[]>(deletedIds);
@@ -135,7 +130,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const deletedSet = new Set([
         ...combinedDeletedIds,
         'ugc-net-2026-june',
+        'ugc-net-2026-dec',
         'bsf-si-ldce-recruitment-2026',
+        'rajasthan-cet-2027-updated-recruitment',
       ]);
 
       const mergedMap = new Map<string, VacancyItem>();
@@ -224,7 +221,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           (v) =>
             !initialDeleted.includes(v.id) &&
             v.id !== 'ugc-net-2026-june' &&
-            v.id !== 'bsf-si-ldce-recruitment-2026'
+            v.id !== 'ugc-net-2026-dec' &&
+            v.id !== 'bsf-si-ldce-recruitment-2026' &&
+            v.id !== 'rajasthan-cet-2027-updated-recruitment'
         ),
         AUTO_DELETE_MAX_AGE_DAYS
       );
