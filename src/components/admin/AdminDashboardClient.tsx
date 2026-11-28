@@ -280,13 +280,20 @@ export const AdminDashboardClient: React.FC = () => {
             नई पोस्ट बनाएँ, पुरानी पोस्ट एडिट या डिलीट करें, Firebase क्लाउड में सेव करें या 1-क्लिक में JSON/Markdown कॉपी करें।
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           <Link
             href="/admin/posts/new"
             className="px-3.5 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors no-underline whitespace-nowrap"
           >
             <FilePlus2 className="w-3.5 h-3.5" aria-hidden="true" />
             <span>+ नई पोस्ट बनाएँ (Create Post)</span>
+          </Link>
+          <Link
+            href="/admin/posts/new?category=result"
+            className="px-3.5 py-2 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-semibold flex items-center gap-1.5 transition-colors no-underline whitespace-nowrap"
+          >
+            <FilePlus2 className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>+ New Result Post</span>
           </Link>
           <button
             type="button"

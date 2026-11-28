@@ -40,97 +40,6 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
     admitCardDate: '2026-11-26',
     examDate: '01, 02 एवं 03 दिसंबर 2026'
   },
-  sectionOrder: [
-    'overview',
-    'cet-overview',
-    'cet-release',
-    'cet-exam-time',
-    'cet-download',
-    'cet-sso',
-    'cet-reporting',
-    'cet-check',
-    'cet-docs',
-    'cet-troubleshoot',
-    'cet-links',
-    'dates',
-    'application_fee',
-    'selection_process',
-    'how_to_apply',
-    'important_links',
-    'faqs'
-  ],
-  customSections: [
-    {
-      id: 'cet-overview',
-      title: 'Rajasthan CET 12th Level Admit Card 2026 Overview',
-      titleHi: 'Rajasthan CET 12th Level Admit Card 2026 Overview',
-      content: 'Complete overview of Rajasthan Common Eligibility Test (Senior Secondary / 12th Level) 2026 Admit Card, exam center details, and instructions.',
-      contentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा आयोजित समान पात्रता परीक्षा (CET सीनियर सेकेंडरी 12वीं स्तर) 2026 के प्रवेश पत्र से संबंधित महत्वपूर्ण विवरण। यह परीक्षा राजस्थान सरकार की 12वीं स्तर की विभिन्न भर्तियों (जैसे पटवारी, एलडीसी, कांस्टेबल, वनपाल आदि) के लिए पात्रता परीक्षा है।'
-    },
-    {
-      id: 'cet-release',
-      title: 'राजस्थान सीईटी 12वीं लेवल एडमिट कार्ड 2026 जारी',
-      titleHi: 'राजस्थान सीईटी 12वीं लेवल एडमिट कार्ड 2026 जारी',
-      content: 'RSSB has officially released the Rajasthan CET 12th level admit cards. Candidates can download their hall tickets online.',
-      contentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB) द्वारा समान पात्रता परीक्षा (CET सीनियर सेकेंडरी 12वीं स्तर) 2026 के ई-एडमिट कार्ड आधिकारिक रूप से जारी कर दिए गए हैं। सभी पंजीकृत अभ्यर्थी अपनी SSO ID (sso.rajasthan.gov.in) या एप्लीकेशन नंबर व जन्मतिथि के माध्यम से अपना प्रवेश पत्र डाउनलोड कर सकते हैं।'
-    },
-    {
-      id: 'cet-exam-time',
-      title: 'Rajasthan CET 12th Level Exam Date 2026 और परीक्षा का समय',
-      titleHi: 'Rajasthan CET 12th Level Exam Date 2026 और परीक्षा का समय',
-      content: 'Exam Dates: 01, 02 and 03 December 2026. Shift-I: 09:00 AM to 12:00 PM. Shift-II: 03:00 PM to 06:00 PM.',
-      contentHi: 'राजस्थान CET 12वीं स्तर परीक्षा 01, 02 एवं 03 दिसंबर 2026 को निर्धारित परीक्षा केंद्रों पर दो पारियों में आयोजित की जाएगी:\n• प्रथम पारी (Shift-I): सुबह 09:00 AM से दोपहर 12:00 PM तक\n• द्वितीय पारी (Shift-II): दोपहर 03:00 PM से शाम 06:00 PM तक'
-    },
-    {
-      id: 'cet-download',
-      title: 'Rajasthan CET 12th Level Admit Card 2026 कैसे डाउनलोड करें?',
-      titleHi: 'Rajasthan CET 12th Level Admit Card 2026 कैसे डाउनलोड करें?',
-      content: '1. Visit sso.rajasthan.gov.in or rssb.rajasthan.gov.in. 2. Login with SSO ID & Password. 3. Open Recruitment Portal. 4. Click Get Admit Card. 5. Download PDF printout.',
-      contentHi: 'एडमिट कार्ड डाउनलोड करने के चरण:\n1. सबसे पहले राजस्थान एसएसओ पोर्टल sso.rajasthan.gov.in पर जाएं।\n2. अपनी SSO ID और पासवर्ड दर्ज करके पोर्टल में लॉगिन करें।\n3. "Recruitment Portal" ऐप को ओपन करें।\n4. ऊपर दिए गए "Get Admit Card" टैब पर क्लिक करें।\n5. CET 12th Level Exam के सामने दिए गए "Get Admit Card" पर क्लिक करें और हॉल टिकट की PDF फाइल डाउनलोड कर प्रिंट निकाल लें।'
-    },
-    {
-      id: 'cet-sso',
-      title: 'SSO ID से राजस्थान सीईटी एडमिट कार्ड कैसे निकालें?',
-      titleHi: 'SSO ID से राजस्थान सीईटी एडमिट कार्ड कैसे निकालें?',
-      content: 'Log in to sso.rajasthan.gov.in -> Recruitment Portal -> Get Admit Card -> Click CET Senior Secondary Admit Card link.',
-      contentHi: 'एसएसओ आईडी (sso.rajasthan.gov.in) के जरिए एडमिट कार्ड निकालने के लिए अपने क्रेडेंशियल्स से लॉगिन करें, रिक्रूटमेंट पोर्टल खोलें और "Get Admit Card" सेक्शन से अपनी परीक्षा का प्रवेश पत्र सीधे डाउनलोड करें।'
-    },
-    {
-      id: 'cet-reporting',
-      title: 'राजस्थान सीईटी परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      titleHi: 'राजस्थान सीईटी परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      content: 'Candidates must report to the exam center 90 minutes before exam commencement. Gates close 60 minutes prior.',
-      contentHi: 'अभ्यर्थियों को परीक्षा शुरू होने से कम से कम 90 मिनट (डेढ़ घंटे) पूर्व परीक्षा केंद्र पर उपस्थिति दर्ज करानी होगी। परीक्षा प्रारंभ होने से ठीक 1 घंटे पहले परीक्षा केंद्र के मुख्य द्वार बंद कर दिए जाएंगे, उसके पश्चात किसी भी स्थिति में प्रवेश नहीं दिया जाएगा।'
-    },
-    {
-      id: 'cet-check',
-      title: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      titleHi: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      content: 'Verify Candidate Name, Roll Number, Exam Center Name & Address, Exam Date & Shift Timing, Photograph & Signature.',
-      contentHi: 'प्रवेश पत्र डाउनलोड करने के पश्चात निम्नलिखित जानकारियों की अच्छी तरह जांच कर लें:\n• अभ्यर्थी का नाम व माता-पिता का नाम\n• रोल नंबर व एप्लीकेशन नंबर\n• परीक्षा केंद्र का नाम व पूरा पता\n• परीक्षा तिथि और पारी का समय (Shift Timings)\n• फोटो और हस्ताक्षर की स्पष्टता'
-    },
-    {
-      id: 'cet-docs',
-      title: 'राजस्थान सीईटी परीक्षा में साथ क्या लेकर जाएं?',
-      titleHi: 'राजस्थान सीईटी परीक्षा में साथ क्या लेकर जाएं?',
-      content: '1. Rajasthan CET Admit Card Printout. 2. Original Photo ID (Aadhar / PAN / Voter ID). 3. Passport Size Photo. 4. Transparent Blue Ball Pen.',
-      contentHi: 'परीक्षा केंद्र पर साथ ले जाने वाली अनिवार्य सामग्री:\n1. राजस्थान CET ई-एडमिट कार्ड का स्पष्ट रंगीन/ब्लैक एंड व्हाइट प्रिंट.\n2. मूल फोटो पहचान पत्र (आधार कार्ड, पैन कार्ड, वोटर आईडी, ड्राइविंग लाइसेंस आदि).\n3. नवीनतम पासपोर्ट साइज रंगीन फोटोग्राफ.\n4. पारदर्शी नीला बॉल पॉइंट पेन (Transparent Blue Ball Pen).'
-    },
-    {
-      id: 'cet-troubleshoot',
-      title: 'Rajasthan CET Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      titleHi: 'Rajasthan CET Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      content: 'Check internet connection, try another browser, verify SSO login details, or contact RSSB helpdesk support.',
-      contentHi: 'यदि एडमिट कार्ड डाउनलोड करने में कोई तकनीकी समस्या आ रही है तो इंटरनेट कनेक्शन जांचें, दूसरा ब्राउज़र (जैसे Chrome या Firefox) उपयोग करें, अपनी SSO ID और पासवर्ड पुनः सत्यापित करें, अथवा राजस्थान कर्मचारी चयन बोर्ड (RSSB) हेल्पडेस्क से संपर्क करें।'
-    },
-    {
-      id: 'cet-links',
-      title: 'Rajasthan CET 12th Level Admit Card 2026 Important Links',
-      titleHi: 'Rajasthan CET 12th Level Admit Card 2026 Important Links',
-      content: 'Download Admit Card via SSO Rajasthan Portal, RSSB Official Website, Join WhatsApp & Telegram channels.',
-      contentHi: 'महत्वपूर्ण लिंक्स:\n• SSO Rajasthan Portal: sso.rajasthan.gov.in\n• RSSB Official Website: rssb.rajasthan.gov.in\n• Join WhatsApp & Telegram for Exam Updates.'
-    }
-  ],
   latestNews: [
     {
       id: 'cet-admit-26-nov',
@@ -214,9 +123,9 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
       aHi: 'sso.rajasthan.gov.in पर लॉगिन करके Recruitment Portal में Get Admit Card से या rssb.rajasthan.gov.in पर आवेदन संख्या व जन्मतिथि डालकर डाउनलोड कर सकते हैं।'
     }
   ],
-  status: 'upcoming',
+  status: 'admit_card_out',
   createdAt: '2026-11-19',
-  updatedAt: '2026-11-19'
+  updatedAt: '2026-11-26'
 };
 
 
@@ -261,97 +170,6 @@ export const RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026: VacancyItem = {
     admitCardDate: '2026-11-12',
     examDate: '2026-11-15'
   },
-  sectionOrder: [
-    'overview',
-    'po-overview',
-    'po-release',
-    'po-exam-time',
-    'po-download',
-    'po-sso',
-    'po-reporting',
-    'po-check',
-    'po-docs',
-    'po-troubleshoot',
-    'po-links',
-    'dates',
-    'application_fee',
-    'selection_process',
-    'how_to_apply',
-    'important_links',
-    'faqs'
-  ],
-  customSections: [
-    {
-      id: 'po-overview',
-      title: 'RPSC Protection Officer Admit Card Overview',
-      titleHi: 'RPSC Protection Officer Admit Card Overview',
-      content: 'Complete overview of RPSC Protection Officer Exam Admit Card, exam center details, and instructions.',
-      contentHi: 'राजस्थान लोक सेवा आयोग (RPSC) द्वारा आयोजित संरक्षण अधिकारी (Protection Officer) परीक्षा के प्रवेश पत्र से संबंधित महत्वपूर्ण विवरण।'
-    },
-    {
-      id: 'po-release',
-      title: 'RPSC संरक्षण अधिकारी एडमिट कार्ड जारी',
-      titleHi: 'RPSC संरक्षण अधिकारी एडमिट कार्ड जारी',
-      content: 'RPSC has officially released the Protection Officer admit cards. Candidates can download their hall tickets online.',
-      contentHi: 'आरपीएससी द्वारा प्रोटेक्शन ऑफिसर परीक्षा के ई-एडमिट कार्ड आधिकारिक रूप से जारी कर दिए गए हैं। सभी पंजीकृत अभ्यर्थी अपनी SSO ID या एप्लीकेशन नंबर से प्रवेश पत्र डाउनलोड कर सकते हैं।'
-    },
-    {
-      id: 'po-exam-time',
-      title: 'RPSC Protection Officer Exam Date और परीक्षा का समय',
-      titleHi: 'RPSC Protection Officer Exam Date और परीक्षा का समय',
-      content: 'Exam Date: 15 November 2026. Shift-I and Shift-II timings as specified on hall ticket.',
-      contentHi: 'आरपीएससी प्रोटेक्शन ऑफिसर परीक्षा 15 नवंबर 2026 को निर्धारित परीक्षा केंद्रों पर दो पारियों में आयोजित की जाएगी।'
-    },
-    {
-      id: 'po-download',
-      title: 'RPSC Protection Officer Admit Card कैसे डाउनलोड करें?',
-      titleHi: 'RPSC Protection Officer Admit Card कैसे डाउनलोड करें?',
-      content: '1. Visit sso.rajasthan.gov.in or rpsc.rajasthan.gov.in. 2. Login with SSO ID. 3. Open Recruitment Portal. 4. Download PDF.',
-      contentHi: 'एडमिट कार्ड डाउनलोड करने के चरण:\n1. राजस्थान एसएसओ पोर्टल sso.rajasthan.gov.in पर जाएं।\n2. अपनी SSO ID और पासवर्ड से लॉगिन करें।\n3. "Recruitment Portal" ऐप खोलकर "Get Admit Card" चुनें और PDF डाउनलोड करें।'
-    },
-    {
-      id: 'po-sso',
-      title: 'SSO ID से RPSC Admit Card कैसे निकालें?',
-      titleHi: 'SSO ID से RPSC Admit Card कैसे निकालें?',
-      content: 'Log in to sso.rajasthan.gov.in -> Recruitment Portal -> Get Admit Card.',
-      contentHi: 'एसएसओ पोर्टल पर लॉगिन करके रिक्रूटमेंट पोर्टल के माध्यम से अपना एडमिट कार्ड तुरंत प्राप्त करें।'
-    },
-    {
-      id: 'po-reporting',
-      title: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      titleHi: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      content: 'Candidates must report to the exam center 90 minutes before exam commencement.',
-      contentHi: 'अभ्यर्थियों को परीक्षा शुरू होने से 90 मिनट पूर्व परीक्षा केंद्र पर पहुँचना अनिवार्य है। गेट परीक्षा से 1 घंटे पहले बंद हो जाएंगे।'
-    },
-    {
-      id: 'po-check',
-      title: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      titleHi: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      content: 'Verify Name, Roll Number, Exam Center Address, Exam Date & Shift Timing.',
-      contentHi: 'प्रवेश पत्र में अपना नाम, रोल नंबर, परीक्षा केंद्र का पता और परीक्षा समय की भली-भांति जांच कर लें।'
-    },
-    {
-      id: 'po-docs',
-      title: 'परीक्षा में साथ क्या लेकर जाएं?',
-      titleHi: 'परीक्षा में साथ क्या लेकर जाएं?',
-      content: '1. Admit Card Printout. 2. Original Photo ID. 3. Passport Size Photo. 4. Blue Ball Pen.',
-      contentHi: 'परीक्षा केंद्र पर एडमिट कार्ड, मूल फोटो पहचान पत्र, पासपोर्ट साइज फोटो और नीला बॉल पेन साथ अवश्य ले जाएं।'
-    },
-    {
-      id: 'po-troubleshoot',
-      title: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      titleHi: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      content: 'Verify internet connection, SSO credentials, or contact RPSC helpdesk.',
-      contentHi: 'तकनीकी समस्या होने पर इंटरनेट जांचें, दूसरा ब्राउज़र उपयोग करें या आरपीएससी हेल्पडेस्क से संपर्क करें।'
-    },
-    {
-      id: 'po-links',
-      title: 'RPSC Protection Officer Admit Card Important Links',
-      titleHi: 'RPSC Protection Officer Admit Card Important Links',
-      content: 'SSO Portal: sso.rajasthan.gov.in | RPSC Official Website: rpsc.rajasthan.gov.in',
-      contentHi: 'महत्वपूर्ण लिंक्स:\n• SSO Portal: sso.rajasthan.gov.in\n• RPSC Website: rpsc.rajasthan.gov.in'
-    }
-  ],
   selectionProcess: ['Written Exam (Paper-I & Paper-II)', 'Document Verification'],
   selectionProcessHi: ['लिखित परीक्षा (पेपर-I व पेपर-II)', 'दस्तावेज सत्यापन'],
   directLinks: [
@@ -371,7 +189,7 @@ export const RPSC_PROTECTION_OFFICER_ADMIT_CARD_2026: VacancyItem = {
 
 export const RSSB_TEACHING_ASSOCIATE_ADMIT_CARD_2026: VacancyItem = {
   id: 'rsmssb-teaching-associate-admit-card-2026',
-  title: 'RSSB / RSSB Teaching Associate Admit Card 2026 Out: 17 नवंबर से परीक्षा, प्रवेश पत्र डाउनलोड करें',
+  title: 'RSSB / RSMSSB Teaching Associate Admit Card 2026 Out: 17 नवंबर से परीक्षा, प्रवेश पत्र डाउनलोड करें',
   titleHi: 'RSSB टीचिंग एसोसिएट एडमिट कार्ड 2026 जारी: 17 नवंबर से पेपर-I परीक्षा शुरू, यहाँ से डाउनलोड करें',
   shortTitle: 'RSSB Teaching Associate Admit Card 2026',
   shortTitleHi: 'RSSB टीचिंग एसोसिएट एडमिट कार्ड 2026',
@@ -408,97 +226,6 @@ export const RSSB_TEACHING_ASSOCIATE_ADMIT_CARD_2026: VacancyItem = {
     admitCardDate: '2026-11-12',
     examDate: '2026-11-17'
   },
-  sectionOrder: [
-    'overview',
-    'ta-overview',
-    'ta-release',
-    'ta-exam-time',
-    'ta-download',
-    'ta-sso',
-    'ta-reporting',
-    'ta-check',
-    'ta-docs',
-    'ta-troubleshoot',
-    'ta-links',
-    'dates',
-    'application_fee',
-    'selection_process',
-    'how_to_apply',
-    'important_links',
-    'faqs'
-  ],
-  customSections: [
-    {
-      id: 'ta-overview',
-      title: 'RSSB Teaching Associate Admit Card Overview',
-      titleHi: 'RSSB Teaching Associate Admit Card Overview',
-      content: 'Complete overview of RSSB Teaching Associate Exam Admit Card, exam center details, and instructions.',
-      contentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा आयोजित टीचिंग एसोसिएट परीक्षा के प्रवेश पत्र से संबंधित महत्वपूर्ण विवरण।'
-    },
-    {
-      id: 'ta-release',
-      title: 'RSSB टीचिंग एसोसिएट एडमिट कार्ड जारी',
-      titleHi: 'RSSB टीचिंग एसोसिएट एडमिट कार्ड जारी',
-      content: 'RSSB has officially released the Teaching Associate admit cards. Candidates can download their hall tickets online.',
-      contentHi: 'आरएसएमएसएसबी द्वारा टीचिंग एसोसिएट परीक्षा के ई-एडमिट कार्ड आधिकारिक रूप से जारी कर दिए गए हैं। सभी पंजीकृत अभ्यर्थी अपनी SSO ID या एप्लीकेशन नंबर से प्रवेश पत्र डाउनलोड कर सकते हैं।'
-    },
-    {
-      id: 'ta-exam-time',
-      title: 'RSSB Teaching Associate Exam Date और परीक्षा का समय',
-      titleHi: 'RSSB Teaching Associate Exam Date और परीक्षा का समय',
-      content: 'Exam Date: 17 November 2026 onwards. Shift timings as specified on hall ticket.',
-      contentHi: 'टीचिंग एसोसिएट परीक्षा 17 नवंबर 2026 से निर्धारित परीक्षा केंद्रों पर आयोजित की जाएगी।'
-    },
-    {
-      id: 'ta-download',
-      title: 'RSSB Teaching Associate Admit Card कैसे डाउनलोड करें?',
-      titleHi: 'RSSB Teaching Associate Admit Card कैसे डाउनलोड करें?',
-      content: '1. Visit rssb.rajasthan.gov.in or sso.rajasthan.gov.in. 2. Login with SSO ID. 3. Download PDF.',
-      contentHi: 'एडमिट कार्ड डाउनलोड करने के चरण:\n1. आधिकारिक वेबसाइट rssb.rajasthan.gov.in या sso.rajasthan.gov.in पर जाएं।\n2. लॉगिन करके अपना हॉल टिकट डाउनलोड करें।'
-    },
-    {
-      id: 'ta-sso',
-      title: 'SSO ID से RSSB Admit Card कैसे निकालें?',
-      titleHi: 'SSO ID से RSSB Admit Card कैसे निकालें?',
-      content: 'Log in to sso.rajasthan.gov.in -> Recruitment Portal -> Get Admit Card.',
-      contentHi: 'एसएसओ पोर्टल पर लॉगिन करके रिक्रूटमेंट पोर्टल के माध्यम से अपना एडमिट कार्ड तुरंत प्राप्त करें।'
-    },
-    {
-      id: 'ta-reporting',
-      title: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      titleHi: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      content: 'Candidates must report to the exam center 90 minutes before exam commencement.',
-      contentHi: 'अभ्यर्थियों को परीक्षा शुरू होने से 90 मिनट पूर्व परीक्षा केंद्र पर पहुँचना अनिवार्य है। गेट परीक्षा से 1 घंटे पहले बंद हो जाएंगे।'
-    },
-    {
-      id: 'ta-check',
-      title: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      titleHi: 'एडमिट कार्ड डाउनलोड करने के बाद क्या जांचें?',
-      content: 'Verify Name, Roll Number, Exam Center Address, Exam Date & Shift Timing.',
-      contentHi: 'प्रवेश पत्र में अपना नाम, रोल नंबर, परीक्षा केंद्र का पता और परीक्षा समय की भली-भांति जांच कर लें।'
-    },
-    {
-      id: 'ta-docs',
-      title: 'परीक्षा में साथ क्या लेकर जाएं?',
-      titleHi: 'परीक्षा में साथ क्या लेकर जाएं?',
-      content: '1. Admit Card Printout. 2. Original Photo ID. 3. Passport Size Photo. 4. Blue Ball Pen.',
-      contentHi: 'परीक्षा केंद्र पर एडमिट कार्ड, मूल फोटो पहचान पत्र, पासपोर्ट साइज फोटो और नीला बॉल पेन साथ अवश्य ले जाएं।'
-    },
-    {
-      id: 'ta-troubleshoot',
-      title: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      titleHi: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      content: 'Verify internet connection, SSO credentials, or contact RSSB helpdesk.',
-      contentHi: 'तकनीकी समस्या होने पर इंटरनेट जांचें, दूसरा ब्राउज़र उपयोग करें या आरएसएमएसएसबी हेल्पडेस्क से संपर्क करें।'
-    },
-    {
-      id: 'ta-links',
-      title: 'RSSB Teaching Associate Admit Card Important Links',
-      titleHi: 'RSSB Teaching Associate Admit Card Important Links',
-      content: 'RSSB Website: rssb.rajasthan.gov.in | SSO Portal: sso.rajasthan.gov.in',
-      contentHi: 'महत्वपूर्ण लिंक्स:\n• RSSB Website: rssb.rajasthan.gov.in\n• SSO Portal: sso.rajasthan.gov.in'
-    }
-  ],
   selectionProcess: ['Written Exam (Paper-I & Paper-II)', 'Document Verification'],
   selectionProcessHi: ['लिखित परीक्षा', 'दस्तावेज सत्यापन'],
   directLinks: [
@@ -555,97 +282,6 @@ export const IBPS_RRB_OFFICER_SCALE_1_ADMIT_CARD_2026: VacancyItem = {
     admitCardDate: '2026-11-11',
     examDate: '2026-11-21'
   },
-  sectionOrder: [
-    'overview',
-    'ibps-overview',
-    'ibps-release',
-    'ibps-exam-time',
-    'ibps-download',
-    'ibps-sso',
-    'ibps-reporting',
-    'ibps-check',
-    'ibps-docs',
-    'ibps-troubleshoot',
-    'ibps-links',
-    'dates',
-    'application_fee',
-    'selection_process',
-    'how_to_apply',
-    'important_links',
-    'faqs'
-  ],
-  customSections: [
-    {
-      id: 'ibps-overview',
-      title: 'IBPS RRB Scale-I Call Letter Overview',
-      titleHi: 'IBPS RRB Scale-I Call Letter Overview',
-      content: 'Complete overview of IBPS RRB Officer Scale-I Prelims Call Letter, exam center details, and instructions.',
-      contentHi: 'आईबीपीएस द्वारा आयोजित क्षेत्रीय ग्रामीण बैंक ऑफिसर स्केल-I प्रीलिम्स परीक्षा के कॉल लेटर से संबंधित महत्वपूर्ण विवरण।'
-    },
-    {
-      id: 'ibps-release',
-      title: 'IBPS RRB Scale-I कॉल लेटर जारी',
-      titleHi: 'IBPS RRB Scale-I कॉल लेटर जारी',
-      content: 'IBPS has officially released the Officer Scale-I Prelims call letters. Candidates can download online.',
-      contentHi: 'आईबीपीएस द्वारा ऑफिसर स्केल-I प्रारंभिक परीक्षा के कॉल लेटर आधिकारिक रूप से जारी कर दिए गए हैं।'
-    },
-    {
-      id: 'ibps-exam-time',
-      title: 'IBPS RRB Exam Date और परीक्षा का समय',
-      titleHi: 'IBPS RRB Exam Date और परीक्षा का समय',
-      content: 'Exam Dates: 21 & 22 November 2026. Shift timings as specified on call letter.',
-      contentHi: 'आईबीपीएस आरआरबी स्केल-I परीक्षा 21 एवं 22 नवंबर 2026 को निर्धारित पालियों में आयोजित होगी।'
-    },
-    {
-      id: 'ibps-download',
-      title: 'IBPS RRB Admit Card कैसे डाउनलोड करें?',
-      titleHi: 'IBPS RRB Admit Card कैसे डाउनलोड करें?',
-      content: '1. Visit ibps.in. 2. Enter Registration Number and Password/DOB. 3. Download Call Letter.',
-      contentHi: 'कॉल लेटर डाउनलोड करने के चरण:\n1. आधिकारिक वेबसाइट ibps.in पर जाएं।\n2. अपना रजिस्ट्रेशन नंबर और पासवर्ड/जन्मतिथि दर्ज करके कॉल लेटर डाउनलोड करें।'
-    },
-    {
-      id: 'ibps-sso',
-      title: 'रजिस्ट्रेशन नंबर से IBPS Call Letter कैसे निकालें?',
-      titleHi: 'रजिस्ट्रेशन नंबर से IBPS Call Letter कैसे निकालें?',
-      content: 'Use registration credentials on ibps.in portal under CRP RRBs section.',
-      contentHi: 'ibps.in पोर्टल पर अपने क्रेडेंशियल्स दर्ज कर अपना कॉल लेटर प्राप्त करें।'
-    },
-    {
-      id: 'ibps-reporting',
-      title: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      titleHi: 'परीक्षा केंद्र पर कितने बजे पहुंचना है?',
-      content: 'Candidates must report 90 minutes before exam time.',
-      contentHi: 'अभ्यर्थियों को परीक्षा समय से 90 मिनट पूर्व केंद्र पर पहुँचना अनिवार्य है।'
-    },
-    {
-      id: 'ibps-check',
-      title: 'कॉल लेटर डाउनलोड करने के बाद क्या जांचें?',
-      titleHi: 'कॉल लेटर डाउनलोड करने के बाद क्या जांचें?',
-      content: 'Verify Name, Roll Number, Exam Center, Shift Time.',
-      contentHi: 'कॉल लेटर में अपना नाम, परीक्षा केंद्र और शिफ्ट समय की जांच करें।'
-    },
-    {
-      id: 'ibps-docs',
-      title: 'परीक्षा में साथ क्या लेकर जाएं?',
-      titleHi: 'परीक्षा में साथ क्या लेकर जाएं?',
-      content: '1. Call Letter Printout. 2. Original Photo ID. 3. Passport Photo.',
-      contentHi: 'कॉल लेटर, मूल फोटो पहचान पत्र और पासपोर्ट फोटो साथ ले जाएं।'
-    },
-    {
-      id: 'ibps-troubleshoot',
-      title: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      titleHi: 'Admit Card डाउनलोड नहीं हो रहा तो क्या करें?',
-      content: 'Verify registration details or contact IBPS support.',
-      contentHi: 'विवरण सही दर्ज करें अथवा आईबीपीएस हेल्पडेस्क से संपर्क करें।'
-    },
-    {
-      id: 'ibps-links',
-      title: 'IBPS RRB Admit Card Important Links',
-      titleHi: 'IBPS RRB Admit Card Important Links',
-      content: 'IBPS Official Website: ibps.in',
-      contentHi: 'महत्वपूर्ण लिंक:\n• IBPS Official Website: ibps.in'
-    }
-  ],
   selectionProcess: ['Prelims Exam', 'Mains Exam', 'Personal Interview'],
   selectionProcessHi: ['प्रारंभिक परीक्षा', 'मुख्य परीक्षा', 'साक्षात्कार'],
   directLinks: [

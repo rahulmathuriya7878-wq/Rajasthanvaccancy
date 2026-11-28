@@ -488,6 +488,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useDynamicFaqSchema({
     vacancy: selectedVacancy,
+    selectedCategory,
+    vacancies,
+    activePolicyView,
     lang,
   });
 

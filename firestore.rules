@@ -234,6 +234,58 @@ service cloud.firestore {
         data.updatedAt is timestamp;
     }
 
+    function isValidAdminTemplate(data, templateId) {
+      return data.keys().hasAll([
+          'templateId',
+          'title',
+          'titleHi',
+          'content',
+          'contentHi',
+          'headers',
+          'rows',
+          'autoGenerateOnResult',
+          'updatedByUid',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'templateId',
+          'title',
+          'titleHi',
+          'content',
+          'contentHi',
+          'headers',
+          'rows',
+          'autoGenerateOnResult',
+          'updatedByUid',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        isValidId(data.templateId) &&
+        data.templateId == templateId &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+        data.titleHi is string && data.titleHi.size() >= 1 && data.titleHi.size() <= 150 &&
+        data.content is string && data.content.size() <= 1000 &&
+        data.contentHi is string && data.contentHi.size() <= 1000 &&
+        data.headers is list &&
+        data.headers.size() >= 1 &&
+        data.headers.size() <= 10 &&
+        data.headers[0] is string &&
+        data.headers[0].size() >= 1 &&
+        data.headers[0].size() <= 100 &&
+        data.rows is list &&
+        data.rows.size() >= 1 &&
+        data.rows.size() <= 50 &&
+        data.rows[0] is map &&
+        data.autoGenerateOnResult is bool &&
+        data.updatedByUid is string &&
+        data.updatedByUid.size() >= 1 &&
+        data.updatedByUid.size() <= 128 &&
+        data.updatedByUid == request.auth.uid &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
     // 0. Publicly readable Jobs Collection (PostBuilderClient CRUD - zero PII, admin-only writes)
     match /jobs/{jobId} {
       allow get: if isValidId(jobId);
@@ -402,6 +454,37 @@ service cloud.firestore {
     match /test/{docId} {
       allow get: if docId == 'connection';
       allow list, write: if false;
+    }
+
+    // 7. Admin-Only Persistent Post Builder Templates (e.g., Result Details)
+    match /admin_templates/{templateId} {
+      allow get: if isVerifiedUser() && isValidId(templateId) && isAdmin();
+      allow list: if false;
+      allow create: if isVerifiedUser() &&
+        isValidId(templateId) &&
+        isValidAdminTemplate(incoming(), templateId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+      allow update: if isVerifiedUser() &&
+        isValidId(templateId) &&
+        isValidAdminTemplate(incoming(), templateId) &&
+        incoming().templateId == existing().templateId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'title',
+          'titleHi',
+          'content',
+          'contentHi',
+          'headers',
+          'rows',
+          'autoGenerateOnResult',
+          'updatedByUid',
+          'updatedAt'
+        ]) &&
+        isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(templateId) && isAdmin();
     }
   }
 }

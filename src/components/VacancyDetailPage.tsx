@@ -43,6 +43,15 @@ import {
   getWhatsAppShareUrl,
   SHARE_BASE_URL,
 } from '../utils/shareUtils';
+import {
+  isRajasthanRelatedPost,
+  getAdmitCardTitles,
+  type AdmitCardSectionTitles,
+  generateDynamicPostFaqs,
+} from '../utils/faqSchemaBuilder';
+import { parseTableCellLink } from '../utils/adminPostUtils';
+
+export { isRajasthanRelatedPost, getAdmitCardTitles, type AdmitCardSectionTitles };
 
 interface VacancyDetailPageProps {
   vacancy: VacancyItem;
@@ -186,6 +195,23 @@ export const normalizePost = (v: VacancyItem): any => {
 export const getHighestEligibilityDocuments = (v: Partial<VacancyItem>, isHi = true): string[] => {
   if (!v) return [];
 
+  if (v.category === 'admit_card' || v.status === 'admit_card_out') {
+    const examLabel = v.shortTitleHi || v.shortTitle || v.postNameHi || 'परीक्षा';
+    return isHi
+      ? [
+          `${examLabel} ई-एडमिट कार्ड (प्रवेश पत्र) का स्पष्ट प्रिंटआउट।`,
+          'मूल वैध फोटो पहचान पत्र (आधार कार्ड / पैन कार्ड / वोटर आईडी / ड्राइविंग लाइसेंस / पासपोर्ट — फोटोकॉपी मान्य नहीं)।',
+          '2 नवीनतम पासपोर्ट साइज रंगीन फोटोग्राफ।',
+          'पारदर्शी नीला बॉल पॉइंट पेन (Transparent Blue Ball Point Pen)।'
+        ]
+      : [
+          `Clear printout of ${v.shortTitle || v.postName || 'Exam'} e-Admit Card / Hall Ticket.`,
+          'Original valid Photo ID Proof (Aadhaar Card / PAN Card / Voter ID / Driving License / Passport).',
+          '2 latest passport-size color photographs.',
+          'Transparent Blue Ball Point Pen.'
+        ];
+  }
+
   if (v.category === 'scheme') {
     const schemeText = ((v.titleHi || '') + ' ' + (v.qualificationDetailsHi || '') + ' ' + (v.descriptionHi || '')).toLowerCase();
     const isScholarshipOrStudent = schemeText.includes('छात्र') || schemeText.includes('स्कूटी') || schemeText.includes('scooty') || schemeText.includes('scholarship') || schemeText.includes('कॉलेज') || schemeText.includes('12वीं');
@@ -314,22 +340,27 @@ export const getHighestEligibilityDocuments = (v: Partial<VacancyItem>, isHi = t
  * Dynamically computes application steps completely free of SSO hardcoding.
  * Tailors to offline submissions or official portal based on vacancy type.
  */
+
 export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string[] => {
   const isYojanaPost = v.category === 'scheme';
+  const isRajPost = isRajasthanRelatedPost(v);
+  const preserveSso = isRajPost && (isYojanaPost || v.category === 'admit_card' || v.status === 'admit_card_out');
 
   if (isHi && Array.isArray(v.howToApplyHi) && v.howToApplyHi.length > 0) {
-    if (isYojanaPost) return v.howToApplyHi;
-    // Sanitize any SSO occurrences for non-scheme jobs
+    if (preserveSso) return v.howToApplyHi;
+    // Sanitize any SSO occurrences for non-Rajasthan posts
     return v.howToApplyHi.map(s => 
-      s.replace(/राजस्थान\s*SSO\s*पोर्टल\s*\(sso\.rajasthan\.gov\.in\)/gi, 'आधिकारिक भर्ती पोर्टल')
+      s.replace(/राजस्थान\s*SSO\s*पोर्टल\s*\(sso\.rajasthan\.gov\.in\)/gi, 'आधिकारिक पोर्टल')
        .replace(/sso\.rajasthan\.gov\.in/gi, 'आधिकारिक वेबसाइट')
        .replace(/अपनी\s*SSO\s*ID\s*और\s*पासवर्ड/gi, 'अपनी लॉगिन आईडी और पासवर्ड')
+       .replace(/SSO\s*पोर्टल/gi, 'आधिकारिक पोर्टल')
+       .replace(/SSO\s*ID/gi, 'लॉगिन / रजिस्ट्रेशन आईडी')
     );
   }
   if (!isHi && Array.isArray(v.howToApply) && v.howToApply.length > 0) {
-    if (isYojanaPost) return v.howToApply;
+    if (preserveSso) return v.howToApply;
     return v.howToApply.map(s => 
-      s.replace(/Rajasthan\s*SSO\s*\(sso\.rajasthan\.gov\.in\)/gi, 'Official Recruitment Portal')
+      s.replace(/Rajasthan\s*SSO\s*\(sso\.rajasthan\.gov\.in\)/gi, 'Official Portal')
        .replace(/sso\.rajasthan\.gov\.in/gi, 'official website')
        .replace(/SSO\s*ID/gi, 'Login ID')
     );
@@ -349,20 +380,32 @@ export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string
     const schemeName = v.shortTitleHi || v.shortTitle || v.postNameHi || 'संबंधित सरकारी योजना';
     return isHi
       ? [
-          `चरण 1: सबसे पहले योजना के आधिकारिक पोर्टल (${portalHost}) या राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) पर जाएं अथवा नजदीकी E-Mitra केंद्र पर संपर्क करें।`,
-          `चरण 2: अपनी SSO ID व पासवर्ड से लॉगिन करें (नए उपयोगकर्ता जन आधार / आधार संख्या से Citizen रजिस्ट्रेशन करें)।`,
+          isRajPost
+            ? `चरण 1: सबसे पहले योजना के आधिकारिक पोर्टल (${portalHost}) या राजस्थान SSO पोर्टल (sso.rajasthan.gov.in) पर जाएं अथवा नजदीकी E-Mitra केंद्र पर संपर्क करें।`
+            : `चरण 1: सबसे पहले योजना के आधिकारिक पोर्टल (${portalHost}) पर जाएं अथवा नजदीकी CSC / सेवा केंद्र पर संपर्क करें।`,
+          isRajPost
+            ? `चरण 2: अपनी SSO ID व पासवर्ड से लॉगिन करें (नए उपयोगकर्ता जन आधार / आधार संख्या से Citizen रजिस्ट्रेशन करें)।`
+            : `चरण 2: अपनी लॉगिन आईडी / मोबाइल नंबर व OTP से लॉगिन करें अथवा नया पंजीकरण (New Registration) करें।`,
           `चरण 3: डैशबोर्ड पर संबंधित विभाग की "${schemeName}" के आवेदन लिंक का चयन करें।`,
-          'चरण 4: जन आधार संख्या दर्ज कर आवेदक व परिवार के सदस्यों का ई-केवाईसी (OTP / बायोमेट्रिक) सत्यापन करें।',
+          isRajPost
+            ? 'चरण 4: जन आधार संख्या दर्ज कर आवेदक व परिवार के सदस्यों का ई-केवाईसी (OTP / बायोमेट्रिक) सत्यापन करें।'
+            : 'चरण 4: आधार संख्या दर्ज कर आवेदक का ई-केवाईसी (OTP / बायोमेट्रिक) सत्यापन पूरा करें।',
           'चरण 5: आवेदन फॉर्म में मांगी गई व्यक्तिगत जानकारी, निवास, पात्रता व आधार-लिंक्ड बैंक खाते का विवरण सही-सही भरें।',
-          'चरण 6: सभी आवश्यक दस्तावेजों (जन आधार, आय/निवास प्रमाण पत्र, पासबुक व योजना संबंधी दस्तावेज) की स्पष्ट PDF/JPG प्रति अपलोड करें।',
+          'चरण 6: सभी आवश्यक दस्तावेजों (पहचान पत्र, आय/निवास प्रमाण पत्र, पासबुक व योजना संबंधी दस्तावेज) की स्पष्ट PDF/JPG प्रति अपलोड करें।',
           'चरण 7: भरे गए संपूर्ण आवेदन फॉर्म का पूर्वावलोकन (Preview) ध्यान से जांचें और फाइनल सबमिट (Final Submit) करें।',
           'चरण 8: आवेदन सबमिट होने के बाद प्राप्त रसीद / आवेदन क्रमांक (Application ID) का प्रिंटआउट भविष्य के लिए सुरक्षित रखें।'
         ]
       : [
-          `Step 1: Visit the official scheme portal (${portalHost}), SSO Rajasthan (sso.rajasthan.gov.in), or your nearest E-Mitra center.`,
-          'Step 2: Log in using your SSO / Citizen credentials or complete new registration via Jan Aadhaar / Aadhaar.',
+          isRajPost
+            ? `Step 1: Visit the official scheme portal (${portalHost}), SSO Rajasthan (sso.rajasthan.gov.in), or your nearest E-Mitra center.`
+            : `Step 1: Visit the official scheme portal (${portalHost}) or your nearest CSC center.`,
+          isRajPost
+            ? 'Step 2: Log in using your SSO / Citizen credentials or complete new registration via Jan Aadhaar / Aadhaar.'
+            : 'Step 2: Log in using your portal credentials / OTP or complete new citizen registration via Aadhaar.',
           `Step 3: Select "${schemeName}" from the active citizen schemes dashboard.`,
-          'Step 4: Verify applicant details via Jan Aadhaar e-KYC and fill in required personal, eligibility, and bank account details.',
+          isRajPost
+            ? 'Step 4: Verify applicant details via Jan Aadhaar e-KYC and fill in required personal, eligibility, and bank account details.'
+            : 'Step 4: Verify applicant details via Aadhaar e-KYC and fill in required personal, eligibility, and bank account details.',
           'Step 5: Upload clear scanned copies of all required scheme documents.',
           'Step 6: Review the application preview carefully, submit the form online, and print/save the acknowledgment receipt.'
         ];
@@ -818,6 +861,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const sectionLabels: Record<string, string> = {
     overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
+    admit_released: 'एडमिट कार्ड जारी सूचना (Admit Card Released)',
+    admit_exam_time: 'परीक्षा तिथि व समय (Exam Date & Time)',
+    admit_how_to_download: 'एडमिट कार्ड कैसे डाउनलोड करें',
+    admit_sso_download: isRajasthanRelatedPost(editablePost) ? 'SSO ID से एडमिट कार्ड डाउनलोड' : 'आधिकारिक पोर्टल से एडमिट कार्ड डाउनलोड',
+    admit_reporting_time: 'परीक्षा केंद्र रिपोर्टिंग समय',
+    admit_check_details: 'एडमिट कार्ड में क्या जांचें',
+    admit_what_to_carry: 'परीक्षा में साथ क्या लेकर जाएं',
+    admit_troubleshoot: 'डाउनलोड समस्या समाधान',
     yojana_info: 'योजना का उद्देश्य एवं मुख्य लाभ (Scheme Benefits)',
     yojana_eligibility: 'योजना पात्रता एवं आय सीमा (Yojana Eligibility)',
     latest_update: 'लेटेस्ट अपडेट (Latest Update)',
@@ -1051,20 +1102,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           <tbody className="divide-y divide-slate-200">
             {table.rows.map((row, rowIdx) => (
               <tr key={rowIdx}>
-                {row.map((cell, colIdx) => (
-                  <td key={colIdx} className="p-2.5 sm:p-3 text-slate-800 font-medium border-r border-slate-200 last:border-r-0 bg-white">
-                    <EditableText
-                      value={cell}
-                      onChange={(val) => {
-                        const newRows = [...table.rows];
-                        newRows[rowIdx] = [...newRows[rowIdx]];
-                        newRows[rowIdx][colIdx] = val;
-                        onUpdateTable({ ...table, rows: newRows });
-                      }}
-                      titlePrefix={`सेल (${rowIdx + 1}, ${colIdx + 1})`}
-                    />
-                  </td>
-                ))}
+                {row.map((cell, colIdx) => {
+                  const parsedLink = !isDirectEditMode ? parseTableCellLink(cell) : null;
+                  return (
+                    <td key={colIdx} className="p-2.5 sm:p-3 text-slate-800 font-medium border-r border-slate-200 last:border-r-0 bg-white">
+                      {parsedLink ? (
+                        <a
+                          href={parsedLink.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
+                        >
+                          <span>{parsedLink.label}</span>
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                        </a>
+                      ) : (
+                        <EditableText
+                          value={cell}
+                          onChange={(val) => {
+                            const newRows = [...table.rows];
+                            newRows[rowIdx] = [...newRows[rowIdx]];
+                            newRows[rowIdx][colIdx] = val;
+                            onUpdateTable({ ...table, rows: newRows });
+                          }}
+                          titlePrefix={`सेल (${rowIdx + 1}, ${colIdx + 1})`}
+                        />
+                      )}
+                    </td>
+                  );
+                })}
                 {isDirectEditMode && (
                   <td className="p-2 text-center bg-white border-l border-slate-200">
                     <div className="flex items-center justify-center gap-1">
@@ -1156,8 +1222,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const metaDesc = document.querySelector('meta[name="description"]');
     const originalDesc = metaDesc?.getAttribute('content') || '';
     const isSchemePost = editablePost.category === 'scheme';
+    const isAdmitPostMeta = editablePost.category === 'admit_card' || editablePost.status === 'admit_card_out';
+    const isResultPostMeta = editablePost.category === 'result' || editablePost.status === 'result_declared';
     const newDesc = isSchemePost
       ? `${postTitle}: मुख्य लाभ (${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'सरकारी सहायता'}), पात्रता शर्तें, आवश्यक दस्तावेज, अंतिम तिथि एवं ऑनलाइन आवेदन प्रक्रिया।`
+      : isAdmitPostMeta
+      ? `${postTitle}: एडमिट कार्ड जारी, परीक्षा तिथि, शिफ्ट समय, ${isRajasthanRelatedPost(editablePost) ? 'SSO ID से' : 'आधिकारिक पोर्टल से'} डाउनलोड करने की विधि, केंद्र निर्देश एवं डायरेक्ट लिंक।`
+      : isResultPostMeta
+      ? `${postTitle}: आधिकारिक परीक्षा परिणाम, मेरिट लिस्ट PDF, कट-ऑफ अंक एवं डाउनलोड प्रक्रिया।`
       : `${postTitle}: कुल पद ${editablePost.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
     if (metaDesc) {
       metaDesc.setAttribute('content', newDesc);
@@ -1267,63 +1339,35 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const isYojana = editablePost.category === 'scheme';
   const isFlexCategory = editablePost.category === 'news' || editablePost.category === 'scheme';
-  const isAdmitOrResult = 
-    editablePost.category === 'admit_card' || 
-    editablePost.category === 'result' || 
-    editablePost.status === 'admit_card_out' || 
-    editablePost.status === 'result_declared';
+  const isAdmitCardPost = editablePost.category === 'admit_card' || editablePost.status === 'admit_card_out';
+  const isResultPost = editablePost.category === 'result' || editablePost.status === 'result_declared';
+  const isAdmitOrResult = isAdmitCardPost || isResultPost;
+  const admitTitles = useMemo(() => getAdmitCardTitles(editablePost), [editablePost]);
 
-  // FAQs with fully integrated dates & scheme-aware fallback
-  const faqList = vacancy.faqs && vacancy.faqs.length > 0 ? vacancy.faqs : isYojana ? [
-    {
-      q: `What benefit is provided under ${shortJobName}?`,
-      qHi: `${shortJobName} के अंतर्गत लाभार्थियों को क्या लाभ / सहायता मिलती है?`,
-      a: editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salary || 'Financial assistance and scheme benefits as per official norms.',
-      aHi: `${editablePost.yojanaOverview?.maxAnnualAssistance || editablePost.salaryHi || editablePost.salary || 'पात्र लाभार्थियों को सरकारी नियमानुसार वित्तीय सहायता एवं योजना लाभ प्रदान किया जाता है।'}`
-    },
-    {
-      q: `Who is eligible to apply for ${shortJobName}?`,
-      qHi: `इस सरकारी योजना के लिए कौन-कौन पात्र (Eligible) हैं?`,
-      a: editablePost.qualificationDetails || 'Permanent residents fulfilling department eligibility norms.',
-      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'राजस्थान के मूल निवासी जो विभाग द्वारा निर्धारित पात्रता एवं आय सीमा की शर्तें पूरी करते हैं।'}`
-    },
-    {
-      q: `What is the last date to apply for ${shortJobName}?`,
-      qHi: `इस योजना में आवेदन करने की अंतिम तिथि क्या है?`,
-      a: `Applications can be submitted from ${applyStartDateDisplay} to ${applyLastDateDisplay}.`,
-      aHi: `योजना के अंतर्गत ऑनलाइन आवेदन ${applyStartDateDisplay} से ${applyLastDateDisplay} तक किए जा सकते हैं।`
-    },
-    {
-      q: `How to apply online for ${shortJobName}?`,
-      qHi: `${shortJobName} के लिए ऑनलाइन आवेदन कैसे करें?`,
-      a: 'Eligible applicants can apply online via the official portal / Rajasthan SSO or nearest E-Mitra center.',
-      aHi: `पात्र आवेदक संबंधित आधिकारिक पोर्टल (${editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'sso.rajasthan.gov.in'}) अथवा नजदीकी E-Mitra केंद्र के माध्यम से ऑनलाइन आवेदन कर सकते हैं।`
+  // FAQs dynamically synchronized with page content & FAQPage JSON-LD
+  const faqList = useMemo(() => {
+    if (isAdmitOrResult) {
+      return generateDynamicPostFaqs(editablePost);
     }
-  ] : [
-    {
-      q: `What is the last date to apply for this vacancy?`,
-      qHi: `इस भर्ती के लिए ऑनलाइन आवेदन की अंतिम तिथि क्या है?`,
-      a: `The last date to submit the application form is ${applyLastDateDisplay}.`,
-      aHi: `ऑनलाइन आवेदन करने की अंतिम तिथि ${applyLastDateDisplay} है। अभ्यर्थी निर्धारित समय से पूर्व अपना आवेदन अवश्य सबमिट कर लें।`
-    },
-    {
-      q: `When did the application process start and notification release?`,
-      qHi: `इस भर्ती का नोटिफिकेशन कब जारी हुआ और आवेदन कब से शुरू हुए?`,
-      a: `Official notification was released on ${notificationDateDisplay} and online application started on ${applyStartDateDisplay}.`,
-      aHi: `आधिकारिक विस्तृत अधिसूचना ${notificationDateDisplay} को जारी की गई थी तथा ऑनलाइन आवेदन की प्रक्रिया ${applyStartDateDisplay} से प्रारंभ है।`
-    },
-    {
-      q: `When will the admit card be available and exam conducted?`,
-      qHi: `एडमिट कार्ड कब जारी होंगे और परीक्षा कब आयोजित होगी?`,
-      a: `Admit card will be released on ${admitCardDateDisplay} and the exam will be held on ${examDateDisplay}.`,
-      aHi: `परीक्षा के एडमिट कार्ड ${admitCardDateDisplay} को जारी किए जाएंगे एवं परीक्षा ${examDateDisplay} को आयोजित की जाएगी।`
-    },
-    {
-      q: `What is the educational qualification required?`,
-      qHi: `इस भर्ती के लिए शैक्षणिक योग्यता क्या है?`,
-      a: `Candidates must possess minimum required educational qualification as per notification.`,
-      aHi: `${editablePost.qualificationDetailsHi || editablePost.qualificationDetails || 'पद अनुसार 10वीं / 12वीं / स्नातक / संबंधित डिग्री उत्तीर्ण होना अनिवार्य है।'}`
+    if (editablePost.faqs && editablePost.faqs.length > 0) {
+      return editablePost.faqs;
     }
+    if (vacancy.faqs && vacancy.faqs.length > 0) {
+      return vacancy.faqs;
+    }
+    return generateDynamicPostFaqs(editablePost);
+  }, [isAdmitOrResult, editablePost, vacancy.faqs]);
+
+  const ADMIT_CARD_SECTION_ORDER = [
+    'overview',
+    'admit_released',
+    'admit_exam_time',
+    'admit_sso_download',
+    'admit_reporting_time',
+    'admit_check_details',
+    'admit_what_to_carry',
+    'admit_troubleshoot',
+    'important_links'
   ];
 
   const DEFAULT_SECTION_ORDER = isYojana
@@ -1339,6 +1383,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         'important_links',
         'faqs'
       ]
+    : isAdmitCardPost
+    ? ADMIT_CARD_SECTION_ORDER
     : isAdmitOrResult
     ? [
         'overview',
@@ -1372,11 +1418,41 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const activeSectionKeys = useMemo(() => {
     const savedOrder = currentVacancy.sectionOrder;
-    if (!savedOrder || savedOrder.length === 0) return DEFAULT_SECTION_ORDER;
-    const normalizedSaved = savedOrder.map(k => k === 'fee' ? 'application_fee' : k === 'salary' ? 'salary_table' : k);
-    const missing = DEFAULT_SECTION_ORDER.filter(k => !normalizedSaved.includes(k));
-    return [...normalizedSaved, ...missing];
-  }, [currentVacancy.sectionOrder, isYojana]);
+    const allCustomKeys = (currentVacancy.customSections || []).map((s) => `custom_${s.id}`);
+
+    const insertMissingCustomKeys = (baseKeys: string[]): string[] => {
+      const missingCustom = allCustomKeys.filter((k) => !baseKeys.includes(k));
+      if (missingCustom.length === 0) return baseKeys;
+      const linksIdx = baseKeys.indexOf('important_links');
+      if (linksIdx >= 0) {
+        return [
+          ...baseKeys.slice(0, linksIdx),
+          ...missingCustom,
+          ...baseKeys.slice(linksIdx),
+        ];
+      }
+      return [...baseKeys, ...missingCustom];
+    };
+
+    if (isAdmitCardPost) {
+      const customKeys = Array.from(
+        new Set([...(savedOrder || []).filter((k) => k.startsWith('custom_')), ...allCustomKeys])
+      );
+      if (savedOrder && savedOrder.some((k) => k.startsWith('admit_'))) {
+        const filtered = savedOrder.filter((k) => ADMIT_CARD_SECTION_ORDER.includes(k) || k.startsWith('custom_'));
+        const missing = ADMIT_CARD_SECTION_ORDER.filter((k) => !filtered.includes(k));
+        return insertMissingCustomKeys([...filtered, ...missing]);
+      }
+      return insertMissingCustomKeys([...ADMIT_CARD_SECTION_ORDER, ...customKeys]);
+    }
+    if (!savedOrder || savedOrder.length === 0) {
+      return insertMissingCustomKeys(DEFAULT_SECTION_ORDER);
+    }
+    const normalizedSaved = savedOrder.map((k) => (k === 'fee' ? 'application_fee' : k === 'salary' ? 'salary_table' : k));
+    const filteredSaved = isAdmitOrResult ? normalizedSaved.filter((k) => k !== 'age_limit') : normalizedSaved;
+    const missing = DEFAULT_SECTION_ORDER.filter((k) => !filteredSaved.includes(k));
+    return insertMissingCustomKeys([...filteredSaved, ...missing]);
+  }, [currentVacancy.sectionOrder, currentVacancy.customSections, isYojana, isAdmitCardPost, isAdmitOrResult]);
 
   return (
     <div className="w-full text-[#222222] space-y-3 sm:space-y-4">
@@ -1560,10 +1636,18 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       ? (isHi
                           ? 'योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आवश्यक दस्तावेज एवं ऑनलाइन आवेदन प्रक्रिया'
                           : 'Scheme Objectives, Benefits, Eligibility Criteria, Documents & Application Guide')
+                      : isAdmitCardPost
+                      ? (isHi
+                          ? `प्रवेश पत्र जारी सूचना, परीक्षा तिथि व समय, ${admitTitles.isSso ? 'SSO ID से डाउनलोड विधि' : 'आधिकारिक पोर्टल से डाउनलोड विधि'}, केंद्र निर्देश एवं महत्वपूर्ण लिंक्स`
+                          : 'Admit Card Release Status, Exam Schedule, Download Steps, Center Instructions & Direct Links')
+                      : isResultPost
+                      ? (isHi
+                          ? 'आधिकारिक परीक्षा परिणाम, मेरिट लिस्ट PDF, कट-ऑफ अंक एवं डाउनलोड प्रक्रिया'
+                          : 'Official Result, Merit List PDF, Cut-off Marks & Download Guide')
                       : (isHi ? 'विस्तृत विज्ञापन, शैक्षणिक योग्यता, आयु सीमा एवं चयन प्रक्रिया' : 'Detailed Notification, Eligibility & Application Guide')}
                   </p>
 
-                  {/* Centered Total Posts / Scheme Benefit Box */}
+                  {/* Centered Total Posts / Admit Card / Scheme Benefit Box */}
                   {isYojana ? (
                     <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
                       <span 
@@ -1589,6 +1673,21 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           }}
                           titlePrefix="योजना मुख्य लाभ"
                         />
+                      </span>
+                    </div>
+                  ) : isAdmitCardPost ? (
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
+                        {isHi ? 'प्रवेश पत्र स्थिति (Admit Card Status)' : 'Admit Card Status'}
+                      </span>
+                      <span 
+                        className="text-xl sm:text-2xl font-black !text-[#facc15] block mt-1 tracking-wide drop-shadow-xs leading-snug"
+                        style={{ color: '#facc15' }}
+                      >
+                        {isHi ? 'एडमिट कार्ड जारी (Download Available)' : 'Admit Card Released'}
                       </span>
                     </div>
                   ) : (!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
@@ -1622,6 +1721,33 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
                         { label: 'अंतिम तिथि', value: applyLastDateDisplay, isImportant: true },
                         { label: 'आवेदन माध्यम', value: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन / E-Mitra', isImportant: false }
+                      ].map((d, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                        >
+                          <span 
+                            className="text-[11px] uppercase font-bold block"
+                            style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                          >
+                            {d.label}
+                          </span>
+                          <span 
+                            className="font-extrabold text-xs sm:text-sm mt-0.5 block break-words"
+                            style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                          >
+                            {d.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : isAdmitCardPost ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
+                      {[
+                        { label: 'परीक्षा संस्था', value: editablePost.organization || 'RSMSSB', isImportant: false },
+                        { label: 'एडमिट कार्ड जारी', value: admitCardDateDisplay, isImportant: false },
+                        { label: 'परीक्षा तिथि', value: examDateDisplay, isImportant: true },
+                        { label: 'डाउनलोड माध्यम', value: admitTitles.isSso ? 'SSO ID / पोर्टल' : 'आधिकारिक वेबसाइट', isImportant: false }
                       ].map((d, idx) => (
                         <div 
                           key={idx} 
@@ -1760,6 +1886,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       value={
                         isYojana
                           ? (editablePost.briefSummaryHi || editablePost.yojanaGeneralInfo?.descriptionHi || `${editablePost.departmentHi || editablePost.organization || 'राजस्थान सरकार'} द्वारा ${shortJobName} के अंतर्गत पात्र नागरिकों को आर्थिक व कल्याणकारी सहायता प्रदान की जा रही है।`)
+                          : isAdmitCardPost
+                          ? (editablePost.briefSummaryHi || `${editablePost.departmentHi || editablePost.organization} द्वारा ${shortJobName} परीक्षा के प्रवेश पत्र (Admit Card) जारी किए गए हैं। परीक्षा में सम्मिलित होने वाले सभी अभ्यर्थी आधिकारिक पोर्टल से अपना ई-एडमिट कार्ड डाउनलोड कर सकते हैं।`)
                           : (editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`)
                       }
                       onChange={(val) => {
@@ -1773,6 +1901,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       ? (isHi
                           ? `इस सरकारी योजना की ताज़ा अधिसूचना ${notificationDateDisplay} को अपडेट की गई है। योजना के तहत आवेदन ${applyStartDateDisplay} से शुरू हो चुके हैं और पात्र लाभार्थी ${applyLastDateDisplay} तक ${editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन पोर्टल / E-Mitra'} के माध्यम से आवेदन कर सकते हैं। योजना का उद्देश्य, मुख्य लाभ, पात्रता शर्तें, आय सीमा, आवश्यक दस्तावेज व आवेदन प्रक्रिया की संपूर्ण जानकारी नीचे दी गई है।`
                           : `Updated on ${notificationDateDisplay}, applications under this government scheme are open from ${applyStartDateDisplay} to ${applyLastDateDisplay} via ${editablePost.yojanaOverview?.applyMode || 'official online portal / E-Mitra'}. Check scheme benefits, eligibility criteria, required documents, and step-by-step application details below.`)
+                      : isAdmitCardPost
+                      ? (isHi
+                          ? `इस परीक्षा के लिए एडमिट कार्ड ${admitCardDateDisplay} से आधिकारिक पोर्टल पर उपलब्ध हैं तथा परीक्षा का आयोजन ${examDateDisplay} को निर्धारित परीक्षा केंद्रों पर किया जाएगा। एडमिट कार्ड डाउनलोड करने की स्टेप-बाय-स्टेप प्रक्रिया, परीक्षा का समय, रिपोर्टिंग टाइम, परीक्षा केंद्र पर ले जाने वाले दस्तावेज एवं महत्वपूर्ण डायरेक्ट लिंक नीचे दिए गए हैं।`
+                          : `Admit cards are available from ${admitCardDateDisplay} on the official portal, and the examination will be conducted on ${examDateDisplay}. Check complete exam timings, download procedure, reporting rules, documents to carry, and direct links below.`)
+                      : isResultPost
+                      ? (isHi
+                          ? `इस परीक्षा के लिए आधिकारिक परिणाम व मेरिट लिस्ट जारी कर दी गई है। सभी अभ्यर्थी नीचे दिए गए महत्वपूर्ण डायरेक्ट लिंक के माध्यम से अपना रिजल्ट, कट-ऑफ अंक व स्कोरकार्ड ऑनलाइन देख सकते हैं।`
+                          : `The official examination result and merit list have been released. Candidates can check their result, category-wise cut-off marks, and direct PDF links below.`)
                       : (isHi 
                           ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
                           : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`)}
@@ -1849,7 +1985,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             },
                             {
                               label: 'आवेदन का माध्यम',
-                              val: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || 'ऑनलाइन (SSO पोर्टल / आधिकारिक वेबसाइट / E-Mitra)',
+                              val: editablePost.yojanaOverview?.applyMode || editablePost.applicationMode || (isRajasthanRelatedPost(editablePost) ? 'ऑनलाइन (SSO पोर्टल / आधिकारिक वेबसाइट / E-Mitra)' : 'ऑनलाइन (आधिकारिक वेबसाइट / पोर्टल)'),
                               isEdit: true,
                               keyName: 'applicationMode'
                             },
@@ -1952,9 +2088,27 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             }
                           ].filter(r => r.show !== false);
 
-                      const overviewRows = Array.isArray(editablePost.overviewRows) && editablePost.overviewRows.length > 0
-                        ? editablePost.overviewRows
-                        : defaultOverviewRows;
+                      const admitCardOverviewRows = [
+                        { label: 'परीक्षा का नाम (Exam Name)', val: editablePost.postNameHi || editablePost.postName || shortJobName, isEdit: true, keyName: 'postNameHi' },
+                        { label: 'आयोजक संस्था (Conducting Body)', val: editablePost.departmentHi || editablePost.department || editablePost.organization, isEdit: true, keyName: 'departmentHi' },
+                        { label: 'एडमिट कार्ड स्थिति (Status)', val: editablePost.status === 'admit_card_out' ? 'एडमिट कार्ड जारी (Released)' : `जारी तिथि: ${admitCardDateDisplay}`, isEdit: false },
+                        { label: 'एडमिट कार्ड जारी तिथि (Admit Card Date)', val: resolvedDates.admitCardDate, isDate: true, dateKey: 'admitCardDate' },
+                        { label: 'परीक्षा तिथि (Exam Date)', val: resolvedDates.examDate, isDate: true, dateKey: 'examDate' },
+                        { label: 'परीक्षा अवधि / समय (Exam Duration)', val: editablePost.examPattern?.durationHi || 'प्रवेश पत्र पर अंकित शिफ्ट समय अनुसार', isEdit: false },
+                        { label: 'डाउनलोड माध्यम (Download Mode)', val: admitTitles.isSso ? 'ऑनलाइन (SSO पोर्टल / आधिकारिक वेबसाइट)' : 'ऑनलाइन (आधिकारिक वेबसाइट)', isEdit: false },
+                        { label: 'परीक्षा स्थान (Exam Centres)', val: editablePost.jobLocation || 'निर्धारित परीक्षा केंद्र', isEdit: true, keyName: 'jobLocation' },
+                        { label: 'आवश्यक लॉगिन विवरण (Credentials)', val: admitTitles.isSso ? 'SSO ID व पासवर्ड / Application No. व जन्मतिथि' : 'रजिस्ट्रेशन नंबर / रोल नंबर व पासवर्ड/जन्मतिथि', isEdit: false }
+                      ];
+
+                      const activeDefaultOverviewRows = isAdmitCardPost ? admitCardOverviewRows : defaultOverviewRows;
+                      const hasSavedAdmitOverview =
+                        Array.isArray(editablePost.overviewRows) &&
+                        editablePost.overviewRows.length > 0 &&
+                        (!isAdmitCardPost || editablePost.overviewRows.some((r: any) => String(r?.label || '').includes('एडमिट कार्ड स्थिति') || String(r?.label || '').includes('आयोजक संस्था')));
+
+                      const overviewRows = hasSavedAdmitOverview
+                        ? editablePost.overviewRows!
+                        : activeDefaultOverviewRows;
 
                       const handleUpdateOverviewRows = (newRows: any[]) => {
                         setEditablePost(prev => ({ ...prev, overviewRows: newRows }));
@@ -1980,7 +2134,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <div className="flex items-center justify-between gap-2 mb-2 pt-2">
                             <EditableText
                               as="h2"
-                              value={getSectionTitle('overview', `${shortJobName} का संक्षिप्त विवरण`)}
+                              value={getSectionTitle('overview', isAdmitCardPost ? admitTitles.overview : `${shortJobName} का संक्षिप्त विवरण`)}
                               onChange={(val) => setSectionTitle('overview', val)}
                               titlePrefix="संक्षिप्त विवरण शीर्षक"
                               className="headlight font-bold text-slate-900"
@@ -2127,6 +2281,403 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </tbody>
                             </table>
                           </div>
+                        </div>
+                      );
+                    }
+
+                    case 'admit_released': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_released')) return null;
+                      const portalHost = editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || (admitTitles.isSso ? 'sso.rajasthan.gov.in' : 'आधिकारिक वेबसाइट');
+                      const downloadUrl = editablePost.officialLinks?.admitCardUrl || editablePost.officialLinks?.officialWebsiteUrl || (admitTitles.isSso ? 'https://sso.rajasthan.gov.in/' : 'https://rajasthan.gov.in');
+                      return (
+                        <div key="admit_released" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_released', admitTitles.admitReleased)}
+                              onChange={(val) => setSectionTitle('admit_released', val)}
+                              titlePrefix="एडमिट कार्ड जारी शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_released', admitTitles.admitReleased)}
+                          </div>
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            {editablePost.departmentHi || editablePost.organization} द्वारा <strong>{editablePost.postNameHi || editablePost.postName || shortJobName}</strong> परीक्षा के ई-एडमिट कार्ड (Admit Card / Hall Ticket) आधिकारिक पोर्टल पर जारी किए गए हैं। सभी पंजीकृत अभ्यर्थी <strong>{admitCardDateDisplay}</strong> से अपने लॉगिन विवरण (
+                            {admitTitles.isSso ? 'SSO ID व पासवर्ड या Application Number व जन्मतिथि' : 'रजिस्ट्रेशन नंबर व पासवर्ड/जन्मतिथि'}
+                            ) के माध्यम से अपना प्रवेश पत्र ऑनलाइन डाउनलोड कर सकते हैं।
+                          </p>
+                          {editablePost.descriptionHi && (
+                            <p className="post-item text-slate-700" style={{ fontSize: '12pt' }}>
+                              <EditableText
+                                value={editablePost.descriptionHi}
+                                onChange={(val) => setEditablePost(prev => ({ ...prev, descriptionHi: val }))}
+                                as="span"
+                                titlePrefix="एडमिट कार्ड विवरण"
+                              />
+                            </p>
+                          )}
+                          <div className="p-3 sm:p-3.5 rounded-md bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="text-xs sm:text-sm text-emerald-950 font-semibold space-y-0.5">
+                              <div>अधिकृत पोर्टल: <span className="font-bold">{portalHost}</span></div>
+                              <div>परीक्षा तिथि: <span className="font-bold">{examDateDisplay}</span></div>
+                            </div>
+                            <a
+                              href={downloadUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#046c4e] hover:bg-[#03543f] text-white font-bold text-xs sm:text-sm rounded-md shadow-2xs transition shrink-0"
+                            >
+                              <span>एडमिट कार्ड डाउनलोड करें</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                          {getSectionTable('admit_released') && renderCustomTableComponent(
+                            getSectionTable('admit_released')!,
+                            (updatedTable) => setSectionTable('admit_released', updatedTable),
+                            () => handleDeleteTableFromSection('admit_released')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_exam_time': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_exam_time')) return null;
+                      return (
+                        <div key="admit_exam_time" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_exam_time', admitTitles.examTime)}
+                              onChange={(val) => setSectionTitle('admit_exam_time', val)}
+                              titlePrefix="परीक्षा तिथि व समय शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_exam_time', admitTitles.examTime)}
+                          </div>
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            <strong>{editablePost.departmentHi || editablePost.organization}</strong> द्वारा {editablePost.postNameHi || shortJobName} परीक्षा का आयोजन <strong>{examDateDisplay}</strong> को निर्धारित परीक्षा केंद्रों पर ({editablePost.examPattern?.examModeHi || 'निर्धारित परीक्षा प्रणाली अनुसार'}) किया जाएगा। परीक्षा की शिफ्ट एवं समय का विवरण नीचे तालिका में देखें:
+                          </p>
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-300">
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">पारी / विवरण (Shift / Details)</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800">निर्धारित समय / तिथि</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">परीक्षा तिथि (Exam Date)</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">{examDateDisplay}</td>
+                                </tr>
+                                {admitTitles.isCet12th ? (
+                                  <>
+                                    <tr>
+                                      <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">प्रथम पारी (Shift-I Morning)</td>
+                                      <td className="p-2.5 sm:p-3 font-semibold text-slate-700 bg-white">सुबह 09:00 AM से दोपहर 12:00 PM तक</td>
+                                    </tr>
+                                    <tr>
+                                      <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">द्वितीय पारी (Shift-II Evening)</td>
+                                      <td className="p-2.5 sm:p-3 font-semibold text-slate-700 bg-white">दोपहर 03:00 PM से शाम 06:00 PM तक</td>
+                                    </tr>
+                                  </>
+                                ) : (
+                                  <tr>
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">परीक्षा समय व अवधि (Shift Timing)</td>
+                                    <td className="p-2.5 sm:p-3 font-semibold text-slate-700 bg-white">
+                                      {editablePost.examPattern?.durationHi || 'अभ्यर्थी के एडमिट कार्ड पर अंकित पारी समय अनुसार'}
+                                    </td>
+                                  </tr>
+                                )}
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">परीक्षा केंद्र पर रिपोर्टिंग समय</td>
+                                  <td className="p-2.5 sm:p-3 font-semibold text-slate-700 bg-white">परीक्षा शुरू होने से 90 मिनट (1.5 घंटे) पूर्व</td>
+                                </tr>
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-rose-700 bg-white border-r border-slate-200">गेट बंद होने का समय (Gate Closing)</td>
+                                  <td className="p-2.5 sm:p-3 font-bold text-rose-700 bg-white">परीक्षा प्रारंभ होने से ठीक 1 घंटे (60 मिनट) पूर्व</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          {getSectionTable('admit_exam_time') && renderCustomTableComponent(
+                            getSectionTable('admit_exam_time')!,
+                            (updatedTable) => setSectionTable('admit_exam_time', updatedTable),
+                            () => handleDeleteTableFromSection('admit_exam_time')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_how_to_download': {
+                      return null;
+                    }
+
+                    case 'admit_sso_download': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_sso_download')) return null;
+                      const portalHost = editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'आधिकारिक वेबसाइट';
+                      return (
+                        <div key="admit_sso_download" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_sso_download', admitTitles.ssoDownload)}
+                              onChange={(val) => setSectionTitle('admit_sso_download', val)}
+                              titlePrefix={admitTitles.isSso ? 'SSO ID डाउनलोड शीर्षक' : 'आधिकारिक पोर्टल डाउनलोड शीर्षक'}
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_sso_download', admitTitles.ssoDownload)}
+                          </div>
+                          {admitTitles.isSso ? (
+                            <div className="p-3.5 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5">
+                              <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                                राजस्थान में आयोजित होने वाली परीक्षाओं का एडमिट कार्ड सीधे <strong>SSO ID (sso.rajasthan.gov.in)</strong> से डाउनलोड करना सबसे आसान तरीका है:
+                              </p>
+                              <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                                <li>सबसे पहले राजस्थान सिंगल साइन ऑन पोर्टल <strong>sso.rajasthan.gov.in</strong> ओपन करें।</li>
+                                <li>अपनी <strong>SSO ID (Digital Identity)</strong>, पासवर्ड और कैप्चा कोड दर्ज कर लॉगिन करें।</li>
+                                <li>डैशबोर्ड पर <strong>&ldquo;Citizen Apps (G2C)&rdquo;</strong> में जाकर <strong>&ldquo;Recruitment Portal&rdquo;</strong> आइकन पर क्लिक करें।</li>
+                                <li>रिक्रूटमेंट पोर्टल खुलने के बाद ऊपर मेनू बार में <strong>&ldquo;Get Admit Card&rdquo;</strong> विकल्प पर क्लिक करें।</li>
+                                <li>अब सूची में अपनी परीक्षा ({editablePost.shortTitle || shortJobName}) के सामने दिए गए <strong>&ldquo;Get Admit Card&rdquo;</strong> बटन पर क्लिक करें और PDF डाउनलोड करें।</li>
+                              </ol>
+                            </div>
+                          ) : (
+                            <div className="p-3.5 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5">
+                              <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                                अभ्यर्थी <strong>{portalHost}</strong> पर अपने रजिस्ट्रेशन विवरण के माध्यम से सीधे एडमिट कार्ड / कॉल लेटर प्राप्त कर सकते हैं:
+                              </p>
+                              <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                                <li>आधिकारिक पोर्टल <strong>{portalHost}</strong> पर जाकर Call Letter / Admit Card लॉगिन पेज खोलें।</li>
+                                <li>अपनी भाषा (Hindi / English) चुनें और <strong>Registration Number / Roll Number</strong> दर्ज करें।</li>
+                                <li>पासवर्ड अथवा अपनी <strong>Date of Birth (DD-MM-YY)</strong> तथा स्क्रीन पर दिख रहा कैप्चा कोड भरें।</li>
+                                <li><strong>Login</strong> बटन पर क्लिक करें और प्रदर्शित एडमिट कार्ड का प्रिंटआउट प्राप्त करें।</li>
+                              </ol>
+                            </div>
+                          )}
+                          {getSectionTable('admit_sso_download') && renderCustomTableComponent(
+                            getSectionTable('admit_sso_download')!,
+                            (updatedTable) => setSectionTable('admit_sso_download', updatedTable),
+                            () => handleDeleteTableFromSection('admit_sso_download')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_reporting_time': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_reporting_time')) return null;
+                      return (
+                        <div key="admit_reporting_time" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_reporting_time', admitTitles.reportingTime)}
+                              onChange={(val) => setSectionTitle('admit_reporting_time', val)}
+                              titlePrefix="रिपोर्टिंग समय शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_reporting_time', admitTitles.reportingTime)}
+                          </div>
+                          <div className="p-3.5 sm:p-4 rounded-md border border-amber-300 bg-amber-50/70 space-y-2 text-slate-800" style={{ fontSize: '12pt' }}>
+                            <p className="post-item font-semibold text-amber-950">
+                              परीक्षा केंद्र पर प्रवेश और सुरक्षा जांच संबंधी समय-सीमा का सख्ती से पालन करें:
+                            </p>
+                            <ul className="list-disc pl-5 space-y-1.5 text-slate-800">
+                              <li><strong>रिपोर्टिंग समय (Reporting Time):</strong> अभ्यर्थियों को परीक्षा प्रारंभ होने से कम से कम <strong>90 से 120 मिनट (1.5 से 2 घंटे) पूर्व</strong> परीक्षा केंद्र पर पहुँचना अनिवार्य है।</li>
+                              <li><strong>मुख्य द्वार बंद होने का समय (Gate Closing):</strong> परीक्षा शुरू होने से ठीक <strong>1 घंटे (60 मिनट) पहले</strong> परीक्षा केंद्र का मुख्य गेट बंद कर दिया जाएगा। इसके बाद किसी भी परिस्थिति में प्रवेश नहीं मिलेगा।</li>
+                              <li><strong>सत्यापन प्रक्रिया:</strong> बायोमेट्रिक उपस्थिति, फोटो मिलान और फ्रिस्किंग (तलाशी) में समय लगता है, इसलिए अंतिम समय की भीड़ से बचें।</li>
+                            </ul>
+                          </div>
+                          {getSectionTable('admit_reporting_time') && renderCustomTableComponent(
+                            getSectionTable('admit_reporting_time')!,
+                            (updatedTable) => setSectionTable('admit_reporting_time', updatedTable),
+                            () => handleDeleteTableFromSection('admit_reporting_time')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_check_details': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_check_details')) return null;
+                      return (
+                        <div key="admit_check_details" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_check_details', admitTitles.checkDetails)}
+                              onChange={(val) => setSectionTitle('admit_check_details', val)}
+                              titlePrefix="एडमिट कार्ड जांच बिंदु शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_check_details', admitTitles.checkDetails)}
+                          </div>
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            ई-एडमिट कार्ड डाउनलोड करने के तुरंत बाद अपने प्रवेश पत्र में अंकित निम्नलिखित सभी विवरणों की सावधानीपूर्वक जांच अवश्य करें:
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            <li><strong>अभ्यर्थी का विवरण:</strong> आपका पूरा नाम, पिता/माता का नाम, श्रेणी (Category) और जन्मतिथि (आधार कार्ड/फॉर्म के समान होनी चाहिए)।</li>
+                            <li><strong>रोल नंबर व आवेदन संख्या:</strong> Roll Number, Application ID एवं बारकोड स्पष्ट रूप से छपा होना चाहिए।</li>
+                            <li><strong>परीक्षा तिथि एवं पारी (Exam Date & Shift):</strong> परीक्षा की तारीख, परीक्षा शुरू होने का समय और रिपोर्टिंग टाइम।</li>
+                            <li><strong>परीक्षा केंद्र का पता (Exam Centre):</strong> परीक्षा केंद्र का पूरा नाम, सेंटर कोड, जिला व लोकेशन।</li>
+                            <li><strong>फोटो और हस्ताक्षर:</strong> एडमिट कार्ड पर आपकी फोटो और सिग्नेचर साफ दिखाई देने चाहिए।</li>
+                            <li><strong>महत्वपूर्ण निर्देश:</strong> एडमिट कार्ड पर छपे ड्रेस कोड व कोविड/सुरक्षा संबंधी दिशा-निर्देश ध्यान से पढ़ें।</li>
+                          </ul>
+                          {getSectionTable('admit_check_details') && renderCustomTableComponent(
+                            getSectionTable('admit_check_details')!,
+                            (updatedTable) => setSectionTable('admit_check_details', updatedTable),
+                            () => handleDeleteTableFromSection('admit_check_details')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_what_to_carry': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_what_to_carry')) return null;
+                      const defaultCarryItems = [
+                        `${editablePost.shortTitleHi || shortJobName} ई-एडमिट कार्ड का स्पष्ट प्रिंटआउट (रंगीन या ब्लैक एंड व्हाइट)।`,
+                        'मूल वैध फोटो पहचान पत्र (आधार कार्ड अद्यतन फोटो सहित / पैन कार्ड / वोटर आईडी / ड्राइविंग लाइसेंस / पासपोर्ट — केवल मूल प्रति मान्य होगी, फोटोकॉपी या मोबाइल फोटो नहीं)।',
+                        '2 नवीनतम पासपोर्ट साइज रंगीन फोटोग्राफ (उपस्थिति पत्रक / एडमिट कार्ड पर लगाने हेतु, 2.5 सेमी × 2.5 सेमी)।',
+                        'पारदर्शी नीला बॉल पॉइंट पेन (Transparent Blue Ball Point Pen)।'
+                      ];
+                      const hasValidAdmitDocs =
+                        Array.isArray(editablePost.requiredDocumentsHi) &&
+                        editablePost.requiredDocumentsHi.length > 0 &&
+                        editablePost.requiredDocumentsHi.some(
+                          d => d.includes('एडमिट') || d.includes('प्रवेश पत्र') || d.includes('कॉल लेटर') || d.includes('हॉल टिकट')
+                        ) &&
+                        !editablePost.requiredDocumentsHi.some(
+                          d => d.includes('अंकतालिका') || d.includes('मूल निवास') || d.includes('जाति प्रमाण')
+                        );
+                      const carryItems = hasValidAdmitDocs ? editablePost.requiredDocumentsHi! : defaultCarryItems;
+
+                      return (
+                        <div key="admit_what_to_carry" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_what_to_carry', admitTitles.whatToCarry)}
+                              onChange={(val) => setSectionTitle('admit_what_to_carry', val)}
+                              titlePrefix="परीक्षा में साथ क्या लेकर जाएं शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_what_to_carry', admitTitles.whatToCarry)}
+                          </div>
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            परीक्षा केंद्र में प्रवेश के लिए अभ्यर्थियों को निम्नलिखित आवश्यक दस्तावेज और सामग्री साथ ले जाना अनिवार्य है (इनके बिना परीक्षा केंद्र में प्रवेश नहीं दिया जाएगा):
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {carryItems.map((item, idx) => (
+                              <li key={idx}>
+                                {isDirectEditMode ? (
+                                  <EditableText
+                                    value={item}
+                                    onChange={(val) => {
+                                      const list = [...carryItems];
+                                      list[idx] = val;
+                                      setEditablePost(prev => ({ ...prev, requiredDocumentsHi: list }));
+                                    }}
+                                    className="font-medium text-slate-800"
+                                  />
+                                ) : (
+                                  <span>{item}</span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                          {isDirectEditMode && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = [...carryItems, 'अन्य आवश्यक सामग्री (जैसे स्व-घोषणा पत्र / दिव्यांग प्रमाण पत्र यदि लागू हो)'];
+                                setEditablePost(prev => ({ ...prev, requiredDocumentsHi: list }));
+                              }}
+                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>+ नया बिंदु जोड़ें</span>
+                            </button>
+                          )}
+                          <div className="p-3 rounded-md bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-800 space-y-1.5">
+                            <div>
+                              <strong>ड्रेस कोड नियम (Dress Code):</strong> सादा, हल्का व बिना बड़े बटन, ब्रोच, मेटल पिन या जेबों वाले साधारण कपड़े एवं सामान्य चप्पल/सैंडल पहनकर आएं। पूरी आस्तीन के कपड़ों व भारी आभूषण से बचें।
+                            </div>
+                          </div>
+                          <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs sm:text-sm text-rose-900">
+                            <strong>प्रतिबंधित सामग्री (Prohibited Items):</strong> मोबाइल फोन, स्मार्ट वॉच, सामान्य घड़ी, ब्लूटूथ, ईयरफोन, कैलकुलेटर, लॉग टेबल, पर्स/वॉलेट, बेल्ट, धूप का चश्मा या किसी भी प्रकार का इलेक्ट्रॉनिक उपकरण परीक्षा केंद्र में ले जाना पूर्णतः वर्जित है।
+                          </div>
+                          {getSectionTable('admit_what_to_carry') && renderCustomTableComponent(
+                            getSectionTable('admit_what_to_carry')!,
+                            (updatedTable) => setSectionTable('admit_what_to_carry', updatedTable),
+                            () => handleDeleteTableFromSection('admit_what_to_carry')
+                          )}
+                        </div>
+                      );
+                    }
+
+                    case 'admit_troubleshoot': {
+                      if (!isAdmitCardPost || isSectionDeleted('admit_troubleshoot')) return null;
+                      const portalHost = editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'आधिकारिक वेबसाइट';
+                      return (
+                        <div key="admit_troubleshoot" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('admit_troubleshoot', admitTitles.troubleshoot)}
+                              onChange={(val) => setSectionTitle('admit_troubleshoot', val)}
+                              titlePrefix="डाउनलोड समस्या समाधान शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            {renderAdminSectionControls('admit_troubleshoot', admitTitles.troubleshoot)}
+                          </div>
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            यदि आपका एडमिट कार्ड डाउनलोड नहीं हो रहा है या वेबसाइट लोड होने में दिक्कत आ रही है, तो नीचे दिए गए समाधान अपनाएं:
+                          </p>
+                          <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            <li><strong>सर्वर ट्रैफिक / इंटरनेट जांचें:</strong> एडमिट कार्ड जारी होते समय वेबसाइट पर भारी ट्रैफिक रहता है; कुछ मिनट बाद या सुबह/रात्रि में पुनः प्रयास करें।</li>
+                            <li><strong>ब्राउज़र बदलें / Cache साफ़ करें:</strong> Google Chrome या Firefox के Incognito Mode में {admitTitles.isSso ? 'sso.rajasthan.gov.in या ' : ''}{portalHost} खोलें।</li>
+                            <li><strong>सही विवरण दर्ज करें:</strong> अपना Application Number / Registration ID, पासवर्ड और जन्मतिथि (DD/MM/YYYY) आवेदन फॉर्म की रसीद से मिलान करके सही भरें।</li>
+                            <li><strong>{admitTitles.isSso ? 'Forgot SSO / Password विकल्प:' : 'Forgot Registration / Password विकल्प:'}</strong> यदि पासवर्ड या आईडी भूल गए हैं, तो लॉगिन पेज पर उपलब्ध Forgot Password / Recovery लिंक का उपयोग करें।</li>
+                            <li><strong>विभागीय हेल्पडेस्क से संपर्क:</strong> एडमिट कार्ड में नाम, फोटो या केंद्र संबंधी किसी त्रुटि अथवा लगातार तकनीकी समस्या के लिए तुरंत <strong>{editablePost.organization || 'संबंधित बोर्ड/आयोग'} ({portalHost})</strong> की आधिकारिक हेल्पलाइन पर संपर्क करें।</li>
+                          </ol>
+                          {getSectionTable('admit_troubleshoot') && renderCustomTableComponent(
+                            getSectionTable('admit_troubleshoot')!,
+                            (updatedTable) => setSectionTable('admit_troubleshoot', updatedTable),
+                            () => handleDeleteTableFromSection('admit_troubleshoot')
+                          )}
                         </div>
                       );
                     }
@@ -2894,7 +3445,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       if (isSectionDeleted('selection_process') || (isFlexCategory && !isYojana)) return null;
                       const defaultSelectionSteps = isYojana
                         ? [
-                            'आधिकारिक योजना पोर्टल / SSO / E-Mitra के माध्यम से ऑनलाइन आवेदन जमा करना।',
+                            isRajasthanRelatedPost(editablePost)
+                              ? 'आधिकारिक योजना पोर्टल / SSO / E-Mitra के माध्यम से ऑनलाइन आवेदन जमा करना।'
+                              : 'आधिकारिक योजना पोर्टल के माध्यम से ऑनलाइन आवेदन जमा करना।',
                             'संबंधित विभाग / नोडल अधिकारी द्वारा पात्रता एवं दस्तावेजों का सत्यापन।',
                             'पात्र लाभार्थियों की स्वीकृत सूची जारी होना व DBT / कार्ड के माध्यम से लाभ प्रदान करना।'
                           ]
@@ -3228,18 +3781,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             />
                           </AdSlotWrapper>
                           <div className="flex items-center justify-between gap-2 pt-2">
-                            <h2 
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('important_links', isAdmitCardPost ? admitTitles.importantLinks : `${shortJobName} Important Links`)}
+                              onChange={(val) => setSectionTitle('important_links', val)}
+                              titlePrefix="महत्वपूर्ण लिंक्स शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{ 
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
                                 fontSize: '11.5pt',
                                 color: '#0f172a'
                               }}
-                            >
-                              {shortJobName} Important Links
-                            </h2>
+                            />
                             <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('important_links', `${shortJobName} Important Links`)}
+                              {renderSectionShareButton('important_links', isAdmitCardPost ? admitTitles.importantLinks : `${shortJobName} Important Links`)}
                               {isDirectEditMode && (
                                 <div className="flex items-center gap-1">
                                   <button
@@ -3269,13 +3824,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                           <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
                             <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
-                               <tbody>
+                              <tbody>
                                 <tr className="border-b border-slate-300">
                                   <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                    {isYojana ? `${shortJobName} आवेदन प्रारंभ (Scheme Apply Start)` : `Start ${shortJobName} form (आवेदन प्रारंभ)`}
+                                    {isYojana
+                                      ? `${shortJobName} आवेदन प्रारंभ (Scheme Apply Start)`
+                                      : isAdmitCardPost
+                                      ? `${shortJobName} एडमिट कार्ड जारी / परीक्षा तिथि`
+                                      : `Start ${shortJobName} form (आवेदन प्रारंभ)`}
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                    {applyStartDateDisplay}
+                                    {isAdmitCardPost
+                                      ? `${admitCardDateDisplay} (Exam: ${examDateDisplay})`
+                                      : applyStartDateDisplay}
                                   </td>
                                 </tr>
 
@@ -3471,7 +4032,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     </tr>
                                   );
                                 })}
-                                {!(Array.isArray(editablePost?.directLinks) && editablePost.directLinks.some((l: any) => typeof l?.url === 'string' && l.url.includes('photo-signature-resize-tool'))) && (
+                                {!isAdmitCardPost && !(Array.isArray(editablePost?.directLinks) && editablePost.directLinks.some((l: any) => typeof l?.url === 'string' && l.url.includes('photo-signature-resize-tool'))) && (
                                   <tr className="border-b border-slate-300 last:border-b-0">
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
                                       {isHi
@@ -3580,11 +4141,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     }
 
                     default: {
-                      if (sectionKey.startsWith('custom_')) {
-                        const customId = sectionKey.replace('custom_', '');
-                        const customSec = (editablePost.customSections || []).find(s => s.id === customId);
-                        if (!customSec) return null;
-
+                      const customId = sectionKey.startsWith('custom_') ? sectionKey.replace('custom_', '') : sectionKey;
+                      const customSec = (editablePost.customSections || []).find(s => s.id === customId);
+                      if (customSec) {
                         const customTable = customSec.tableData || getSectionTable(sectionKey);
 
                         return (

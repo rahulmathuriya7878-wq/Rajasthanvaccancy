@@ -154,7 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isMounted = false;
       if (unsubscribe) unsubscribe();
     };
-  }, [shouldHydrateFirebaseAuth, isAdminState]);
+  }, [shouldHydrateFirebaseAuth]);
 
   const toggleAdminMode = (enabled?: boolean) => {
     const nextState = enabled !== undefined ? enabled : !isAdminState;
@@ -172,6 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         import('../lib/firebase'),
         import('../services/firebaseUserService'),
       ]);
+      const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
       try {
         const result = await signInWithPopup(auth, googleAuthProvider);
         if (result.user) {
@@ -187,24 +188,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (popupErr: any) {
         const code = popupErr?.code || '';
-        // If popup is blocked or closed, fallback to redirect sign in
-        if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // Only fall back to redirect when popup is blocked on a top-level window (never inside an iframe or on user close)
+        if (code === 'auth/popup-blocked' && !isInIframe) {
           await signInWithRedirect(auth, googleAuthProvider);
           return { ok: true };
         }
         throw popupErr;
       }
-      return { ok: false, error: 'Google लॉगिन पूरा नहीं हुआ।' };
+      return { ok: false, error: 'Google sign-in did not complete.' };
     } catch (err: any) {
       console.error('Google sign-in error:', err);
       const code = err?.code || '';
       const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'rajasthanvacancy.online';
+      const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
       const msg =
         code === 'auth/unauthorized-domain'
-          ? `Firebase Auth में "${currentHost}" डोमेन अनुमति सूची (Authorized Domains) में नहीं है। समाधान: (1) नीचे दिए गए एडमिन पासकोड का उपयोग करें, या (2) मुख्य ऐप URL (https://ais-pre-xr5evgohw4ejjzuf775vak-300878841095.asia-southeast1.run.app) से लॉगिन करें।`
+          ? `Domain "${currentHost}" is not in Firebase Authorized Domains. Add it in Firebase Console or open via https://ais-pre-xr5evgohw4ejjzuf775vak-300878841095.asia-southeast1.run.app.`
           : code === 'auth/popup-blocked'
-            ? 'ब्राउज़र ने पॉपअप ब्लॉक कर दिया। रीडायरेक्ट लॉगिन का प्रयास किया जा रहा है...'
-            : err?.message || 'Google लॉगिन विफल रहा।';
+            ? isInIframe
+              ? 'Browser blocked the Google sign-in popup inside the preview frame. Allow popups or open Admin in a new tab.'
+              : 'Browser blocked the Google sign-in popup. Please allow popups and try again.'
+            : code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request'
+              ? 'Google sign-in popup was closed before completing login. Please try again.'
+              : code === 'auth/operation-not-allowed'
+                ? 'Google Sign-In is disabled in Firebase Authentication settings.'
+                : err?.message || 'Google sign-in failed.';
       return { ok: false, error: msg };
     }
   };

@@ -38,6 +38,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
     lang,
     vacancies,
     toastMessage,
+    showToast,
     isUrlIndexationOpen,
     setIsUrlIndexationOpen,
   } = usePortal();
@@ -63,8 +64,17 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
     try {
       const res = await signInWithGoogle();
       if (!res.ok) {
-        setLoginError(res.error || 'Google sign-in failed.');
+        const msg = res.error || 'Google sign-in failed.';
+        setLoginError(msg);
+        showToast(msg);
+      } else {
+        setLoginError('');
+        showToast('Connected to Firebase Google Cloud!');
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Google sign-in failed.';
+      setLoginError(msg);
+      showToast(msg);
     } finally {
       setSigningIn(false);
     }
@@ -188,14 +198,35 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         </div>
 
         {!isCloudAdmin && (
-          <button
-            type="button"
-            disabled={signingIn}
-            onClick={handleGoogleSignIn}
-            className="w-full px-3 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
-          >
-            {signingIn ? 'Connecting...' : 'Connect Google Cloud'}
-          </button>
+          <div className="space-y-2">
+            <button
+              type="button"
+              disabled={signingIn}
+              onClick={handleGoogleSignIn}
+              className="w-full px-3 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {signingIn ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <Cloud className="w-3.5 h-3.5" aria-hidden="true" />
+              )}
+              <span>{signingIn ? 'Connecting...' : 'Connect Google Cloud'}</span>
+            </button>
+            {loginError && (
+              <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-[11px] font-medium text-red-800 leading-snug space-y-1.5">
+                <p>{loginError}</p>
+                <a
+                  href={pathname || '/admin'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-semibold text-[#15803d] hover:underline no-underline"
+                >
+                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                  <span>Open in New Tab to Connect</span>
+                </a>
+              </div>
+            )}
+          </div>
         )}
 
         <button
@@ -280,8 +311,17 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
           </button>
 
           {loginError && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800 leading-relaxed">
-              {loginError}
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800 leading-relaxed space-y-1.5">
+              <p>{loginError}</p>
+              <a
+                href={pathname || '/admin'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-[#15803d] hover:underline no-underline"
+              >
+                <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Open in New Tab to Connect</span>
+              </a>
             </div>
           )}
 

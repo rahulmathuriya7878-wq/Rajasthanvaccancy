@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { PortalHomeClient } from '@/components/PortalHomeClient';
 import { INITIAL_VACANCIES } from '@/data/mockVacancies';
 import { filterActivePostsWithinDays } from '@/utils/dateUtils';
+import { buildFaqPageJsonLd } from '@/utils/faqSchemaBuilder';
 import { getSocialOgImageUrl } from '@/utils/shareUtils';
 import {
   DEFAULT_PRODUCTION_ORIGIN as CANONICAL_ORIGIN,
@@ -92,9 +93,14 @@ export async function generateMetadata({
     if (matched) {
       const postTitle = matched.titleHi || matched.title;
       const title = `${postTitle} - Rajasthan Vacancy 2026`;
-      const description =
-        matched.briefSummaryHi ||
-        `${postTitle}: कुल पद ${matched.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+      const isAdmitPost = matched.category === 'admit_card' || matched.status === 'admit_card_out';
+      const isResultPost = matched.category === 'result' || matched.status === 'result_declared';
+      const fallbackDesc = isAdmitPost
+        ? `${postTitle}: एडमिट कार्ड जारी, परीक्षा तिथि, शिफ्ट समय, डाउनलोड करने की प्रक्रिया, केंद्र निर्देश एवं डायरेक्ट लिंक।`
+        : isResultPost
+          ? `${postTitle}: आधिकारिक मेरिट लिस्ट PDF, कैटेगरी वाइज कट-ऑफ मार्क्स, स्कोरकार्ड व अगली चयन प्रक्रिया की पूरी जानकारी।`
+          : `${postTitle}: कुल पद ${matched.totalPosts || 'विभिन्न पद'}। भर्ती की शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, परीक्षा तिथि एवं फॉर्म भरने की पूरी प्रक्रिया।`;
+      const description = matched.briefSummaryHi || fallbackDesc;
       const canonical = `${CANONICAL_ORIGIN}/?vacancy=${encodeURIComponent(matched.id)}`;
       const ogImageUrl = getSocialOgImageUrl(matched);
 
@@ -166,13 +172,37 @@ export default async function HomePage({
   const searchQuery = typeof sp.search === 'string' ? sp.search.trim() : null;
   const openIndexation = sp.tool === 'indexation' || sp.indexation === '1' || sp.indexation === 'true';
 
+  const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
+  const matchedVacancy = vacancyParam
+    ? activeVacancies.find((v) => v.id.toLowerCase() === vacancyParam.toLowerCase()) || null
+    : null;
+
+  const ssrFaqJson = !policyParam
+    ? buildFaqPageJsonLd({
+        vacancy: matchedVacancy,
+        category: matchedVacancy ? null : categoryParam,
+        vacancies: activeVacancies,
+        lang: 'hi',
+        origin: CANONICAL_ORIGIN,
+      }).replace(/</g, '\\u003c')
+    : '';
+
   return (
-    <PortalHomeClient
-      initialVacancyId={vacancyParam}
-      initialCategory={categoryParam}
-      initialPolicy={policyParam}
-      initialSearch={searchQuery}
-      initialOpenIndexation={openIndexation}
-    />
+    <>
+      {!policyParam && ssrFaqJson && (
+        <script
+          id="dynamic-faq-schema-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: ssrFaqJson }}
+        />
+      )}
+      <PortalHomeClient
+        initialVacancyId={vacancyParam}
+        initialCategory={categoryParam}
+        initialPolicy={policyParam}
+        initialSearch={searchQuery}
+        initialOpenIndexation={openIndexation}
+      />
+    </>
   );
 }

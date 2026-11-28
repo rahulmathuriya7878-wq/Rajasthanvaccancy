@@ -22,12 +22,34 @@ import {
   Check,
   Code2,
   Link2,
+  Table2,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePortal } from '@/context/PortalContext';
 import {
+  loadCachedResultDetailsTemplate,
+  resetResultDetailsTemplateInCloud,
+  saveResultDetailsTemplateToCloud,
+  subscribeResultDetailsTemplateFromCloud,
+  type TemplateSyncSource,
+} from '@/services/postTemplateCloudSync';
+import {
   convertImageFileToWebP,
+  createResultDetailsTableData,
   formatBytesCompact,
+  getDefaultPersistentResultTemplate,
+  isCutoffMarksColumn,
+  isDownloadLinkColumn,
+  isResultDetailsTableMeta,
+  normalizePersistentResultTemplate,
+  RESULT_DETAILS_TABLE_TEMPLATE,
+  sanitizeNumericCutoffInput,
+  validateDownloadLinkUrl,
+  validateResultTableSections,
+  type PersistentResultTemplate,
   type WebPConversionResult,
 } from '@/utils/adminPostUtils';
 import { DEFAULT_PRODUCTION_ORIGIN } from '@/utils/seoCanonical';
@@ -35,6 +57,7 @@ import { copyTextToClipboard } from '@/utils/shareUtils';
 import type {
   BoardType,
   CategoryType,
+  CustomPostSection,
   DirectLinkItem,
   JobStatusType,
   PostBreakdownItem,
@@ -71,6 +94,17 @@ interface FaqRow {
   id: string;
   qHi: string;
   aHi: string;
+}
+
+interface CustomTableSectionDraft {
+  id: string;
+  title: string;
+  titleHi: string;
+  content: string;
+  contentHi: string;
+  headers: string[];
+  rows: string[][];
+  userModified: boolean;
 }
 
 const VALID_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
@@ -152,8 +186,10 @@ export const PostBuilderClient: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit')?.trim() || null;
+  const initialCategoryParam = !editId ? searchParams.get('category')?.trim() || null : null;
+  const matchedInitialCategory = CATEGORIES.find((c) => c.value === initialCategoryParam);
 
-  const { user, isCloudAdmin, getAdminAuthHeaders } = useAuth();
+  const { user, isCloudAdmin, signInWithGoogle, getAdminAuthHeaders } = useAuth();
   const { vacancies, handleUpdateVacancy, handleDeleteVacancy, showToast } = usePortal();
 
   const existingPost = useMemo(
@@ -165,8 +201,12 @@ export const PostBuilderClient: React.FC = () => {
   const [activeTab, setActiveTab] = useState<BuilderTab>('basic');
 
   // Basic Info
-  const [category, setCategory] = useState<CategoryType>('latest_job');
-  const [status, setStatus] = useState<JobStatusType>('active');
+  const [category, setCategory] = useState<CategoryType>(
+    matchedInitialCategory ? matchedInitialCategory.value : 'latest_job'
+  );
+  const [status, setStatus] = useState<JobStatusType>(
+    matchedInitialCategory ? matchedInitialCategory.defaultStatus : 'active'
+  );
   const [titleHi, setTitleHi] = useState('');
   const [titleEn, setTitleEn] = useState('');
   const [slug, setSlug] = useState('');
@@ -220,6 +260,19 @@ export const PostBuilderClient: React.FC = () => {
   const [postalAddressHi, setPostalAddressHi] = useState('');
   const [postRows, setPostRows] = useState<PostRow[]>([]);
   const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
+  const [customTableSections, setCustomTableSections] = useState<CustomTableSectionDraft[]>([]);
+  const [cutoffInputWarnings, setCutoffInputWarnings] = useState<Record<string, string>>({});
+  const [otherCustomSections, setOtherCustomSections] = useState<CustomPostSection[]>([]);
+  const [persistentResultTemplate, setPersistentResultTemplate] = useState<PersistentResultTemplate>(
+    () => getDefaultPersistentResultTemplate()
+  );
+  const [templateSyncSource, setTemplateSyncSource] = useState<TemplateSyncSource>('default');
+  const [savingTemplate, setSavingTemplate] = useState(false);
+
+  const tableValidation = useMemo(
+    () => validateResultTableSections(customTableSections),
+    [customTableSections]
+  );
 
   // SEO & Indexing
   const [metaTitle, setMetaTitle] = useState('');
@@ -233,6 +286,7 @@ export const PostBuilderClient: React.FC = () => {
   const [deletingPost, setDeletingPost] = useState(false);
   const [confirmDeletePost, setConfirmDeletePost] = useState(false);
   const [indexingNow, setIndexingNow] = useState(false);
+  const [connectingCloud, setConnectingCloud] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successInfo, setSuccessInfo] = useState<{
     slug: string;
@@ -244,6 +298,30 @@ export const PostBuilderClient: React.FC = () => {
 
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
   const hydratedEditIdRef = useRef<string | null>(null);
+  const dismissedResultTemplateRef = useRef<boolean>(false);
+
+  // Hydrate persistent Result Details template from local cache on mount & Firestore for verified admins
+  useEffect(() => {
+    const cached = loadCachedResultDetailsTemplate();
+    if (cached.isCustomizedLocally) {
+      setPersistentResultTemplate(cached.template);
+      setTemplateSyncSource('local');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user || !isCloudAdmin) return;
+    const unsubscribe = subscribeResultDetailsTemplateFromCloud(
+      (cloudTpl, source) => {
+        setPersistentResultTemplate(cloudTpl);
+        setTemplateSyncSource(source);
+      },
+      () => {
+        // Keep local cache / default template silently on read error
+      }
+    );
+    return () => unsubscribe();
+  }, [user, isCloudAdmin]);
 
   // Hydrate existing post when editing via ?edit=<id>
   useEffect(() => {
@@ -342,6 +420,34 @@ export const PostBuilderClient: React.FC = () => {
       );
     }
 
+    if (Array.isArray(existingPost.customSections) && existingPost.customSections.length > 0) {
+      const tableDrafts: CustomTableSectionDraft[] = [];
+      const nonTableSecs: CustomPostSection[] = [];
+      existingPost.customSections.forEach((sec) => {
+        if (sec.tableData && Array.isArray(sec.tableData.headers) && sec.tableData.headers.length > 0) {
+          tableDrafts.push({
+            id: sec.id,
+            title: sec.title || sec.titleHi || 'Custom Table',
+            titleHi: sec.titleHi || sec.title || 'Custom Table',
+            content: sec.content || '',
+            contentHi: sec.contentHi || '',
+            headers: [...sec.tableData.headers],
+            rows: Array.isArray(sec.tableData.rows)
+              ? sec.tableData.rows.map((r) => [...r])
+              : [],
+            userModified: true,
+          });
+        } else {
+          nonTableSecs.push(sec);
+        }
+      });
+      setCustomTableSections(tableDrafts);
+      setOtherCustomSections(nonTableSecs);
+    } else {
+      setCustomTableSections([]);
+      setOtherCustomSections([]);
+    }
+
     setMetaTitle(existingPost.seoSettings?.metaTitle || '');
     setMetaDescription(existingPost.seoSettings?.metaDescription || existingPost.briefSummaryHi || '');
     setFocusKeywords((existingPost.seoSettings?.focusKeywords || existingPost.tags || []).join(', '));
@@ -383,6 +489,186 @@ export const PostBuilderClient: React.FC = () => {
       const cursor = start + prefix.length + (selected || 'Text here').length + suffix.length;
       el.setSelectionRange(cursor, cursor);
     });
+  };
+
+  const hasResultDetailsTable = useMemo(
+    () =>
+      customTableSections.some((s) =>
+        isResultDetailsTableMeta(s.id, s.title, s.titleHi)
+      ),
+    [customTableSections]
+  );
+
+  // Automatically generate 'Result Details' rows (Category | Cut-off Marks | Download Link)
+  // from the persistent template in every new result-based post
+  useEffect(() => {
+    if (editId) return;
+    if (category !== 'result') {
+      dismissedResultTemplateRef.current = false;
+      setCustomTableSections((prev) =>
+        prev.filter((s) => !(s.id === RESULT_DETAILS_TABLE_TEMPLATE.id && !s.userModified))
+      );
+      return;
+    }
+    if (dismissedResultTemplateRef.current) return;
+    if (!persistentResultTemplate.autoGenerateOnResult) return;
+
+    const candidateUrl =
+      sanitizeHttpUrl(notificationPdfUrl) || sanitizeHttpUrl(officialWebsiteUrl) || '';
+    const safeUrl = validateDownloadLinkUrl(candidateUrl).valid ? candidateUrl : '';
+    const seeded = createResultDetailsTableData(safeUrl, persistentResultTemplate);
+
+    setCustomTableSections((prev) => {
+      const existingIdx = prev.findIndex((s) =>
+        isResultDetailsTableMeta(s.id, s.title, s.titleHi)
+      );
+      if (existingIdx >= 0) {
+        const current = prev[existingIdx];
+        if (!current.userModified) {
+          const isIdentical =
+            JSON.stringify(current.headers) === JSON.stringify(seeded.headers) &&
+            JSON.stringify(current.rows) === JSON.stringify(seeded.rows) &&
+            current.title === seeded.title &&
+            current.titleHi === seeded.titleHi;
+          if (isIdentical) return prev;
+          const next = [...prev];
+          next[existingIdx] = { ...seeded, userModified: false };
+          return next;
+        }
+        return prev;
+      }
+      return [{ ...seeded, userModified: false }, ...prev];
+    });
+  }, [editId, category, persistentResultTemplate, notificationPdfUrl, officialWebsiteUrl]);
+
+  const handleInsertResultDetailsTemplate = (options: {
+    autoSeed?: boolean;
+    switchToTab?: boolean;
+  } = {}) => {
+    const { autoSeed = false, switchToTab = false } = options;
+    dismissedResultTemplateRef.current = false;
+    const candidateUrl =
+      sanitizeHttpUrl(notificationPdfUrl) || sanitizeHttpUrl(officialWebsiteUrl) || '';
+    const fallbackUrl = validateDownloadLinkUrl(candidateUrl).valid ? candidateUrl : '';
+
+    setCustomTableSections((prev) => {
+      const exists = prev.some((s) => isResultDetailsTableMeta(s.id, s.title, s.titleHi));
+      if (exists) {
+        return prev.map((s) =>
+          isResultDetailsTableMeta(s.id, s.title, s.titleHi)
+            ? { ...s, userModified: autoSeed ? s.userModified : true }
+            : s
+        );
+      }
+      const seeded = createResultDetailsTableData(fallbackUrl, persistentResultTemplate);
+      return [
+        {
+          ...seeded,
+          userModified: !autoSeed,
+        },
+        ...prev,
+      ];
+    });
+
+    if (!autoSeed) {
+      showToast('Result Details table template loaded (Category | Cut-off Marks | Download Link).');
+    }
+    if (switchToTab) {
+      setActiveTab('content');
+    }
+  };
+
+  const handleSaveAsPersistentResultTemplate = async (tbl: CustomTableSectionDraft) => {
+    const tableCheck = validateResultTableSections([tbl]);
+    if (!tableCheck.valid) {
+      setErrorMsg(
+        tableCheck.firstError ||
+          'Please fix invalid Cut-off Marks or Download Link cells before saving the template.'
+      );
+      return;
+    }
+    setErrorMsg('');
+    setSavingTemplate(true);
+    try {
+      const normalized = normalizePersistentResultTemplate({
+        templateId: RESULT_DETAILS_TABLE_TEMPLATE.id,
+        title: tbl.title || tbl.titleHi || RESULT_DETAILS_TABLE_TEMPLATE.title,
+        titleHi: tbl.titleHi || tbl.title || RESULT_DETAILS_TABLE_TEMPLATE.titleHi,
+        content: tbl.content || '',
+        contentHi: tbl.contentHi || tbl.content || '',
+        headers: tbl.headers,
+        defaultRows: tbl.rows,
+        autoGenerateOnResult: true,
+      });
+      const result = await saveResultDetailsTemplateToCloud(normalized);
+      setPersistentResultTemplate(result.template);
+      setTemplateSyncSource(result.source);
+      setCustomTableSections((prev) =>
+        prev.map((s) =>
+          s.id === tbl.id
+            ? {
+                ...s,
+                headers: [...result.template.headers],
+                userModified: false,
+              }
+            : s
+        )
+      );
+      showToast(
+        result.synced
+          ? 'Result Details template saved persistently to Firestore!'
+          : result.message || 'Result Details template saved persistently!'
+      );
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  const handleResetPersistentResultTemplate = async () => {
+    setErrorMsg('');
+    setSavingTemplate(true);
+    try {
+      const result = await resetResultDetailsTemplateInCloud();
+      setPersistentResultTemplate(result.template);
+      setTemplateSyncSource(result.synced ? 'cloud' : 'default');
+      dismissedResultTemplateRef.current = false;
+      const candidateUrl =
+        sanitizeHttpUrl(notificationPdfUrl) || sanitizeHttpUrl(officialWebsiteUrl) || '';
+      const fallbackUrl = validateDownloadLinkUrl(candidateUrl).valid ? candidateUrl : '';
+      const resetTable = createResultDetailsTableData(fallbackUrl, result.template);
+      setCustomTableSections((prev) => {
+        const idx = prev.findIndex((s) => isResultDetailsTableMeta(s.id, s.title, s.titleHi));
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy[idx] = { ...resetTable, userModified: false };
+          return copy;
+        }
+        return [{ ...resetTable, userModified: false }, ...prev];
+      });
+      showToast('Result Details persistent template reset to built-in defaults.');
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  const handleAddBlankTableSection = () => {
+    const newId = `table-${Date.now().toString(36)}`;
+    setCustomTableSections((prev) => [
+      ...prev,
+      {
+        id: newId,
+        title: 'Additional Details Table',
+        titleHi: 'Additional Details Table',
+        content: '',
+        contentHi: '',
+        headers: ['Column 1', 'Column 2', 'Column 3'],
+        rows: [
+          ['', '', ''],
+          ['', '', ''],
+        ],
+        userModified: true,
+      },
+    ]);
   };
 
   // Auto WebP Image Compression Handler
@@ -525,6 +811,57 @@ export const PostBuilderClient: React.FC = () => {
     const minAgeNum = Number.isFinite(Number(ageMin)) && Number(ageMin) > 0 ? Number(ageMin) : 18;
     const maxAgeNum = Number.isFinite(Number(ageMax)) && Number(ageMax) >= minAgeNum ? Number(ageMax) : 40;
 
+    const parsedTableSections: CustomPostSection[] = customTableSections
+      .filter((sec) => {
+        const hasPopulatedData = sec.rows.some((r) =>
+          r.slice(1).some((cell) => cell.trim() !== '')
+        );
+        return sec.userModified || hasPopulatedData;
+      })
+      .map((sec) => {
+        const cleanHeaders = sec.headers.map((h, i) => h.trim() || `Column ${i + 1}`);
+        const cleanRows = sec.rows
+          .filter((r) => r.some((cell) => cell.trim() !== ''))
+          .map((r) => cleanHeaders.map((_, idx) => (r[idx] ?? '').trim()));
+        return {
+          id: sec.id,
+          title: sec.title.trim() || sec.titleHi.trim() || 'Result Details',
+          titleHi: sec.titleHi.trim() || sec.title.trim() || 'Result Details',
+          content: sec.content.trim(),
+          contentHi: sec.contentHi.trim() || sec.content.trim(),
+          sectionType: 'table' as const,
+          tableData: {
+            headers: cleanHeaders,
+            rows: cleanRows,
+          },
+        };
+      })
+      .filter((sec) => (sec.tableData?.rows.length || 0) > 0);
+
+    const mergedCustomSections: CustomPostSection[] = [
+      ...otherCustomSections.filter(
+        (other) => !parsedTableSections.some((tbl) => tbl.id === other.id)
+      ),
+      ...parsedTableSections,
+    ];
+
+    let nextSectionOrder = existingPost?.sectionOrder
+      ? [...existingPost.sectionOrder]
+      : undefined;
+    if (nextSectionOrder && parsedTableSections.length > 0) {
+      parsedTableSections.forEach((sec) => {
+        const customKey = `custom_${sec.id}`;
+        if (!nextSectionOrder!.includes(customKey)) {
+          const linksIdx = nextSectionOrder!.indexOf('important_links');
+          if (linksIdx >= 0) {
+            nextSectionOrder!.splice(linksIdx, 0, customKey);
+          } else {
+            nextSectionOrder!.push(customKey);
+          }
+        }
+      });
+    }
+
     return {
       ...(existingPost || {}),
       id: finalSlug,
@@ -582,6 +919,8 @@ export const PostBuilderClient: React.FC = () => {
       requiredDocumentsHi: parsedDocs.length ? parsedDocs : undefined,
       postalAddress: postalAddressHi.trim() || undefined,
       postalAddressHi: postalAddressHi.trim() || undefined,
+      customSections: mergedCustomSections.length ? mergedCustomSections : undefined,
+      sectionOrder: nextSectionOrder,
       faqs: parsedFaqs.length ? parsedFaqs : undefined,
       featuredImage: safeFeaturedImage,
       seoSettings: {
@@ -683,6 +1022,15 @@ export const PostBuilderClient: React.FC = () => {
     if (!VALID_ID_REGEX.test(candidateSlug)) {
       setErrorMsg('URL Slug may only contain letters, numbers, hyphens, or underscores (max 128 chars).');
       setActiveTab('basic');
+      return;
+    }
+
+    if (!tableValidation.valid) {
+      setErrorMsg(
+        tableValidation.firstError ||
+          'Please fix invalid Cut-off Marks (numeric only) or Download Link (valid URL) cells.'
+      );
+      setActiveTab('content');
       return;
     }
 
@@ -846,6 +1194,20 @@ export const PostBuilderClient: React.FC = () => {
         ? `| **Official Website (आधिकारिक वेबसाइट)** | ${payload.officialLinks.officialWebsiteUrl} |`
         : '',
     ];
+
+    (payload.customSections || []).forEach((sec) => {
+      if (sec.tableData && sec.tableData.headers.length > 0 && sec.tableData.rows.length > 0) {
+        lines.push('');
+        lines.push(`## ${sec.titleHi || sec.title}`);
+        if (sec.contentHi || sec.content) lines.push(sec.contentHi || sec.content);
+        lines.push(`| ${sec.tableData.headers.join(' | ')} |`);
+        lines.push(`| ${sec.tableData.headers.map(() => ':---').join(' | ')} |`);
+        sec.tableData.rows.forEach((r) => {
+          lines.push(`| ${r.map((cell) => cell || '—').join(' | ')} |`);
+        });
+      }
+    });
+
     return lines.filter((l, i, arr) => !(l === '' && arr[i - 1] === '')).join('\n').trim();
   };
 
@@ -1153,6 +1515,9 @@ export const PostBuilderClient: React.FC = () => {
                       const found = CATEGORIES.find((c) => c.value === next);
                       if (found && !existingPost) setStatus(found.defaultStatus);
                       if (next === 'scheme') setOrganization('Sarkari Yojana');
+                      if (next === 'result' && !existingPost && !hasResultDetailsTable) {
+                        handleInsertResultDetailsTemplate({ autoSeed: true });
+                      }
                     }}
                     className="w-full px-3 py-2.5 rounded-lg border border-neutral-300 text-sm text-neutral-900 bg-white focus:outline-none focus:border-[#15803d]"
                   >
@@ -1182,6 +1547,27 @@ export const PostBuilderClient: React.FC = () => {
                   </select>
                 </div>
               </div>
+
+              {category === 'result' && (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs text-emerald-950">
+                    <Table2 className="w-4 h-4 text-[#15803d] shrink-0" />
+                    <span>
+                      Persistent <strong>Result Details</strong> template ({persistentResultTemplate.headers.join(' | ')} · {persistentResultTemplate.defaultRows.length} rows){' '}
+                      {hasResultDetailsTable
+                        ? 'is auto-generated in Tab 4.'
+                        : 'is ready to insert in Tab 4.'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleInsertResultDetailsTemplate({ switchToTab: true })}
+                    className="px-3 py-1.5 rounded-md bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold cursor-pointer whitespace-nowrap"
+                  >
+                    {hasResultDetailsTable ? 'Edit Result Details Table' : 'Use Result Details Template'}
+                  </button>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
@@ -2005,6 +2391,513 @@ export const PostBuilderClient: React.FC = () => {
                 </div>
               </div>
 
+              {/* Pre-defined Table Structure Templates & Custom Tables */}
+              <div className="border-t border-neutral-200 pt-5 space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-sm font-bold text-neutral-900 flex items-center gap-1.5">
+                      <Table2 className="w-4 h-4 text-[#15803d]" />
+                      <span>Pre-defined Table Structure Templates</span>
+                    </h2>
+                    <p className="text-xs text-neutral-500">
+                      Insert consistent structured tables such as Result Details (Category, Cut-off Marks, Download Link).
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleInsertResultDetailsTemplate({ autoSeed: false })}
+                      className="px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>
+                        {hasResultDetailsTable
+                          ? 'Result Details Template Active'
+                          : 'Insert Result Details Template'}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddBlankTableSection}
+                      className="px-3 py-1.5 rounded-lg border border-neutral-300 hover:bg-neutral-50 text-xs font-semibold text-neutral-800 flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Custom Table</span>
+                    </button>
+                  </div>
+                </div>
+
+                {customTableSections.map((tbl) => {
+                  const candidateLinkFallback =
+                    sanitizeHttpUrl(notificationPdfUrl) || sanitizeHttpUrl(officialWebsiteUrl) || '';
+                  const defaultLinkFallback = validateDownloadLinkUrl(candidateLinkFallback).valid
+                    ? candidateLinkFallback
+                    : '';
+                  const isResultTable = isResultDetailsTableMeta(tbl.id, tbl.title, tbl.titleHi);
+                  const hasValidatedCols = tbl.headers.some(
+                    (h, idx) =>
+                      isCutoffMarksColumn(tbl.id, tbl.title, tbl.titleHi, h, idx) ||
+                      isDownloadLinkColumn(tbl.id, tbl.title, tbl.titleHi, h, idx)
+                  );
+                  const tableErrorsCount = Object.keys(tableValidation.cellErrors).filter((k) =>
+                    k.startsWith(`${tbl.id}:`)
+                  ).length;
+                  return (
+                    <div
+                      key={tbl.id}
+                      className={`rounded-xl border p-4 space-y-3 ${
+                        tableErrorsCount > 0
+                          ? 'border-red-300 bg-red-50/30'
+                          : 'border-neutral-200 bg-neutral-50/60'
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex-1 min-w-[200px] grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={tbl.titleHi || tbl.title}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCustomTableSections((prev) =>
+                                prev.map((s) =>
+                                  s.id === tbl.id
+                                    ? { ...s, title: val, titleHi: val, userModified: true }
+                                    : s
+                                )
+                              );
+                            }}
+                            placeholder="Table Section Title (e.g. Result Details)"
+                            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white text-xs font-bold text-neutral-900 focus:outline-none focus:border-[#15803d]"
+                          />
+                          <input
+                            type="text"
+                            value={tbl.contentHi || tbl.content}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCustomTableSections((prev) =>
+                                prev.map((s) =>
+                                  s.id === tbl.id
+                                    ? { ...s, content: val, contentHi: val, userModified: true }
+                                    : s
+                                )
+                              );
+                            }}
+                            placeholder="Optional short description above table"
+                            className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white text-xs text-neutral-700 focus:outline-none focus:border-[#15803d]"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isResultTable) {
+                              dismissedResultTemplateRef.current = true;
+                            }
+                            setCustomTableSections((prev) => prev.filter((s) => s.id !== tbl.id));
+                            setCutoffInputWarnings((prev) => {
+                              const next: Record<string, string> = {};
+                              Object.entries(prev).forEach(([k, v]) => {
+                                if (!k.startsWith(`${tbl.id}:`)) next[k] = v;
+                              });
+                              return next;
+                            });
+                          }}
+                          className="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Remove Table</span>
+                        </button>
+                      </div>
+
+                      {isResultTable && (
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] px-3 py-2 rounded-lg bg-emerald-50/70 border border-emerald-200 text-emerald-950">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-semibold">
+                              Persistent Template ({templateSyncSource === 'cloud' ? 'Cloud Synced' : templateSyncSource === 'local' ? 'Saved Locally' : 'Built-in Default'})
+                            </span>
+                            <span className="text-emerald-800">
+                              Auto-generates Category, Cut-off Marks &amp; Download Link rows on every new Result post.
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <button
+                              type="button"
+                              disabled={savingTemplate}
+                              onClick={() => void handleSaveAsPersistentResultTemplate(tbl)}
+                              className="px-2.5 py-1 rounded-md bg-[#15803d] hover:bg-[#166534] text-white font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                            >
+                              {savingTemplate ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Save className="w-3 h-3" />
+                              )}
+                              <span>Save as Persistent Template</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={savingTemplate}
+                              onClick={() => void handleResetPersistentResultTemplate()}
+                              className="px-2.5 py-1 rounded-md border border-emerald-300 bg-white hover:bg-emerald-100 text-emerald-900 font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Reset Default</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {(isResultTable || hasValidatedCols) && (
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] px-2.5 py-1.5 rounded-lg bg-white border border-neutral-200 text-neutral-600">
+                          <span>
+                            Validation rules: <strong>Cut-off Marks</strong> accepts numeric values only (e.g. 142 or 142.50); <strong>Download Link</strong> requires a valid <code className="font-mono">http(s)://</code> URL.
+                          </span>
+                          {tableErrorsCount > 0 && (
+                            <span className="font-semibold text-red-600">
+                              {tableErrorsCount} invalid {tableErrorsCount === 1 ? 'cell' : 'cells'}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Editable Column Headers */}
+                      <div className="overflow-x-auto border border-neutral-200 rounded-lg bg-white">
+                        <table className="w-full border-collapse text-left text-xs">
+                          <thead>
+                            <tr className="bg-neutral-100 border-b border-neutral-200">
+                              {tbl.headers.map((header, colIdx) => (
+                                <th
+                                  key={colIdx}
+                                  className="p-2 border-r border-neutral-200 last:border-r-0 min-w-[150px]"
+                                >
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="text"
+                                      value={header}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setCustomTableSections((prev) =>
+                                          prev.map((s) => {
+                                            if (s.id !== tbl.id) return s;
+                                            const nextHeaders = [...s.headers];
+                                            nextHeaders[colIdx] = val;
+                                            return { ...s, headers: nextHeaders, userModified: true };
+                                          })
+                                        );
+                                      }}
+                                      placeholder={`Column ${colIdx + 1}`}
+                                      className="w-full px-2 py-1 rounded border border-neutral-300 bg-white font-semibold text-neutral-900 text-xs focus:outline-none focus:border-[#15803d]"
+                                    />
+                                    {tbl.headers.length > 1 && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setCustomTableSections((prev) =>
+                                            prev.map((s) =>
+                                              s.id !== tbl.id
+                                                ? s
+                                                : {
+                                                    ...s,
+                                                    headers: s.headers.filter((_, i) => i !== colIdx),
+                                                    rows: s.rows.map((r) => r.filter((_, i) => i !== colIdx)),
+                                                    userModified: true,
+                                                  }
+                                            )
+                                          );
+                                          setCutoffInputWarnings((prev) => {
+                                            const next: Record<string, string> = {};
+                                            Object.entries(prev).forEach(([k, v]) => {
+                                              if (!k.startsWith(`${tbl.id}:`)) next[k] = v;
+                                            });
+                                            return next;
+                                          });
+                                        }}
+                                        title="Remove column"
+                                        className="p-1 text-neutral-400 hover:text-red-600 cursor-pointer"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    )}
+                                  </div>
+                                </th>
+                              ))}
+                              <th className="p-2 w-24 text-center font-semibold text-neutral-600">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-neutral-200">
+                            {tbl.rows.map((row, rowIdx) => (
+                              <tr key={rowIdx}>
+                                {tbl.headers.map((header, colIdx) => {
+                                  const lowerH = header.toLowerCase();
+                                  const isLinkCol = isDownloadLinkColumn(
+                                    tbl.id,
+                                    tbl.title,
+                                    tbl.titleHi,
+                                    header,
+                                    colIdx
+                                  );
+                                  const isCutoffCol = isCutoffMarksColumn(
+                                    tbl.id,
+                                    tbl.title,
+                                    tbl.titleHi,
+                                    header,
+                                    colIdx
+                                  );
+                                  const cellKey = `${tbl.id}:${rowIdx}:${colIdx}`;
+                                  const cellVal = row[colIdx] ?? '';
+                                  const cellError =
+                                    tableValidation.cellErrors[cellKey] ||
+                                    cutoffInputWarnings[cellKey];
+                                  return (
+                                    <td
+                                      key={colIdx}
+                                      className="p-1.5 border-r border-neutral-200 last:border-r-0 align-top"
+                                    >
+                                      <input
+                                        type={isLinkCol ? 'url' : 'text'}
+                                        inputMode={isCutoffCol ? 'decimal' : undefined}
+                                        value={cellVal}
+                                        aria-invalid={Boolean(cellError)}
+                                        onChange={(e) => {
+                                          const rawVal = e.target.value;
+                                          let nextVal = rawVal;
+                                          if (isCutoffCol) {
+                                            nextVal = sanitizeNumericCutoffInput(rawVal);
+                                            setCutoffInputWarnings((prev) => {
+                                              if (rawVal !== nextVal) {
+                                                return {
+                                                  ...prev,
+                                                  [cellKey]:
+                                                    'Only numeric values (0-9 and .) are allowed.',
+                                                };
+                                              }
+                                              if (!prev[cellKey]) return prev;
+                                              const copy = { ...prev };
+                                              delete copy[cellKey];
+                                              return copy;
+                                            });
+                                          } else if (cutoffInputWarnings[cellKey]) {
+                                            setCutoffInputWarnings((prev) => {
+                                              const copy = { ...prev };
+                                              delete copy[cellKey];
+                                              return copy;
+                                            });
+                                          }
+                                          setCustomTableSections((prev) =>
+                                            prev.map((s) => {
+                                              if (s.id !== tbl.id) return s;
+                                              const nextRows = s.rows.map((r, rIdx) => {
+                                                if (rIdx !== rowIdx) return r;
+                                                const copy = [...r];
+                                                copy[colIdx] = nextVal;
+                                                return copy;
+                                              });
+                                              return { ...s, rows: nextRows, userModified: true };
+                                            })
+                                          );
+                                        }}
+                                        placeholder={
+                                          isLinkCol
+                                            ? 'https://example.com/result.pdf'
+                                            : isCutoffCol
+                                              ? 'e.g. 142.50'
+                                              : lowerH.includes('category')
+                                                ? 'e.g. General / OBC / SC / ST'
+                                                : `Enter ${header}`
+                                        }
+                                        className={`w-full px-2 py-1.5 rounded border text-xs text-neutral-900 focus:outline-none ${
+                                          cellError
+                                            ? 'border-red-400 bg-red-50/50 focus:border-red-600'
+                                            : 'border-neutral-200 focus:border-[#15803d]'
+                                        } ${isLinkCol ? 'font-mono' : ''}`}
+                                      />
+                                      {cellError && (
+                                        <p className="mt-1 text-[11px] font-medium text-red-600 leading-tight">
+                                          {cellError}
+                                        </p>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                                <td className="p-1.5 text-center align-top">
+                                  <div className="inline-flex items-center gap-0.5">
+                                    <button
+                                      type="button"
+                                      disabled={rowIdx === 0}
+                                      onClick={() => {
+                                        setCustomTableSections((prev) =>
+                                          prev.map((s) => {
+                                            if (s.id !== tbl.id || rowIdx <= 0) return s;
+                                            const copy = [...s.rows];
+                                            [copy[rowIdx - 1], copy[rowIdx]] = [
+                                              copy[rowIdx],
+                                              copy[rowIdx - 1],
+                                            ];
+                                            return { ...s, rows: copy, userModified: true };
+                                          })
+                                        );
+                                        setCutoffInputWarnings((prev) => {
+                                          const next: Record<string, string> = {};
+                                          Object.entries(prev).forEach(([k, v]) => {
+                                            if (!k.startsWith(`${tbl.id}:`)) next[k] = v;
+                                          });
+                                          return next;
+                                        });
+                                      }}
+                                      aria-label="Move row up"
+                                      className="p-1 rounded text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 cursor-pointer"
+                                    >
+                                      <ArrowUp className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={rowIdx >= tbl.rows.length - 1}
+                                      onClick={() => {
+                                        setCustomTableSections((prev) =>
+                                          prev.map((s) => {
+                                            if (s.id !== tbl.id || rowIdx >= s.rows.length - 1) return s;
+                                            const copy = [...s.rows];
+                                            [copy[rowIdx + 1], copy[rowIdx]] = [
+                                              copy[rowIdx],
+                                              copy[rowIdx + 1],
+                                            ];
+                                            return { ...s, rows: copy, userModified: true };
+                                          })
+                                        );
+                                        setCutoffInputWarnings((prev) => {
+                                          const next: Record<string, string> = {};
+                                          Object.entries(prev).forEach(([k, v]) => {
+                                            if (!k.startsWith(`${tbl.id}:`)) next[k] = v;
+                                          });
+                                          return next;
+                                        });
+                                      }}
+                                      aria-label="Move row down"
+                                      className="p-1 rounded text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 cursor-pointer"
+                                    >
+                                      <ArrowDown className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setCustomTableSections((prev) =>
+                                          prev.map((s) =>
+                                            s.id !== tbl.id
+                                              ? s
+                                              : {
+                                                  ...s,
+                                                  rows: s.rows.filter((_, idx) => idx !== rowIdx),
+                                                  userModified: true,
+                                                }
+                                          )
+                                        );
+                                        setCutoffInputWarnings((prev) => {
+                                          const next: Record<string, string> = {};
+                                          Object.entries(prev).forEach(([k, v]) => {
+                                            if (!k.startsWith(`${tbl.id}:`)) next[k] = v;
+                                          });
+                                          return next;
+                                        });
+                                      }}
+                                      aria-label="Remove row"
+                                      className="p-1 rounded text-neutral-500 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setCustomTableSections((prev) =>
+                                prev.map((s) =>
+                                  s.id !== tbl.id
+                                    ? s
+                                    : {
+                                        ...s,
+                                        rows: [...s.rows, s.headers.map(() => '')],
+                                        userModified: true,
+                                      }
+                                )
+                              )
+                            }
+                            className="px-2.5 py-1 rounded-md border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-800 inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Add Row</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setCustomTableSections((prev) =>
+                                prev.map((s) =>
+                                  s.id !== tbl.id
+                                    ? s
+                                    : {
+                                        ...s,
+                                        headers: [...s.headers, `Column ${s.headers.length + 1}`],
+                                        rows: s.rows.map((r) => [...r, '']),
+                                        userModified: true,
+                                      }
+                                )
+                              )
+                            }
+                            className="px-2.5 py-1 rounded-md border border-neutral-300 bg-white hover:bg-neutral-50 text-xs font-semibold text-neutral-800 inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Add Column</span>
+                          </button>
+                        </div>
+
+                        {defaultLinkFallback &&
+                          tbl.headers.some((h, idx) =>
+                            isDownloadLinkColumn(tbl.id, tbl.title, tbl.titleHi, h, idx)
+                          ) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const linkColIdx = tbl.headers.findIndex((h, idx) =>
+                                  isDownloadLinkColumn(tbl.id, tbl.title, tbl.titleHi, h, idx)
+                                );
+                                if (linkColIdx < 0) return;
+                                setCustomTableSections((prev) =>
+                                  prev.map((s) =>
+                                    s.id !== tbl.id
+                                      ? s
+                                      : {
+                                          ...s,
+                                          rows: s.rows.map((r) => {
+                                            const copy = [...r];
+                                            if (!copy[linkColIdx]?.trim()) {
+                                              copy[linkColIdx] = defaultLinkFallback;
+                                            }
+                                            return copy;
+                                          }),
+                                          userModified: true,
+                                        }
+                                  )
+                                );
+                                showToast('Filled empty Download Link cells with official URL.');
+                              }}
+                              className="px-2.5 py-1 rounded-md border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-xs font-semibold text-emerald-900 cursor-pointer"
+                            >
+                              Fill Empty Download Links
+                            </button>
+                          )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               {/* Post-wise Breakdown + FAQs Controls */}
               <div className="border-t border-neutral-200 pt-4 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -2230,11 +3123,43 @@ export const PostBuilderClient: React.FC = () => {
 
           <div className="bg-white border border-neutral-200 rounded-xl p-4 space-y-2.5 text-xs">
             <div className="font-semibold text-neutral-900">Publish Checklist</div>
-            <div className="flex items-center justify-between text-neutral-600">
-              <span>Firebase Cloud Auth</span>
-              <span className={isCloudAdmin ? 'font-semibold text-[#15803d]' : 'font-semibold text-amber-700'}>
-                {isCloudAdmin ? 'Connected' : 'Local Only'}
-              </span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-neutral-600">
+                <span>Firebase Cloud Auth</span>
+                <span className={isCloudAdmin ? 'font-semibold text-[#15803d]' : 'font-semibold text-amber-700'}>
+                  {isCloudAdmin ? 'Connected' : 'Local Only'}
+                </span>
+              </div>
+              {!isCloudAdmin && (
+                <button
+                  type="button"
+                  disabled={connectingCloud}
+                  onClick={async () => {
+                    setErrorMsg('');
+                    setConnectingCloud(true);
+                    try {
+                      const res = await signInWithGoogle();
+                      if (!res.ok) {
+                        const msg = res.error || 'Google Cloud sign-in failed.';
+                        setErrorMsg(msg);
+                        showToast(msg);
+                      } else {
+                        showToast('Connected to Firebase Google Cloud!');
+                      }
+                    } finally {
+                      setConnectingCloud(false);
+                    }
+                  }}
+                  className="w-full px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  {connectingCloud ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Cloud className="w-3.5 h-3.5" />
+                  )}
+                  <span>{connectingCloud ? 'Connecting...' : 'Connect Google Cloud'}</span>
+                </button>
+              )}
             </div>
             <div className="flex items-center justify-between text-neutral-600">
               <span>Date Rows</span>
@@ -2246,6 +3171,12 @@ export const PostBuilderClient: React.FC = () => {
               <span>Fee Rows</span>
               <span className="font-mono tabular-nums text-neutral-900">
                 {feeRows.filter((f) => f.value.trim()).length}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-neutral-600">
+              <span>Custom Tables</span>
+              <span className="font-mono tabular-nums text-neutral-900">
+                {customTableSections.length}
               </span>
             </div>
             <div className="flex items-center justify-between text-neutral-600">

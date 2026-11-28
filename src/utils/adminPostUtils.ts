@@ -222,3 +222,378 @@ export function formatBytesCompact(bytes: number): string {
   if (kb < 1024) return `${kb.toFixed(1)} KB`;
   return `${(kb / 1024).toFixed(2)} MB`;
 }
+
+export interface TableTemplateDefinition {
+  id: string;
+  label: string;
+  title: string;
+  titleHi: string;
+  content: string;
+  contentHi: string;
+  headers: string[];
+  defaultRows: string[][];
+}
+
+export const RESULT_DETAILS_TABLE_TEMPLATE: TableTemplateDefinition = {
+  id: 'result-details',
+  label: 'Result Details (Category | Cut-off Marks | Download Link)',
+  title: 'Result Details',
+  titleHi: 'Result Details',
+  content: 'Category-wise Cut-off Marks and Official Result Download Links:',
+  contentHi: 'श्रेणीवार कट-ऑफ अंक (Cut-off Marks) एवं आधिकारिक रिजल्ट डाउनलोड लिंक नीचे तालिका में देखें:',
+  headers: ['Category', 'Cut-off Marks', 'Download Link'],
+  defaultRows: [
+    ['General (UR)', '', ''],
+    ['OBC (NCL)', '', ''],
+    ['EWS', '', ''],
+    ['SC', '', ''],
+    ['ST', '', ''],
+  ],
+};
+
+export interface PersistentResultTemplate {
+  templateId: string;
+  title: string;
+  titleHi: string;
+  content: string;
+  contentHi: string;
+  headers: string[];
+  defaultRows: string[][];
+  autoGenerateOnResult: boolean;
+}
+
+export function getDefaultPersistentResultTemplate(): PersistentResultTemplate {
+  return {
+    templateId: RESULT_DETAILS_TABLE_TEMPLATE.id,
+    title: RESULT_DETAILS_TABLE_TEMPLATE.title,
+    titleHi: RESULT_DETAILS_TABLE_TEMPLATE.titleHi,
+    content: RESULT_DETAILS_TABLE_TEMPLATE.content,
+    contentHi: RESULT_DETAILS_TABLE_TEMPLATE.contentHi,
+    headers: [...RESULT_DETAILS_TABLE_TEMPLATE.headers],
+    defaultRows: RESULT_DETAILS_TABLE_TEMPLATE.defaultRows.map((row) => [...row]),
+    autoGenerateOnResult: true,
+  };
+}
+
+export function normalizePersistentResultTemplate(
+  raw?: Partial<PersistentResultTemplate> | null
+): PersistentResultTemplate {
+  const defaults = getDefaultPersistentResultTemplate();
+  if (!raw || typeof raw !== 'object') return defaults;
+
+  const title =
+    (typeof raw.title === 'string' && raw.title.trim() ? raw.title.trim() : defaults.title).slice(
+      0,
+      150
+    );
+  const titleHi =
+    (typeof raw.titleHi === 'string' && raw.titleHi.trim()
+      ? raw.titleHi.trim()
+      : title || defaults.titleHi
+    ).slice(0, 150);
+  const content = (typeof raw.content === 'string' ? raw.content : defaults.content).slice(0, 1000);
+  const contentHi = (typeof raw.contentHi === 'string' ? raw.contentHi : defaults.contentHi).slice(
+    0,
+    1000
+  );
+
+  let headers = Array.isArray(raw.headers)
+    ? raw.headers
+        .map((h) => (typeof h === 'string' ? h.trim().slice(0, 100) : ''))
+        .filter(Boolean)
+        .slice(0, 10)
+    : [...defaults.headers];
+
+  // Guarantee the canonical 'Category', 'Cut-off Marks', and 'Download Link' columns exist
+  const requiredCols = ['Category', 'Cut-off Marks', 'Download Link'];
+  const lowerHeaders = headers.map((h) => h.toLowerCase());
+  const hasCategory = lowerHeaders.some((h) => h.includes('category'));
+  const hasCutoff = lowerHeaders.some((h) => h.includes('cut') || h.includes('marks'));
+  const hasLink = lowerHeaders.some((h) => h.includes('link') || h.includes('url'));
+
+  if (!hasCategory || !hasCutoff || !hasLink || headers.length === 0) {
+    const extraCols = headers.filter((h) => {
+      const l = h.toLowerCase();
+      return !l.includes('category') && !l.includes('cut') && !l.includes('marks') && !l.includes('link') && !l.includes('url');
+    });
+    headers = [...requiredCols, ...extraCols].slice(0, 10);
+  }
+
+  const rawRows = Array.isArray(raw.defaultRows) ? raw.defaultRows : defaults.defaultRows;
+  const normalizedRows = rawRows
+    .filter((r) => Array.isArray(r))
+    .slice(0, 50)
+    .map((row) => headers.map((_, colIdx) => String(row[colIdx] ?? '').slice(0, 500)));
+
+  return {
+    templateId: RESULT_DETAILS_TABLE_TEMPLATE.id,
+    title,
+    titleHi,
+    content,
+    contentHi,
+    headers,
+    defaultRows:
+      normalizedRows.length > 0
+        ? normalizedRows
+        : defaults.defaultRows.map((r) => headers.map((_, idx) => r[idx] ?? '')),
+    autoGenerateOnResult:
+      typeof raw.autoGenerateOnResult === 'boolean' ? raw.autoGenerateOnResult : true,
+  };
+}
+
+export function createResultDetailsTableData(
+  defaultDownloadUrl = '',
+  template?: PersistentResultTemplate | null
+): {
+  id: string;
+  title: string;
+  titleHi: string;
+  content: string;
+  contentHi: string;
+  headers: string[];
+  rows: string[][];
+} {
+  const tpl = normalizePersistentResultTemplate(template);
+  const candidateUrl = defaultDownloadUrl.trim();
+  const safeUrl = validateDownloadLinkUrl(candidateUrl).valid ? candidateUrl : '';
+  const linkColIndices = new Set(
+    tpl.headers
+      .map((h, idx) =>
+        isDownloadLinkColumn(tpl.templateId, tpl.title, tpl.titleHi, h, idx) ? idx : -1
+      )
+      .filter((idx) => idx >= 0)
+  );
+
+  return {
+    id: tpl.templateId,
+    title: tpl.title,
+    titleHi: tpl.titleHi,
+    content: tpl.content,
+    contentHi: tpl.contentHi,
+    headers: [...tpl.headers],
+    rows: tpl.defaultRows.map((row) =>
+      tpl.headers.map((_, colIdx) => {
+        const val = String(row[colIdx] ?? '');
+        if (linkColIndices.has(colIdx) && !val.trim() && safeUrl) {
+          return safeUrl;
+        }
+        return val;
+      })
+    ),
+  };
+}
+
+export interface ParsedTableCellLink {
+  label: string;
+  url: string;
+}
+
+/**
+ * Parses table cells such as:
+ * - "https://ssc.gov.in/result.pdf"
+ * - "[Download Result PDF](https://ssc.gov.in/result.pdf)"
+ * - "Download PDF | https://ssc.gov.in/result.pdf"
+ * Only allows http/https URLs for XSS safety.
+ */
+export function parseTableCellLink(rawCell?: string | null): ParsedTableCellLink | null {
+  if (!rawCell || typeof rawCell !== 'string') return null;
+  const trimmed = rawCell.trim();
+  if (!trimmed) return null;
+
+  // Markdown link: [Label](https://...)
+  const mdMatch = trimmed.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/i);
+  if (mdMatch) {
+    return {
+      label: mdMatch[1].trim() || 'Download Link',
+      url: mdMatch[2].trim(),
+    };
+  }
+
+  // Pipe syntax: Label | https://...
+  const pipeMatch = trimmed.match(/^([^|]+)\|\s*(https?:\/\/\S+)$/i);
+  if (pipeMatch) {
+    return {
+      label: pipeMatch[1].trim() || 'Download Link',
+      url: pipeMatch[2].trim(),
+    };
+  }
+
+  // Direct http/https URL
+  if (/^https?:\/\/\S+$/i.test(trimmed)) {
+    const isPdf = /\.pdf(\?|#|$)/i.test(trimmed);
+    return {
+      label: isPdf ? 'Download PDF' : 'Download / Click Here',
+      url: trimmed,
+    };
+  }
+
+  return null;
+}
+
+export interface CellValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+export function isResultDetailsTableMeta(id: string, title?: string, titleHi?: string): boolean {
+  return (
+    id === RESULT_DETAILS_TABLE_TEMPLATE.id ||
+    (title || '').trim().toLowerCase() === 'result details' ||
+    (titleHi || '').trim().toLowerCase() === 'result details'
+  );
+}
+
+export function isCutoffMarksColumn(
+  tableId: string,
+  title: string,
+  titleHi: string,
+  header: string,
+  colIdx: number
+): boolean {
+  const lowerH = (header || '').trim().toLowerCase();
+  if (lowerH.includes('cut') || lowerH.includes('marks')) return true;
+  if (
+    isResultDetailsTableMeta(tableId, title, titleHi) &&
+    colIdx === 1 &&
+    !lowerH.includes('link') &&
+    !lowerH.includes('url') &&
+    !lowerH.includes('category')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function isDownloadLinkColumn(
+  tableId: string,
+  title: string,
+  titleHi: string,
+  header: string,
+  colIdx: number
+): boolean {
+  const lowerH = (header || '').trim().toLowerCase();
+  if (lowerH.includes('link') || lowerH.includes('url')) return true;
+  if (
+    isResultDetailsTableMeta(tableId, title, titleHi) &&
+    colIdx === 2 &&
+    !lowerH.includes('cut') &&
+    !lowerH.includes('marks') &&
+    !lowerH.includes('category')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Keeps only digits (0-9) and at most one decimal point for Cut-off Marks cells.
+ */
+export function sanitizeNumericCutoffInput(raw: string): string {
+  const cleaned = (raw || '').replace(/[^0-9.]/g, '');
+  const firstDotIdx = cleaned.indexOf('.');
+  if (firstDotIdx === -1) return cleaned;
+  const beforeDot = cleaned.slice(0, firstDotIdx);
+  const afterDot = cleaned.slice(firstDotIdx + 1).replace(/\./g, '');
+  const prefix = beforeDot === '' ? '0' : beforeDot;
+  return `${prefix}.${afterDot}`;
+}
+
+export function validateCutoffMarksValue(raw?: string | null): CellValidationResult {
+  const trimmed = (raw ?? '').trim();
+  if (!trimmed) return { valid: true };
+  if (!/^\d+(\.\d+)?$/.test(trimmed)) {
+    return {
+      valid: false,
+      error: 'Cut-off Marks must be a valid number (e.g. 142 or 142.50).',
+    };
+  }
+  return { valid: true };
+}
+
+export function validateDownloadLinkUrl(raw?: string | null): CellValidationResult {
+  const trimmed = (raw ?? '').trim();
+  if (!trimmed) return { valid: true };
+  if (/\s/.test(trimmed)) {
+    return {
+      valid: false,
+      error: 'Download Link cannot contain spaces. Enter a valid URL (https://...).',
+    };
+  }
+  try {
+    const parsed = new URL(trimmed);
+    const hasHttpProtocol = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    const host = parsed.hostname;
+    const isValidHost =
+      Boolean(host) &&
+      !host.startsWith('.') &&
+      !host.endsWith('.') &&
+      (host === 'localhost' || (host.includes('.') && host.split('.').every((part) => part.length > 0)));
+    if (!hasHttpProtocol || !isValidHost) {
+      return {
+        valid: false,
+        error: 'Enter a valid URL starting with http:// or https:// (e.g. https://example.com/result.pdf).',
+      };
+    }
+    return { valid: true };
+  } catch {
+    return {
+      valid: false,
+      error: 'Enter a valid URL starting with http:// or https:// (e.g. https://example.com/result.pdf).',
+    };
+  }
+}
+
+export interface TableSectionsValidationResult {
+  valid: boolean;
+  cellErrors: Record<string, string>;
+  firstError?: string;
+}
+
+export function validateResultTableSections(
+  sections: Array<{
+    id: string;
+    title: string;
+    titleHi?: string;
+    headers: string[];
+    rows: string[][];
+  }>
+): TableSectionsValidationResult {
+  const cellErrors: Record<string, string> = {};
+  let firstError: string | undefined;
+
+  for (const tbl of sections) {
+    const tableLabel = (tbl.titleHi || tbl.title || 'Table').trim();
+    for (let rowIdx = 0; rowIdx < tbl.rows.length; rowIdx++) {
+      const row = tbl.rows[rowIdx] || [];
+      for (let colIdx = 0; colIdx < tbl.headers.length; colIdx++) {
+        const header = tbl.headers[colIdx] || '';
+        const cellVal = row[colIdx] ?? '';
+        const key = `${tbl.id}:${rowIdx}:${colIdx}`;
+
+        if (isCutoffMarksColumn(tbl.id, tbl.title, tbl.titleHi || '', header, colIdx)) {
+          const check = validateCutoffMarksValue(cellVal);
+          if (!check.valid && check.error) {
+            cellErrors[key] = check.error;
+            if (!firstError) {
+              firstError = `${tableLabel} — Row ${rowIdx + 1} (${header || 'Cut-off Marks'}): ${check.error}`;
+            }
+          }
+        } else if (isDownloadLinkColumn(tbl.id, tbl.title, tbl.titleHi || '', header, colIdx)) {
+          const check = validateDownloadLinkUrl(cellVal);
+          if (!check.valid && check.error) {
+            cellErrors[key] = check.error;
+            if (!firstError) {
+              firstError = `${tableLabel} — Row ${rowIdx + 1} (${header || 'Download Link'}): ${check.error}`;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    valid: Object.keys(cellErrors).length === 0,
+    cellErrors,
+    firstError,
+  };
+}
