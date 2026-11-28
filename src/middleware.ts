@@ -1,8 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from '@/lib/adminAuth';
-import { INITIAL_VACANCIES } from '@/data/mockVacancies';
-import { filterActivePostsWithinDays } from '@/utils/dateUtils';
-import { DEFAULT_PRODUCTION_ORIGIN as CANONICAL_ORIGIN, normalizeBreadcrumbCategoryKey } from '@/utils/seoCanonical';
+import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from '@/lib/adminSessionEdge';
+
+const CANONICAL_ORIGIN = (() => {
+  const fallback = 'https://rajasthanvacancy.online';
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || '').trim().replace(/\/+$/, '');
+  if (!raw) return fallback;
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    if (!parsed.hostname.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(parsed.hostname)) {
+      return fallback;
+    }
+    return parsed.origin;
+  } catch {
+    return fallback;
+  }
+})();
+
+function normalizeCategoryKey(category: string): string {
+  const lower = category.trim().toLowerCase();
+  return lower === 'ugc_net' || lower === 'job' ? 'latest_job' : lower;
+}
 
 const KNOWN_POLICY_ALIASES: Record<string, string> = {
   about: 'about',
@@ -31,9 +48,39 @@ const KNOWN_CATEGORIES = new Set([
   'job',
 ]);
 
-const ACTIVE_VACANCY_SLUG_MAP: Map<string, string> = new Map(
-  filterActivePostsWithinDays(INITIAL_VACANCIES).map((v) => [v.id.toLowerCase(), v.id])
-);
+const ACTIVE_VACANCY_SLUGS: readonly string[] = [
+  'uptet-2026-notification-online-form',
+  'csir-npl-mts-recruitment-2026',
+  'rrc-nr-apprentice-recruitment-2026',
+  'dsssb-sweeper-chowkidar-recruitment-2026',
+  'indian-army-tes-57-recruitment-2026',
+  'ibps-so-specialist-officer-recruitment-2026',
+  'rajasthan-police-constable-recruitment-2026',
+  'rajasthan-high-court-system-assistant-clerk-2026',
+  'ssc-gd-constable-recruitment-2026',
+  'rajasthan-palanhar-yojana-2026',
+  'rajasthan-cet-admit-card-2026',
+  'gopal-credit-card-yojana-2026',
+  'rrb-group-d-result-2026',
+  'rpsc-protection-officer-admit-card-2026',
+  'rsmssb-teaching-associate-admit-card-2026',
+  'ibps-rrb-officer-scale-1-admit-card-2026',
+  'ssc-cgl-tier-1-result-2026',
+  'rsmssb-junior-instructor-result-2026',
+  'ibps-po-mains-result-scorecard-2026',
+  'rpsc-ras-prelims-exam-date-2026',
+  'ssc-chsl-tier-1-exam-date-2026',
+  'upsc-ifs-mains-exam-schedule-2026',
+  'rajasthan-sjed-scholarship-last-date-news-2026',
+  'cm-higher-education-scholarship-yojana-2026',
+  'devnarayan-chhatra-scooty-yojana-2026',
+  'kalibai-scooty-yojana-2026',
+];
+
+const ACTIVE_VACANCY_SLUG_MAP = new Map<string, string>([
+  ...ACTIVE_VACANCY_SLUGS.map((id): [string, string] => [id.toLowerCase(), id]),
+  ['rajasthan-cet-12th-level-admit-card-2026', 'rajasthan-cet-admit-card-2026'],
+]);
 
 const NOISE_QUERY_PARAMS = new Set([
   'utm_source',
@@ -55,14 +102,15 @@ const NOISE_QUERY_PARAMS = new Set([
   '_ga',
 ]);
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { nextUrl } = request;
   const rawHost = (request.headers.get('host') || '').toLowerCase();
   const hostname = rawHost.split(':')[0];
-  const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+  const isLocalHost =
+    hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
   const rawPath = nextUrl.pathname || '/';
 
-  // Enforce middleware session / bearer auth check on protected /api/admin/* routes
+  // Enforce Edge session / bearer auth check on protected /api/admin/* routes
   if (rawPath.startsWith('/api/admin/') && rawPath !== '/api/admin/session') {
     const authHeader = request.headers.get('authorization') || '';
     const hasBearer = authHeader.toLowerCase().startsWith('bearer ') && authHeader.length > 25;
@@ -101,21 +149,30 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Canonical host/index.html redirect
+  // Canonical /index.html redirect
   if (rawPath === '/index.html') {
     const target = nextUrl.clone();
     target.pathname = '/';
     return NextResponse.redirect(target, 301);
   }
 
-  const canonicalHost = new URL(CANONICAL_ORIGIN).hostname.toLowerCase();
+  let canonicalHost = 'rajasthanvacancy.online';
+  try {
+    canonicalHost = new URL(CANONICAL_ORIGIN).hostname.toLowerCase();
+  } catch {
+    canonicalHost = 'rajasthanvacancy.online';
+  }
   const alternateHost = canonicalHost.startsWith('www.')
     ? canonicalHost.slice(4)
     : `www.${canonicalHost}`;
 
   if (!isLocalHost && hostname === alternateHost && hostname !== canonicalHost) {
-    const target = new URL(`${nextUrl.pathname}${nextUrl.search}`, CANONICAL_ORIGIN);
-    return NextResponse.redirect(target, 301);
+    try {
+      const target = new URL(`${nextUrl.pathname}${nextUrl.search}`, CANONICAL_ORIGIN);
+      return NextResponse.redirect(target, 301);
+    } catch {
+      // Continue safely if URL construction fails
+    }
   }
 
   // Canonical slug & query normalization for GET/HEAD
@@ -123,7 +180,7 @@ export async function proxy(request: NextRequest) {
     const cleanPath = rawPath.replace(/^\/+|\/+$/g, '');
     const lowerPath = cleanPath.toLowerCase();
 
-    if (!nextUrl.searchParams.get('tool') && !nextUrl.searchParams.get('indexation') && !nextUrl.searchParams.get('search')) {
+    if (!nextUrl.searchParams.get('search')) {
       if (cleanPath && KNOWN_POLICY_ALIASES[lowerPath]) {
         const target = nextUrl.clone();
         target.pathname = '/';
@@ -132,7 +189,7 @@ export async function proxy(request: NextRequest) {
       }
 
       if (cleanPath && KNOWN_CATEGORIES.has(lowerPath)) {
-        const normCat = normalizeBreadcrumbCategoryKey(lowerPath);
+        const normCat = normalizeCategoryKey(lowerPath);
         const target = nextUrl.clone();
         target.pathname = '/';
         target.search = `?category=${encodeURIComponent(normCat)}`;
@@ -140,7 +197,7 @@ export async function proxy(request: NextRequest) {
       }
 
       if (cleanPath && !cleanPath.includes('.') && cleanPath !== 'photo-signature-resize-tool') {
-        const matchedId = ACTIVE_VACANCY_SLUG_MAP.get(lowerPath) || (lowerPath === 'rajasthan-cet-12th-level-admit-card-2026' ? 'rajasthan-cet-admit-card-2026' : null);
+        const matchedId = ACTIVE_VACANCY_SLUG_MAP.get(lowerPath);
         if (matchedId) {
           const target = nextUrl.clone();
           target.pathname = '/';

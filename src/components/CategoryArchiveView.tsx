@@ -27,7 +27,6 @@ interface CategoryArchiveViewProps {
   setSearchQuery?: (q: string) => void;
   isAdmin?: boolean;
   onDeleteVacancy?: (id: string) => void;
-  isLoading?: boolean;
 }
 
 export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
@@ -44,25 +43,8 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   setSearchQuery,
   isAdmin = false,
   onDeleteVacancy,
-  isLoading = false,
 }) => {
   const isHi = lang === 'hi';
-
-  if (isLoading && vacancies.length === 0) {
-    return (
-      <div className="space-y-4 animate-pulse">
-        <div className="h-10 bg-slate-200 rounded-lg w-1/3 mb-4" />
-        <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="bg-white p-4 rounded-xl border border-slate-300 shadow-xs space-y-2">
-              <div className="h-5 bg-slate-200 rounded w-4/5" />
-              <div className="h-3 bg-slate-200 rounded w-1/2" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   // 10 recent posts for the authentic GeneratePress sidebar
   const recentPosts = [...allVacancies]

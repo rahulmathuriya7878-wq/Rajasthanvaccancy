@@ -2,37 +2,25 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { 
-  Calendar, 
-  ShieldCheck, 
-  Edit3, 
-  Trash2,
-  Bell, 
-  ChevronRight, 
+import {
+  Calendar,
+  Bell,
+  ChevronRight,
   ChevronLeft,
-  CheckCircle2,
   Folder,
   MessageCircle,
-  FileText,
   Check,
-  Plus,
-  PlusCircle,
-  RefreshCw,
-  EyeOff,
-  X,
   Home,
   Copy,
   ExternalLink,
   Tag,
   Flame,
   Share2,
-  Cloud
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { VacancyItem, LanguageMode, CustomPostSection } from '../types';
+import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
 import { AdSlotWrapper } from './AdSlotWrapper';
-import { formatDisplayDate, resolveJobDates, IntegratedJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { formatDisplayDate, resolveJobDates, compareVacanciesNewestFirst } from '../utils/dateUtils';
 import { buildCanonicalUrl, applyCanonicalTag, normalizeBreadcrumbCategoryKey } from '../utils/seoCanonical';
 import { getJobFeaturedImage } from '../utils/thumbnailGenerator';
 import {
@@ -58,9 +46,6 @@ interface VacancyDetailPageProps {
   lang: LanguageMode;
   allVacancies: VacancyItem[];
   onSelectOtherVacancy: (item: VacancyItem) => void;
-  onDeleteVacancy?: (id: string) => void;
-  onUpdateVacancy?: (updatedJob: VacancyItem) => void | Promise<{ synced: boolean; reason?: string; message?: string }>;
-  onOpenAdminLogin?: () => void;
   isAdmin?: boolean;
   onSelectCategory?: (category: string) => void;
   onSearchKeyword?: (keyword: string) => void;
@@ -551,60 +536,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   lang,
   allVacancies,
   onSelectOtherVacancy,
-  onDeleteVacancy,
-  onUpdateVacancy,
-  onOpenAdminLogin,
   isAdmin = false,
   onSelectCategory,
   onSearchKeyword,
 }) => {
-  const { isCloudAdmin, user, signInWithGoogle } = useAuth();
-  const [editablePost, setEditablePost] = useState<VacancyItem>(() => normalizePost(vacancy) as VacancyItem);
+  const editablePost = useMemo(() => normalizePost(vacancy) as VacancyItem, [vacancy]);
   const currentVacancy = editablePost;
-  const setCurrentVacancy = setEditablePost;
 
-  const [isDirectEditMode, setIsDirectEditMode] = useState<boolean>(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
-  const [lastSavedTime, setLastSavedTime] = useState<string>('');
-  const [isSavingCloud, setIsSavingCloud] = useState<boolean>(false);
-  const [cloudSyncedOnce, setCloudSyncedOnce] = useState<boolean>(false);
-  const isDirtyRef = React.useRef<boolean>(false);
-  const lastSavedSnapshotRef = React.useRef<string>('');
-
-  const [pdfUploadTargetIndex, setPdfUploadTargetIndex] = useState<number | null>(null);
-  const [isPdfModalOpen, setIsPdfModalOpen] = useState<boolean>(false);
-  const [alertFeedback, setAlertFeedback] = useState<string>('');
-  const [newTagInput, setNewTagInput] = useState<string>('');
-
-  const displayTags = (editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0)
-    ? editablePost.tags
-    : (vacancy.tags && Array.isArray(vacancy.tags) && vacancy.tags.length > 0)
+  const displayTags =
+    editablePost.tags && Array.isArray(editablePost.tags) && editablePost.tags.length > 0
+      ? editablePost.tags
+      : vacancy.tags && Array.isArray(vacancy.tags) && vacancy.tags.length > 0
       ? vacancy.tags
       : ['#RajasthanVacancy2026', '#SarkariResult2026', '#GovtJobsAlert', '#SarkariBharti'];
-
-  const handleAddTag = () => {
-    const trimmed = newTagInput.trim();
-    if (!trimmed) return;
-    const formatted = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
-    if (!displayTags.includes(formatted)) {
-      const updated = [...displayTags, formatted];
-      const updatedPost = { ...editablePost, tags: updated };
-      setEditablePost(updatedPost);
-      setHasUnsavedChanges(true);
-      if (onUpdateVacancy) onUpdateVacancy(updatedPost);
-      setAlertFeedback(`✅ नया टैग "${formatted}" सफलतापूर्वक जोड़ा गया!`);
-    }
-    setNewTagInput('');
-  };
-
-  const handleRemoveTag = (index: number) => {
-    const updated = displayTags.filter((_, idx) => idx !== index);
-    const updatedPost = { ...editablePost, tags: updated };
-    setEditablePost(updatedPost);
-    setHasUnsavedChanges(true);
-    if (onUpdateVacancy) onUpdateVacancy(updatedPost);
-    setAlertFeedback('❌ टैग हटा दिया गया।');
-  };
 
   const handleTagClick = (tag: string) => {
     const clean = tag.replace(/^#/, '');
@@ -612,11 +556,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       onSearchKeyword(clean);
       return;
     }
-    const matching = allVacancies.find(v => v.id !== vacancy.id && (
-      (v.tags && v.tags.some(t => t.toLowerCase().includes(clean.toLowerCase()))) ||
-      v.title.toLowerCase().includes(clean.toLowerCase()) ||
-      (v.titleHi && v.titleHi.toLowerCase().includes(clean.toLowerCase()))
-    ));
+    const matching = allVacancies.find(
+      (v) =>
+        v.id !== vacancy.id &&
+        ((v.tags && v.tags.some((t) => t.toLowerCase().includes(clean.toLowerCase()))) ||
+          v.title.toLowerCase().includes(clean.toLowerCase()) ||
+          (v.titleHi && v.titleHi.toLowerCase().includes(clean.toLowerCase())))
+    );
     if (matching) {
       onSelectOtherVacancy(matching);
     } else if (onBack) {
@@ -624,247 +570,49 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     }
   };
 
-  useEffect(() => {
-    // Only reset editablePost from parent prop when switching posts or when not actively dirty-editing
-    if (vacancy.id !== editablePost.id || (!isDirectEditMode && !isDirtyRef.current)) {
-      const normalized = normalizePost(vacancy);
-      setEditablePost(normalized);
-      lastSavedSnapshotRef.current = JSON.stringify(normalized);
-    }
-  }, [vacancy, isDirectEditMode]);
-
-  // 1. Reusable In-Place Word Editable Component (FullPagePostView.tsx)
-  const EditableText: React.FC<{
+  const DisplayField: React.FC<{
     value?: string | number;
-    onChange: (val: string) => void;
     className?: string;
     style?: React.CSSProperties;
     as?: 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'div' | 'p' | 'td';
     placeholder?: string;
-    titlePrefix?: string;
     isDate?: boolean;
   }> = ({
     value = '',
-    onChange,
     className = '',
     style,
-    as: Tag = 'span',
+    as: TagEl = 'span',
     placeholder = '...',
-    titlePrefix = 'टेक्स्ट',
-    isDate = false
+    isDate = false,
   }) => {
     const strVal = String(value ?? '');
-    const [localVal, setLocalVal] = useState(strVal);
-
-    useEffect(() => {
-      setLocalVal(strVal);
-    }, [strVal]);
-
     const isIsoOrStandardDate = /^\d{4}-\d{2}-\d{2}/.test(strVal) || /^\d{1,2}-\d{1,2}-\d{4}/.test(strVal);
-    const displayVal = (!isDirectEditMode && (isDate || isIsoOrStandardDate)) ? formatDisplayDate(strVal) : strVal;
-
-    // यदि वर्ड एडिट मोड बंद है तो साधारण टेक्स्ट दिखाएं
-    if (!isDirectEditMode) {
-      return (
-        <Tag className={className} style={style}>
-          {displayVal || placeholder}
-        </Tag>
-      );
-    }
-
-    // वर्ड एडिट मोड चालू होने पर इनपुट / टेक्स्टएरिया दिखाएं
-    if (Tag === 'p' || Tag === 'div') {
-      return (
-        <textarea
-          value={localVal}
-          onChange={(e) => {
-            isDirtyRef.current = true;
-            setHasUnsavedChanges(true);
-            setLocalVal(e.target.value);
-            onChange(e.target.value);
-          }}
-          style={style}
-          placeholder={placeholder}
-          className={`${className} w-full bg-amber-50 text-slate-900 border border-amber-400 rounded p-1.5 focus:ring-2 focus:ring-amber-500 outline-none text-xs sm:text-sm font-medium`}
-          title={`क्लिक करके ${titlePrefix} बदलें`}
-          rows={3}
-        />
-      );
-    }
+    const displayVal = isDate || isIsoOrStandardDate ? formatDisplayDate(strVal) : strVal;
 
     return (
-      <input
-        type="text"
-        value={localVal}
-        onChange={(e) => {
-          isDirtyRef.current = true;
-          setHasUnsavedChanges(true);
-          setLocalVal(e.target.value);
-          onChange(e.target.value);
-        }}
-        style={style}
-        placeholder={placeholder}
-        className={`${className} bg-amber-50 text-slate-900 border border-amber-400 rounded px-1.5 py-0.5 focus:ring-2 focus:ring-amber-500 outline-none inline-block w-full font-medium text-xs sm:text-sm`}
-        title={`क्लिक करके ${titlePrefix} बदलें`}
-      />
+      <TagEl className={className} style={style}>
+        {displayVal || placeholder}
+      </TagEl>
     );
   };
 
-  // 2. Manual & Real-Time Debounced Cloud+Local Save Action
-  const onUpdatePost = onUpdateVacancy;
-  const persistPostUpdates = React.useCallback(async (postToSave: VacancyItem, explicitClick = false) => {
-    setIsSavingCloud(true);
-    let cloudSynced = false;
-    let cloudReason: string | undefined;
-    let cloudMsg: string | undefined;
-
-    try {
-      if (onUpdatePost) {
-        const res = await onUpdatePost(postToSave);
-        if (res && typeof res === 'object') {
-          cloudSynced = !!res.synced;
-          cloudReason = res.reason;
-          cloudMsg = res.message;
-        }
-      }
-
-      lastSavedSnapshotRef.current = JSON.stringify(postToSave);
-      isDirtyRef.current = false;
-      setHasUnsavedChanges(false);
-      setCloudSyncedOnce(cloudSynced);
-      setLastSavedTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
-      if (cloudSynced) {
-        setAlertFeedback('☁️ सभी फोन और डिवाइस पर परिवर्तन लाइव सेव हो गया!');
-      } else if (cloudReason === 'auth_required') {
-        if (explicitClick) {
-          setAlertFeedback('⚠️ केवल इसी फोन में सेव हुआ! दूसरे फोन में दिखाने के लिए ऊपर "Google लॉगिन करें" बटन दबाएं।');
-        }
-      } else if (cloudMsg) {
-        setAlertFeedback(`⚠️ ${cloudMsg}`);
-      } else if (explicitClick) {
-        setAlertFeedback('✅ परिवर्तन सफलतापूर्वक सहेजे गए!');
-      }
-    } catch (e) {
-      console.error(e);
-      setAlertFeedback('❌ सेव करने में त्रुटि हुई।');
-    } finally {
-      setIsSavingCloud(false);
-    }
-  }, [onUpdatePost]);
-
-  const handleManualSave = () => {
-    void persistPostUpdates(editablePost, true);
-  };
-
-  // Debounced auto-save (1.4s after last Word In-Place Edit Mode keystroke) without cursor reset
-  useEffect(() => {
-    if (!isAdmin || !isDirectEditMode) return;
-    const serialized = JSON.stringify(editablePost);
-    if (!lastSavedSnapshotRef.current) {
-      lastSavedSnapshotRef.current = serialized;
-      return;
-    }
-    if (serialized === lastSavedSnapshotRef.current) return;
-
-    isDirtyRef.current = true;
-    setHasUnsavedChanges(true);
-
-    const timer = window.setTimeout(() => {
-      void persistPostUpdates(editablePost, false);
-    }, 1400);
-
-    return () => window.clearTimeout(timer);
-  }, [editablePost, isAdmin, isDirectEditMode, persistPostUpdates]);
-
-  useEffect(() => {
-    if (alertFeedback) {
-      const timer = setTimeout(() => setAlertFeedback(''), 4500);
-      return () => clearTimeout(timer);
-    }
-  }, [alertFeedback]);
-
-  const handleAttachPdfToLink = (idx: number) => {
-    setPdfUploadTargetIndex(idx);
-    setIsPdfModalOpen(true);
-  };
-
-  const handleAddDirectLink = () => {
-    setEditablePost(prev => {
-      const list = [...(prev.directLinks || [])];
-      list.push({
-        label: 'New Important Link / नया लिंक',
-        actionText: 'Click Here',
-        type: 'official',
-        url: 'https://www.rajasthanvacancy.online/'
-      });
-      return { ...prev, directLinks: list };
-    });
-  };
-
-  const handlePdfFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      setAlertFeedback('⚠️ कृपया केवल PDF (.pdf) फ़ाइल चुनें।');
-      return;
-    }
-
-    const fileSizeKb = Math.round(file.size / 1024);
-    const fileSizeStr = fileSizeKb > 1024 ? `${(fileSizeKb / 1024).toFixed(2)} MB` : `${fileSizeKb} KB`;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const dataUrl = event.target?.result as string;
-      const cleanFileName = file.name.replace(/\.pdf$/i, '');
-
-      setEditablePost(prev => {
-        const list = [...(prev.directLinks || [])];
-        if (pdfUploadTargetIndex !== null && pdfUploadTargetIndex >= 0 && pdfUploadTargetIndex < list.length) {
-          list[pdfUploadTargetIndex] = {
-            ...list[pdfUploadTargetIndex],
-            url: dataUrl,
-            fileName: file.name,
-            fileSize: fileSizeStr,
-            isPdf: true,
-            actionText: list[pdfUploadTargetIndex].actionText || 'Download PDF'
-          };
-        } else {
-          list.push({
-            label: `Download ${cleanFileName} (PDF)`,
-            actionText: 'Download PDF',
-            type: 'notification',
-            url: dataUrl,
-            fileName: file.name,
-            fileSize: fileSizeStr,
-            isPdf: true,
-            isPrimary: true
-          });
-        }
-        return { ...prev, directLinks: list };
-      });
-
-      setAlertFeedback(`✅ PDF फ़ाइल "${file.name}" (${fileSizeStr}) सफलतापूर्वक जोड़ी गई!`);
-      setIsPdfModalOpen(false);
-    };
-
-    reader.readAsDataURL(file);
-  };
-
   const isHi = lang === 'hi';
-  const postTitle = isHi ? (currentVacancy.titleHi || currentVacancy.title) : currentVacancy.title;
-  const shortJobName = currentVacancy.shortTitleHi || currentVacancy.shortTitle || postTitle.split(':')[0] || 'भर्ती 2026';
+  const postTitle = isHi ? editablePost.titleHi || editablePost.title : editablePost.title;
+  const shortJobName = editablePost.shortTitleHi || editablePost.shortTitle || postTitle.split(':')[0] || 'भर्ती 2026';
 
-  const isOfflinePost = ((editablePost.titleHi || '') + (editablePost.postNameHi || '') + (editablePost.id || '') + (editablePost.department || '')).toLowerCase().includes('ऑफलाइन') ||
-    ((editablePost.title || '') + (editablePost.postName || '') + (editablePost.id || '')).toLowerCase().includes('offline') ||
-    (editablePost.id && editablePost.id.includes('hindi-typist')) ||
-    (editablePost.id && editablePost.id.includes('air-force')) ||
+  const isOfflinePost =
+    ((editablePost.titleHi || '') + (editablePost.postNameHi || '') + (editablePost.id || '') + (editablePost.department || ''))
+      .toLowerCase()
+      .includes('ऑफलाइन') ||
+    ((editablePost.title || '') + (editablePost.postName || '') + (editablePost.id || ''))
+      .toLowerCase()
+      .includes('offline') ||
+    Boolean(editablePost.id && editablePost.id.includes('hindi-typist')) ||
+    Boolean(editablePost.id && editablePost.id.includes('air-force')) ||
     Boolean(editablePost.postalAddress);
 
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Unified Integrated Dates (Notification, Apply Start, Apply Last, Fee Last, Admit Card, Exam)
   const resolvedDates = useMemo(() => resolveJobDates(editablePost), [editablePost]);
 
   const notificationDateDisplay = formatDisplayDate(resolvedDates.notificationDate);
@@ -873,123 +621,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
   const admitCardDateDisplay = formatDisplayDate(resolvedDates.admitCardDate);
   const examDateDisplay = formatDisplayDate(resolvedDates.examDate);
 
-  // Centralized synchronizer that propagates any date change across all sections
-  const updateIntegratedDate = (
-    field: keyof IntegratedJobDates,
-    newVal: string
-  ) => {
-    setEditablePost(prev => {
-      const current = resolveJobDates(prev);
-      const updatedDates: IntegratedJobDates = { ...current, [field]: newVal };
-
-      const labelsMap: Record<keyof IntegratedJobDates, string> = {
-        notificationDate: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)',
-        applyStartDate: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)',
-        applyLastDate: 'Last Date for Apply Online (ऑनलाइन आवेदन अंतिम तिथि)',
-        feeLastDate: 'Pay Exam Fee Last Date (शुल्क भुगतान अंतिम तिथि)',
-        admitCardDate: 'Admit Card Available (एडमिट कार्ड जारी तिथि)',
-        examDate: 'Exam Date (परीक्षा तिथि)'
-      };
-
-      let updatedList: any[] = [];
-      if (Array.isArray(prev.importantDates) && prev.importantDates.length > 0) {
-        let matched = false;
-        updatedList = prev.importantDates.map((item: any) => {
-          const lbl = String(item?.label || '').toLowerCase();
-          let isMatch = false;
-          if (field === 'notificationDate' && (item?.key === 'notificationDate' || lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('विज्ञप्ति') || lbl.includes('released'))) isMatch = true;
-          if (field === 'applyStartDate' && (item?.key === 'applyStartDate' || lbl.includes('begin') || lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('आवेदन प्रारंभ'))) isMatch = true;
-          if (field === 'applyLastDate' && (item?.key === 'applyLastDate' || lbl.includes('last') || lbl.includes('अंतिम') || lbl.includes('समाप्त'))) isMatch = true;
-          if (field === 'feeLastDate' && (item?.key === 'feeLastDate' || lbl.includes('fee') || lbl.includes('शुल्क'))) isMatch = true;
-          if (field === 'admitCardDate' && (item?.key === 'admitCardDate' || lbl.includes('admit') || lbl.includes('एडमिट') || lbl.includes('प्रवेश पत्र'))) isMatch = true;
-          if (field === 'examDate' && (item?.key === 'examDate' || lbl.includes('exam') || lbl.includes('परीक्षा'))) isMatch = true;
-
-          if (isMatch) {
-            matched = true;
-            return { ...item, key: field, value: newVal };
-          }
-          return item;
-        });
-
-        if (!matched) {
-          updatedList.push({ key: field, label: labelsMap[field], value: newVal });
-        }
-      } else {
-        updatedList = [
-          { key: 'notificationDate', label: labelsMap.notificationDate, value: updatedDates.notificationDate },
-          { key: 'applyStartDate', label: labelsMap.applyStartDate, value: updatedDates.applyStartDate },
-          { key: 'applyLastDate', label: labelsMap.applyLastDate, value: updatedDates.applyLastDate },
-          { key: 'feeLastDate', label: labelsMap.feeLastDate, value: updatedDates.feeLastDate },
-          { key: 'admitCardDate', label: labelsMap.admitCardDate, value: updatedDates.admitCardDate },
-          { key: 'examDate', label: labelsMap.examDate, value: updatedDates.examDate }
-        ];
-      }
-
-      return {
-        ...prev,
-        importantDates: updatedList
-      };
-    });
-  };
-
-  // Section Management State for Admin
-  const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
-  const [newSectionTitle, setNewSectionTitle] = useState('');
-  const [newSectionContent, setNewSectionContent] = useState('');
-  const [newSectionType, setNewSectionType] = useState<'paragraph' | 'bullets' | 'table' | 'alert_box'>('paragraph');
-  const [editingCustomSection, setEditingCustomSection] = useState<CustomPostSection | null>(null);
-
-  const deletedKeys = currentVacancy.deletedSectionKeys || [];
+  const deletedKeys = editablePost.deletedSectionKeys || [];
   const isSectionDeleted = (key: string) => deletedKeys.includes(key);
 
-  const sectionLabels: Record<string, string> = {
-    overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
-    result_overview: 'परिणाम का संक्षिप्त विवरण (Result Overview)',
-    result_how_to_check: 'रिजल्ट कैसे चेक करें (How to Check Result)',
-    admit_released: 'एडमिट कार्ड जारी सूचना (Admit Card Released)',
-    admit_exam_time: 'परीक्षा तिथि व समय (Exam Date & Time)',
-    admit_how_to_download: 'एडमिट कार्ड कैसे डाउनलोड करें',
-    admit_sso_download: isRajasthanRelatedPost(editablePost) ? 'SSO ID से एडमिट कार्ड डाउनलोड' : 'आधिकारिक पोर्टल से एडमिट कार्ड डाउनलोड',
-    admit_reporting_time: 'परीक्षा केंद्र रिपोर्टिंग समय',
-    admit_check_details: 'एडमिट कार्ड में क्या जांचें',
-    admit_what_to_carry: 'परीक्षा में साथ क्या लेकर जाएं',
-    admit_troubleshoot: 'डाउनलोड समस्या समाधान',
-    yojana_info: 'योजना का उद्देश्य एवं मुख्य लाभ (Scheme Benefits)',
-    yojana_eligibility: 'योजना पात्रता एवं आय सीमा (Yojana Eligibility)',
-    latest_update: 'लेटेस्ट अपडेट (Latest Update)',
-    latest_news: 'ताज़ा समाचार (Latest News)',
-    dates: 'महत्वपूर्ण तिथियाँ (Important Dates)',
-    post_breakdown: 'पदों का विवरण (Post Breakdown)',
-    qualification: 'शैक्षणिक योग्यता (Eligibility)',
-    age_limit: 'आयु सीमा (Age Limit)',
-    application_fee: 'आवेदन शुल्क (Application Fee)',
-    selection_process: 'चयन / लाभ वितरण प्रक्रिया (Selection / Benefit Process)',
-    postal_address: 'आवेदन भेजने का पता (Postal Address)',
-    salary: 'वेतनमान / सहायता (Salary / Assistance)',
-    teacher_notes: 'स्पेशल नोट्स (Teacher Notes)',
-    documents: 'आवश्यक दस्तावेज (Required Documents)',
-    how_to_apply: 'आवेदन कैसे करें (How to Apply)',
-    official_notification: 'आधिकारिक विज्ञप्ति व नोटिफिकेशन PDF (Official Notification)',
-    important_links: 'महत्वपूर्ण लिंक्स (Important Links)',
-    faqs: 'प्रश्नोत्तर (FAQs)'
-  };
-
-  // Section Table Management Helpers (Add or Delete Table in any box)
   const getSectionTable = (sectionKey: string) => {
     if (editablePost.sectionTableMap && editablePost.sectionTableMap[sectionKey]) {
       return editablePost.sectionTableMap[sectionKey];
     }
     return null;
-  };
-
-  const setSectionTable = (sectionKey: string, tableData: any) => {
-    setEditablePost(prev => ({
-      ...prev,
-      sectionTableMap: {
-        ...(prev.sectionTableMap || {}),
-        [sectionKey]: tableData
-      }
-    }));
   };
 
   const getSectionTitle = (sectionKey: string, defaultTitle: string) => {
@@ -999,302 +638,47 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     return defaultTitle;
   };
 
-  const setSectionTitle = (sectionKey: string, titleVal: string) => {
-    setEditablePost(prev => ({
-      ...prev,
-      sectionTitleMap: {
-        ...(prev.sectionTitleMap || {}),
-        [sectionKey]: titleVal
-      }
-    }));
-  };
-
-  const handleAddTableToSection = (sectionKey: string) => {
-    const defaultTable = {
-      headers: ['विवरण (Heading 1)', 'जानकारी (Heading 2)'],
-      rows: [
-        ['बिन्दु 1', 'जानकारी यहाँ दर्ज करें'],
-        ['बिन्दु 2', 'जानकारी यहाँ दर्ज करें']
-      ]
-    };
-    setSectionTable(sectionKey, defaultTable);
-    setAlertFeedback('✅ इस बॉक्स में नयी टेबल सफलतापूर्वक जोड़ी गई!');
-  };
-
-  const handleDeleteTableFromSection = (sectionKey: string) => {
-    setSectionTable(sectionKey, null);
-    setAlertFeedback('❌ इस बॉक्स से टेबल हटा दी गई।');
-  };
-
-  const handleDeleteSection = (key: string) => {
-    if (key.startsWith('custom_')) {
-      const customId = key.replace('custom_', '');
-      const updated: VacancyItem = {
-        ...currentVacancy,
-        customSections: (currentVacancy.customSections || []).filter(s => s.id !== customId)
-      };
-      setCurrentVacancy(updated);
-      if (onUpdateVacancy) onUpdateVacancy(updated);
-    } else {
-      if (!deletedKeys.includes(key)) {
-        const updated: VacancyItem = {
-          ...currentVacancy,
-          deletedSectionKeys: [...deletedKeys, key]
-        };
-        setCurrentVacancy(updated);
-        if (onUpdateVacancy) onUpdateVacancy(updated);
-      }
-    }
-  };
-
-  const handleRestoreSection = (key: string) => {
-    const updated: VacancyItem = {
-      ...currentVacancy,
-      deletedSectionKeys: deletedKeys.filter(k => k !== key)
-    };
-    setCurrentVacancy(updated);
-    if (onUpdateVacancy) onUpdateVacancy(updated);
-  };
-
-  const handleMoveSectionOrderUp = (index: number) => {
-    if (index <= 0) return;
-    const order = [...activeSectionKeys];
-    const temp = order[index];
-    order[index] = order[index - 1];
-    order[index - 1] = temp;
-    const updated: VacancyItem = {
-      ...currentVacancy,
-      sectionOrder: order
-    };
-    setCurrentVacancy(updated);
-    if (onUpdateVacancy) onUpdateVacancy(updated);
-  };
-
-  const handleMoveSectionOrderDown = (index: number) => {
-    if (index >= activeSectionKeys.length - 1) return;
-    const order = [...activeSectionKeys];
-    const temp = order[index];
-    order[index] = order[index + 1];
-    order[index + 1] = temp;
-    const updated: VacancyItem = {
-      ...currentVacancy,
-      sectionOrder: order
-    };
-    setCurrentVacancy(updated);
-    if (onUpdateVacancy) onUpdateVacancy(updated);
-  };
-
-  const renderAdminSectionControls = (_key: string, _label: string) => {
-    return null;
-  };
-
-  const renderCustomTableComponent = (
-    table: { headers: string[]; rows: string[][] },
-    onUpdateTable: (table: { headers: string[]; rows: string[][] } | null) => void,
-    onDeleteTable: () => void
-  ) => {
-    const handleMoveRow = (rowIdx: number, direction: 'up' | 'down') => {
-      const targetIdx = direction === 'up' ? rowIdx - 1 : rowIdx + 1;
-      if (targetIdx < 0 || targetIdx >= table.rows.length) return;
-      const newRows = [...table.rows];
-      const temp = newRows[rowIdx];
-      newRows[rowIdx] = newRows[targetIdx];
-      newRows[targetIdx] = temp;
-      onUpdateTable({ ...table, rows: newRows });
-    };
-
-    return (
-      <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white my-3 shadow-2xs">
-        {isDirectEditMode && (
-          <div className="p-2 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap text-xs">
-            <div className="flex items-center gap-2 font-bold text-slate-700">
-              <span>📊 टेबल कंट्रोल्स:</span>
-              <span>{table.rows.length} रो | {table.headers.length} कॉलम</span>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <button
-                type="button"
-                onClick={() => {
-                  const newHeaders = [...table.headers, `कॉलम ${table.headers.length + 1}`];
-                  const newRows = table.rows.map(row => [...row, 'डेटा दर्ज करें']);
-                  onUpdateTable({ headers: newHeaders, rows: newRows });
-                }}
-                className="px-2 py-0.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
-                title="टेबल में नया कॉलम जोड़ें"
-              >
-                <Plus className="w-3 h-3" />
-                <span>+ कॉलम जोड़ें</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const newRow = table.headers.map((_, idx) => `डेटा ${idx + 1}`);
-                  onUpdateTable({ ...table, rows: [...table.rows, newRow] });
-                }}
-                className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
-                title="टेबल में नयी रो जोड़ें"
-              >
-                <Plus className="w-3 h-3" />
-                <span>+ रो जोड़ें</span>
-              </button>
-              <button
-                type="button"
-                onClick={onDeleteTable}
-                className="px-2 py-0.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded text-[11px] cursor-pointer flex items-center gap-1"
-                title="संपूर्ण टेबल हटाएं"
-              >
-                <Trash2 className="w-3 h-3" />
-                <span>❌ टेबल हटाएं</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-300">
-              {table.headers.map((h, colIdx) => (
-                <th key={colIdx} className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 last:border-r-0 relative group">
-                  <div className="flex items-center justify-between gap-1">
-                    <EditableText
-                      value={h}
-                      onChange={(val) => {
-                        const newHeaders = [...table.headers];
-                        newHeaders[colIdx] = val;
-                        onUpdateTable({ ...table, headers: newHeaders });
-                      }}
-                      titlePrefix={`कॉलम ${colIdx + 1} शीर्षक`}
-                    />
-                    {isDirectEditMode && table.headers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newHeaders = table.headers.filter((_, i) => i !== colIdx);
-                          const newRows = table.rows.map(r => r.filter((_, i) => i !== colIdx));
-                          onUpdateTable({ headers: newHeaders, rows: newRows });
-                        }}
-                        className="text-rose-500 hover:text-rose-700 text-[10px] font-bold px-1 cursor-pointer"
-                        title="यह कॉलम हटाएं"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                </th>
-              ))}
-              {isDirectEditMode && <th className="p-2 border-slate-200 text-center w-28 font-bold text-xs text-slate-600">कंट्रोल्स</th>}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {table.rows.map((row, rowIdx) => (
-              <tr key={rowIdx}>
-                {row.map((cell, colIdx) => {
-                  const parsedLink = !isDirectEditMode ? parseTableCellLink(cell) : null;
-                  return (
-                    <td key={colIdx} className="p-2.5 sm:p-3 text-slate-800 font-medium border-r border-slate-200 last:border-r-0 bg-white">
-                      {parsedLink ? (
-                        <a
-                          href={parsedLink.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
-                        >
-                          <span>{parsedLink.label}</span>
-                          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                        </a>
-                      ) : (
-                        <EditableText
-                          value={cell}
-                          onChange={(val) => {
-                            const newRows = [...table.rows];
-                            newRows[rowIdx] = [...newRows[rowIdx]];
-                            newRows[rowIdx][colIdx] = val;
-                            onUpdateTable({ ...table, rows: newRows });
-                          }}
-                          titlePrefix={`सेल (${rowIdx + 1}, ${colIdx + 1})`}
-                        />
-                      )}
-                    </td>
-                  );
-                })}
-                {isDirectEditMode && (
-                  <td className="p-2 text-center bg-white border-l border-slate-200">
-                    <div className="flex items-center justify-center gap-1">
-                      {rowIdx > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => handleMoveRow(rowIdx, 'up')}
-                          className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                          title="रो ऊपर करें"
-                        >
-                          ⬆️
-                        </button>
-                      )}
-                      {rowIdx < table.rows.length - 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleMoveRow(rowIdx, 'down')}
-                          className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                          title="रो नीचे करें"
-                        >
-                          ⬇️
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newRows = table.rows.filter((_, i) => i !== rowIdx);
-                          onUpdateTable({ ...table, rows: newRows });
-                        }}
-                        className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
-                        title="यह रो हटाएं"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
-                )}
-              </tr>
+  const renderCustomTableComponent = (table: { headers: string[]; rows: string[][] }) => (
+    <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white my-3 shadow-2xs">
+      <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+        <thead>
+          <tr className="bg-slate-50 border-b border-slate-300">
+            {table.headers.map((h, colIdx) => (
+              <th key={colIdx} className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 last:border-r-0">
+                <span>{h}</span>
+              </th>
             ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
-
-  const handleAddNewSection = () => {
-    if (!newSectionTitle.trim()) return;
-    const newSec: CustomPostSection = {
-      id: Date.now().toString(),
-      title: newSectionTitle.trim(),
-      titleHi: newSectionTitle.trim(),
-      content: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है।',
-      contentHi: newSectionContent.trim() || 'विवरण यहाँ उपलब्ध है。',
-      sectionType: newSectionType
-    };
-    const updated: VacancyItem = {
-      ...currentVacancy,
-      customSections: [...(currentVacancy.customSections || []), newSec]
-    };
-    setCurrentVacancy(updated);
-    if (onUpdateVacancy) onUpdateVacancy(updated);
-    setNewSectionTitle('');
-    setNewSectionContent('');
-    setIsAddSectionOpen(false);
-  };
-
-  const handleSaveCustomSectionEdit = () => {
-    if (!editingCustomSection) return;
-    const updated: VacancyItem = {
-      ...currentVacancy,
-      customSections: (currentVacancy.customSections || []).map(s =>
-        s.id === editingCustomSection.id ? editingCustomSection : s
-      )
-    };
-    setCurrentVacancy(updated);
-    if (onUpdateVacancy) onUpdateVacancy(updated);
-    setEditingCustomSection(null);
-  };
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-200">
+          {table.rows.map((row, rowIdx) => (
+            <tr key={rowIdx}>
+              {row.map((cell, colIdx) => {
+                const parsedLink = parseTableCellLink(cell);
+                return (
+                  <td key={colIdx} className="p-2.5 sm:p-3 text-slate-800 font-medium border-r border-slate-200 last:border-r-0 bg-white">
+                    {parsedLink ? (
+                      <a
+                        href={parsedLink.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline font-bold inline-flex items-center gap-1"
+                      >
+                        <span>{parsedLink.label}</span>
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      </a>
+                    ) : (
+                      <span>{cell}</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1373,8 +757,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       if (metaDesc) metaDesc.setAttribute('content', originalDesc);
     };
   }, [vacancy.id, postTitle, editablePost]);
-
-  const renderSectionShareButton = (_sectionKey: string, _sectionTitle: string) => null;
 
   // Previous and Next Post for navigation footer
   const { prevPost, nextPost } = useMemo(() => {
@@ -1663,17 +1045,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           >
               {/* Entry Header */}
               <header className="entry-header border-b border-slate-200 pb-4 mb-5">
-                <EditableText
+                <DisplayField
                   as="h1"
                   value={isHi ? (editablePost.titleHi || editablePost.title) : editablePost.title}
-                  onChange={(val) => {
-                    setEditablePost(prev => ({
-                      ...prev,
-                      titleHi: val,
-                      title: val
-                    }));
-                  }}
-                  titlePrefix="शीर्षक (Title)"
                   className="entry-title font-bold text-slate-900 tracking-tight leading-snug text-[22px] sm:text-[24px]"
                   style={{
                     fontFamily: "'Inter', 'Roboto', 'Noto Sans Devanagari', -apple-system, sans-serif",
@@ -1727,17 +1101,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       : (editablePost.department || (editablePost.organization ? `${editablePost.organization} DEPARTMENT` : 'RPSC DEPARTMENT'))}
                   </span>
                   <div>
-                    <EditableText
+                    <DisplayField
                       as="h2"
                       value={editablePost.shortTitleHi || editablePost.shortTitle || shortJobName}
-                      onChange={(val) => {
-                        setEditablePost(prev => ({
-                          ...prev,
-                          shortTitleHi: val,
-                          shortTitle: val
-                        }));
-                      }}
-                      titlePrefix="संक्षिप्त नाम"
                       className="headlight text-xl sm:text-2xl font-extrabold !text-white tracking-tight leading-snug drop-shadow-xs"
                       style={{ color: '#ffffff', fontFamily: "'Noto Sans Devanagari', 'Hind', 'Poppins', sans-serif" }}
                     />
@@ -1774,7 +1140,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         className="text-xl sm:text-2xl font-black !text-[#facc15] block mt-1 tracking-wide drop-shadow-xs leading-snug"
                         style={{ color: '#facc15' }}
                       >
-                        <EditableText
+                        <DisplayField
                           value={
                             editablePost.yojanaOverview?.maxAnnualAssistance ||
                             editablePost.salaryHi ||
@@ -1782,10 +1148,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             editablePost.totalPosts ||
                             (isHi ? 'सरकारी सहायता व योजना लाभ' : 'Government Scheme Assistance')
                           }
-                          onChange={(val) => {
-                            setEditablePost(prev => ({ ...prev, salaryHi: val, salary: val }));
-                          }}
-                          titlePrefix="योजना मुख्य लाभ"
                         />
                       </span>
                     </div>
@@ -1831,12 +1193,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         className="text-2xl sm:text-3xl font-black !text-[#facc15] block mt-0.5 tracking-wide drop-shadow-xs"
                         style={{ color: '#facc15' }}
                       >
-                        <EditableText
+                        <DisplayField
                           value={editablePost.totalPosts || (isHi ? 'विभिन्न पद' : 'Various Posts')}
-                          onChange={(val) => {
-                            setEditablePost(prev => ({ ...prev, totalPosts: val }));
-                          }}
-                          titlePrefix="कुल पद"
                         />
                       </span>
                     </div>
@@ -2046,7 +1404,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                 <div className="space-y-3">
                   <p className="post-item">
                     <strong>{postTitle}:</strong>{' '}
-                    <EditableText
+                    <DisplayField
                       value={
                         isYojana
                           ? (editablePost.briefSummaryHi || editablePost.yojanaGeneralInfo?.descriptionHi || `${editablePost.departmentHi || editablePost.organization || 'राजस्थान सरकार'} द्वारा ${shortJobName} के अंतर्गत पात्र नागरिकों को आर्थिक व कल्याणकारी सहायता प्रदान की जा रही है।`)
@@ -2056,10 +1414,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           ? (editablePost.briefSummaryHi || `${editablePost.departmentHi || editablePost.organization} द्वारा ${shortJobName} (${editablePost.totalPosts || 'विभिन्न पद'}) का आधिकारिक परिणाम जारी कर दिया गया है।`)
                           : (editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`)
                       }
-                      onChange={(val) => {
-                        setEditablePost(prev => ({ ...prev, briefSummaryHi: val }));
-                      }}
-                      titlePrefix="संक्षिप्त विवरण सारांश"
                     />
                   </p>
                   <p className="post-item">
@@ -2194,11 +1548,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="result_overview">
                           <div className="flex items-center justify-between gap-2 mb-2 pt-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('result_overview', `${shortJobName} संक्षिप्त विवरण (Result Overview)`)}
-                              onChange={(val) => setSectionTitle('result_overview', val)}
-                              titlePrefix="रिजल्ट विवरण शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2232,15 +1584,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                       {row.label}
                                     </td>
                                     <td className="p-2.5 sm:p-3 text-slate-700 bg-white font-semibold">
-                                      {row.isEdit && row.keyName ? (
-                                        <EditableText
-                                          value={row.val}
-                                          onChange={(val) => setEditablePost((prev) => ({ ...prev, [row.keyName!]: val }))}
-                                          titlePrefix={row.label}
-                                        />
-                                      ) : (
-                                        <span>{row.val}</span>
-                                      )}
+                                      <span>{row.val}</span>
                                     </td>
                                   </tr>
                                 ))}
@@ -2441,33 +1785,12 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         ? editablePost.overviewRows!
                         : activeDefaultOverviewRows;
 
-                      const handleUpdateOverviewRows = (newRows: any[]) => {
-                        setEditablePost(prev => ({ ...prev, overviewRows: newRows }));
-                      };
-
-                      const handleMoveOverviewRow = (rowIdx: number, direction: 'up' | 'down') => {
-                        const targetIdx = direction === 'up' ? rowIdx - 1 : rowIdx + 1;
-                        if (targetIdx < 0 || targetIdx >= overviewRows.length) return;
-                        const rows = [...overviewRows];
-                        const temp = rows[rowIdx];
-                        rows[rowIdx] = rows[targetIdx];
-                        rows[targetIdx] = temp;
-                        handleUpdateOverviewRows(rows);
-                      };
-
-                      const handleDeleteOverviewRow = (rowIdx: number) => {
-                        const rows = overviewRows.filter((_, i) => i !== rowIdx);
-                        handleUpdateOverviewRows(rows);
-                      };
-
                       return (
                         <div key="overview">
                           <div className="flex items-center justify-between gap-2 mb-2 pt-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('overview', isAdmitCardPost ? admitTitles.overview : `${shortJobName} का संक्षिप्त विवरण`)}
-                              onChange={(val) => setSectionTitle('overview', val)}
-                              titlePrefix="संक्षिप्त विवरण शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{ 
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2476,19 +1799,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               }}
                             />
                             <div className="flex items-center gap-1.5">
-                              {isDirectEditMode && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const rows = [...overviewRows, { label: 'नया विवरण', val: 'जानकारी दर्ज करें', isEdit: true }];
-                                    handleUpdateOverviewRows(rows);
-                                  }}
-                                  className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                  <span>+ नई रो</span>
-                                </button>
-                              )}
                               <a
                                 href={getWhatsAppShareUrl(editablePost)}
                                 target="_blank"
@@ -2499,8 +1809,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
                                 <span>शेयर करें</span>
                               </a>
-                              {renderSectionShareButton('overview', `${shortJobName} का संक्षिप्त विवरण`)}
-                              {renderAdminSectionControls('overview', 'संक्षिप्त विवरण')}
                             </div>
                           </div>
                           <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
@@ -2515,84 +1823,13 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {overviewRows.map((row: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-200 last:border-b-0">
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200 w-1/3">
-                                      <EditableText
-                                        value={row.label}
-                                        onChange={(val) => {
-                                          const rows = [...overviewRows];
-                                          rows[idx] = { ...rows[idx], label: val };
-                                          handleUpdateOverviewRows(rows);
-                                        }}
-                                        titlePrefix="रो शीर्षक"
-                                      />
+                                      <DisplayField value={row.label} />
                                     </td>
                                     <td className="p-2.5 sm:p-3 text-slate-700 bg-white font-semibold">
-                                      <div className="flex items-center justify-between gap-2">
-                                        <div className="flex-1">
-                                          {row.isDate ? (
-                                            <EditableText
-                                              value={row.val as string}
-                                              onChange={(val) => updateIntegratedDate(row.dateKey as any, val)}
-                                              titlePrefix={row.label}
-                                              isDate={true}
-                                            />
-                                          ) : row.isEdit ? (
-                                            <EditableText
-                                              value={row.val as string}
-                                              onChange={(val) => {
-                                                const rows = [...overviewRows];
-                                                rows[idx] = { ...rows[idx], val: val };
-                                                if (row.keyName) {
-                                                  setEditablePost(prev => ({ ...prev, [row.keyName]: val }));
-                                                }
-                                                handleUpdateOverviewRows(rows);
-                                              }}
-                                              titlePrefix={row.label}
-                                            />
-                                          ) : (
-                                            <EditableText
-                                              value={row.val as string}
-                                              onChange={(val) => {
-                                                const rows = [...overviewRows];
-                                                rows[idx] = { ...rows[idx], val: val };
-                                                handleUpdateOverviewRows(rows);
-                                              }}
-                                              titlePrefix={row.label}
-                                            />
-                                          )}
-                                        </div>
-                                        {isDirectEditMode && (
-                                          <div className="flex items-center gap-1 shrink-0 ml-2">
-                                            {idx > 0 && (
-                                              <button
-                                                type="button"
-                                                onClick={() => handleMoveOverviewRow(idx, 'up')}
-                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                                                title="रो ऊपर करें"
-                                              >
-                                                ⬆️
-                                              </button>
-                                            )}
-                                            {idx < overviewRows.length - 1 && (
-                                              <button
-                                                type="button"
-                                                onClick={() => handleMoveOverviewRow(idx, 'down')}
-                                                className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                                                title="रो नीचे करें"
-                                              >
-                                                ⬇️
-                                              </button>
-                                            )}
-                                            <button
-                                              type="button"
-                                              onClick={() => handleDeleteOverviewRow(idx)}
-                                              className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
-                                              title="यह रो हटाएं"
-                                            >
-                                              🗑️
-                                            </button>
-                                          </div>
-                                        )}
-                                      </div>
+                                      <DisplayField
+                                        value={row.val as string}
+                                        isDate={Boolean(row.isDate)}
+                                      />
                                     </td>
                                   </tr>
                                 ))}
@@ -2623,11 +1860,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_released" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_released', admitTitles.admitReleased)}
-                              onChange={(val) => setSectionTitle('admit_released', val)}
-                              titlePrefix="एडमिट कार्ड जारी शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2635,7 +1870,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_released', admitTitles.admitReleased)}
                           </div>
                           <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                             {editablePost.departmentHi || editablePost.organization} द्वारा <strong>{editablePost.postNameHi || editablePost.postName || shortJobName}</strong> परीक्षा के ई-एडमिट कार्ड (Admit Card / Hall Ticket) आधिकारिक पोर्टल पर जारी किए गए हैं। सभी पंजीकृत अभ्यर्थी <strong>{admitCardDateDisplay}</strong> से अपने लॉगिन विवरण (
@@ -2644,11 +1878,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </p>
                           {editablePost.descriptionHi && (
                             <p className="post-item text-slate-700" style={{ fontSize: '12pt' }}>
-                              <EditableText
+                              <DisplayField
                                 value={editablePost.descriptionHi}
-                                onChange={(val) => setEditablePost(prev => ({ ...prev, descriptionHi: val }))}
                                 as="span"
-                                titlePrefix="एडमिट कार्ड विवरण"
                               />
                             </p>
                           )}
@@ -2667,11 +1899,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
-                          {getSectionTable('admit_released') && renderCustomTableComponent(
-                            getSectionTable('admit_released')!,
-                            (updatedTable) => setSectionTable('admit_released', updatedTable),
-                            () => handleDeleteTableFromSection('admit_released')
-                          )}
+                          {getSectionTable('admit_released') && renderCustomTableComponent(getSectionTable('admit_released')!)}
                         </div>
                       );
                     }
@@ -2681,11 +1909,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_exam_time" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_exam_time', admitTitles.examTime)}
-                              onChange={(val) => setSectionTitle('admit_exam_time', val)}
-                              titlePrefix="परीक्षा तिथि व समय शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2693,7 +1919,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_exam_time', admitTitles.examTime)}
                           </div>
                           <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                             <strong>{editablePost.departmentHi || editablePost.organization}</strong> द्वारा {editablePost.postNameHi || shortJobName} परीक्षा का आयोजन <strong>{examDateDisplay}</strong> को निर्धारित परीक्षा केंद्रों पर ({editablePost.examPattern?.examModeHi || 'निर्धारित परीक्षा प्रणाली अनुसार'}) किया जाएगा। परीक्षा की शिफ्ट एवं समय का विवरण नीचे तालिका में देखें:
@@ -2741,11 +1966,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </tbody>
                             </table>
                           </div>
-                          {getSectionTable('admit_exam_time') && renderCustomTableComponent(
-                            getSectionTable('admit_exam_time')!,
-                            (updatedTable) => setSectionTable('admit_exam_time', updatedTable),
-                            () => handleDeleteTableFromSection('admit_exam_time')
-                          )}
+                          {getSectionTable('admit_exam_time') && renderCustomTableComponent(getSectionTable('admit_exam_time')!)}
                         </div>
                       );
                     }
@@ -2760,11 +1981,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_sso_download" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_sso_download', admitTitles.ssoDownload)}
-                              onChange={(val) => setSectionTitle('admit_sso_download', val)}
-                              titlePrefix={admitTitles.isSso ? 'SSO ID डाउनलोड शीर्षक' : 'आधिकारिक पोर्टल डाउनलोड शीर्षक'}
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2772,7 +1991,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_sso_download', admitTitles.ssoDownload)}
                           </div>
                           {admitTitles.isSso ? (
                             <div className="p-3.5 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5">
@@ -2800,11 +2018,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </ol>
                             </div>
                           )}
-                          {getSectionTable('admit_sso_download') && renderCustomTableComponent(
-                            getSectionTable('admit_sso_download')!,
-                            (updatedTable) => setSectionTable('admit_sso_download', updatedTable),
-                            () => handleDeleteTableFromSection('admit_sso_download')
-                          )}
+                          {getSectionTable('admit_sso_download') && renderCustomTableComponent(getSectionTable('admit_sso_download')!)}
                         </div>
                       );
                     }
@@ -2814,11 +2028,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_reporting_time" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_reporting_time', admitTitles.reportingTime)}
-                              onChange={(val) => setSectionTitle('admit_reporting_time', val)}
-                              titlePrefix="रिपोर्टिंग समय शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2826,7 +2038,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_reporting_time', admitTitles.reportingTime)}
                           </div>
                           <div className="p-3.5 sm:p-4 rounded-md border border-amber-300 bg-amber-50/70 space-y-2 text-slate-800" style={{ fontSize: '12pt' }}>
                             <p className="post-item font-semibold text-amber-950">
@@ -2838,11 +2049,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               <li><strong>सत्यापन प्रक्रिया:</strong> बायोमेट्रिक उपस्थिति, फोटो मिलान और फ्रिस्किंग (तलाशी) में समय लगता है, इसलिए अंतिम समय की भीड़ से बचें।</li>
                             </ul>
                           </div>
-                          {getSectionTable('admit_reporting_time') && renderCustomTableComponent(
-                            getSectionTable('admit_reporting_time')!,
-                            (updatedTable) => setSectionTable('admit_reporting_time', updatedTable),
-                            () => handleDeleteTableFromSection('admit_reporting_time')
-                          )}
+                          {getSectionTable('admit_reporting_time') && renderCustomTableComponent(getSectionTable('admit_reporting_time')!)}
                         </div>
                       );
                     }
@@ -2852,11 +2059,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_check_details" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_check_details', admitTitles.checkDetails)}
-                              onChange={(val) => setSectionTitle('admit_check_details', val)}
-                              titlePrefix="एडमिट कार्ड जांच बिंदु शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2864,7 +2069,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_check_details', admitTitles.checkDetails)}
                           </div>
                           <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                             ई-एडमिट कार्ड डाउनलोड करने के तुरंत बाद अपने प्रवेश पत्र में अंकित निम्नलिखित सभी विवरणों की सावधानीपूर्वक जांच अवश्य करें:
@@ -2877,11 +2081,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             <li><strong>फोटो और हस्ताक्षर:</strong> एडमिट कार्ड पर आपकी फोटो और सिग्नेचर साफ दिखाई देने चाहिए।</li>
                             <li><strong>महत्वपूर्ण निर्देश:</strong> एडमिट कार्ड पर छपे ड्रेस कोड व कोविड/सुरक्षा संबंधी दिशा-निर्देश ध्यान से पढ़ें।</li>
                           </ul>
-                          {getSectionTable('admit_check_details') && renderCustomTableComponent(
-                            getSectionTable('admit_check_details')!,
-                            (updatedTable) => setSectionTable('admit_check_details', updatedTable),
-                            () => handleDeleteTableFromSection('admit_check_details')
-                          )}
+                          {getSectionTable('admit_check_details') && renderCustomTableComponent(getSectionTable('admit_check_details')!)}
                         </div>
                       );
                     }
@@ -2908,11 +2108,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_what_to_carry" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_what_to_carry', admitTitles.whatToCarry)}
-                              onChange={(val) => setSectionTitle('admit_what_to_carry', val)}
-                              titlePrefix="परीक्षा में साथ क्या लेकर जाएं शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2920,7 +2118,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_what_to_carry', admitTitles.whatToCarry)}
                           </div>
                           <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                             परीक्षा केंद्र में प्रवेश के लिए अभ्यर्थियों को निम्नलिखित आवश्यक दस्तावेज और सामग्री साथ ले जाना अनिवार्य है (इनके बिना परीक्षा केंद्र में प्रवेश नहीं दिया जाएगा):
@@ -2928,35 +2125,10 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
                             {carryItems.map((item, idx) => (
                               <li key={idx}>
-                                {isDirectEditMode ? (
-                                  <EditableText
-                                    value={item}
-                                    onChange={(val) => {
-                                      const list = [...carryItems];
-                                      list[idx] = val;
-                                      setEditablePost(prev => ({ ...prev, requiredDocumentsHi: list }));
-                                    }}
-                                    className="font-medium text-slate-800"
-                                  />
-                                ) : (
-                                  <span>{item}</span>
-                                )}
+                                <span>{item}</span>
                               </li>
                             ))}
                           </ul>
-                          {isDirectEditMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const list = [...carryItems, 'अन्य आवश्यक सामग्री (जैसे स्व-घोषणा पत्र / दिव्यांग प्रमाण पत्र यदि लागू हो)'];
-                                setEditablePost(prev => ({ ...prev, requiredDocumentsHi: list }));
-                              }}
-                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 flex items-center gap-1 cursor-pointer"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span>+ नया बिंदु जोड़ें</span>
-                            </button>
-                          )}
                           <div className="p-3 rounded-md bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-800 space-y-1.5">
                             <div>
                               <strong>ड्रेस कोड नियम (Dress Code):</strong> सादा, हल्का व बिना बड़े बटन, ब्रोच, मेटल पिन या जेबों वाले साधारण कपड़े एवं सामान्य चप्पल/सैंडल पहनकर आएं। पूरी आस्तीन के कपड़ों व भारी आभूषण से बचें।
@@ -2965,11 +2137,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs sm:text-sm text-rose-900">
                             <strong>प्रतिबंधित सामग्री (Prohibited Items):</strong> मोबाइल फोन, स्मार्ट वॉच, सामान्य घड़ी, ब्लूटूथ, ईयरफोन, कैलकुलेटर, लॉग टेबल, पर्स/वॉलेट, बेल्ट, धूप का चश्मा या किसी भी प्रकार का इलेक्ट्रॉनिक उपकरण परीक्षा केंद्र में ले जाना पूर्णतः वर्जित है।
                           </div>
-                          {getSectionTable('admit_what_to_carry') && renderCustomTableComponent(
-                            getSectionTable('admit_what_to_carry')!,
-                            (updatedTable) => setSectionTable('admit_what_to_carry', updatedTable),
-                            () => handleDeleteTableFromSection('admit_what_to_carry')
-                          )}
+                          {getSectionTable('admit_what_to_carry') && renderCustomTableComponent(getSectionTable('admit_what_to_carry')!)}
                         </div>
                       );
                     }
@@ -2980,11 +2148,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="admit_troubleshoot" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('admit_troubleshoot', admitTitles.troubleshoot)}
-                              onChange={(val) => setSectionTitle('admit_troubleshoot', val)}
-                              titlePrefix="डाउनलोड समस्या समाधान शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -2992,7 +2158,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            {renderAdminSectionControls('admit_troubleshoot', admitTitles.troubleshoot)}
                           </div>
                           <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
                             यदि आपका एडमिट कार्ड डाउनलोड नहीं हो रहा है या वेबसाइट लोड होने में दिक्कत आ रही है, तो नीचे दिए गए समाधान अपनाएं:
@@ -3004,11 +2169,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             <li><strong>{admitTitles.isSso ? 'Forgot SSO / Password विकल्प:' : 'Forgot Registration / Password विकल्प:'}</strong> यदि पासवर्ड या आईडी भूल गए हैं, तो लॉगिन पेज पर उपलब्ध Forgot Password / Recovery लिंक का उपयोग करें।</li>
                             <li><strong>विभागीय हेल्पडेस्क से संपर्क:</strong> एडमिट कार्ड में नाम, फोटो या केंद्र संबंधी किसी त्रुटि अथवा लगातार तकनीकी समस्या के लिए तुरंत <strong>{editablePost.organization || 'संबंधित बोर्ड/आयोग'} ({portalHost})</strong> की आधिकारिक हेल्पलाइन पर संपर्क करें।</li>
                           </ol>
-                          {getSectionTable('admit_troubleshoot') && renderCustomTableComponent(
-                            getSectionTable('admit_troubleshoot')!,
-                            (updatedTable) => setSectionTable('admit_troubleshoot', updatedTable),
-                            () => handleDeleteTableFromSection('admit_troubleshoot')
-                          )}
+                          {getSectionTable('admit_troubleshoot') && renderCustomTableComponent(getSectionTable('admit_troubleshoot')!)}
                         </div>
                       );
                     }
@@ -3024,11 +2185,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       const checkSteps = getHowToCheckResultSteps(editablePost, isHi);
                       return (
                         <div key="result_how_to_check" className="space-y-3 pt-2">
-                          <EditableText
+                          <DisplayField
                             as="h2"
                             value={getSectionTitle('result_how_to_check', `${shortJobName} रिजल्ट कैसे चेक करें?`)}
-                            onChange={(val) => setSectionTitle('result_how_to_check', val)}
-                            titlePrefix="रिजल्ट चेक करने की विधि शीर्षक"
                             className="headlight font-bold text-slate-900"
                             style={{
                               fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -3043,19 +2202,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
                             {checkSteps.map((step, idx) => (
                               <li key={idx}>
-                                {isDirectEditMode ? (
-                                  <EditableText
-                                    value={step}
-                                    onChange={(val) => {
-                                      const list = [...checkSteps];
-                                      list[idx] = val;
-                                      setEditablePost((prev) => ({ ...prev, howToApplyHi: list }));
-                                    }}
-                                    titlePrefix={`रिजल्ट चरण ${idx + 1}`}
-                                  />
-                                ) : (
-                                  <span>{step}</span>
-                                )}
+                                <span>{step}</span>
                               </li>
                             ))}
                           </ol>
@@ -3102,9 +2249,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {headingText}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderAdminSectionControls('yojana_info', 'योजना के लाभ')}
-                            </div>
                           </div>
 
                           <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-lg p-3.5 sm:p-4 space-y-2.5 text-slate-800" style={{ fontSize: '12pt' }}>
@@ -3131,11 +2275,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </ul>
                             )}
                           </div>
-                          {getSectionTable('yojana_info') && renderCustomTableComponent(
-                            getSectionTable('yojana_info')!,
-                            (updatedTable) => setSectionTable('yojana_info', updatedTable),
-                            () => handleDeleteTableFromSection('yojana_info')
-                          )}
+                          {getSectionTable('yojana_info') && renderCustomTableComponent(getSectionTable('yojana_info')!)}
                         </div>
                       );
                     }
@@ -3168,9 +2308,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {headingText}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderAdminSectionControls('yojana_eligibility', 'योजना पात्रता')}
-                            </div>
                           </div>
 
                           <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
@@ -3189,11 +2326,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </ul>
                             </div>
                           )}
-                          {getSectionTable('yojana_eligibility') && renderCustomTableComponent(
-                            getSectionTable('yojana_eligibility')!,
-                            (updatedTable) => setSectionTable('yojana_eligibility', updatedTable),
-                            () => handleDeleteTableFromSection('yojana_eligibility')
-                          )}
+                          {getSectionTable('yojana_eligibility') && renderCustomTableComponent(getSectionTable('yojana_eligibility')!)}
                         </div>
                       );
                     }
@@ -3217,34 +2350,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </div>
 
                             <div className="flex items-center gap-2">
-                              {renderSectionShareButton('latest_news', `${shortJobName} ताज़ा समाचार`)}
                               <span className="text-[11px] font-bold bg-white text-slate-700 border border-slate-200 px-2 py-0.5 rounded shadow-2xs">
                                 {newsList.length} अपडेट्स
                               </span>
-                              {isDirectEditMode && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newItem = {
-                                      id: `news-${Date.now()}`,
-                                      date: new Date().toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
-                                      badge: 'नया अपडेट',
-                                      headline: 'नया समाचार शीर्षक यहां लिखें',
-                                      details: 'समाचार का विवरण यहां लिखें। अभ्यर्थी नियमित रूप से पोर्टल चेक करते रहें।',
-                                      isHighlighted: false
-                                    };
-                                    setEditablePost({
-                                      ...editablePost,
-                                      latestNews: [newItem, ...newsList]
-                                    });
-                                  }}
-                                  className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                  <span>+ समाचार जोड़ें</span>
-                                </button>
-                              )}
-                              {renderAdminSectionControls('latest_news', 'ताज़ा समाचार')}
                             </div>
                           </div>
 
@@ -3257,73 +2365,33 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-[10.5px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                                      <EditableText
+                                      <DisplayField
                                         value={news.badge || 'अपडेट'}
-                                        onChange={(val) => {
-                                          const list = [...newsList];
-                                          list[idx] = { ...list[idx], badge: val };
-                                          setEditablePost({ ...editablePost, latestNews: list });
-                                        }}
                                         className="text-slate-700 font-bold"
-                                        titlePrefix="बैज"
                                       />
                                     </span>
                                     <span className="text-[11px] font-medium text-slate-500 flex items-center gap-1">
                                       <Calendar className="w-3 h-3 text-slate-400" />
-                                      <EditableText
+                                      <DisplayField
                                         value={news.date || 'अक्टूबर 2026'}
-                                        onChange={(val) => {
-                                          const list = [...newsList];
-                                          list[idx] = { ...list[idx], date: val };
-                                          setEditablePost({ ...editablePost, latestNews: list });
-                                        }}
                                         className="font-medium text-slate-600"
-                                        titlePrefix="दिनांक"
                                       />
                                     </span>
                                   </div>
-
-                                  {isDirectEditMode && (
-                                    <div className="flex items-center gap-1.5">
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const list = newsList.filter((_: any, i: number) => i !== idx);
-                                          setEditablePost({ ...editablePost, latestNews: list });
-                                        }}
-                                        className="text-[10px] px-2 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 font-bold cursor-pointer"
-                                        title="समाचार हटाएं"
-                                      >
-                                        🗑️ हटाएं
-                                      </button>
-                                    </div>
-                                  )}
                                 </div>
 
                                 <h3 className="font-bold text-slate-900 mb-1 leading-snug" style={{ fontSize: '11.5pt' }}>
-                                  <EditableText
+                                  <DisplayField
                                     value={news.headline}
-                                    onChange={(val) => {
-                                      const list = [...newsList];
-                                      list[idx] = { ...list[idx], headline: val };
-                                      setEditablePost({ ...editablePost, latestNews: list });
-                                    }}
                                     className="text-slate-900 font-bold"
-                                    titlePrefix="हेडलाइन"
                                   />
                                 </h3>
 
                                 <div className="text-slate-700 leading-relaxed" style={{ fontSize: '12pt' }}>
-                                  <EditableText
+                                  <DisplayField
                                     value={news.details}
-                                    onChange={(val) => {
-                                      const list = [...newsList];
-                                      list[idx] = { ...list[idx], details: val };
-                                      setEditablePost({ ...editablePost, latestNews: list });
-                                    }}
                                     as="span"
                                     className="text-slate-700"
-                                    titlePrefix="विवरण"
                                   />
                                 </div>
                               </div>
@@ -3372,23 +2440,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {isResultPost ? `${shortJobName} परीक्षा व परिणाम तिथियाँ (Result Schedule)` : `${shortJobName} Important Dates`}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('dates', `${shortJobName} Important Dates`)}
-                              {isDirectEditMode && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const list = [...rawDatesList, { key: `custom_${Date.now()}`, label: 'नयी तिथि विवरण', value: 'शीघ्र' }];
-                                    setEditablePost({ ...editablePost, importantDates: list });
-                                  }}
-                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                  <span>+ रो जोड़ें</span>
-                                </button>
-                              )}
-                              {renderAdminSectionControls('dates', 'Important Dates')}
-                            </div>
                           </div>
 
                           <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
@@ -3397,42 +2448,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {datesList.map((date: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-300 last:border-b-0">
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={date.label}
-                                        onChange={(val) => {
-                                          const list = [...rawDatesList];
-                                          list[idx] = { ...list[idx], label: val };
-                                          setEditablePost({ ...editablePost, importantDates: list });
-                                        }}
                                         className="font-bold text-slate-800"
                                       />
                                     </td>
                                     <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={date.value}
-                                        onChange={(val) => {
-                                          const list = [...rawDatesList];
-                                          list[idx] = { ...list[idx], value: val };
-                                          setEditablePost({ ...editablePost, importantDates: list });
-                                        }}
                                         className="font-semibold text-slate-800"
                                       />
                                     </td>
-                                    {isDirectEditMode && (
-                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const list = rawDatesList.filter((_: any, i: number) => i !== idx);
-                                            setEditablePost({ ...editablePost, importantDates: list });
-                                          }}
-                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
-                                          title="यह तिथि रो हटाएं"
-                                        >
-                                          🗑️
-                                        </button>
-                                      </td>
-                                    )}
                                   </tr>
                                 ))}
                               </tbody>
@@ -3464,23 +2490,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {isYojana ? `${shortJobName} आवेदन शुल्क (Application Fee)` : `${shortJobName} Application Fee`}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('fee', `${shortJobName} Application Fee`)}
-                              {isDirectEditMode && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const list = [...rawFeeList, { category: 'नयी श्रेणी', amount: '₹0/-' }];
-                                    setEditablePost({ ...editablePost, applicationFee: list });
-                                  }}
-                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                  <span>+ रो जोड़ें</span>
-                                </button>
-                              )}
-                              {renderAdminSectionControls('fee', 'Application Fee')}
-                            </div>
                           </div>
 
                           <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
@@ -3489,42 +2498,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 {feeList.map((fee: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-300 last:border-b-0">
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={fee.category}
-                                        onChange={(val) => {
-                                          const list = [...rawFeeList];
-                                          list[idx] = { ...list[idx], category: val };
-                                          setEditablePost({ ...editablePost, applicationFee: list });
-                                        }}
                                         className="font-bold text-slate-800"
                                       />
                                     </td>
                                     <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={fee.amount}
-                                        onChange={(val) => {
-                                          const list = [...rawFeeList];
-                                          list[idx] = { ...list[idx], amount: val };
-                                          setEditablePost({ ...editablePost, applicationFee: list });
-                                        }}
                                         className="font-semibold text-slate-800"
                                       />
                                     </td>
-                                    {isDirectEditMode && (
-                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const list = rawFeeList.filter((_: any, i: number) => i !== idx);
-                                            setEditablePost({ ...editablePost, applicationFee: list });
-                                          }}
-                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
-                                          title="यह शुल्क रो हटाएं"
-                                        >
-                                          🗑️
-                                        </button>
-                                      </td>
-                                    )}
                                   </tr>
                                 ))}
                               </tbody>
@@ -3548,24 +2532,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {shortJobName} पदों / सीटों का विवरण
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('post_breakdown', `${shortJobName} पदों का विवरण`)}
-                              {isDirectEditMode && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const currentList = editablePost.postBreakdown || vacancy.postBreakdown || [];
-                                    const list = [...currentList, { postNameHi: 'नया पद / ट्रेड', postName: 'New Post', postsCount: '10', qualification: 'Educational Qualification', qualificationHi: 'शैक्षणिक योग्यता दर्ज करें' }];
-                                    setEditablePost({ ...editablePost, postBreakdown: list });
-                                  }}
-                                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                  <span>+ रो जोड़ें</span>
-                                </button>
-                              )}
-                              {renderAdminSectionControls('post_breakdown', 'पद विवरण')}
-                            </div>
                           </div>
                           <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
                             <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
@@ -3575,7 +2541,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">पद / ट्रेड नाम</th>
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200">कुल पद</th>
                                   <th className="p-2.5 sm:p-3 font-bold text-slate-800">योग्यता</th>
-                                  {isDirectEditMode && <th className="p-2 text-center w-10 text-xs font-bold text-slate-600">हटाएं</th>}
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-200">
@@ -3583,53 +2548,18 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   <tr key={idx}>
                                     <td className="p-2.5 sm:p-3 text-center border-r border-slate-200 bg-white">{idx + 1}</td>
                                     <td className="p-2.5 sm:p-3 font-semibold text-slate-800 border-r border-slate-200 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={isHi ? (pb.postNameHi || pb.postName) : (pb.postName || pb.postNameHi)}
-                                        onChange={(val) => {
-                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
-                                          list[idx] = { ...list[idx], postNameHi: val, postName: val };
-                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
-                                        }}
-                                        titlePrefix="पद नाम"
                                       />
                                     </td>
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-900 border-r border-slate-200 bg-white">
-                                      <EditableText
-                                        value={pb.postsCount}
-                                        onChange={(val) => {
-                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
-                                          list[idx] = { ...list[idx], postsCount: val };
-                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
-                                        }}
-                                        titlePrefix="पद संख्या"
-                                      />
+                                      <DisplayField value={pb.postsCount} />
                                     </td>
                                     <td className="p-2.5 sm:p-3 text-slate-700 bg-white">
-                                      <EditableText
+                                      <DisplayField
                                         value={isHi ? (pb.qualificationHi || pb.qualification) : (pb.qualification || pb.qualificationHi)}
-                                        onChange={(val) => {
-                                          const list = [...(editablePost.postBreakdown || vacancy.postBreakdown || [])];
-                                          list[idx] = { ...list[idx], qualificationHi: val, qualification: val };
-                                          setEditablePost(prev => ({ ...prev, postBreakdown: list }));
-                                        }}
-                                        titlePrefix="योग्यता"
                                       />
                                     </td>
-                                    {isDirectEditMode && (
-                                      <td className="p-2 text-center bg-white border-l border-slate-200 w-10">
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const list = (editablePost.postBreakdown || vacancy.postBreakdown || []).filter((_: any, i: number) => i !== idx);
-                                            setEditablePost({ ...editablePost, postBreakdown: list });
-                                          }}
-                                          className="text-rose-600 hover:text-rose-800 text-xs font-bold cursor-pointer"
-                                          title="यह पद रो हटाएं"
-                                        >
-                                          🗑️
-                                        </button>
-                                      </td>
-                                    )}
                                   </tr>
                                 ))}
                               </tbody>
@@ -3656,19 +2586,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {isResultPost ? `${shortJobName} निर्धारित शैक्षणिक योग्यता` : `${shortJobName} शैक्षणिक योग्यता`}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('qualification', `${shortJobName} शैक्षणिक योग्यता`)}
-                              {renderAdminSectionControls('qualification', 'शैक्षणिक योग्यता')}
-                            </div>
                           </div>
                           {isResultPost ? (
                             <div className="p-3.5 rounded-md border border-slate-300 bg-white space-y-2 text-slate-700" style={{ fontSize: '12pt' }}>
                               <p className="post-item">
-                                <EditableText
-                                  value={qualText}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
-                                  titlePrefix="मुख्य शैक्षणिक योग्यता"
-                                />
+                                <DisplayField value={qualText} />
                               </p>
                               {(editablePost.salaryHi || editablePost.salary) && (
                                 <p className="post-item text-sm text-slate-800">
@@ -3680,40 +2602,28 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           ) : (
                             <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
                               <li>
-                                <EditableText
+                                <DisplayField
                                   value={(editablePost as any).qualificationNote1 || 'मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote1: val } as any))}
-                                  titlePrefix="योग्यता नियम 1"
                                 />
                               </li>
                               <li>
-                                <EditableText
+                                <DisplayField
                                   value={editablePost.qualificationDetailsHi || editablePost.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
-                                  titlePrefix="मुख्य शैक्षणिक योग्यता"
                                 />
                               </li>
                               <li>
-                                <EditableText
+                                <DisplayField
                                   value={(editablePost as any).qualificationNote2 || 'आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote2: val } as any))}
-                                  titlePrefix="योग्यता नियम 2"
                                 />
                               </li>
                               <li>
-                                <EditableText
+                                <DisplayField
                                   value={(editablePost as any).qualificationNote3 || 'विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote3: val } as any))}
-                                  titlePrefix="योग्यता नियम 3"
                                 />
                               </li>
                             </ul>
                           )}
-                          {getSectionTable('qualification') && renderCustomTableComponent(
-                            getSectionTable('qualification')!,
-                            (updatedTable) => setSectionTable('qualification', updatedTable),
-                            () => handleDeleteTableFromSection('qualification')
-                          )}
+                          {getSectionTable('qualification') && renderCustomTableComponent(getSectionTable('qualification')!)}
                         </div>
                       );
                     }
@@ -3728,11 +2638,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="age_limit">
                           <div className="flex items-center justify-between gap-2 mb-3 pt-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('age_limit', `${shortJobName} Age Limit 2026`)}
-                              onChange={(val) => setSectionTitle('age_limit', val)}
-                              titlePrefix="आयु सीमा शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{ 
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -3740,52 +2648,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('age_limit', `${shortJobName} Age Limit`)}
-                              {renderAdminSectionControls('age_limit', 'आयु सीमा')}
-                            </div>
                           </div>
 
                           <p className="post-item mb-3 text-slate-800" style={{ fontSize: '12pt' }}>
                             {editablePost.organization || 'विभाग'} भर्ती के विस्तृत नोटिफिकेशन में सामान्य आयु सीमा{' '}
                             <strong>
-                              <EditableText
-                                value={minAgeVal}
-                                onChange={(val) => {
-                                  const num = parseInt(val) || 18;
-                                  setEditablePost(prev => ({
-                                    ...prev,
-                                    ageLimit: { ...prev.ageLimit, min: num }
-                                  }));
-                                }}
-                                titlePrefix="न्यूनतम आयु"
-                              />{' '}
+                              <DisplayField value={minAgeVal} />{' '}
                               से{' '}
-                              <EditableText
-                                value={maxAgeVal}
-                                onChange={(val) => {
-                                  const num = parseInt(val) || 40;
-                                  setEditablePost(prev => ({
-                                    ...prev,
-                                    ageLimit: { ...prev.ageLimit, max: num }
-                                  }));
-                                }}
-                                titlePrefix="अधिकतम आयु"
-                              />{' '}
+                              <DisplayField value={maxAgeVal} />{' '}
                               वर्ष
                             </strong>{' '}
                             दी गई है। आयु की गणना{' '}
                             <strong>
-                              <EditableText
-                                value={asOnDateVal}
-                                onChange={(val) => {
-                                  setEditablePost(prev => ({
-                                    ...prev,
-                                    ageLimit: { ...prev.ageLimit, asOnDate: val }
-                                  }));
-                                }}
-                                titlePrefix="आयु गणना तिथि"
-                              />
+                              <DisplayField value={asOnDateVal} />
                             </strong>{' '}
                             को आधार मानकर होगी।
                           </p>
@@ -3802,61 +2677,31 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 <tr>
                                   <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">न्यूनतम आयु</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
-                                    <EditableText
-                                      value={`${minAgeVal} वर्ष`}
-                                      onChange={(val) => {
-                                        const num = parseInt(val) || minAgeVal;
-                                        setEditablePost(prev => ({
-                                          ...prev,
-                                          ageLimit: { ...prev.ageLimit, min: num }
-                                        }));
-                                      }}
-                                    />
+                                    <DisplayField value={`${minAgeVal} वर्ष`} />
                                   </td>
                                 </tr>
                                 <tr>
                                   <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">सामान्य अधिकतम आयु</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
-                                    <EditableText
-                                      value={`${maxAgeVal} वर्ष`}
-                                      onChange={(val) => {
-                                        const num = parseInt(val) || maxAgeVal;
-                                        setEditablePost(prev => ({
-                                          ...prev,
-                                          ageLimit: { ...prev.ageLimit, max: num }
-                                        }));
-                                      }}
-                                    />
+                                    <DisplayField value={`${maxAgeVal} वर्ष`} />
                                   </td>
                                 </tr>
                                 <tr>
                                   <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">OBC-NCL को छूट</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
-                                    <EditableText
-                                      value={(editablePost as any).obcRelaxationHi || 'अधिकतम आयु में 3 वर्ष'}
-                                      onChange={(val) => setEditablePost(prev => ({ ...prev, obcRelaxationHi: val } as any))}
-                                      titlePrefix="OBC छूट"
-                                    />
+                                    <DisplayField value={(editablePost as any).obcRelaxationHi || 'अधिकतम आयु में 3 वर्ष'} />
                                   </td>
                                 </tr>
                                 <tr>
                                   <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">SC/ST को छूट</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
-                                    <EditableText
-                                      value={(editablePost as any).scstRelaxationHi || 'अधिकतम आयु में 5 वर्ष'}
-                                      onChange={(val) => setEditablePost(prev => ({ ...prev, scstRelaxationHi: val } as any))}
-                                      titlePrefix="SC/ST छूट"
-                                    />
+                                    <DisplayField value={(editablePost as any).scstRelaxationHi || 'अधिकतम आयु में 5 वर्ष'} />
                                   </td>
                                 </tr>
                                 <tr>
                                   <td className="p-2.5 sm:p-3 bg-white border-r border-slate-200 text-slate-800 font-bold">भूतपूर्व सैनिक और अन्य पात्र श्रेणियाँ</td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 bg-white">
-                                    <EditableText
-                                      value={(editablePost as any).otherRelaxationHi || 'विज्ञापन के नियमानुसार'}
-                                      onChange={(val) => setEditablePost(prev => ({ ...prev, otherRelaxationHi: val } as any))}
-                                      titlePrefix="अन्य श्रेणी छूट"
-                                    />
+                                    <DisplayField value={(editablePost as any).otherRelaxationHi || 'विज्ञापन के नियमानुसार'} />
                                   </td>
                                 </tr>
                               </tbody>
@@ -3907,10 +2752,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 ? `${shortJobName} रिजल्ट के बाद आगे की चयन प्रक्रिया`
                                 : 'चयन प्रक्रिया और मेरिट की गणना'}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('selection_process', isYojana ? `${shortJobName} लाभ प्राप्ति प्रक्रिया` : `${shortJobName} चयन प्रक्रिया`)}
-                              {renderAdminSectionControls('selection_process', isYojana ? 'लाभ प्राप्ति प्रक्रिया' : 'चयन प्रक्रिया')}
-                            </div>
                           </div>
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
                             {isYojana
@@ -3922,36 +2763,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
                             {stepsList.map((step, idx) => (
                               <li key={idx}>
-                                <EditableText
-                                  value={step}
-                                  onChange={(val) => {
-                                    const list = [...stepsList];
-                                    list[idx] = val;
-                                    setEditablePost(prev => ({ ...prev, selectionProcessHi: list }));
-                                  }}
-                                  titlePrefix={`चयन चरण ${idx + 1}`}
-                                />
+                                <DisplayField value={step} />
                               </li>
                             ))}
                           </ol>
-                          {isDirectEditMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const list = [...stepsList, `चरण ${stepsList.length + 1}: नया चयन चरण दर्ज करें`];
-                                setEditablePost({ ...editablePost, selectionProcessHi: list });
-                              }}
-                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mt-2 flex items-center gap-1 cursor-pointer"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span>+ नया चरण जोड़ें</span>
-                            </button>
-                          )}
-                          {getSectionTable('selection_process') && renderCustomTableComponent(
-                            getSectionTable('selection_process')!,
-                            (updatedTable) => setSectionTable('selection_process', updatedTable),
-                            () => handleDeleteTableFromSection('selection_process')
-                          )}
+                          {getSectionTable('selection_process') && renderCustomTableComponent(getSectionTable('selection_process')!)}
                         </div>
                       );
                     }
@@ -3970,10 +2786,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {shortJobName} Offline Form Send Address (आवेदन भेजने का पता)
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('postal_address', `${shortJobName} आवेदन भेजने का पता`)}
-                              {renderAdminSectionControls('postal_address', 'आवेदन भेजने का पता')}
-                            </div>
                           </div>
                           <div className="p-3 sm:p-4 rounded-md border border-slate-300 bg-white space-y-2.5 min-w-0 overflow-hidden">
                             <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
@@ -3981,10 +2793,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </p>
                             <div className="p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded text-slate-900 font-bold leading-relaxed min-w-0 overflow-hidden" style={{ fontSize: '12pt' }}>
                               <p className="font-mono text-slate-900 select-all break-words">
-                                <EditableText
+                                <DisplayField
                                   value={editablePost.postalAddressHi || editablePost.postalAddress || 'The Commanding Officer, Head Quarter Southern Air Command (Unit), Akkulam, Trivandrum – 695011'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, postalAddressHi: val, postalAddress: val }))}
-                                  titlePrefix="डाक का पता"
                                 />
                               </p>
                             </div>
@@ -3993,10 +2803,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 <strong>लिफाफे के ऊपर क्या लिखें (Envelope Superscription):</strong>
                               </p>
                               <p className="p-2 bg-slate-50 border border-slate-200 rounded font-mono text-slate-900 font-semibold select-all break-words">
-                                <EditableText
+                                <DisplayField
                                   value={editablePost.envelopeNoteHi || 'APPLICATION FOR THE POST OF HINDI TYPIST AND CATEGORY: OBC'}
-                                  onChange={(val) => setEditablePost(prev => ({ ...prev, envelopeNoteHi: val }))}
-                                  titlePrefix="लिफाफा विवरण"
                                 />
                               </p>
                               <p className="text-slate-600 text-xs sm:text-sm">
@@ -4004,11 +2812,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </p>
                             </div>
                           </div>
-                          {getSectionTable('postal_address') && renderCustomTableComponent(
-                            getSectionTable('postal_address')!,
-                            (updatedTable) => setSectionTable('postal_address', updatedTable),
-                            () => handleDeleteTableFromSection('postal_address')
-                          )}
+                          {getSectionTable('postal_address') && renderCustomTableComponent(getSectionTable('postal_address')!)}
                         </div>
                       );
 
@@ -4038,10 +2842,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 ? `${shortJobName} दस्तावेज सत्यापन / अगले चरण हेतु आवश्यक दस्तावेज`
                                 : 'आवेदन के लिए आवश्यक दस्तावेज'}
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('documents', `${shortJobName} आवश्यक दस्तावेज`)}
-                              {renderAdminSectionControls('documents', 'आवश्यक दस्तावेज')}
-                            </div>
                           </div>
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
                             {isYojana
@@ -4052,49 +2852,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           </p>
                           <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '12pt' }}>
                             {activeDocs.map((doc, i) => (
-                              <li key={i} className="group">
-                                {isDirectEditMode ? (
-                                  <div className="flex items-center gap-2">
-                                    <EditableText
-                                      value={doc}
-                                      onChange={(val) => {
-                                        const list = [...activeDocs];
-                                        list[i] = val;
-                                        setEditablePost({ ...editablePost, requiredDocumentsHi: list });
-                                      }}
-                                      className="flex-1 font-medium text-slate-800"
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const list = activeDocs.filter((_, idx) => idx !== i);
-                                        setEditablePost({ ...editablePost, requiredDocumentsHi: list });
-                                      }}
-                                      className="text-rose-500 hover:text-rose-700 text-xs px-1 cursor-pointer"
-                                      title="यह दस्तावेज हटाएं"
-                                    >
-                                      ✕
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <span>{doc}</span>
-                                )}
+                              <li key={i}>
+                                <span>{doc}</span>
                               </li>
                             ))}
                           </ul>
-                          {isDirectEditMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const list = [...activeDocs, 'नया आवश्यक शैक्षणिक/श्रेणी दस्तावेज'];
-                                setEditablePost({ ...editablePost, requiredDocumentsHi: list });
-                              }}
-                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mb-3 flex items-center gap-1 cursor-pointer"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span>+ नया दस्तावेज जोड़ें</span>
-                            </button>
-                          )}
 
                           {!isFlexCategory && !isResultPost && (
                             <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
@@ -4121,11 +2883,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                               </table>
                             </div>
                           )}
-                          {getSectionTable('documents') && renderCustomTableComponent(
-                            getSectionTable('documents')!,
-                            (updatedTable) => setSectionTable('documents', updatedTable),
-                            () => handleDeleteTableFromSection('documents')
-                          )}
+                          {getSectionTable('documents') && renderCustomTableComponent(getSectionTable('documents')!)}
                         </div>
                       );
                     }
@@ -4147,61 +2905,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {shortJobName} के लिए आवेदन कैसे करें?
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('how_to_apply', `${shortJobName} आवेदन कैसे करें`)}
-                              {renderAdminSectionControls('how_to_apply', 'आवेदन कैसे करें')}
-                            </div>
                           </div>
                           <ol className="list-decimal pl-5 space-y-2 text-slate-700" style={{ fontSize: '12pt' }}>
                             {howToApplySteps.map((step, idx) => (
-                              <li key={idx} className="group">
-                                {isDirectEditMode ? (
-                                  <div className="flex items-center gap-2">
-                                    <EditableText
-                                      value={step}
-                                      onChange={(val) => {
-                                        const list = [...howToApplySteps];
-                                        list[idx] = val;
-                                        setEditablePost({ ...editablePost, howToApplyHi: list });
-                                      }}
-                                      className="flex-1 font-medium text-slate-800"
-                                    />
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const list = howToApplySteps.filter((_, i) => i !== idx);
-                                        setEditablePost({ ...editablePost, howToApplyHi: list });
-                                      }}
-                                      className="text-rose-500 hover:text-rose-700 text-xs px-1 cursor-pointer"
-                                      title="यह चरण हटाएं"
-                                    >
-                                      ✕
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <span>{step}</span>
-                                )}
+                              <li key={idx}>
+                                <span>{step}</span>
                               </li>
                             ))}
                           </ol>
-                          {isDirectEditMode && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const list = [...howToApplySteps, `चरण ${howToApplySteps.length + 1}: नया चरण दर्ज करें`];
-                                setEditablePost({ ...editablePost, howToApplyHi: list });
-                              }}
-                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mt-2 flex items-center gap-1 cursor-pointer"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span>+ नया चरण जोड़ें</span>
-                            </button>
-                          )}
-                          {getSectionTable('how_to_apply') && renderCustomTableComponent(
-                            getSectionTable('how_to_apply')!,
-                            (updatedTable) => setSectionTable('how_to_apply', updatedTable),
-                            () => handleDeleteTableFromSection('how_to_apply')
-                          )}
+                          {getSectionTable('how_to_apply') && renderCustomTableComponent(getSectionTable('how_to_apply')!)}
                         </div>
                       );
                     }
@@ -4214,11 +2926,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       return (
                         <div key="official_notification" className="space-y-3 pt-2">
                           <div className="flex items-center justify-between gap-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('official_notification', `${shortJobName} — आधिकारिक विज्ञप्ति (Official Notification)`)}
-                              onChange={(val) => setSectionTitle('official_notification', val)}
-                              titlePrefix="आधिकारिक विज्ञप्ति शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -4226,10 +2936,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('official_notification', `${shortJobName} आधिकारिक विज्ञप्ति`)}
-                              {renderAdminSectionControls('official_notification', 'आधिकारिक विज्ञप्ति')}
-                            </div>
                           </div>
 
                           <div className="border border-slate-300 rounded-md bg-slate-50/70 p-3.5 sm:p-4 space-y-2.5">
@@ -4283,11 +2989,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             />
                           </AdSlotWrapper>
                           <div className="flex items-center justify-between gap-2 pt-2">
-                            <EditableText
+                            <DisplayField
                               as="h2"
                               value={getSectionTitle('important_links', isAdmitCardPost ? admitTitles.importantLinks : `${shortJobName} Important Links`)}
-                              onChange={(val) => setSectionTitle('important_links', val)}
-                              titlePrefix="महत्वपूर्ण लिंक्स शीर्षक"
                               className="headlight font-bold text-slate-900"
                               style={{ 
                                 fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
@@ -4295,33 +2999,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             />
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('important_links', isAdmitCardPost ? admitTitles.importantLinks : `${shortJobName} Important Links`)}
-                              {isDirectEditMode && (
-                                <div className="flex items-center gap-1">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setPdfUploadTargetIndex(null);
-                                      setIsPdfModalOpen(true);
-                                    }}
-                                    className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                  >
-                                    <FileText className="w-3 h-3" />
-                                    <span>+ 📄 PDF</span>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={handleAddDirectLink}
-                                    className="text-[11px] bg-slate-700 hover:bg-slate-800 text-white font-bold px-2 py-0.5 rounded shadow-2xs cursor-pointer flex items-center gap-1"
-                                  >
-                                    <Plus className="w-3 h-3" />
-                                    <span>+ लिंक</span>
-                                  </button>
-                                </div>
-                              )}
-                              {renderAdminSectionControls('important_links', 'महत्वपूर्ण लिंक्स')}
-                            </div>
                           </div>
 
                           <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
@@ -4373,27 +3050,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     /\.pdf(\?.*)?$/i.test(resolvedUrl)
                                   );
 
-                                  const handleMoveDirectLink = (direction: 'up' | 'down') => {
-                                    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-                                    setEditablePost(prev => {
-                                      const links = [...(prev.directLinks || [])];
-                                      if (targetIdx < 0 || targetIdx >= links.length) return prev;
-                                      const temp = links[idx];
-                                      links[idx] = links[targetIdx];
-                                      links[targetIdx] = temp;
-                                      return { ...prev, directLinks: links };
-                                    });
-                                  };
-
-                                  const handleDeleteDirectLink = () => {
-                                    setEditablePost(prev => {
-                                      const links = [...(prev.directLinks || [])];
-                                      links.splice(idx, 1);
-                                      return { ...prev, directLinks: links };
-                                    });
-                                  };
-
-                                  const linksArr = editablePost.directLinks || [];
                                   const internalTarget = internalVacancySlug
                                     ? allVacancies.find(
                                         (v) => v.id === internalVacancySlug || v.id.toLowerCase() === internalVacancySlug!.toLowerCase()
@@ -4403,15 +3059,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   return (
                                     <tr key={idx} className="border-b border-slate-300">
                                       <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
-                                        <EditableText
+                                        <DisplayField
                                           value={link.label}
-                                          onChange={(newVal) => {
-                                            setEditablePost(prev => {
-                                              const list = [...(prev.directLinks || [])];
-                                              list[idx] = { ...list[idx], label: newVal };
-                                              return { ...prev, directLinks: list };
-                                            });
-                                          }}
                                           className="font-bold text-slate-800"
                                         />
                                       </td>
@@ -4419,22 +3068,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                         <div className="flex flex-col gap-1.5 w-full">
                                           <div className="flex items-center justify-between gap-2 flex-wrap">
                                             <div className="flex items-center gap-1.5">
-                                              {isDirectEditMode ? (
-                                                <input
-                                                  type="text"
-                                                  value={link.actionText || 'Click Here'}
-                                                  onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    setEditablePost(prev => {
-                                                      const list = [...(prev.directLinks || [])];
-                                                      list[idx] = { ...list[idx], actionText: val };
-                                                      return { ...prev, directLinks: list };
-                                                    });
-                                                  }}
-                                                  className="bg-amber-50 text-blue-700 font-bold border border-amber-300 rounded px-1.5 py-0.5 text-xs w-28 focus:ring-1 focus:ring-amber-500 outline-none"
-                                                  title="बटन का नाम (जैसे: Click Here / Download)"
-                                                />
-                                              ) : internalTarget ? (
+                                              {internalTarget ? (
                                                 <a
                                                   href={`/?vacancy=${encodeURIComponent(internalTarget.id)}`}
                                                   onClick={(e) => {
@@ -4457,82 +3091,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                                   <span>{link.actionText || 'Click Here'}</span>
                                                 </a>
                                               )}
-
-                                              {isDirectEditMode && (
-                                                <a
-                                                  href={resolvedUrl}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  className="text-slate-400 hover:text-blue-600 p-0.5"
-                                                  title="इस लिंक को नए टैब में खोलकर जांचें"
-                                                >
-                                                  <ExternalLink className="w-3.5 h-3.5" />
-                                                </a>
-                                              )}
                                             </div>
-                                          <div className="flex items-center gap-1.5 ml-auto">
-                                            {isDirectEditMode && (
-                                              <>
-                                                <button
-                                                  type="button"
-                                                  onClick={() => handleAttachPdfToLink(idx)}
-                                                  className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold px-1.5 py-0.5 rounded cursor-pointer"
-                                                  title="PDF फ़ाइल बदलें"
-                                                >
-                                                  📄 PDF
-                                                </button>
-                                                {idx > 0 && (
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => handleMoveDirectLink('up')}
-                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                                                    title="लिंक ऊपर करें"
-                                                  >
-                                                    ⬆️
-                                                  </button>
-                                                )}
-                                                {idx < linksArr.length - 1 && (
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => handleMoveDirectLink('down')}
-                                                    className="text-slate-600 hover:text-slate-900 text-xs font-bold p-1 cursor-pointer bg-slate-100 hover:bg-slate-200 rounded"
-                                                    title="लिंक नीचे करें"
-                                                  >
-                                                    ⬇️
-                                                  </button>
-                                                )}
-                                                <button
-                                                  type="button"
-                                                  onClick={handleDeleteDirectLink}
-                                                  className="text-rose-600 hover:text-rose-800 text-xs font-bold p-1 cursor-pointer bg-rose-50 hover:bg-rose-100 rounded"
-                                                  title="यह लिंक हटाएं"
-                                                >
-                                                  🗑️
-                                                </button>
-                                              </>
-                                            )}
                                           </div>
-                                        </div>
-                                        {isDirectEditMode && (
-                                            <div className="flex items-center gap-1.5 w-full mt-1 pt-1 border-t border-slate-100">
-                                              <span className="text-[10px] font-bold text-slate-500 shrink-0">URL:</span>
-                                              <input
-                                                type="url"
-                                                value={link.url || ''}
-                                                onChange={(e) => {
-                                                  const val = e.target.value;
-                                                  setEditablePost(prev => {
-                                                    const list = [...(prev.directLinks || [])];
-                                                    list[idx] = { ...list[idx], url: val };
-                                                    return { ...prev, directLinks: list };
-                                                  });
-                                                }}
-                                                placeholder="वेब लिंक (URL) दर्ज करें जैसे: https://..."
-                                                className="bg-amber-50 text-slate-900 border border-amber-300 rounded px-1.5 py-0.5 text-[11px] font-mono w-full focus:ring-1 focus:ring-amber-500 outline-none"
-                                                title="इस लिंक का वेब पता (URL) बदलें"
-                                              />
-                                            </div>
-                                          )}
                                         </div>
                                       </td>
                                     </tr>
@@ -4553,20 +3113,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                       >
                                         <span>{isHi ? 'Click Here (Resize Tool)' : 'Click Here'}</span>
                                       </Link>
-                                    </td>
-                                  </tr>
-                                )}
-                                {isDirectEditMode && (
-                                  <tr className="bg-slate-50 border-t border-slate-300">
-                                    <td colSpan={2} className="p-2.5 text-center bg-slate-50">
-                                      <button
-                                        type="button"
-                                        onClick={handleAddDirectLink}
-                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-bold text-xs shadow-xs cursor-pointer transition"
-                                      >
-                                        <Plus className="w-3.5 h-3.5" />
-                                        <span>+ नया लिंक जोड़ें (Add Important Link)</span>
-                                      </button>
                                     </td>
                                   </tr>
                                 )}
@@ -4593,10 +3139,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             >
                               {shortJobName} FAQs
                             </h2>
-                            <div className="flex items-center gap-1.5">
-                              {renderSectionShareButton('faqs', `${shortJobName} FAQs`)}
-                              {renderAdminSectionControls('faqs', 'FAQs')}
-                            </div>
                           </div>
                           <div className="space-y-3">
                             {faqList.map((faq, idx) => (
@@ -4609,39 +3151,17 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   style={{ fontSize: '11.5pt' }}
                                 >
                                   <span className="text-slate-500 font-bold">Q.</span>
-                                  <EditableText
-                                    value={isHi ? (faq.qHi || faq.q) : faq.q}
-                                    onChange={(val) => {
-                                      const currentFaqs = editablePost.faqs && editablePost.faqs.length > 0 ? editablePost.faqs : faqList;
-                                      const list = [...currentFaqs];
-                                      list[idx] = { ...list[idx], qHi: val, q: val };
-                                      setEditablePost(prev => ({ ...prev, faqs: list }));
-                                    }}
-                                    titlePrefix="प्रश्न"
-                                  />
+                                  <DisplayField value={isHi ? (faq.qHi || faq.q) : faq.q} />
                                 </h3>
                                 <div className="text-slate-700 text-xs sm:text-sm pl-4 border-l-2 border-slate-300 mt-2">
                                   <p className="post-item" style={{ fontSize: '12pt' }}>
-                                    <EditableText
-                                      value={isHi ? (faq.aHi || faq.a) : faq.a}
-                                      onChange={(val) => {
-                                        const currentFaqs = editablePost.faqs && editablePost.faqs.length > 0 ? editablePost.faqs : faqList;
-                                        const list = [...currentFaqs];
-                                        list[idx] = { ...list[idx], aHi: val, a: val };
-                                        setEditablePost(prev => ({ ...prev, faqs: list }));
-                                      }}
-                                      titlePrefix="उत्तर"
-                                    />
+                                    <DisplayField value={isHi ? (faq.aHi || faq.a) : faq.a} />
                                   </p>
                                 </div>
                               </div>
                             ))}
                           </div>
-                        {getSectionTable('faqs') && renderCustomTableComponent(
-                          getSectionTable('faqs')!,
-                          (updatedTable) => setSectionTable('faqs', updatedTable),
-                          () => handleDeleteTableFromSection('faqs')
-                        )}
+                        {getSectionTable('faqs') && renderCustomTableComponent(getSectionTable('faqs')!)}
                         </div>
                       );
                     }
@@ -4663,47 +3183,20 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                   color: '#0f172a'
                                 }}
                               >
-                                <EditableText
-                                  value={customSec.titleHi || customSec.title}
-                                  onChange={(val) => {
-                                    const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, title: val, titleHi: val } : s);
-                                    setEditablePost(prev => ({ ...prev, customSections: list }));
-                                  }}
-                                  titlePrefix="सेक्शन शीर्षक"
-                                />
+                                <DisplayField value={customSec.titleHi || customSec.title} />
                               </h2>
-                              <div className="flex items-center gap-1.5">
-                                {renderAdminSectionControls(sectionKey, customSec.title)}
-                              </div>
                             </div>
 
                             {customSec.contentHi || customSec.content ? (
                               <div className="text-slate-700 text-xs sm:text-sm">
-                                <EditableText
+                                <DisplayField
                                   value={customSec.contentHi || customSec.content}
-                                  onChange={(val) => {
-                                    const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, content: val, contentHi: val } : s);
-                                    setEditablePost(prev => ({ ...prev, customSections: list }));
-                                  }}
                                   as="p"
-                                  titlePrefix="सेक्शन सामग्री"
                                 />
                               </div>
                             ) : null}
 
-                            {customTable && renderCustomTableComponent(
-                              customTable,
-                              (updatedTable) => {
-                                const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, tableData: updatedTable || undefined } : s);
-                                setEditablePost(prev => ({ ...prev, customSections: list }));
-                                setSectionTable(sectionKey, updatedTable);
-                              },
-                              () => {
-                                const list = (editablePost.customSections || []).map(s => s.id === customId ? { ...s, tableData: undefined } : s);
-                                setEditablePost(prev => ({ ...prev, customSections: list }));
-                                handleDeleteTableFromSection(sectionKey);
-                              }
-                            )}
+                            {customTable && renderCustomTableComponent(customTable)}
                           </div>
                         );
                       }
@@ -4734,31 +3227,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       </div>
                     </div>
 
-                    {/* Direct Edit Mode: Admin Tag Input */}
-                    {isDirectEditMode && (
-                      <div className="flex items-center gap-2 shrink-0">
-                        <input
-                          type="text"
-                          value={newTagInput}
-                          onChange={(e) => setNewTagInput(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleAddTag();
-                            }
-                          }}
-                          placeholder="नया वायरल टैग लिखें (उदा. #CET2026)"
-                          className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-none focus:border-blue-500 w-44"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleAddTag}
-                          className="text-xs font-bold bg-[#0056b3] text-white px-3 py-1.5 rounded-md hover:bg-blue-800 transition cursor-pointer"
-                        >
-                          + जोड़ें
-                        </button>
-                      </div>
-                    )}
                   </div>
 
                   {/* Viral Tags Badges Cloud */}
@@ -4779,16 +3247,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             <Tag className="w-3.5 h-3.5 text-[#0056b3]/70 group-hover:text-blue-700 shrink-0" />
                             <span className="group-hover:underline underline-offset-2">{cleanTag}</span>
                           </button>
-                          {isDirectEditMode && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTag(idx)}
-                              className="ml-1 text-slate-400 hover:text-rose-600 transition p-0.5 rounded cursor-pointer"
-                              title="टैग हटाएं"
-                            >
-                              ×
-                            </button>
-                          )}
                         </span>
                       );
                     })}
@@ -5010,73 +3468,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
             </article>
           </main>
         </div>
-
-      {/* PDF Upload Modal */}
-      {isPdfModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full border border-slate-300 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 bg-rose-700 text-white">
-              <div className="flex items-center gap-2 font-black text-sm">
-                <FileText className="w-4 h-4" />
-                <span>
-                  {pdfUploadTargetIndex !== null ? 'मौजूदा लिंक के लिए PDF अपलोड करें' : 'नया PDF डॉक्यूमेंट जोड़ें'}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsPdfModalOpen(false)}
-                className="text-white hover:bg-rose-800 p-1 rounded cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 space-y-4">
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded text-xs text-rose-900 space-y-1">
-                <p className="font-bold">📄 PDF फाइल अपलोड निर्देश:</p>
-                <p>कंप्यूटर या मोबाइल से कोई भी आधिकारिक PDF (नोटिफिकेशन, सिलेबस, रिजल्ट, फॉर्म) चुनें। यह तुरंत लिंक के साथ अटैच होकर डाउनलोड करने योग्य बन जाएगी।</p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  PDF फ़ाइल चुनें (.pdf)
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf,.pdf"
-                  onChange={handlePdfFileChange}
-                  className="block w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer border border-slate-300 rounded p-1 bg-slate-50"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setIsPdfModalOpen(false)}
-                  className="px-3 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-100 border border-slate-300 cursor-pointer"
-                >
-                  रद्द करें
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Real-time Alert Feedback Notification */}
-      {alertFeedback && (
-        <div className="fixed bottom-5 right-5 z-50 bg-emerald-800 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-bold flex items-center gap-2 border border-emerald-600 animate-in slide-in-from-bottom-2 duration-200">
-          <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
-          <span>{alertFeedback}</span>
-          <button
-            type="button"
-            onClick={() => setAlertFeedback('')}
-            className="ml-2 hover:bg-emerald-700 p-0.5 rounded cursor-pointer"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
     </div>
   );
 };

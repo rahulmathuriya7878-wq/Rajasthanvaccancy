@@ -54,8 +54,6 @@ interface PageSearchParams {
   category?: string;
   policy?: string;
   search?: string;
-  tool?: string;
-  indexation?: string;
 }
 
 export async function generateMetadata({

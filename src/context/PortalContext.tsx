@@ -48,12 +48,10 @@ interface PortalContextType {
   setSelectedVacancy: (v: VacancyItem | null) => void;
   activePolicyView: PolicyViewType | null;
   setActivePolicyView: (p: PolicyViewType | null) => void;
-  isLoading: boolean;
   isAdminLoginOpen: boolean;
   setIsAdminLoginOpen: (open: boolean) => void;
   toastMessage: string | null;
   showToast: (msg: string) => void;
-  isInitialNotFound: boolean;
   handleGoHome: () => void;
   handleSelectVacancy: (item: VacancyItem) => void;
   handleSelectCategory: (cat: string) => void;
@@ -85,8 +83,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [activePolicyView, setActivePolicyView] = useState<PolicyViewType | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [isInitialNotFound, setIsInitialNotFound] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
   const isUnresolvedInitialUrlRef = useRef<boolean>(false);
@@ -339,7 +335,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     mergedSnapshot.find((v) => v.id.toLowerCase() === lowerParam);
                   if (cloudMatch && !combinedDeleted.includes(cloudMatch.id)) {
                     isUnresolvedInitialUrlRef.current = false;
-                    setIsInitialNotFound(false);
                     setSelectedVacancy(cloudMatch);
                     setActivePolicyView(null);
                   }
@@ -378,7 +373,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActivePolicyView(p);
         setSelectedVacancy(null);
         setSelectedCategory('ALL');
-        setIsInitialNotFound(false);
         return;
       }
 
@@ -396,19 +390,16 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
         if (found) {
           isUnresolvedInitialUrlRef.current = false;
-          setIsInitialNotFound(false);
           setSelectedVacancy(found);
           setActivePolicyView(null);
         } else {
           isUnresolvedInitialUrlRef.current = true;
-          setIsInitialNotFound(true);
         }
         return;
       }
 
       if (params.category && params.category !== 'ALL') {
         isUnresolvedInitialUrlRef.current = false;
-        setIsInitialNotFound(false);
         const normalizedCat = params.category === 'ugc_net' || params.category === 'job' ? 'latest_job' : params.category;
         setSelectedCategory(normalizedCat as CategoryType);
         setActivePolicyView(null);
@@ -419,7 +410,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setSelectedVacancy(null);
       setSelectedCategory('ALL');
       setActivePolicyView(null);
-      setIsInitialNotFound(false);
     },
     []
   );
@@ -458,7 +448,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       if (selectedVacancy) {
         isUnresolvedInitialUrlRef.current = false;
-        setIsInitialNotFound(false);
         if (currentVacancyId !== selectedVacancy.id || url.pathname !== '/' || url.searchParams.has('policy')) {
           url.pathname = '/';
           url.searchParams.set('vacancy', selectedVacancy.id);
@@ -607,7 +596,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleGoHome = useCallback(() => {
     isUnresolvedInitialUrlRef.current = false;
-    setIsInitialNotFound(false);
     setSelectedCategory('ALL');
     setSearchQuery('');
     setSelectedVacancy(null);
@@ -626,7 +614,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleSelectVacancy = useCallback((item: VacancyItem) => {
     isUnresolvedInitialUrlRef.current = false;
-    setIsInitialNotFound(false);
     setVacancies((prev) =>
       prev.map((v) => (v.id === item.id ? { ...v, clicksCount: (v.clicksCount || 0) + 1 } : v))
     );
@@ -647,7 +634,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleSelectCategory = useCallback((cat: string) => {
     isUnresolvedInitialUrlRef.current = false;
-    setIsInitialNotFound(false);
     const normalizedCat = cat === 'ugc_net' || cat === 'job' ? 'latest_job' : cat;
     setSelectedCategory(normalizedCat as CategoryType | 'ALL');
     setSelectedVacancy(null);
@@ -667,7 +653,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleSelectPolicy = useCallback((policy: PolicyViewType) => {
     isUnresolvedInitialUrlRef.current = false;
-    setIsInitialNotFound(false);
     setActivePolicyView(policy);
     setSelectedVacancy(null);
     setSelectedCategory('ALL');
@@ -840,12 +825,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSelectedVacancy,
         activePolicyView,
         setActivePolicyView,
-        isLoading,
         isAdminLoginOpen,
         setIsAdminLoginOpen,
         toastMessage,
         showToast,
-        isInitialNotFound,
         handleGoHome,
         handleSelectVacancy,
         handleSelectCategory,

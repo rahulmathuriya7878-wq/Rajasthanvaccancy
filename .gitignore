@@ -2,6 +2,11 @@ node_modules/
 build/
 dist/
 coverage/
+.next/
+.open-next/
+.wrangler/
+.aistudio/
+tsconfig.tsbuildinfo
 .DS_Store
 *.log
 .env*

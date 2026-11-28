@@ -63,13 +63,11 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     selectedCategory,
     selectedVacancy,
     activePolicyView,
-    isLoading,
     setIsAdminLoginOpen,
     handleGoHome,
     handleSelectVacancy,
     handleSelectCategory,
     handleSelectPolicy,
-    handleUpdateVacancy,
     handleDeleteVacancy,
     hydrateInitialParams,
   } = usePortal();
@@ -174,9 +172,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             allVacancies={vacancies}
             onSelectOtherVacancy={handleSelectVacancy}
             isAdmin={isAdmin}
-            onDeleteVacancy={handleDeleteVacancy}
-            onUpdateVacancy={handleUpdateVacancy}
-            onOpenAdminLogin={() => setIsAdminLoginOpen(true)}
             onSelectCategory={(cat) => handleSelectCategory(cat)}
             onSearchKeyword={(keyword) => {
               handleGoHome();
@@ -200,7 +195,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             setSearchQuery={setSearchQuery}
             isAdmin={isAdmin}
             onDeleteVacancy={handleDeleteVacancy}
-            isLoading={isLoading}
           />
         </Suspense>
       ) : (
@@ -217,7 +211,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             onFilterCategory={(cat) => handleSelectCategory(cat)}
             isAdmin={isAdmin}
             onDeleteVacancy={handleDeleteVacancy}
-            isLoading={isLoading}
           />
         </div>
       )}

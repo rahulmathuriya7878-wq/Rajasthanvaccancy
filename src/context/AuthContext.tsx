@@ -4,7 +4,6 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import type { User } from 'firebase/auth';
 
 const AUTHORIZED_ADMIN_EMAIL = 'rahulmathuriya7878@gmail.com';
-const STORAGE_KEY_REGULAR_AUTH = 'raj_user_sync_active_v1';
 
 export interface GoogleSignInResult {
   ok: boolean;
@@ -18,7 +17,6 @@ interface AuthContextType {
   isAdmin: boolean;
   isCloudAdmin: boolean;
   signInWithGoogle: () => Promise<GoogleSignInResult>;
-  signInRegularUserWithGoogle: () => Promise<GoogleSignInResult>;
   loginWithPasscode: (passcode: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
   toggleAdminMode: (enabled?: boolean) => void;
@@ -31,7 +29,6 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isCloudAdmin: false,
   signInWithGoogle: async () => ({ ok: false }),
-  signInRegularUserWithGoogle: async () => ({ ok: false }),
   loginWithPasscode: async () => ({ ok: false }),
   logout: async () => {},
   toggleAdminMode: () => {},
@@ -40,7 +37,7 @@ const AuthContext = createContext<AuthContextType>({
 
 function isAuthorizedAdminUser(u: User | null): boolean {
   if (!u || !u.email) return false;
-  return true;
+  return u.email.toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
 }
 
 async function exchangeAdminSessionCookie(u: User): Promise<void> {
@@ -67,16 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [shouldHydrateFirebaseAuth, setShouldHydrateFirebaseAuth] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Hydrate admin / user sync flags from localStorage after mount & check redirect result
+  // Hydrate admin flag from localStorage after mount & check redirect result
   useEffect(() => {
     try {
       const storedAdmin = localStorage.getItem('raj_admin_active_v1') === 'true';
-      const storedRegular = localStorage.getItem(STORAGE_KEY_REGULAR_AUTH) === 'true';
       if (storedAdmin) {
         setIsAdminState(true);
-        setShouldHydrateFirebaseAuth(true);
-        setLoading(true);
-      } else if (storedRegular) {
         setShouldHydrateFirebaseAuth(true);
         setLoading(true);
       }
@@ -85,27 +78,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check redirect result for mobile / redirect sign in flow
     (async () => {
       try {
-        const [{ getRedirectResult }, { auth }, { syncUserProfileToFirestore }] = await Promise.all([
+        const [{ getRedirectResult, signOut }, { auth }, { syncUserProfileToFirestore }] = await Promise.all([
           import('firebase/auth'),
           import('../lib/firebase'),
           import('../services/firebaseUserService'),
         ]);
         const result = await getRedirectResult(auth);
         if (result?.user) {
-          setUser(result.user);
-          setShouldHydrateFirebaseAuth(true);
-          setIsAdminState(true);
-          try {
-            localStorage.setItem('raj_admin_active_v1', 'true');
-          } catch {}
-          void exchangeAdminSessionCookie(result.user);
-          void syncUserProfileToFirestore(result.user);
+          if (isAuthorizedAdminUser(result.user)) {
+            setUser(result.user);
+            setShouldHydrateFirebaseAuth(true);
+            setIsAdminState(true);
+            try {
+              localStorage.setItem('raj_admin_active_v1', 'true');
+            } catch {}
+            void exchangeAdminSessionCookie(result.user);
+            void syncUserProfileToFirestore(result.user);
+          } else {
+            await signOut(auth).catch(() => {});
+          }
         }
       } catch {}
     })();
   }, []);
 
-  // Hydrate Firebase Auth session whenever admin mode OR regular user cloud alert sync is active
+  // Hydrate Firebase Auth session whenever admin mode is active
   useEffect(() => {
     if (!shouldHydrateFirebaseAuth && !isAdminState) {
       setLoading(false);
@@ -117,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     (async () => {
       try {
-        const [{ onAuthStateChanged }, { auth }, { syncUserProfileToFirestore }] = await Promise.all([
+        const [{ onAuthStateChanged, signOut }, { auth }, { syncUserProfileToFirestore }] = await Promise.all([
           import('firebase/auth'),
           import('../lib/firebase'),
           import('../services/firebaseUserService'),
@@ -126,22 +123,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
           if (!isMounted) return;
+          if (currentUser && !isAuthorizedAdminUser(currentUser)) {
+            await signOut(auth).catch(() => {});
+            setUser(null);
+            setIsAdminState(false);
+            setLoading(false);
+            return;
+          }
+
           setUser(currentUser);
           setLoading(false);
 
-          if (currentUser) {
-            if (isAuthorizedAdminUser(currentUser)) {
-              setIsAdminState(true);
-              try {
-                localStorage.setItem('raj_admin_active_v1', 'true');
-              } catch {}
-              void exchangeAdminSessionCookie(currentUser);
-            } else {
-              try {
-                localStorage.setItem(STORAGE_KEY_REGULAR_AUTH, 'true');
-              } catch {}
-            }
-
+          if (currentUser && isAuthorizedAdminUser(currentUser)) {
+            setIsAdminState(true);
+            try {
+              localStorage.setItem('raj_admin_active_v1', 'true');
+            } catch {}
+            void exchangeAdminSessionCookie(currentUser);
             void syncUserProfileToFirestore(currentUser);
           }
         });
@@ -167,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async (): Promise<GoogleSignInResult> => {
     try {
-      const [{ signInWithPopup, signInWithRedirect }, { auth, googleAuthProvider }, { syncUserProfileToFirestore }] = await Promise.all([
+      const [{ signInWithPopup, signInWithRedirect, signOut }, { auth, googleAuthProvider }, { syncUserProfileToFirestore }] = await Promise.all([
         import('firebase/auth'),
         import('../lib/firebase'),
         import('../services/firebaseUserService'),
@@ -176,6 +174,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const result = await signInWithPopup(auth, googleAuthProvider);
         if (result.user) {
+          if (!isAuthorizedAdminUser(result.user)) {
+            await signOut(auth).catch(() => {});
+            return { ok: false, error: 'यह Google अकाउंट एडमिन एक्सेस के लिए अधिकृत नहीं है।' };
+          }
           setUser(result.user);
           setShouldHydrateFirebaseAuth(true);
           setIsAdminState(true);
@@ -213,47 +215,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               : code === 'auth/operation-not-allowed'
                 ? 'Google Sign-In is disabled in Firebase Authentication settings.'
                 : err?.message || 'Google sign-in failed.';
-      return { ok: false, error: msg };
-    }
-  };
-
-  // Safe Google Sign-In for regular users syncing their Job Alert Preferences (never grants admin UI unless authorized admin email)
-  const signInRegularUserWithGoogle = async (): Promise<GoogleSignInResult> => {
-    try {
-      const [{ signInWithPopup }, { auth, googleAuthProvider }, { syncUserProfileToFirestore }] = await Promise.all([
-        import('firebase/auth'),
-        import('../lib/firebase'),
-        import('../services/firebaseUserService'),
-      ]);
-      const result = await signInWithPopup(auth, googleAuthProvider);
-      if (result.user) {
-        setUser(result.user);
-        setShouldHydrateFirebaseAuth(true);
-        try {
-          localStorage.setItem(STORAGE_KEY_REGULAR_AUTH, 'true');
-        } catch {}
-        if (isAuthorizedAdminUser(result.user)) {
-          setIsAdminState(true);
-          try {
-            localStorage.setItem('raj_admin_active_v1', 'true');
-          } catch {}
-          void exchangeAdminSessionCookie(result.user);
-        }
-        void syncUserProfileToFirestore(result.user);
-        return { ok: true, user: result.user };
-      }
-      return { ok: false, error: 'Google sign-in did not complete.' };
-    } catch (err: any) {
-      const code = err?.code || '';
-      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'rajasthanvacancy.online';
-      const msg =
-        code === 'auth/unauthorized-domain'
-          ? `Domain "${currentHost}" is not yet added to Firebase Authorized Domains. Your job alerts remain saved on this device automatically.`
-          : code === 'auth/popup-blocked'
-            ? 'Please allow browser popups to sync job alerts with Google.'
-            : code === 'auth/popup-closed-by-user'
-              ? 'Sign-in window closed.'
-              : err?.message || 'Unable to sign in right now.';
       return { ok: false, error: msg };
     }
   };
@@ -310,7 +271,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setShouldHydrateFirebaseAuth(false);
       try {
         localStorage.setItem('raj_admin_active_v1', 'false');
-        localStorage.removeItem(STORAGE_KEY_REGULAR_AUTH);
       } catch {}
     } catch (err) {
       console.error('Logout error:', err);
@@ -344,7 +304,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         isCloudAdmin,
         signInWithGoogle,
-        signInRegularUserWithGoogle,
         loginWithPasscode,
         logout,
         toggleAdminMode,

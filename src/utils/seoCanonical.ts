@@ -10,13 +10,23 @@
  * 5. Enforces the single authoritative production domain from NEXT_PUBLIC_SITE_URL (default: https://rajasthanvacancy.online).
  */
 
-const RAW_SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://rajasthanvacancy.online')
-  .trim()
-  .replace(/\/+$/, '');
+function resolveProductionOrigin(raw?: string): string {
+  const fallback = 'https://rajasthanvacancy.online';
+  const trimmed = (raw || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return fallback;
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(candidate);
+    if (!parsed.hostname.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(parsed.hostname)) {
+      return fallback;
+    }
+    return parsed.origin;
+  } catch {
+    return fallback;
+  }
+}
 
-export const DEFAULT_PRODUCTION_ORIGIN = /^https?:\/\//i.test(RAW_SITE_URL)
-  ? RAW_SITE_URL
-  : `https://${RAW_SITE_URL}`;
+export const DEFAULT_PRODUCTION_ORIGIN = resolveProductionOrigin(process.env.NEXT_PUBLIC_SITE_URL);
 
 /**
  * Always return the single authoritative production canonical origin

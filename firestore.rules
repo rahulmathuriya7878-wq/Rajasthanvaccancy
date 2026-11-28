@@ -289,7 +289,7 @@ service cloud.firestore {
     // 0. Publicly readable Jobs Collection (PostBuilderClient CRUD - zero PII, admin-only writes)
     match /jobs/{jobId} {
       allow get: if isValidId(jobId);
-      allow list: if resource.data.jobId is string && resource.data.jobId.size() <= 128;
+      allow list: if true;
       allow create: if isVerifiedUser() &&
         isValidId(jobId) &&
         isValidJobPost(incoming(), jobId) &&

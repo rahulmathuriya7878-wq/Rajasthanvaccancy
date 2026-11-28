@@ -5,25 +5,22 @@ import {
   Upload,
   Download,
   RotateCw,
-  RefreshCw,
   Image as ImageIcon,
   PenTool,
   CheckCircle2,
   AlertCircle,
   Sparkles,
   Trash2,
-  ExternalLink,
   Copy,
   Printer,
   Fingerprint,
-  Calendar,
   Check,
 } from 'lucide-react';
 
-export type ToolMode = 'photo' | 'signature' | 'thumb';
-export type OutputFormat = 'image/jpeg' | 'image/png';
+type ToolMode = 'photo' | 'signature' | 'thumb';
+type OutputFormat = 'image/jpeg' | 'image/png';
 
-export interface ExamPreset {
+interface ExamPreset {
   id: string;
   label: string;
   sublabel: string;
@@ -32,7 +29,7 @@ export interface ExamPreset {
   thumb: { width: number; height: number; maxKb: number; minKb: number };
 }
 
-export const EXAM_PRESETS: ExamPreset[] = [
+const EXAM_PRESETS: ExamPreset[] = [
   {
     id: 'rajasthan',
     label: 'Rajasthan (RPSC / RSSB / SSO)',
@@ -470,59 +467,6 @@ export const PhotoSignResizeTool: React.FC = () => {
       const fallbackUrl = URL.createObjectURL(file);
       loadImageFromDataUrl(fallbackUrl, file.name, file.size);
     }
-  };
-
-  const handleLoadSample = () => {
-    const sampleCanvas = document.createElement('canvas');
-    if (mode === 'signature') {
-      sampleCanvas.width = 600;
-      sampleCanvas.height = 200;
-      const ctx = sampleCanvas.getContext('2d');
-      if (!ctx) return;
-      ctx.fillStyle = '#F8FAFC';
-      ctx.fillRect(0, 0, 600, 200);
-      ctx.strokeStyle = '#1E3A8A';
-      ctx.lineWidth = 6;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(80, 130);
-      ctx.bezierCurveTo(140, 40, 185, 160, 250, 100);
-      ctx.bezierCurveTo(310, 45, 360, 150, 440, 90);
-      ctx.stroke();
-    } else if (mode === 'thumb') {
-      sampleCanvas.width = 400;
-      sampleCanvas.height = 400;
-      const ctx = sampleCanvas.getContext('2d');
-      if (!ctx) return;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, 400, 400);
-      ctx.strokeStyle = '#1E3A8A';
-      ctx.lineWidth = 3;
-      for (let r = 30; r < 140; r += 15) {
-        ctx.beginPath();
-        ctx.ellipse(200, 200, r * 0.75, r, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-    } else {
-      sampleCanvas.width = 480;
-      sampleCanvas.height = 640;
-      const ctx = sampleCanvas.getContext('2d');
-      if (!ctx) return;
-      ctx.fillStyle = '#EFF6FF';
-      ctx.fillRect(0, 0, 480, 640);
-      ctx.fillStyle = '#1E293B';
-      ctx.beginPath();
-      ctx.arc(240, 230, 90, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#15803D';
-      ctx.beginPath();
-      ctx.ellipse(240, 500, 160, 130, 0, Math.PI, Math.PI * 2);
-      ctx.fill();
-    }
-
-    const dataUrl = sampleCanvas.toDataURL('image/jpeg', 0.95);
-    const approxBytes = Math.round(((dataUrl.split(',')[1] || '').length * 3) / 4);
-    loadImageFromDataUrl(dataUrl, `sample-${mode}.jpg`, approxBytes);
   };
 
   const handleReset = () => {
