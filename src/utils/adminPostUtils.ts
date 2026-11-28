@@ -236,18 +236,18 @@ export interface TableTemplateDefinition {
 
 export const RESULT_DETAILS_TABLE_TEMPLATE: TableTemplateDefinition = {
   id: 'result-details',
-  label: 'Result Details (Category | Cut-off Marks | Download Link)',
+  label: 'Result Details (Category | Cut-off Marks)',
   title: 'Result Details',
   titleHi: 'Result Details',
-  content: 'Category-wise Cut-off Marks and Official Result Download Links:',
-  contentHi: 'श्रेणीवार कट-ऑफ अंक (Cut-off Marks) एवं आधिकारिक रिजल्ट डाउनलोड लिंक नीचे तालिका में देखें:',
-  headers: ['Category', 'Cut-off Marks', 'Download Link'],
+  content: 'Category-wise Cut-off Marks:',
+  contentHi: 'श्रेणीवार कट-ऑफ अंक (Cut-off Marks) नीचे तालिका में देखें:',
+  headers: ['Category', 'Cut-off Marks'],
   defaultRows: [
-    ['General (UR)', '', ''],
-    ['OBC (NCL)', '', ''],
-    ['EWS', '', ''],
-    ['SC', '', ''],
-    ['ST', '', ''],
+    ['General (UR)', ''],
+    ['OBC (NCL)', ''],
+    ['EWS', ''],
+    ['SC', ''],
+    ['ST', ''],
   ],
 };
 
@@ -297,24 +297,31 @@ export function normalizePersistentResultTemplate(
     1000
   );
 
-  let headers = Array.isArray(raw.headers)
-    ? raw.headers
-        .map((h) => (typeof h === 'string' ? h.trim().slice(0, 100) : ''))
-        .filter(Boolean)
-        .slice(0, 10)
+  const rawHeaders = Array.isArray(raw.headers)
+    ? raw.headers.map((h) => (typeof h === 'string' ? h.trim().slice(0, 100) : ''))
     : [...defaults.headers];
 
-  // Guarantee the canonical 'Category', 'Cut-off Marks', and 'Download Link' columns exist
-  const requiredCols = ['Category', 'Cut-off Marks', 'Download Link'];
+  // Track non-Download-Link column indices to keep existing cell alignment when migrating old templates
+  const keptIndices: number[] = [];
+  rawHeaders.forEach((h, idx) => {
+    if (!h) return;
+    if (h.toLowerCase() === 'download link') return;
+    keptIndices.push(idx);
+  });
+
+  let headers = keptIndices.map((idx) => rawHeaders[idx]).slice(0, 10);
+
+  // Guarantee the canonical 'Category' and 'Cut-off Marks' columns exist
+  const requiredCols = ['Category', 'Cut-off Marks'];
   const lowerHeaders = headers.map((h) => h.toLowerCase());
   const hasCategory = lowerHeaders.some((h) => h.includes('category'));
   const hasCutoff = lowerHeaders.some((h) => h.includes('cut') || h.includes('marks'));
-  const hasLink = lowerHeaders.some((h) => h.includes('link') || h.includes('url'));
 
-  if (!hasCategory || !hasCutoff || !hasLink || headers.length === 0) {
+  const useKeptIndexMapping = hasCategory && hasCutoff && headers.length > 0;
+  if (!useKeptIndexMapping) {
     const extraCols = headers.filter((h) => {
       const l = h.toLowerCase();
-      return !l.includes('category') && !l.includes('cut') && !l.includes('marks') && !l.includes('link') && !l.includes('url');
+      return !l.includes('category') && !l.includes('cut') && !l.includes('marks');
     });
     headers = [...requiredCols, ...extraCols].slice(0, 10);
   }
@@ -323,7 +330,11 @@ export function normalizePersistentResultTemplate(
   const normalizedRows = rawRows
     .filter((r) => Array.isArray(r))
     .slice(0, 50)
-    .map((row) => headers.map((_, colIdx) => String(row[colIdx] ?? '').slice(0, 500)));
+    .map((row) =>
+      useKeptIndexMapping
+        ? keptIndices.slice(0, headers.length).map((origIdx) => String(row[origIdx] ?? '').slice(0, 500))
+        : headers.map((_, colIdx) => String(row[colIdx] ?? '').slice(0, 500))
+    );
 
   return {
     templateId: RESULT_DETAILS_TABLE_TEMPLATE.id,
@@ -465,23 +476,14 @@ export function isCutoffMarksColumn(
 }
 
 export function isDownloadLinkColumn(
-  tableId: string,
-  title: string,
-  titleHi: string,
+  _tableId: string,
+  _title: string,
+  _titleHi: string,
   header: string,
-  colIdx: number
+  _colIdx: number
 ): boolean {
   const lowerH = (header || '').trim().toLowerCase();
   if (lowerH.includes('link') || lowerH.includes('url')) return true;
-  if (
-    isResultDetailsTableMeta(tableId, title, titleHi) &&
-    colIdx === 2 &&
-    !lowerH.includes('cut') &&
-    !lowerH.includes('marks') &&
-    !lowerH.includes('category')
-  ) {
-    return true;
-  }
   return false;
 }
 

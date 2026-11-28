@@ -173,6 +173,7 @@ function makeSlug(text: string): string {
 function sanitizeHttpUrl(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return '';
+  if (trimmed.startsWith('/')) return trimmed;
   if (/^https?:\/\//i.test(trimmed)) return trimmed;
   if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)) return '';
   return `https://${trimmed}`;
@@ -499,7 +500,7 @@ export const PostBuilderClient: React.FC = () => {
     [customTableSections]
   );
 
-  // Automatically generate 'Result Details' rows (Category | Cut-off Marks | Download Link)
+  // Automatically generate 'Result Details' rows (Category | Cut-off Marks)
   // from the persistent template in every new result-based post
   useEffect(() => {
     if (editId) return;
@@ -571,7 +572,7 @@ export const PostBuilderClient: React.FC = () => {
     });
 
     if (!autoSeed) {
-      showToast('Result Details table template loaded (Category | Cut-off Marks | Download Link).');
+      showToast('Result Details table template loaded (Category | Cut-off Marks).');
     }
     if (switchToTab) {
       setActiveTab('content');
@@ -583,7 +584,7 @@ export const PostBuilderClient: React.FC = () => {
     if (!tableCheck.valid) {
       setErrorMsg(
         tableCheck.firstError ||
-          'Please fix invalid Cut-off Marks or Download Link cells before saving the template.'
+          'Please fix invalid table cell values (Cut-off Marks must be numeric) before saving the template.'
       );
       return;
     }
@@ -1040,7 +1041,7 @@ export const PostBuilderClient: React.FC = () => {
     if (!tableValidation.valid) {
       setErrorMsg(
         tableValidation.firstError ||
-          'Please fix invalid Cut-off Marks (numeric only) or Download Link (valid URL) cells.'
+          'Please fix invalid table cell values (Cut-off Marks must be numeric).'
       );
       setActiveTab('content');
       return;
@@ -2412,7 +2413,7 @@ export const PostBuilderClient: React.FC = () => {
                       <span>Pre-defined Table Structure Templates</span>
                     </h2>
                     <p className="text-xs text-neutral-500">
-                      Insert consistent structured tables such as Result Details (Category, Cut-off Marks, Download Link).
+                      Insert consistent structured tables such as Result Details (Category, Cut-off Marks).
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -2527,7 +2528,7 @@ export const PostBuilderClient: React.FC = () => {
                               Persistent Template ({templateSyncSource === 'cloud' ? 'Cloud Synced' : templateSyncSource === 'local' ? 'Saved Locally' : 'Built-in Default'})
                             </span>
                             <span className="text-emerald-800">
-                              Auto-generates Category, Cut-off Marks &amp; Download Link rows on every new Result post.
+                              Auto-generates Category &amp; Cut-off Marks rows on every new Result post.
                             </span>
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5">
@@ -2560,7 +2561,7 @@ export const PostBuilderClient: React.FC = () => {
                       {(isResultTable || hasValidatedCols) && (
                         <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] px-2.5 py-1.5 rounded-lg bg-white border border-neutral-200 text-neutral-600">
                           <span>
-                            Validation rules: <strong>Cut-off Marks</strong> accepts numeric values only (e.g. 142 or 142.50); <strong>Download Link</strong> requires a valid <code className="font-mono">http(s)://</code> URL.
+                            Validation rules: <strong>Cut-off Marks</strong> accepts numeric values only (e.g. 142 or 142.50).
                           </span>
                           {tableErrorsCount > 0 && (
                             <span className="font-semibold text-red-600">

@@ -13,13 +13,10 @@ import {
   Landmark,
   MessageCircle,
   Globe,
-  Bell,
-  BellRing,
   FilePlus2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOptionalPortal } from '../context/PortalContext';
-import { useOptionalNotifications } from '../context/NotificationContext';
 import { LanguageMode, VacancyItem } from '../types';
 import { compareVacanciesNewestFirst } from '../utils/dateUtils';
 
@@ -44,7 +41,6 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { isAdmin, toggleAdminMode } = useAuth();
   const portal = useOptionalPortal();
-  const notif = useOptionalNotifications();
   const lang = langProp ?? portal?.lang ?? 'hi';
   const onGoHome = onGoHomeProp ?? portal?.handleGoHome;
   const latestVacancies = latestVacanciesProp ?? portal?.vacancies ?? [];
@@ -233,90 +229,6 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Header Navigation Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Browser Push Subscribe Button */}
-              {notif && notif.browserPermission !== 'unsupported' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (
-                      notif.browserPermission === 'granted' &&
-                      notif.preferences.browserPushEnabled
-                    ) {
-                      notif.openNotificationDrawer('preferences');
-                    } else if (notif.browserPermission === 'granted') {
-                      notif.updatePreferences({ browserPushEnabled: true });
-                    } else if (notif.browserPermission === 'denied') {
-                      notif.openNotificationDrawer('preferences');
-                    } else {
-                      void notif.requestBrowserPushPermission();
-                    }
-                  }}
-                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer whitespace-nowrap shrink-0 shadow-2xs ${
-                    notif.browserPermission === 'granted' &&
-                    notif.preferences.browserPushEnabled
-                      ? 'bg-emerald-50 text-[#15803d] border border-emerald-300 hover:bg-emerald-100'
-                      : 'bg-[#15803d] hover:bg-[#166534] text-white border border-[#15803d]'
-                  }`}
-                  aria-label={
-                    notif.browserPermission === 'granted' &&
-                    notif.preferences.browserPushEnabled
-                      ? isHi
-                        ? 'पुश नोटिफिकेशन सक्रिय हैं'
-                        : 'Push Notifications Subscribed'
-                      : isHi
-                        ? 'नई भर्तियों के पुश नोटिफिकेशन के लिए सब्सक्राइब करें'
-                        : 'Subscribe to Push Notifications for new job alerts'
-                  }
-                  title={
-                    notif.browserPermission === 'granted' &&
-                    notif.preferences.browserPushEnabled
-                      ? isHi
-                        ? 'ब्राउज़र पुश अलर्ट सक्रिय हैं — सेटिंग्स देखें'
-                        : 'Browser push alerts active — view settings'
-                      : isHi
-                        ? 'नई भर्तियों के ब्राउज़र पुश नोटिफिकेशन चालू करें'
-                        : 'Enable browser push notifications for new job alerts'
-                  }
-                >
-                  <BellRing className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                  <span>
-                    {notif.browserPermission === 'granted' &&
-                    notif.preferences.browserPushEnabled
-                      ? isHi
-                        ? 'Subscribed'
-                        : 'Subscribed'
-                      : 'Subscribe'}
-                  </span>
-                </button>
-              )}
-
-              {/* Regular User Job Alerts & Notification Center Button */}
-              {notif && (
-                <button
-                  type="button"
-                  onClick={() => notif.openNotificationDrawer('inbox')}
-                  className="relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:border-[#15803d] hover:text-[#15803d] text-slate-800 font-semibold text-xs transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                  aria-label={
-                    isHi
-                      ? `जॉब अलर्ट नोटिफिकेशन${notif.unreadCount > 0 ? ` (${notif.unreadCount} अपठित)` : ''}`
-                      : `Job Alert Notifications${notif.unreadCount > 0 ? ` (${notif.unreadCount} unread)` : ''}`
-                  }
-                  title={isHi ? 'जॉब अलर्ट और सेव्ड सर्च नोटिफिकेशन' : 'Job Alerts & Saved Search Notifications'}
-                >
-                  {notif.unreadCount > 0 ? (
-                    <BellRing className="w-4 h-4 text-[#15803d] shrink-0" aria-hidden="true" />
-                  ) : (
-                    <Bell className="w-4 h-4 text-slate-700 shrink-0" aria-hidden="true" />
-                  )}
-                  <span className="hidden sm:inline">{isHi ? 'जॉब अलर्ट' : 'Job Alerts'}</span>
-                  {notif.unreadCount > 0 && (
-                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-md bg-[#15803d] text-white text-[10px] font-bold tabular-nums leading-none">
-                      {notif.unreadCount > 99 ? '99+' : notif.unreadCount}
-                    </span>
-                  )}
-                </button>
-              )}
-
               {/* Mobile Menu Toggle Button matching '≡ Menu' from screenshot */}
               <button
                 type="button"
@@ -447,26 +359,6 @@ export const Header: React.FC<HeaderProps> = ({
                     </button>
                   )}
                 </>
-              )}
-
-              {/* Regular User Custom Job Alerts trigger in Mobile Menu */}
-              {notif && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    notif.openNotificationDrawer('alerts');
-                  }}
-                  className="mt-1 px-3 py-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-between transition cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <BellRing className="w-4 h-4 text-[#15803d]" />
-                    <span>{isHi ? 'कस्टम जॉब अलर्ट सेट करें' : 'Custom Job Alerts'}</span>
-                  </div>
-                  <span className="text-[11px] font-semibold text-[#15803d] tabular-nums">
-                    {notif.savedAlerts.filter((a) => a.enabled).length} {isHi ? 'सक्रिय' : 'Active'}
-                  </span>
-                </button>
               )}
 
               {/* Official WhatsApp Channel Link in Mobile Menu */}

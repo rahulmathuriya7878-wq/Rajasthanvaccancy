@@ -7,11 +7,9 @@ import {
   Search, 
   ExternalLink,
   Trash2,
-  ShieldCheck,
-  BellRing
+  ShieldCheck
 } from 'lucide-react';
-import { VacancyItem, LanguageMode, CategoryType } from '../types';
-import { useOptionalNotifications } from '../context/NotificationContext';
+import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
 
@@ -49,7 +47,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   isLoading = false,
 }) => {
   const isHi = lang === 'hi';
-  const notif = useOptionalNotifications();
 
   if (isLoading && vacancies.length === 0) {
     return (
@@ -131,25 +128,6 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 self-start md:self-center flex-wrap shrink-0">
-          {notif && (
-            <button
-              type="button"
-              onClick={() =>
-                notif.openSaveSearchBuilder({
-                  name: searchQuery.trim()
-                    ? `${searchQuery.trim()} · ${isHi ? categoryTitleHi : categoryTitle}`
-                    : `${isHi ? categoryTitleHi : categoryTitle} Alert`,
-                  categories: [categoryKey as CategoryType],
-                  keywords: searchQuery.trim() ? [searchQuery.trim()] : [],
-                })
-              }
-              className="px-3.5 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] text-white text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
-            >
-              <BellRing className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>{isHi ? 'इस श्रेणी का अलर्ट सेट करें' : 'Create Alert for Category'}</span>
-            </button>
-          )}
-
           <button
             onClick={onClearCategory}
             className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"

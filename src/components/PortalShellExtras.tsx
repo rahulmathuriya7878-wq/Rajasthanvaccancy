@@ -4,8 +4,6 @@ import React, { lazy, Suspense } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import { usePortal } from '../context/PortalContext';
 import { OfflineIndicator } from './OfflineIndicator';
-import { NotificationCenterDrawer } from './NotificationCenterDrawer';
-import { LiveNotificationToast } from './LiveNotificationToast';
 
 const AdminLoginModal = lazy(() =>
   import('./AdminLoginModal').then((m) => ({ default: m.AdminLoginModal }))
@@ -33,9 +31,6 @@ export const PortalShellExtras: React.FC = () => {
           <span>{toastMessage}</span>
         </div>
       )}
-
-      <NotificationCenterDrawer />
-      <LiveNotificationToast />
 
       {isAdminLoginOpen && (
         <Suspense fallback={null}>

@@ -1,10 +1,8 @@
 'use client';
 
 import React, { lazy, Suspense, useEffect, useMemo, useRef } from 'react';
-import { BellRing } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getPortalSectionTitle, usePortal, type PolicyViewType } from '../context/PortalContext';
-import { useOptionalNotifications } from '../context/NotificationContext';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import { FastUpdatesGrid } from './FastUpdatesGrid';
 
@@ -58,7 +56,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
   initialOpenIndexation = false,
 }) => {
   const { isAdmin } = useAuth();
-  const notif = useOptionalNotifications();
   const {
     lang,
     vacancies,
@@ -68,17 +65,14 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     selectedCategory,
     selectedVacancy,
     activePolicyView,
-    alertJobIds,
     isLoading,
     setIsAdminLoginOpen,
-    setIsUrlIndexationOpen,
     handleGoHome,
     handleSelectVacancy,
     handleSelectCategory,
     handleSelectPolicy,
     handleUpdateVacancy,
     handleDeleteVacancy,
-    handleToggleAlertMe,
     hydrateInitialParams,
   } = usePortal();
 
@@ -219,90 +213,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Rajasthan Vacancy 2026
             </h1>
-            {notif && (
-              <div className="flex items-center gap-2 flex-wrap">
-                {notif.browserPermission !== 'unsupported' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        notif.browserPermission === 'granted' &&
-                        notif.preferences.browserPushEnabled
-                      ) {
-                        notif.openNotificationDrawer('preferences');
-                      } else if (notif.browserPermission === 'granted') {
-                        notif.updatePreferences({ browserPushEnabled: true });
-                      } else if (notif.browserPermission === 'denied') {
-                        notif.openNotificationDrawer('preferences');
-                      } else {
-                        void notif.requestBrowserPushPermission();
-                      }
-                    }}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer whitespace-nowrap shadow-xs ${
-                      notif.browserPermission === 'granted' &&
-                      notif.preferences.browserPushEnabled
-                        ? 'bg-emerald-50 text-[#15803d] border border-emerald-300 hover:bg-emerald-100'
-                        : 'bg-[#15803d] hover:bg-[#166534] text-white border border-[#15803d]'
-                    }`}
-                    title={
-                      notif.browserPermission === 'granted' &&
-                      notif.preferences.browserPushEnabled
-                        ? lang === 'hi'
-                          ? 'ब्राउज़र पुश नोटिफिकेशन सक्रिय हैं — प्राथमिकताएं प्रबंधित करें'
-                          : 'Browser Push Notifications Active — Manage Preferences'
-                        : lang === 'hi'
-                          ? 'नई सरकारी भर्तियों के ब्राउज़र पुश नोटिफिकेशन चालू करने के लिए सब्सक्राइब करें'
-                          : 'Subscribe to enable browser push notifications for new job alerts'
-                    }
-                  >
-                    <BellRing
-                      className={`w-3.5 h-3.5 shrink-0 ${
-                        notif.browserPermission === 'granted' &&
-                        notif.preferences.browserPushEnabled
-                          ? 'text-[#15803d]'
-                          : 'text-white'
-                      }`}
-                      aria-hidden="true"
-                    />
-                    <span>
-                      {notif.browserPermission === 'granted' &&
-                      notif.preferences.browserPushEnabled
-                        ? lang === 'hi'
-                          ? '✓ सब्सक्राइब्ड (Push Active)'
-                          : '✓ Subscribed (Push Active)'
-                        : lang === 'hi'
-                          ? 'Subscribe (पुश अलर्ट चालू करें)'
-                          : 'Subscribe to Job Alerts'}
-                    </span>
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() =>
-                    notif.openSaveSearchBuilder({
-                      keywords: searchQuery.trim() ? [searchQuery.trim()] : [],
-                      categories: ['latest_job'],
-                    })
-                  }
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:border-[#15803d] hover:text-[#15803d] text-slate-800 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  <BellRing className="w-3.5 h-3.5 text-[#15803d] shrink-0" aria-hidden="true" />
-                  <span>
-                    {searchQuery.trim()
-                      ? lang === 'hi'
-                        ? `"${searchQuery.trim()}" के लिए अलर्ट सेव करें`
-                        : `Save Alert for "${searchQuery.trim()}"`
-                      : notif.savedAlerts.filter((a) => a.enabled).length > 0
-                        ? lang === 'hi'
-                          ? `मेरे जॉब अलर्ट (${notif.savedAlerts.filter((a) => a.enabled).length} सक्रिय)`
-                          : `My Job Alerts (${notif.savedAlerts.filter((a) => a.enabled).length} active)`
-                        : lang === 'hi'
-                          ? 'कस्टम जॉब अलर्ट बनाएं'
-                          : 'Create Custom Job Alert'}
-                  </span>
-                </button>
-              </div>
-            )}
           </div>
           <FastUpdatesGrid
             vacancies={filteredVacancies}
@@ -311,9 +221,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             onFilterCategory={(cat) => handleSelectCategory(cat)}
             isAdmin={isAdmin}
             onDeleteVacancy={handleDeleteVacancy}
-            alertJobIds={alertJobIds}
-            onToggleAlertMe={handleToggleAlertMe}
-            onOpenUrlIndexation={() => setIsUrlIndexationOpen(true)}
             isLoading={isLoading}
           />
         </div>

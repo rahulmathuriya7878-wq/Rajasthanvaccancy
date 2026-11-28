@@ -1,12 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { 
-  Bell,
-  Trash2,
-  Search,
-  ShieldCheck
-} from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
 import { AdSlotWrapper } from './AdSlotWrapper';
@@ -20,10 +15,7 @@ interface FastUpdatesGridProps {
   onFilterCategory?: (category: CategoryType) => void;
   isAdmin?: boolean;
   onDeleteVacancy?: (id: string) => void;
-  alertJobIds?: string[];
-  onToggleAlertMe?: (id: string) => void;
   showAds?: boolean;
-  onOpenUrlIndexation?: () => void;
   isLoading?: boolean;
 }
 
@@ -34,10 +26,7 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
   onFilterCategory,
   isAdmin = false,
   onDeleteVacancy,
-  alertJobIds = [],
-  onToggleAlertMe,
   showAds = true,
-  onOpenUrlIndexation,
   isLoading = false,
 }) => {
   const isHi = lang === 'hi';
@@ -220,33 +209,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
                         </button>
                       </div>
                     )}
-
-                    {/* Quick Alert Bell toggle */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (onToggleAlertMe) onToggleAlertMe(item.id);
-                      }}
-                      className={`p-1 rounded-md transition shrink-0 cursor-pointer ${
-                        alertJobIds?.includes(item.id)
-                          ? 'text-rose-700 bg-rose-50'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                      }`}
-                      aria-pressed={Boolean(alertJobIds?.includes(item.id))}
-                      aria-label={
-                        alertJobIds?.includes(item.id)
-                          ? (isHi ? `${item.titleHi || item.title} का अलर्ट हटाएं` : `Remove alert for ${item.title}`)
-                          : (isHi ? `${item.titleHi || item.title} के लिए अलर्ट सेट करें` : `Set alert for ${item.title}`)
-                      }
-                      title={
-                        alertJobIds?.includes(item.id)
-                          ? (isHi ? (isYojanaBox ? 'योजना अलर्ट सक्रिय' : 'अलर्ट सक्रिय') : 'Alert Active')
-                          : (isHi ? (isYojanaBox ? 'योजना अलर्ट सेट करें' : 'अलर्ट सेट करें') : 'Set Alert')
-                      }
-                    >
-                      <Bell className={`w-3.5 h-3.5 ${alertJobIds?.includes(item.id) ? 'fill-rose-700 text-rose-700' : ''}`} aria-hidden="true" />
-                    </button>
                   </div>
                 </div>
                 );
@@ -291,41 +253,6 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 
   return (
     <div className="w-full space-y-6">
-      {/* Admin Control Panel Banner: Google URL Inspection (Admin Only) */}
-      {isAdmin && onOpenUrlIndexation && (
-        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-xl p-3.5 sm:p-4 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-extrabold text-xs sm:text-sm text-white flex flex-wrap items-center gap-1.5">
-                <span>{isHi ? 'एडमिन पैनल (Admin Live Control Panel)' : 'Admin Live Control Panel'}</span>
-                <span className="text-[10px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded">
-                  FIREBASE LIVE
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300 mt-0.5">
-                {isHi
-                  ? 'Google में URL इंडेक्स कराएं या /admin डैशबोर्ड खोलें'
-                  : 'Inspect & index URLs in Google Search Console or open /admin'}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={onOpenUrlIndexation}
-              className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
-              aria-label="Open Google URL Inspection Tool"
-            >
-              <Search className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{isHi ? 'URL Inspection' : 'URL Inspection'}</span>
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Row 1: Latest Jobs, Admit Card, Results (3 columns) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch min-w-0">
         {row1Sections.map(renderSectionBox)}

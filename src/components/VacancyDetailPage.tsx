@@ -133,10 +133,17 @@ export const normalizePost = (v: VacancyItem): any => {
     for (const item of existing) {
       if (item && item.label) {
         const lbl = item.label.toLowerCase();
-        const isStandard = lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('begin') ||
+        const isCorrectionOrShortNotice =
+          lbl.includes('संशोधन') ||
+          lbl.includes('correction') ||
+          lbl.includes('पत्रांक') ||
+          lbl.includes('short notice');
+        const isStandard = !isCorrectionOrShortNotice && (
+          lbl.includes('notif') || lbl.includes('अधिसूचना') || lbl.includes('begin') ||
           lbl.includes('start') || lbl.includes('शुरू') || lbl.includes('प्रारंभ') || lbl.includes('last') || lbl.includes('अंतिम') ||
           lbl.includes('fee') || lbl.includes('शुल्क') || lbl.includes('admit') || lbl.includes('एडमिट') ||
-          lbl.includes('exam') || lbl.includes('परीक्षा') || lbl.includes('योजना घोषणा');
+          lbl.includes('exam') || lbl.includes('परीक्षा') || lbl.includes('योजना घोषणा')
+        );
         if (!isStandard) {
           defaultDatesArray.push(item);
         }
@@ -963,6 +970,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     teacher_notes: 'स्पेशल नोट्स (Teacher Notes)',
     documents: 'आवश्यक दस्तावेज (Required Documents)',
     how_to_apply: 'आवेदन कैसे करें (How to Apply)',
+    official_notification: 'आधिकारिक विज्ञप्ति व नोटिफिकेशन PDF (Official Notification)',
     important_links: 'महत्वपूर्ण लिंक्स (Important Links)',
     faqs: 'प्रश्नोत्तर (FAQs)'
   };
@@ -1476,6 +1484,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
         'postal_address',
         'documents',
         'how_to_apply',
+        'official_notification',
         'important_links',
         'faqs'
       ];
@@ -4205,6 +4214,64 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             (updatedTable) => setSectionTable('how_to_apply', updatedTable),
                             () => handleDeleteTableFromSection('how_to_apply')
                           )}
+                        </div>
+                      );
+                    }
+
+                    case 'official_notification': {
+                      if (isSectionDeleted('official_notification')) return null;
+                      const excerpt = editablePost.officialNotificationExcerpt;
+                      if (!excerpt) return null;
+
+                      return (
+                        <div key="official_notification" className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('official_notification', `${shortJobName} — आधिकारिक विज्ञप्ति (Official Notification)`)}
+                              onChange={(val) => setSectionTitle('official_notification', val)}
+                              titlePrefix="आधिकारिक विज्ञप्ति शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            <div className="flex items-center gap-1.5">
+                              {renderSectionShareButton('official_notification', `${shortJobName} आधिकारिक विज्ञप्ति`)}
+                              {renderAdminSectionControls('official_notification', 'आधिकारिक विज्ञप्ति')}
+                            </div>
+                          </div>
+
+                          <div className="border border-slate-300 rounded-md bg-slate-50/70 p-3.5 sm:p-4 space-y-2.5">
+                            {(excerpt.authority || excerpt.refNo || excerpt.date) && (
+                              <div className="border-b border-slate-200 pb-2 space-y-1 text-xs sm:text-sm">
+                                {excerpt.authority && (
+                                  <div className="font-extrabold text-slate-900">{excerpt.authority}</div>
+                                )}
+                                <div className="flex flex-wrap items-center justify-between gap-2 text-slate-600 font-semibold text-xs">
+                                  {excerpt.refNo && <span>{excerpt.refNo}</span>}
+                                  {excerpt.date && <span>{excerpt.date}</span>}
+                                </div>
+                              </div>
+                            )}
+                            {excerpt.titleRed && (
+                              <div className="font-extrabold text-rose-700 text-sm sm:text-base">
+                                {excerpt.titleRed}
+                              </div>
+                            )}
+                            {excerpt.titleSubtitle && (
+                              <div className="text-xs sm:text-sm font-bold text-slate-800">
+                                {excerpt.titleSubtitle}
+                              </div>
+                            )}
+                            {excerpt.body && (
+                              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                                {excerpt.body}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       );
                     }

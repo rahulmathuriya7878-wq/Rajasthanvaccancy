@@ -15,12 +15,11 @@ import {
   isPostOlderThanDays,
 } from '../utils/dateUtils';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
-import type { VacancyItem, CategoryType, JobStatusType, LanguageMode } from '../types';
+import type { VacancyItem, CategoryType, LanguageMode } from '../types';
 
 export type PolicyViewType = 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap';
 
 const STORAGE_KEY_VACANCIES = 'raj_vacancies_v32';
-const STORAGE_KEY_ALERT_JOBS = 'raj_alert_job_ids_v1';
 
 export function getPortalSectionTitle(cat: string, lang: LanguageMode = 'hi'): string {
   const isHi = lang === 'hi';
@@ -49,7 +48,6 @@ interface PortalContextType {
   setSelectedVacancy: (v: VacancyItem | null) => void;
   activePolicyView: PolicyViewType | null;
   setActivePolicyView: (p: PolicyViewType | null) => void;
-  alertJobIds: string[];
   isLoading: boolean;
   isAdminLoginOpen: boolean;
   setIsAdminLoginOpen: (open: boolean) => void;
@@ -64,7 +62,6 @@ interface PortalContextType {
   handleSelectPolicy: (policy: PolicyViewType) => void;
   handleUpdateVacancy: (updatedJob: VacancyItem) => Promise<CloudSyncResult>;
   handleDeleteVacancy: (id: string) => Promise<void>;
-  handleToggleAlertMe: (id: string) => void;
   hydrateInitialParams: (params: {
     vacancy?: string | null;
     category?: string | null;
@@ -85,7 +82,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [vacancies, setVacancies] = useState<VacancyItem[]>(() =>
     filterActivePostsWithinDays(INITIAL_VACANCIES, AUTO_DELETE_MAX_AGE_DAYS)
   );
-  const [alertJobIds, setAlertJobIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'ALL'>('ALL');
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
@@ -102,7 +98,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const vacanciesRef = useRef<VacancyItem[]>(vacancies);
   const selectedVacancyRef = useRef<VacancyItem | null>(selectedVacancy);
   const lastScrolledVacancyIdRef = useRef<string | null>(null);
-  const prevStatusesRef = useRef<Record<string, JobStatusType>>({});
 
   useEffect(() => {
     deletedIdsRef.current = deletedIds;
@@ -199,14 +194,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } catch {}
 
     try {
-      const storedAlerts = localStorage.getItem(STORAGE_KEY_ALERT_JOBS);
-      if (storedAlerts) {
-        const parsedAlerts = JSON.parse(storedAlerts);
-        if (Array.isArray(parsedAlerts)) setAlertJobIds(parsedAlerts);
-      }
-    } catch {}
-
-    try {
       let loaded = INITIAL_VACANCIES;
       const stored = localStorage.getItem(STORAGE_KEY_VACANCIES);
       if (stored) {
@@ -280,13 +267,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => window.clearTimeout(timer);
   }, [vacancies, hasMounted]);
 
-  useEffect(() => {
-    if (!hasMounted) return;
-    try {
-      localStorage.setItem(STORAGE_KEY_ALERT_JOBS, JSON.stringify(alertJobIds));
-    } catch {}
-  }, [alertJobIds, hasMounted]);
-
   // Automatically purge any post older than 70 days
   useEffect(() => {
     const purgeExpiredPosts = () => {
@@ -296,7 +276,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           .filter((v) => isPostOlderThanDays(v, AUTO_DELETE_MAX_AGE_DAYS, nowMs))
           .map((v) => v.id);
         if (expiredIds.length === 0) return prev;
-        setAlertJobIds((prevAlerts) => prevAlerts.filter((id) => !expiredIds.includes(id)));
         return prev.filter((v) => !expiredIds.includes(v.id));
       });
     };
@@ -312,24 +291,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
-
-  // Monitor job status updates from 'upcoming' to 'active' for alertJobIds
-  useEffect(() => {
-    vacancies.forEach((job) => {
-      const prevStatus = prevStatusesRef.current[job.id];
-      const newStatus = job.status;
-      if (prevStatus && prevStatus !== 'active' && newStatus === 'active' && alertJobIds.includes(job.id)) {
-        const jobTitle = lang === 'hi' ? job.titleHi || job.title : job.title;
-        showToast(`🔥 ऑनलाइन आवेदन शुरू! ${jobTitle}`);
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-          new Notification('🔥 ऑनलाइन आवेदन शुरू हो गए हैं!', {
-            body: `${jobTitle}\nकुल पद: ${job.totalPosts || 'विभिन्न'}. अंतिम तिथि: ${job.importantDates?.applyLastDate || 'TBA'}`,
-          });
-        }
-      }
-      prevStatusesRef.current[job.id] = job.status;
-    });
-  }, [vacancies, alertJobIds, lang, showToast]);
 
   // Real-time Firestore listener for vacancy_overrides across all devices (client-only dynamic import for Cloudflare Workers SSR safety)
   useEffect(() => {
@@ -732,41 +693,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [isHomeRoute, router]);
 
-  const handleToggleAlertMe = useCallback(
-    (id: string) => {
-      const targetJob = vacancies.find((v) => v.id === id);
-      const isCurrentlySet = alertJobIds.includes(id);
-
-      if (isCurrentlySet) {
-        setAlertJobIds((prev) => prev.filter((i) => i !== id));
-        showToast(lang === 'hi' ? 'जॉब अलर्ट हटा दिया गया' : 'Job alert removed');
-      } else {
-        setAlertJobIds((prev) => [...prev, id]);
-        if (typeof window !== 'undefined' && 'Notification' in window) {
-          if (Notification.permission === 'default') {
-            Notification.requestPermission().then((permission) => {
-              if (permission === 'granted' && targetJob) {
-                new Notification('🔔 जॉब अलर्ट सक्रिय!', {
-                  body: `${targetJob.titleHi || targetJob.title} - जैसे ही फॉर्म शुरू होंगे, आपको ब्राउज़र नोटिफिकेशन मिल जाएगा।`,
-                });
-              }
-            });
-          } else if (Notification.permission === 'granted' && targetJob) {
-            new Notification('🔔 जॉब अलर्ट सक्रिय!', {
-              body: `${targetJob.titleHi || targetJob.title} - जैसे ही फॉर्म शुरू होंगे, आपको ब्राउज़र नोटिफिकेशन मिल जाएगा।`,
-            });
-          }
-        }
-        showToast(
-          lang === 'hi'
-            ? '🔔 अलर्ट सक्रिय! फॉर्म शुरू होते ही आपको नोटिफिकेशन मिल जाएगा।'
-            : '🔔 Alert active! You will be notified when applications open.'
-        );
-      }
-    },
-    [vacancies, alertJobIds, lang, showToast]
-  );
-
   const handleUpdateVacancy = useCallback(
     async (updatedJob: VacancyItem): Promise<CloudSyncResult> => {
       setDeletedIds((prev) => {
@@ -929,7 +855,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSelectedVacancy,
         activePolicyView,
         setActivePolicyView,
-        alertJobIds,
         isLoading,
         isAdminLoginOpen,
         setIsAdminLoginOpen,
@@ -944,7 +869,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         handleSelectPolicy,
         handleUpdateVacancy,
         handleDeleteVacancy,
-        handleToggleAlertMe,
         hydrateInitialParams,
       }}
     >

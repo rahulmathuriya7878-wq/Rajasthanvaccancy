@@ -3,7 +3,6 @@ import Script from 'next/script';
 import '@/index.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { PortalProvider } from '@/context/PortalContext';
-import { NotificationProvider } from '@/context/NotificationContext';
 import { PortalLayoutChrome } from '@/components/PortalLayoutChrome';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DEFAULT_PRODUCTION_ORIGIN as SITE_URL } from '@/utils/seoCanonical';
@@ -159,9 +158,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <AuthProvider>
             <PortalProvider>
-              <NotificationProvider>
-                <PortalLayoutChrome>{children}</PortalLayoutChrome>
-              </NotificationProvider>
+              <PortalLayoutChrome>{children}</PortalLayoutChrome>
             </PortalProvider>
           </AuthProvider>
         </ErrorBoundary>

@@ -392,18 +392,18 @@ export const SSC_CGL_TIER_1_RESULT_2026: VacancyItem = {
     {
       id: 'result-details',
       title: 'Result Details',
-      titleHi: 'Result Details (SSC CGL Tier-1 कट-ऑफ एवं डाउनलोड लिंक)',
-      content: 'Category-wise Tier-1 Qualifying Cut-off Marks (Other Posts) and Direct Result Links:',
-      contentHi: 'SSC CGL टियर-1 परीक्षा के श्रेणीवार कट-ऑफ अंक (Cut-off Marks) एवं आधिकारिक मेरिट लिंक नीचे तालिका में देखें:',
+      titleHi: 'Result Details (SSC CGL Tier-1 श्रेणीवार कट-ऑफ अंक)',
+      content: 'Category-wise Tier-1 Qualifying Cut-off Marks (Other Posts):',
+      contentHi: 'SSC CGL टियर-1 परीक्षा के श्रेणीवार कट-ऑफ अंक (Cut-off Marks) नीचे तालिका में देखें:',
       sectionType: 'table',
       tableData: {
-        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        headers: ['Category', 'Cut-off Marks'],
         rows: [
-          ['General (UR)', '146.50', 'https://ssc.gov.in/'],
-          ['OBC (NCL)', '139.25', 'https://ssc.gov.in/'],
-          ['EWS', '136.00', 'https://ssc.gov.in/'],
-          ['SC', '121.75', 'https://ssc.gov.in/'],
-          ['ST', '111.50', 'https://ssc.gov.in/']
+          ['General (UR)', '146.50'],
+          ['OBC (NCL)', '139.25'],
+          ['EWS', '136.00'],
+          ['SC', '121.75'],
+          ['ST', '111.50']
         ]
       }
     }
@@ -515,18 +515,18 @@ export const RSMSSB_JUNIOR_INSTRUCTOR_RESULT_2026: VacancyItem = {
     {
       id: 'result-details',
       title: 'Result Details',
-      titleHi: 'Result Details (RSMSSB Junior Instructor कट-ऑफ व रिजल्ट लिंक)',
-      content: 'Non-TSP Category-wise Cut-off Marks (Out of 120) & Direct Result Links:',
-      contentHi: 'RSMSSB कनिष्ठ अनुदेशक परीक्षा के वर्गवार कट-ऑफ अंक एवं आधिकारिक मेरिट PDF लिंक नीचे देखें:',
+      titleHi: 'Result Details (RSMSSB Junior Instructor श्रेणीवार कट-ऑफ)',
+      content: 'Non-TSP Category-wise Cut-off Marks (Out of 120):',
+      contentHi: 'RSMSSB कनिष्ठ अनुदेशक परीक्षा के वर्गवार कट-ऑफ अंक नीचे तालिका में देखें:',
       sectionType: 'table',
       tableData: {
-        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        headers: ['Category', 'Cut-off Marks'],
         rows: [
-          ['General (UR)', '84.33', 'https://rssb.rajasthan.gov.in/'],
-          ['OBC (NCL)', '81.67', 'https://rssb.rajasthan.gov.in/'],
-          ['EWS', '78.40', 'https://rssb.rajasthan.gov.in/'],
-          ['SC', '72.15', 'https://rssb.rajasthan.gov.in/'],
-          ['ST', '68.90', 'https://rssb.rajasthan.gov.in/']
+          ['General (UR)', '84.33'],
+          ['OBC (NCL)', '81.67'],
+          ['EWS', '78.40'],
+          ['SC', '72.15'],
+          ['ST', '68.90']
         ]
       }
     }
@@ -616,18 +616,18 @@ export const IBPS_PO_MAINS_RESULT_2026: VacancyItem = {
     {
       id: 'result-details',
       title: 'Result Details',
-      titleHi: 'Result Details (IBPS PO Mains कट-ऑफ एवं स्कोरकार्ड लिंक)',
-      content: 'Category-wise IBPS PO Mains Cut-off Marks (Out of 225) and Official Scorecard Link:',
-      contentHi: 'IBPS PO मुख्य परीक्षा (225 अंकों में से) श्रेणीवार कट-ऑफ अंक व रिजल्ट लिंक नीचे तालिका में देखें:',
+      titleHi: 'Result Details (IBPS PO Mains श्रेणीवार कट-ऑफ अंक)',
+      content: 'Category-wise IBPS PO Mains Cut-off Marks (Out of 225):',
+      contentHi: 'IBPS PO मुख्य परीक्षा (225 अंकों में से) श्रेणीवार कट-ऑफ अंक नीचे तालिका में देखें:',
       sectionType: 'table',
       tableData: {
-        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        headers: ['Category', 'Cut-off Marks'],
         rows: [
-          ['General (UR)', '72.50', 'https://www.ibps.in/'],
-          ['OBC (NCL)', '69.75', 'https://www.ibps.in/'],
-          ['EWS', '68.50', 'https://www.ibps.in/'],
-          ['SC', '58.25', 'https://www.ibps.in/'],
-          ['ST', '51.50', 'https://www.ibps.in/']
+          ['General (UR)', '72.50'],
+          ['OBC (NCL)', '69.75'],
+          ['EWS', '68.50'],
+          ['SC', '58.25'],
+          ['ST', '51.50']
         ]
       }
     }

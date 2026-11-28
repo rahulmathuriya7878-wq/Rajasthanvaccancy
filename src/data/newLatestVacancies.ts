@@ -1,5 +1,205 @@
 import { VacancyItem } from '../types';
 
+export const UPTET_2026_NOTIFICATION_VACANCY: VacancyItem = {
+  id: 'uptet-2026-notification-online-form',
+  title: 'UPTET 2026 Notification Out (Advt. No. 10/2026): UPESSC Online OTR & Form Apply Started from 24 Nov, Exam on 26–27 Feb 2027',
+  titleHi: 'UPTET 2026 ऑनलाइन आवेदन शुरू: उत्तर प्रदेश शिक्षक पात्रता परीक्षा (कक्षा 1-5 व 6-8) विज्ञापन 10/2026 जारी, अंतिम तिथि 23 दिसंबर',
+  shortTitle: 'UPTET 2026 Online Form & Official Notification',
+  shortTitleHi: 'UPTET 2026 ऑनलाइन आवेदन व आधिकारिक विज्ञप्ति',
+  organization: 'Education Department',
+  department: 'Uttar Pradesh Education Service Selection Commission (UPESSC), 23 Allenganj, Prayagraj–211002',
+  departmentHi: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग (UPESSC), 23 एलनगंज, प्रयागराज–211002',
+  advtNo: '10/2026 (पत्रांक: 3585 / 42(2026) / अधियाचन (विज्ञापन) / 2026–27)',
+  category: 'latest_job',
+  tags: [
+    'uptet 2026',
+    'upessc uptet notification 2026',
+    'uptet advt 10 2026',
+    'uptet otr online form',
+    'up teacher eligibility test 2026',
+    'teaching job'
+  ],
+  isTrending: true,
+  isHighDemand: true,
+  isHot: true,
+  isNew: true,
+  clicksCount: 24500,
+  savesCount: 6420,
+  totalPosts: 'प्राथमिक (कक्षा 1–5) व उच्च प्राथमिक (कक्षा 6–8) शिक्षक पात्रता परीक्षा',
+  postName: 'UP Teacher Eligibility Test (UPTET–2026): Primary Level (Class 1–5) & Upper Primary Level (Class 6–8)',
+  postNameHi: 'उ०प्र० शिक्षक पात्रता परीक्षा (UPTET)–2026: प्राथमिक स्तर (कक्षा–1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा–6 से 8)',
+  qualification: ['Graduate', 'B.Ed/BSTC'],
+  qualificationDetails: 'Candidates fulfilling prescribed eligibility criteria as per detailed Advt. No. 10/2026 instruction booklet published on upessc.up.gov.in and uptet.upessc.org/otr/info.',
+  qualificationDetailsHi: 'आयोग की वेबसाइट https://upessc.up.gov.in/ पर प्रकाशित विज्ञापन संख्या 10/2026 की विस्तृत निर्देश-पुस्तिका के अनुसार प्राथमिक स्तर (कक्षा 1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा 6 से 8) हेतु निर्धारित शैक्षणिक/प्रशिक्षण अर्हता पूर्ण करने वाले अभ्यर्थी।',
+  briefSummary: 'Uttar Pradesh Education Service Selection Commission (UPESSC), Prayagraj has released Short Notice for UPTET-2026 (Advt. No. 10/2026). Online OTR and Application Form started on 24-11-2026, fee last date is 23-12-2026, correction deadline is 27-12-2026, and exam will be held on 26 & 27 February 2027.',
+  briefSummaryHi: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग (UPESSC), प्रयागराज द्वारा उ०प्र० शिक्षक पात्रता परीक्षा प्राथमिक स्तर (कक्षा–1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा–6 से 8) — UPTET 2026 हेतु विज्ञापन संख्या 10/2026 की संक्षिप्त-विज्ञप्ति (पत्रांक 3585, दिनांक 18 नवम्बर 2026) जारी कर दी गई है। विस्तृत विज्ञापन 24-11-2026 को आयोग की वेबसाइट upessc.up.gov.in पर प्रकाशित किया गया है तथा ऑनलाइन पंजीकरण (OTR) व आवेदन प्रक्रिया 24 नवंबर 2026 से प्रारंभ हो चुकी है। आवेदन शुल्क जमा करने की अंतिम तिथि 23 दिसंबर 2026, आवेदन संशोधन की अंतिम तिथि 27 दिसंबर 2026 तथा परीक्षा 26 व 27 फरवरी 2027 को आयोजित की जाएगी।',
+  description: 'Official short notification, important dates, OTR registration process, correction schedule, exam dates, and official notification PDF for UPTET 2026 (Advt. No. 10/2026) issued by UPESSC, Prayagraj.',
+  descriptionHi: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग (23 एलनगंज, प्रयागराज–211002) द्वारा जारी संक्षिप्त-विज्ञप्ति (पत्रांक: 3585 / 42(2026) / अधियाचन (विज्ञापन) / 2026–27, दिनांक 18 नवम्बर 2026) के मुख्य बिंदु:\n\n• विज्ञापन संख्या 10/2026 (UPTET–2026 प्राथमिक स्तर कक्षा–1 से 5 एवं उच्च प्राथमिक स्तर कक्षा–6 से 8) दिनांक 24.11.2026 को आयोग की आधिकारिक वेबसाइट https://upessc.up.gov.in/ पर प्रदर्शित किया गया है।\n• अभ्यर्थियों की सुगमता हेतु One Time Registration (OTR) व्यवस्था लागू की गई है — अतः OTR पूर्ण करने के पश्चात ही अभ्यर्थी UPTET–2026 हेतु आवेदन करें।\n• विस्तृत विज्ञापन निर्देश-पुस्तिका सहित अभ्यर्थी https://uptet.upessc.org/otr/info लिंक पर क्लिक कर पढ़ सकते हैं।\n• परीक्षा का आयोजन 26 व 27 फरवरी, 2027 को किया जाएगा।',
+  jobLocation: 'Uttar Pradesh (UPESSC, Prayagraj)',
+  salary: 'UP Primary & Upper Primary Assistant Teacher Recruitment Eligibility',
+  salaryHi: 'उ०प्र० प्राथमिक (कक्षा 1–5) व उच्च प्राथमिक (कक्षा 6–8) शिक्षक भर्ती हेतु पात्रता परीक्षा',
+  applicationMode: 'Online (OTR अनिवार्य — uptet.upessc.org/otr/info)',
+  ageLimit: {
+    min: 18,
+    max: 40,
+    asOnDate: '2026-11-24',
+    relaxationNotes: 'As per UPESSC UPTET–2026 detailed advertisement booklet (Advt. No. 10/2026).',
+    relaxationNotesHi: 'विस्तृत विज्ञापन संख्या 10/2026 की निर्देश-पुस्तिका में वर्णित पात्रता व आयु नियमों के अनुसार लागू।'
+  },
+  applicationFee: [
+    { category: 'One Time Registration (OTR) अनिवार्यता', amount: 'आवेदन से पूर्व OTR पूर्ण करना अनिवार्य (uptet.upessc.org/otr/info)' },
+    { category: 'आवेदन शुल्क भुगतान की अन्तिम तिथि', amount: '23-12-2026 (विस्तृत विज्ञापन निर्देश-पुस्तिका अनुसार ऑनलाइन भुगतान)' }
+  ],
+  importantDates: [
+    { key: 'shortNoticeDate', label: 'संक्षिप्त विज्ञप्ति पत्रांक दिनांक (Short Notice Date)', value: '18 नवम्बर 2026' },
+    { key: 'notificationDate', label: 'विज्ञापन प्रकाशन की तिथि (Notification Publication Date)', value: '24-11-2026' },
+    { key: 'applyStartDate', label: 'ऑनलाइन पंजीकरण (O.T.R.) / आवेदन प्रारम्भ होने की तिथि', value: '24-11-2026' },
+    { key: 'feeLastDate', label: 'ऑनलाइन आवेदन शुल्क जमा करने की अन्तिम तिथि', value: '23-12-2026' },
+    { key: 'applyLastDate', label: 'ऑनलाइन आवेदन की अन्तिम तिथि (Last Date)', value: '23-12-2026' },
+    { key: 'correctionLastDate', label: 'ऑनलाइन आवेदन में संशोधन की अंतिम तिथि (Correction Last Date)', value: '27-12-2026' },
+    { key: 'admitCardDate', label: 'एडमिट कार्ड जारी तिथि (Admit Card)', value: 'फरवरी 2027 (परीक्षा से पूर्व)' },
+    { key: 'examDate', label: 'परीक्षा तिथि (UPTET–2026 Exam Date)', value: '26 व 27 फरवरी, 2027' }
+  ],
+  officialNotificationExcerpt: {
+    authority: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग, 23 एलनगंज, प्रयागराज–211002',
+    refNo: 'पत्रांक: 3585 / 42(2026) / अधियाचन (विज्ञापन) / 2026–27 | विज्ञापन संख्या: 10/2026',
+    date: 'दिनांक: 18 नवम्बर 2026 (विज्ञापन प्रकाशन: 24-11-2026)',
+    titleRed: 'संक्षिप्त–विज्ञप्ति : उ०प्र० शिक्षक पात्रता परीक्षा (UPTET)–2026',
+    titleSubtitle: 'प्राथमिक स्तर (कक्षा–1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा–6 से 8) | हस्ताक्षर: संजय कुमार सिंह, उपसचिव',
+    body: 'एतद्वारा सूचित किया जाता है कि मा० आयोग द्वारा लिये गये निर्णय के क्रम में उ०प्र० शिक्षक पात्रता परीक्षा प्राथमिक स्तर (कक्षा–1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा–6 से 8) का विज्ञापन संख्या 10/2026, दिनांक 24.11.2026 को आयोग की वेबसाइट https://upessc.up.gov.in/ पर प्रदर्शित किया जायेगा। शिक्षक पात्रता परीक्षा (UPTET)–2026 में प्रतिभाग करने वाले इच्छुक अभ्यर्थियों की सुगमता हेतु One Time Registration (OTR) व्यवस्था लागू की गयी है। अतः OTR पूर्ण करने के पश्चात ही अभ्यर्थीगण शिक्षक पात्रता परीक्षा (UPTET)–2026 हेतु आवेदन करें। विस्तृत विज्ञापन निर्देश-पुस्तिका सहित आयोग की उक्त संदर्भित वेबसाइट पर प्रदर्शित https://uptet.upessc.org/otr/info लिंक पर क्लिक कर देख अथवा पढ़ सकते हैं।'
+  },
+  postBreakdown: [
+    {
+      postName: 'UPTET-2026 Primary Level (Class 1 to 5)',
+      postNameHi: 'प्राथमिक स्तर शिक्षक पात्रता परीक्षा (कक्षा–1 से 5)',
+      categoryOrSubjectHi: 'विज्ञापन संख्या 10/2026 (पेपर–I)',
+      postsCount: 'पात्रता परीक्षा',
+      qualification: 'Prescribed qualification as per UPESSC Advt. No. 10/2026 instruction booklet',
+      qualificationHi: 'विस्तृत विज्ञापन संख्या 10/2026 निर्देश-पुस्तिका अनुसार निर्धारित अर्हता',
+      payLevel: 'उ०प्र० प्राथमिक शिक्षक पात्रता'
+    },
+    {
+      postName: 'UPTET-2026 Upper Primary Level (Class 6 to 8)',
+      postNameHi: 'उच्च प्राथमिक स्तर शिक्षक पात्रता परीक्षा (कक्षा–6 से 8)',
+      categoryOrSubjectHi: 'विज्ञापन संख्या 10/2026 (पेपर–II)',
+      postsCount: 'पात्रता परीक्षा',
+      qualification: 'Prescribed qualification as per UPESSC Advt. No. 10/2026 instruction booklet',
+      qualificationHi: 'विस्तृत विज्ञापन संख्या 10/2026 निर्देश-पुस्तिका अनुसार निर्धारित अर्हता',
+      payLevel: 'उ०प्र० उच्च प्राथमिक शिक्षक पात्रता'
+    }
+  ],
+  latestNews: [
+    {
+      id: 'uptet-2026-advt-released',
+      date: '24 नवंबर 2026',
+      badge: 'आवेदन शुरू (OTR)',
+      headline: 'UPTET 2026 (विज्ञापन संख्या 10/2026) ऑनलाइन पंजीकरण व आवेदन प्रारंभ',
+      details: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग (UPESSC) द्वारा प्राथमिक (कक्षा 1–5) व उच्च प्राथमिक (कक्षा 6–8) स्तर की UPTET 2026 आवेदन प्रक्रिया 24-11-2026 से शुरू कर दी गई है। आवेदन से पूर्व OTR पूर्ण करना अनिवार्य है।',
+      isHighlighted: true
+    },
+    {
+      id: 'uptet-2026-exam-schedule',
+      date: '18 नवंबर 2026',
+      badge: 'परीक्षा व संशोधन तिथि',
+      headline: 'शुल्क अंतिम तिथि 23 दिसंबर, संशोधन 27 दिसंबर तथा परीक्षा 26 व 27 फरवरी 2027 को',
+      details: 'ऑनलाइन आवेदन शुल्क जमा करने की अंतिम तिथि 23-12-2026, आवेदन संशोधन की अंतिम तिथि 27-12-2026 तथा लिखित परीक्षा 26 व 27 फरवरी 2027 निर्धारित है।',
+      isHighlighted: false
+    }
+  ],
+  selectionProcess: [
+    'One Time Registration (OTR) at uptet.upessc.org/otr/info',
+    'Online Application Form Submission & Fee Payment (by 23-12-2026)',
+    'Application Form Correction Window (up to 27-12-2026)',
+    'UPTET–2026 Written Examination (26 & 27 February 2027)'
+  ],
+  selectionProcessHi: [
+    'One Time Registration (OTR) पोर्टल (uptet.upessc.org/otr/info) पर पंजीकरण पूर्ण करना',
+    'UPTET–2026 ऑनलाइन आवेदन फॉर्म भरना एवं शुल्क जमा करना (अंतिम तिथि: 23-12-2026)',
+    'ऑनलाइन आवेदन में आवश्यक संशोधन (अंतिम तिथि: 27-12-2026)',
+    'UPTET–2026 परीक्षा (26 व 27 फरवरी, 2027) एवं पात्रता प्रमाण पत्र जारी होना'
+  ],
+  requiredDocumentsHi: [
+    'One Time Registration (OTR) संख्या एवं लॉगिन विवरण (आवेदन से पूर्व अनिवार्य)',
+    'शैक्षणिक एवं प्रशिक्षण योग्यता प्रमाण पत्र (10वीं, 12वीं, स्नातक एवं D.El.Ed / B.Ed आदि निर्देश-पुस्तिका अनुसार)',
+    'वैध फोटो पहचान पत्र (आधार कार्ड / पहचान प्रमाण) तथा नवीनतम पासपोर्ट साइज फोटो व हस्ताक्षर',
+    'आरक्षण / जाति / दिव्यांगता प्रमाण पत्र (यदि लागू हो)',
+    'सक्रिय मोबाइल नंबर एवं ईमेल आईडी'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले उत्तर प्रदेश शिक्षा सेवा चयन आयोग की आधिकारिक वेबसाइट https://upessc.up.gov.in/ या सीधे https://uptet.upessc.org/otr/info पर जाएं।',
+    'चरण 2: विज्ञापन संख्या 10/2026 की विस्तृत निर्देश-पुस्तिका व संक्षिप्त-विज्ञप्ति को ध्यानपूर्वक पढ़ें।',
+    'चरण 3: आवेदन करने से पूर्व One Time Registration (OTR) प्रक्रिया पूर्ण करें।',
+    'चरण 4: OTR पूर्ण होने के बाद प्राथमिक स्तर (कक्षा 1–5) या उच्च प्राथमिक स्तर (कक्षा 6–8) अथवा दोनों के लिए UPTET–2026 आवेदन फॉर्म भरें।',
+    'चरण 5: दिनांक 23-12-2026 तक ऑनलाइन आवेदन शुल्क जमा कर फॉर्म सबमिट करें और प्रिंट सुरक्षित रखें (संशोधन अंतिम तिथि: 27-12-2026)।'
+  ],
+  directLinks: [
+    {
+      label: 'UPTET 2026 OTR Registration & Apply Online (OTR पूर्ण कर आवेदन करें)',
+      actionText: 'Apply / OTR Portal',
+      url: 'https://uptet.upessc.org/otr/info',
+      isPrimary: true
+    },
+    {
+      label: 'Official Short Notification PDF (आधिकारिक संक्षिप्त-विज्ञप्ति 10/2026 PDF)',
+      actionText: 'Download PDF',
+      url: '/assets/aistudio/58a4-ee39-4750-9f09-cc44_7c960008.pdf',
+      fileName: 'UPTET-2026-Official-Notification-Advt-10-2026.pdf',
+      fileSize: '419 KB',
+      isPdf: true,
+      isPrimary: true
+    },
+    {
+      label: 'UPESSC Official Website (उत्तर प्रदेश शिक्षा सेवा चयन आयोग पोर्टल)',
+      actionText: 'Official Portal',
+      url: 'https://upessc.up.gov.in/'
+    },
+    {
+      label: 'Join Official WhatsApp Channel (भर्ती व परीक्षा अपडेट)',
+      actionText: 'Join WhatsApp',
+      url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j'
+    },
+    {
+      label: 'Join Telegram Channel',
+      actionText: 'Join Telegram',
+      url: 'https://t.me/rajsthan_vacancy'
+    }
+  ],
+  officialLinks: {
+    applyOnlineUrl: 'https://uptet.upessc.org/otr/info',
+    notificationPdfUrl: '/assets/aistudio/58a4-ee39-4750-9f09-cc44_7c960008.pdf',
+    officialWebsiteUrl: 'https://upessc.up.gov.in/'
+  },
+  faqs: [
+    {
+      q: 'When did UPTET 2026 online registration (OTR) and application start?',
+      qHi: 'UPTET 2026 ऑनलाइन पंजीकरण (OTR) एवं आवेदन कब से शुरू हुए हैं?',
+      a: 'As per Advt. No. 10/2026 issued by UPESSC, online OTR registration and application started on 24 November 2026.',
+      aHi: 'उत्तर प्रदेश शिक्षा सेवा चयन आयोग के विज्ञापन संख्या 10/2026 के अनुसार ऑनलाइन पंजीकरण (OTR) एवं आवेदन 24-11-2026 से प्रारंभ हुए हैं।'
+    },
+    {
+      q: 'What are the fee last date and application correction last date for UPTET 2026?',
+      qHi: 'UPTET 2026 शुल्क जमा करने और आवेदन संशोधन की अंतिम तिथि क्या है?',
+      a: 'The last date to pay the online application fee is 23 December 2026, and the last date for online application correction is 27 December 2026.',
+      aHi: 'ऑनलाइन आवेदन शुल्क जमा करने की अंतिम तिथि 23-12-2026 तथा ऑनलाइन आवेदन में संशोधन की अंतिम तिथि 27-12-2026 निर्धारित है।'
+    },
+    {
+      q: 'When will the UPTET 2026 examination be conducted?',
+      qHi: 'UPTET 2026 की परीक्षा कब आयोजित की जाएगी?',
+      a: 'The UPTET-2026 examination for Primary (Class 1–5) and Upper Primary (Class 6–8) levels will be conducted on 26 and 27 February 2027.',
+      aHi: 'प्राथमिक स्तर (कक्षा 1 से 5) एवं उच्च प्राथमिक स्तर (कक्षा 6 से 8) की UPTET–2026 परीक्षा 26 व 27 फरवरी, 2027 को आयोजित की जाएगी।'
+    },
+    {
+      q: 'Is One Time Registration (OTR) mandatory for UPTET 2026?',
+      qHi: 'क्या UPTET 2026 आवेदन के लिए OTR अनिवार्य है?',
+      a: 'Yes, candidates must complete One Time Registration (OTR) at uptet.upessc.org/otr/info before submitting the UPTET 2026 application form.',
+      aHi: 'हाँ, अभ्यर्थियों को आवेदन करने से पूर्व https://uptet.upessc.org/otr/info के माध्यम से One Time Registration (OTR) पूर्ण करना अनिवार्य है।'
+    }
+  ],
+  status: 'active',
+  createdAt: '2026-11-24',
+  updatedAt: '2026-11-28'
+};
+
 export const CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY: VacancyItem = {
   id: 'csir-npl-mts-recruitment-2026',
   title: 'CSIR-NPL MTS Recruitment 2026: 10वीं पास के लिए मल्टी टास्किंग स्टाफ के 25 पदों पर भर्ती जारी, आवेदन 23 दिसंबर तक',
@@ -741,6 +941,7 @@ export const SSC_GD_CONSTABLE_RECRUITMENT_2026_VACANCY: VacancyItem = {
 };
 
 export const EIGHT_LATEST_VACANCIES: VacancyItem[] = [
+  UPTET_2026_NOTIFICATION_VACANCY,
   CSIR_NPL_MTS_RECRUITMENT_2026_VACANCY,
   RRC_NR_APPRENTICE_RECRUITMENT_2026_VACANCY,
   DSSSB_SWEEPER_CHOWKIDAR_RECRUITMENT_2026_VACANCY,
