@@ -1,6 +1,6 @@
 'use client';
 
-import React, { lazy, Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
@@ -15,14 +15,9 @@ import {
   X,
   ShieldCheck,
   KeyRound,
-  Globe,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePortal } from '@/context/PortalContext';
-
-const UrlIndexationModal = lazy(() =>
-  import('../UrlIndexationModal').then((m) => ({ default: m.UrlIndexationModal }))
-);
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -31,14 +26,7 @@ interface AdminShellProps {
 export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
   const pathname = usePathname();
   const { isAdmin, loginWithPasscode, logout } = useAuth();
-  const {
-    lang,
-    vacancies,
-    toastMessage,
-    showToast,
-    isUrlIndexationOpen,
-    setIsUrlIndexationOpen,
-  } = usePortal();
+  const { toastMessage } = usePortal();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [passcode, setPasscode] = useState('');
@@ -128,18 +116,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         })}
 
         <div className="pt-4 mt-4 border-t border-neutral-200 space-y-1">
-          <button
-            type="button"
-            onClick={() => {
-              setIsUrlIndexationOpen(true);
-              if (onNavigate) onNavigate();
-            }}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors whitespace-nowrap cursor-pointer text-left"
-          >
-            <Globe className="w-4 h-4 shrink-0" aria-hidden="true" />
-            <span>URL Inspection</span>
-          </button>
-
           <Link
             href="/"
             onClick={onNavigate}
@@ -330,18 +306,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         >
           {toastMessage}
         </div>
-      )}
-
-      {/* URL Inspection & Instant Indexing Modal */}
-      {isUrlIndexationOpen && (
-        <Suspense fallback={null}>
-          <UrlIndexationModal
-            isOpen={isUrlIndexationOpen}
-            onClose={() => setIsUrlIndexationOpen(false)}
-            lang={lang}
-            vacancies={vacancies}
-          />
-        </Suspense>
       )}
     </div>
   );

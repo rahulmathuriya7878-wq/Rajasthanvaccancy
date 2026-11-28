@@ -170,7 +170,6 @@ export default async function HomePage({
   const categoryParam = typeof sp.category === 'string' ? sp.category.trim() : null;
   const policyParam = typeof sp.policy === 'string' ? sp.policy.trim().toLowerCase() : null;
   const searchQuery = typeof sp.search === 'string' ? sp.search.trim() : null;
-  const openIndexation = sp.tool === 'indexation' || sp.indexation === '1' || sp.indexation === 'true';
 
   const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
   const matchedVacancy = vacancyParam
@@ -201,7 +200,6 @@ export default async function HomePage({
         initialCategory={categoryParam}
         initialPolicy={policyParam}
         initialSearch={searchQuery}
-        initialOpenIndexation={openIndexation}
       />
     </>
   );

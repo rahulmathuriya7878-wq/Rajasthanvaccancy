@@ -13,7 +13,6 @@ import {
   Download,
   Cloud,
   Save,
-  Send,
   Loader2,
   CheckCircle2,
   AlertCircle,
@@ -286,14 +285,11 @@ export const PostBuilderClient: React.FC = () => {
   const [savingMode, setSavingMode] = useState<'draft' | 'publish' | null>(null);
   const [deletingPost, setDeletingPost] = useState(false);
   const [confirmDeletePost, setConfirmDeletePost] = useState(false);
-  const [indexingNow, setIndexingNow] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successInfo, setSuccessInfo] = useState<{
     slug: string;
     synced: boolean;
     revalidated: boolean;
-    indexed: boolean;
-    gscInspectUrl?: string;
   } | null>(null);
 
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
@@ -1053,8 +1049,6 @@ export const PostBuilderClient: React.FC = () => {
       const cloudRes = await handleUpdateVacancy(payload);
 
       let revalidated = false;
-      let indexed = false;
-      let gscInspectUrl: string | undefined;
 
       const headers = await getAdminAuthHeaders();
 
@@ -1068,28 +1062,10 @@ export const PostBuilderClient: React.FC = () => {
         revalidated = revRes.ok;
       } catch {}
 
-      // Trigger Protected Instant Indexing API on Publish
-      if (mode === 'publish') {
-        try {
-          const idxRes = await fetch('/api/admin/index-url', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ slug: payload.id }),
-          });
-          if (idxRes.ok) {
-            const idxData = await idxRes.json();
-            indexed = Boolean(idxData.ok);
-            gscInspectUrl = idxData.gscInspectUrl;
-          }
-        } catch {}
-      }
-
       setSuccessInfo({
         slug: payload.id,
         synced: cloudRes.synced,
         revalidated,
-        indexed,
-        gscInspectUrl,
       });
 
       if (!cloudRes.synced && cloudRes.reason !== 'auth_required') {
@@ -1097,36 +1073,6 @@ export const PostBuilderClient: React.FC = () => {
       }
     } finally {
       setSavingMode(null);
-    }
-  };
-
-  const handleDirectIndexTrigger = async () => {
-    setIndexingNow(true);
-    setErrorMsg('');
-    try {
-      const headers = await getAdminAuthHeaders();
-      const res = await fetch('/api/admin/index-url', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ slug: effectiveSlug }),
-      });
-      const data = await res.json();
-      if (res.ok && data.ok) {
-        setSuccessInfo((prev) => ({
-          slug: effectiveSlug,
-          synced: prev?.synced ?? true,
-          revalidated: prev?.revalidated ?? true,
-          indexed: true,
-          gscInspectUrl: data.gscInspectUrl,
-        }));
-        showToast('Instant indexing ping sent.');
-      } else {
-        setErrorMsg(data.error || 'Sign in with verified Google Admin to use /api/admin/index-url.');
-      }
-    } catch {
-      setErrorMsg('Failed to contact indexing endpoint.');
-    } finally {
-      setIndexingNow(false);
     }
   };
 
@@ -1459,7 +1405,6 @@ export const PostBuilderClient: React.FC = () => {
                 ? `Saved & synced to Firestore /jobs/${successInfo.slug}`
                 : 'Saved locally (sign in with Google Admin for Firestore /jobs sync)'}
               {successInfo.revalidated ? ' · Cache revalidated' : ''}
-              {successInfo.indexed ? ' · Indexing dispatched' : ''}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -1472,17 +1417,6 @@ export const PostBuilderClient: React.FC = () => {
               <span>View Live Post</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
-            {successInfo.gscInspectUrl && (
-              <a
-                href={successInfo.gscInspectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-neutral-800 hover:underline flex items-center gap-1 whitespace-nowrap"
-              >
-                <span>GSC Inspect</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
           </div>
         </div>
       )}
@@ -3107,24 +3041,6 @@ export const PostBuilderClient: React.FC = () => {
               </div>
 
               <div className="xl:hidden pt-2">{renderGoogleSnippetPreview()}</div>
-
-              <div className="border-t border-neutral-200 pt-4 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs font-bold text-neutral-900">Instant Search Engine Indexing</div>
-                  <p className="text-xs text-neutral-500">
-                    Dispatch IndexNow &amp; Google Sitemap ping via protected `/api/admin/index-url`.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  disabled={indexingNow}
-                  onClick={() => void handleDirectIndexTrigger()}
-                  className="px-4 py-2 rounded-lg border border-neutral-300 hover:bg-neutral-50 disabled:opacity-60 text-xs font-semibold text-neutral-900 flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-                >
-                  {indexingNow ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5 text-[#15803d]" />}
-                  <span>{indexingNow ? 'Submitting...' : 'Ping Indexing API'}</span>
-                </button>
-              </div>
             </div>
           )}
         </div>
@@ -3211,7 +3127,7 @@ export const PostBuilderClient: React.FC = () => {
             ) : (
               <Cloud className="w-3.5 h-3.5" />
             )}
-            <span>{savingMode === 'publish' ? 'Publishing...' : 'Publish & Index'}</span>
+            <span>{savingMode === 'publish' ? 'Publishing...' : 'Publish Post'}</span>
           </button>
         </div>
       </div>

@@ -9,7 +9,6 @@ import { LanguageMode, VacancyItem } from '../types';
 interface FooterProps {
   lang?: LanguageMode;
   onSelectPolicy?: (policy: 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap') => void;
-  onOpenUrlIndexation?: () => void;
   onSelectVacancy?: (item: VacancyItem) => void;
   isAdmin?: boolean;
 }
@@ -17,7 +16,6 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   lang: langProp,
   onSelectPolicy: onSelectPolicyProp,
-  onOpenUrlIndexation: onOpenUrlIndexationProp,
   onSelectVacancy: onSelectVacancyProp,
   isAdmin: isAdminProp,
 }) => {
@@ -25,7 +23,6 @@ export const Footer: React.FC<FooterProps> = ({
   const portal = useOptionalPortal();
   const lang = langProp ?? portal?.lang ?? 'hi';
   const onSelectPolicy = onSelectPolicyProp ?? portal?.handleSelectPolicy ?? (() => {});
-  const onOpenUrlIndexation = onOpenUrlIndexationProp ?? (portal ? () => portal.setIsUrlIndexationOpen(true) : undefined);
   const onSelectVacancy = onSelectVacancyProp ?? portal?.handleSelectVacancy;
   const isAdmin = isAdminProp ?? authIsAdmin;
   const isHi = lang === 'hi';
@@ -47,17 +44,6 @@ export const Footer: React.FC<FooterProps> = ({
                 <Globe className="w-4 h-4 text-emerald-700" aria-hidden="true" />
                 <span>{isHi ? 'महत्वपूर्ण सरकारी भर्ती एवं योजना डायरेक्टरी (Quick Web Links)' : 'Rajasthan Govt Jobs & Schemes Directory'}</span>
               </h2>
-              {onOpenUrlIndexation && (
-                <button
-                  type="button"
-                  onClick={onOpenUrlIndexation}
-                  className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
-                  title={isHi ? 'Google Search Console URL Indexation Assistant' : 'URL Indexation Assistant'}
-                >
-                  <Globe className="w-3.5 h-3.5 text-emerald-700" aria-hidden="true" />
-                  <span>{isHi ? 'सर्च कंसोल इंडेक्सेशन (GSC)' : 'URL Indexation'}</span>
-                </button>
-              )}
             </div>
             <p className="text-xs text-slate-600 mb-3">
               {isHi 
@@ -94,12 +80,6 @@ export const Footer: React.FC<FooterProps> = ({
             © {new Date().getFullYear()} RAJASTHAN JOBS/VACANCY — {isHi ? 'सर्वाधिकार सुरक्षित | राजस्थान का विश्वसनीय भर्ती मंच' : 'All Rights Reserved. Clean & Searchable Govt Job Alerts.'}
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5" style={{ fontSize: '12pt' }}>
-            {isAdmin && onOpenUrlIndexation && (
-              <button onClick={onOpenUrlIndexation} className="text-emerald-700 font-bold hover:text-emerald-800 transition cursor-pointer flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5" />
-                <span>{isHi ? 'URL Indexation' : 'URL Indexation'}</span>
-              </button>
-            )}
             {isAdmin && (
               <>
                 <a

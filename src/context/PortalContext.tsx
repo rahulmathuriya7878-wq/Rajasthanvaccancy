@@ -51,8 +51,6 @@ interface PortalContextType {
   isLoading: boolean;
   isAdminLoginOpen: boolean;
   setIsAdminLoginOpen: (open: boolean) => void;
-  isUrlIndexationOpen: boolean;
-  setIsUrlIndexationOpen: (open: boolean) => void;
   toastMessage: string | null;
   showToast: (msg: string) => void;
   isInitialNotFound: boolean;
@@ -67,7 +65,6 @@ interface PortalContextType {
     category?: string | null;
     policy?: string | null;
     search?: string | null;
-    openIndexation?: boolean;
   }) => void;
 }
 
@@ -87,7 +84,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyItem | null>(null);
   const [activePolicyView, setActivePolicyView] = useState<PolicyViewType | null>(null);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [isUrlIndexationOpen, setIsUrlIndexationOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isInitialNotFound, setIsInitialNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -372,12 +368,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       category?: string | null;
       policy?: string | null;
       search?: string | null;
-      openIndexation?: boolean;
     }) => {
-      if (params.openIndexation) {
-        setIsUrlIndexationOpen(true);
-      }
-
       if (params.search) {
         setSearchQuery(params.search);
       }
@@ -724,12 +715,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         showToast(cloudResult.message || (lang === 'hi' ? 'पोस्ट विवरण स्थानीय रूप से अपडेट हुआ!' : 'Post details updated locally!'));
       }
 
-      fetch('/api/seo/auto-index', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ urls: [`${getCanonicalOrigin()}/?vacancy=${encodeURIComponent(updatedJob.id)}`] }),
-      }).catch(() => {});
-
       return cloudResult;
     },
     [lang, showToast]
@@ -858,8 +843,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isLoading,
         isAdminLoginOpen,
         setIsAdminLoginOpen,
-        isUrlIndexationOpen,
-        setIsUrlIndexationOpen,
         toastMessage,
         showToast,
         isInitialNotFound,

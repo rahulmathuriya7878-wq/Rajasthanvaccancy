@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   X,
   KeyRound,
-  Search,
   LogOut,
   Loader2,
   LayoutDashboard,
@@ -19,7 +18,6 @@ interface AdminLoginModalProps {
   onClose: () => void;
   lang: LanguageMode;
   onSuccess?: () => void;
-  onOpenUrlIndexation?: () => void;
 }
 
 export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
@@ -27,7 +25,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onClose,
   lang,
   onSuccess,
-  onOpenUrlIndexation,
 }) => {
   const isHi = lang === 'hi';
   const { isAdmin, loginWithPasscode, logout } = useAuth();
@@ -89,8 +86,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               <p className="text-xs text-slate-300">
                 {isAdmin
                   ? isHi
-                    ? 'एडमिन डैशबोर्ड (/admin) खोलें और URL इंडेक्स कराएं'
-                    : 'Open Admin Dashboard (/admin) & manage indexing'
+                    ? 'एडमिन डैशबोर्ड (/admin) खोलें और पोस्ट प्रबंधित करें'
+                    : 'Open Admin Dashboard (/admin) & manage posts'
                   : isHi
                     ? 'एडमिन मोड अनलॉक करने के लिए पासवर्ड दर्ज करें'
                     : 'Enter admin password to unlock admin controls'}
@@ -122,17 +119,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                   <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                   <span>{isHi ? 'प्रो एडमिन डैशबोर्ड खोलें (/admin)' : 'Open Full Admin Dashboard (/admin)'}</span>
                 </Link>
-
-                {onOpenUrlIndexation && (
-                  <button
-                    type="button"
-                    onClick={onOpenUrlIndexation}
-                    className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Search className="w-4 h-4 text-emerald-400" />
-                    <span>{isHi ? 'Google URL Inspection & Auto-Index' : 'Open URL Inspection Tool'}</span>
-                  </button>
-                )}
 
                 <button
                   type="button"

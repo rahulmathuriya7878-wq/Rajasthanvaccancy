@@ -12,9 +12,7 @@ import {
   Pencil,
   Trash2,
   ExternalLink,
-  Send,
   FilePlus2,
-  Check,
   Loader2,
   X,
   Copy,
@@ -91,13 +89,7 @@ export const AdminDashboardClient: React.FC = () => {
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [confirmSingleDeleteId, setConfirmSingleDeleteId] = useState<string | null>(null);
   const [busyRowId, setBusyRowId] = useState<string | null>(null);
-  const [indexingRowId, setIndexingRowId] = useState<string | null>(null);
   const [revalidating, setRevalidating] = useState(false);
-  const [lastIndexFeedback, setLastIndexFeedback] = useState<{
-    slug: string;
-    message: string;
-    gscInspectUrl?: string;
-  } | null>(null);
 
   const sortedVacancies = useMemo(
     () => [...vacancies].sort(compareVacanciesNewestFirst),
@@ -211,33 +203,6 @@ export const AdminDashboardClient: React.FC = () => {
       await triggerRevalidate(item.id);
     } finally {
       setBusyRowId(null);
-    }
-  };
-
-  const handleIndexSinglePost = async (item: VacancyItem) => {
-    setIndexingRowId(item.id);
-    try {
-      const headers = await getAdminAuthHeaders();
-      const res = await fetch('/api/admin/index-url', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ slug: item.id }),
-      });
-      const data = await res.json();
-      if (res.ok && data.ok) {
-        setLastIndexFeedback({
-          slug: item.id,
-          message: `Indexing submitted for /?vacancy=${item.id}`,
-          gscInspectUrl: data.gscInspectUrl,
-        });
-        showToast('Indexing notification dispatched.');
-      } else {
-        showToast(data.error || 'Google Admin sign-in required for protected indexing API.');
-      }
-    } catch {
-      showToast('Indexing request failed.');
-    } finally {
-      setIndexingRowId(null);
     }
   };
 
@@ -385,37 +350,6 @@ export const AdminDashboardClient: React.FC = () => {
         </div>
       </div>
 
-      {/* Instant Indexing Feedback Strip */}
-      {lastIndexFeedback && (
-        <div className="bg-white border border-neutral-200 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-neutral-800 font-medium">
-            <Check className="w-4 h-4 text-[#15803d] shrink-0" />
-            <span>{lastIndexFeedback.message}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {lastIndexFeedback.gscInspectUrl && (
-              <a
-                href={lastIndexFeedback.gscInspectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[#15803d] hover:underline flex items-center gap-1 whitespace-nowrap"
-              >
-                <span>Open in Search Console</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={() => setLastIndexFeedback(null)}
-              aria-label="Dismiss indexing notification"
-              className="p-1 text-neutral-400 hover:text-neutral-700 cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Main DataTable Container */}
       <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
         {/* Toolbar: Search, Category Filter Tabs, Bulk Actions */}
@@ -551,7 +485,6 @@ export const AdminDashboardClient: React.FC = () => {
                   const expiringSoon = isExpiringWithinDays(item, 3);
                   const seoAudit = auditVacancySeo(item);
                   const isBusy = busyRowId === item.id;
-                  const isIndexing = indexingRowId === item.id;
                   const lastDateLabel =
                     item.importantDates?.applyLastDate ||
                     item.yojanaOverview?.applyLastDate ||
@@ -654,21 +587,6 @@ export const AdminDashboardClient: React.FC = () => {
                             className="p-2 rounded-md text-neutral-600 hover:text-[#15803d] hover:bg-emerald-50 transition-colors cursor-pointer"
                           >
                             <Copy className="w-4 h-4" />
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={isIndexing}
-                            onClick={() => void handleIndexSinglePost(item)}
-                            title="Request Instant Indexing"
-                            aria-label={`Index ${item.title}`}
-                            className="p-2 rounded-md text-neutral-600 hover:text-[#15803d] hover:bg-emerald-50 disabled:opacity-50 transition-colors cursor-pointer"
-                          >
-                            {isIndexing ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Send className="w-4 h-4" />
-                            )}
                           </button>
 
                           <Link

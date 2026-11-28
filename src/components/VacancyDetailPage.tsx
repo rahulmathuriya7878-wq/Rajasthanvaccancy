@@ -8,7 +8,6 @@ import {
   Edit3, 
   Trash2,
   Bell, 
-  Search,
   ChevronRight, 
   ChevronLeft,
   CheckCircle2,
@@ -1633,20 +1632,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
           </span>
         </nav>
 
-        {/* URL Inspection & Action Buttons (Admin Only) */}
+        {/* Action Buttons (Admin Only) */}
         {isAdmin && (
           <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={`https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent(`${SHARE_BASE_URL}/`)}&item_url=${encodeURIComponent(getVacancyShareUrl(editablePost.id))}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-[11px] transition"
-              title="Google Search Console URL Inspection में यह पोस्ट जांचें व तुरंत इंडेक्स करवाएं"
-            >
-              <Search className="w-3 h-3 text-blue-600" />
-              <span>GSC Inspect</span>
-              <ExternalLink className="w-2.5 h-2.5" />
-            </a>
             <button
               type="button"
               onClick={async () => {

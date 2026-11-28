@@ -8,19 +8,13 @@ import { OfflineIndicator } from './OfflineIndicator';
 const AdminLoginModal = lazy(() =>
   import('./AdminLoginModal').then((m) => ({ default: m.AdminLoginModal }))
 );
-const UrlIndexationModal = lazy(() =>
-  import('./UrlIndexationModal').then((m) => ({ default: m.UrlIndexationModal }))
-);
 
 export const PortalShellExtras: React.FC = () => {
   const {
     lang,
-    vacancies,
     toastMessage,
     isAdminLoginOpen,
     setIsAdminLoginOpen,
-    isUrlIndexationOpen,
-    setIsUrlIndexationOpen,
   } = usePortal();
 
   return (
@@ -38,21 +32,6 @@ export const PortalShellExtras: React.FC = () => {
             isOpen={isAdminLoginOpen}
             onClose={() => setIsAdminLoginOpen(false)}
             lang={lang}
-            onOpenUrlIndexation={() => {
-              setIsAdminLoginOpen(false);
-              setIsUrlIndexationOpen(true);
-            }}
-          />
-        </Suspense>
-      )}
-
-      {isUrlIndexationOpen && (
-        <Suspense fallback={null}>
-          <UrlIndexationModal
-            isOpen={isUrlIndexationOpen}
-            onClose={() => setIsUrlIndexationOpen(false)}
-            lang={lang}
-            vacancies={vacancies}
           />
         </Suspense>
       )}

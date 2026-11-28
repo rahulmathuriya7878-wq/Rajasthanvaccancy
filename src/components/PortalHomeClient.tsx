@@ -36,7 +36,6 @@ interface PortalHomeClientProps {
   initialCategory?: string | null;
   initialPolicy?: string | null;
   initialSearch?: string | null;
-  initialOpenIndexation?: boolean;
 }
 
 const VALID_POLICIES: readonly PolicyViewType[] = [
@@ -53,7 +52,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
   initialCategory = null,
   initialPolicy = null,
   initialSearch = null,
-  initialOpenIndexation = false,
 }) => {
   const { isAdmin } = useAuth();
   const {
@@ -77,7 +75,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
   } = usePortal();
 
   const hydratedKeyRef = useRef<string | null>(null);
-  const routeKey = `${initialVacancyId || ''}|${initialCategory || ''}|${initialPolicy || ''}|${initialSearch || ''}|${initialOpenIndexation ? '1' : '0'}`;
+  const routeKey = `${initialVacancyId || ''}|${initialCategory || ''}|${initialPolicy || ''}|${initialSearch || ''}`;
 
   useEffect(() => {
     if (hydratedKeyRef.current === routeKey) return;
@@ -87,7 +85,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
       category: initialCategory,
       policy: initialPolicy,
       search: initialSearch,
-      openIndexation: initialOpenIndexation,
     });
   }, [
     routeKey,
@@ -95,7 +92,6 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     initialCategory,
     initialPolicy,
     initialSearch,
-    initialOpenIndexation,
     hydrateInitialParams,
   ]);
 
