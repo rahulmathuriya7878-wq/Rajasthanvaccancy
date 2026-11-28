@@ -134,6 +134,23 @@ export default function RootLayout({
       </head>
       <body>
         <Script
+          id="gtm-script"
+          async
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-K2W295VF"
+        />
+        <Script
+          id="gtm-datalayer-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            `,
+          }}
+        />
+        <Script
           async
           strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3176571184961509"

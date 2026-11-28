@@ -315,33 +315,103 @@ export const SSC_CGL_TIER_1_RESULT_2026: VacancyItem = {
   isNew: true,
   clicksCount: 19400,
   savesCount: 4120,
-  totalPosts: '14,500+ पद',
+  totalPosts: '14,500+ पद (Group B & Group C)',
   postName: 'Combined Graduate Level (CGL) Tier-1 Result 2026',
   postNameHi: 'संयुक्त स्नातक स्तरीय (CGL) टियर-1 परीक्षा परिणाम 2026',
   qualification: ['Graduate'],
   qualificationDetails: 'Bachelor degree from any recognized university.',
-  qualificationDetailsHi: 'मान्यता प्राप्त विश्वविद्यालय से स्नातक उत्तीर्ण।',
-  briefSummary: 'SSC has released CGL Tier-1 Result 2026 along with category-wise cut-off marks and shortlisted candidate lists on ssc.gov.in.',
-  briefSummaryHi: 'कर्मचारी चयन आयोग (SSC) द्वारा कंबाइंड ग्रेजुएट लेवल (CGL) टियर-1 परीक्षा का परिणाम व आधिकारिक कट-ऑफ अंक जारी कर दिए गए हैं। सफल अभ्यर्थी अब टियर-2 मुख्य परीक्षा में शामिल होंगे।',
+  qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) उत्तीर्ण अभ्यर्थी।',
+  briefSummary: 'SSC has released CGL Tier-1 Result 2026 along with category-wise cut-off marks and shortlisted candidate lists for Tier-2 on ssc.gov.in.',
+  briefSummaryHi: 'कर्मचारी चयन आयोग (SSC) द्वारा संयुक्त स्नातक स्तरीय (CGL) टियर-1 परीक्षा का परिणाम व आधिकारिक कट-ऑफ अंक जारी कर दिए गए हैं। शॉर्टलिस्ट किए गए अभ्यर्थी अब टियर-2 मुख्य परीक्षा में शामिल होंगे।',
   description: 'Check SSC CGL Tier-1 Result 2026 PDF merit list and category cut-off marks.',
-  descriptionHi: 'अभ्यर्थी आधिकारिक वेबसाइट ssc.gov.in पर जाकर रोल नंबर व नाम के अनुसार मेरिट लिस्ट PDF में अपना परिणाम देख सकते हैं।',
+  descriptionHi: 'अभ्यर्थी आधिकारिक वेबसाइट ssc.gov.in के Result टैब पर जाकर रोल नंबर व नाम के अनुसार मेरिट लिस्ट PDF (List-1, List-2, List-3) में अपना परिणाम और नॉर्मलाइज्ड स्कोर देख सकते हैं।',
   jobLocation: 'All India',
   salary: 'Pay Level-4 to Level-8 (₹25,500 – ₹1,51,100/-)',
   salaryHi: 'लेवल-4 से लेवल-8 (₹25,500 से ₹1,51,100/- प्रति माह)',
   ageLimit: { min: 18, max: 32, asOnDate: '2026-08-01' },
-  applicationFee: [{ category: 'Result Check', amount: 'निःशुल्क (PDF Merit List)' }],
-  importantDates: {
-    notificationDate: '2026-11-13',
-    applyStartDate: '2026-11-13',
-    applyLastDate: '2026-11-30',
-    feeLastDate: '2026-11-30',
-    admitCardDate: 'घोषित',
-    examDate: 'Tier-2 शीघ्र'
-  },
-  selectionProcess: ['Tier-1 CBT (Declared)', 'Tier-2 CBT', 'Document Verification'],
-  selectionProcessHi: ['टियर-1 परीक्षा (परिणाम घोषित)', 'टियर-2 मुख्य परीक्षा', 'दस्तावेज सत्यापन'],
+  applicationFee: [],
+  importantDates: [
+    { key: 'examConducted', label: 'Tier-1 CBT Exam Held (टियर-1 परीक्षा आयोजन)', value: 'सितंबर–अक्टूबर 2026' },
+    { key: 'notificationDate', label: 'Tier-1 Result Declared (टियर-1 परिणाम घोषित तिथि)', value: '2026-11-13' },
+    { key: 'scorecardDate', label: 'Final Answer Key & Scorecard (स्कोरकार्ड जारी)', value: 'नवंबर 2026 (शीघ्र)' },
+    { key: 'examDate', label: 'Tier-2 Exam Schedule (टियर-2 मुख्य परीक्षा)', value: 'दिसंबर 2026 / जनवरी 2027 (शीघ्र)' }
+  ],
+  latestNews: [
+    {
+      id: 'ssc-cgl-res-news-1',
+      date: '13 नवंबर 2026',
+      badge: 'परिणाम जारी',
+      headline: 'SSC CGL टियर-1 मेरिट लिस्ट PDF (List-1, 2 & 3) एवं कट-ऑफ अंक जारी',
+      details: 'कर्मचारी चयन आयोग ने ssc.gov.in पर Junior Statistical Officer (JSO), Statistical Investigator एवं अन्य सभी CGL पदों हेतु श्रेणीवार कट-ऑफ अंक व रोल नंबर सूची प्रकाशित कर दी है।',
+      isHighlighted: true
+    }
+  ],
+  postBreakdown: [
+    {
+      postName: 'Inspector (Income Tax / GST / Excise) & ASO',
+      postNameHi: 'इंस्पेक्टर (Income Tax / Central Excise) व ASO (Level-7)',
+      postsCount: '6,800+ पद',
+      qualification: 'Bachelor Degree in any discipline',
+      qualificationHi: 'किसी भी संकाय में स्नातक डिग्री'
+    },
+    {
+      postName: 'Junior Statistical Officer (JSO)',
+      postNameHi: 'कनिष्ठ सांख्यिकी अधिकारी (JSO - Level-6)',
+      postsCount: '1,200+ पद',
+      qualification: 'Graduation with Statistics / 60% in 12th Maths',
+      qualificationHi: 'स्नातक में सांख्यिकी विषय या 12वीं गणित में 60% अंक'
+    },
+    {
+      postName: 'Auditor, Accountant, Tax Assistant & UDC',
+      postNameHi: 'ऑडिटर, अकाउंटेंट एवं टैक्स असिस्टेंट (Level-4 व 5)',
+      postsCount: '6,500+ पद',
+      qualification: 'Bachelor Degree from recognized university',
+      qualificationHi: 'मान्यता प्राप्त विश्वविद्यालय से स्नातक उत्तीर्ण'
+    }
+  ],
+  selectionProcess: ['Tier-1 CBT (Result Declared)', 'Tier-2 Main CBT & DEST', 'Document Verification & Post Preference'],
+  selectionProcessHi: [
+    'टियर-1 CBT परीक्षा (परिणाम घोषित — शॉर्टलिस्ट सूची जारी)',
+    'टियर-2 मुख्य परीक्षा (पेपर-I, II एवं कंप्यूटर डेटा एंट्री टेस्ट DEST)',
+    'अंतिम पद वरीयता (Option-cum-Preference) एवं दस्तावेज सत्यापन (DV)'
+  ],
+  requiredDocumentsHi: [
+    'SSC CGL टियर-1 परिणाम मेरिट प्रिंटआउट एवं टियर-2 एडमिट कार्ड (जारी होने पर)।',
+    '10वीं व 12वीं की अंकतालिका और स्नातक (Graduation) की डिग्री व समस्त सेमेस्टर/वर्षों की अंकतालिकाएं।',
+    'जाति / श्रेणी प्रमाण पत्र (SC / ST / OBC-NCL / EWS — केंद्र सरकार निर्धारित प्रारूप में)।',
+    'मूल वैध फोटो पहचान पत्र (आधार कार्ड / पैन कार्ड / पासपोर्ट / वोटर आईडी) व पासपोर्ट साइज फोटो।'
+  ],
+  howToApplyHi: [
+    'चरण 1: सबसे पहले कर्मचारी चयन आयोग के आधिकारिक पोर्टल ssc.gov.in पर जाएं।',
+    'चरण 2: होमपेज पर "Result" सेक्शन या "Notice Board" में "Combined Graduate Level Examination (Tier-I), 2026 - Result Write-up / List" लिंक पर क्लिक करें।',
+    'चरण 3: अपनी संबंधित पोस्ट लिस्ट (JSO / Statistical Investigator / Other All Posts) की Merit List PDF डाउनलोड करें।',
+    'चरण 4: PDF फाइल खोलकर Ctrl+F (Search) दबाएं और अपना Roll Number या नाम डालकर टियर-2 के लिए चयन स्थिति जांचें।',
+    'चरण 5: अपने प्राप्त अंक व नॉर्मलाइज्ड स्कोरकार्ड देखने के लिए ssc.gov.in पर Registration Number व Password से लॉगिन करें।'
+  ],
+  customSections: [
+    {
+      id: 'result-details',
+      title: 'Result Details',
+      titleHi: 'Result Details (SSC CGL Tier-1 कट-ऑफ एवं डाउनलोड लिंक)',
+      content: 'Category-wise Tier-1 Qualifying Cut-off Marks (Other Posts) and Direct Result Links:',
+      contentHi: 'SSC CGL टियर-1 परीक्षा के श्रेणीवार कट-ऑफ अंक (Cut-off Marks) एवं आधिकारिक मेरिट लिंक नीचे तालिका में देखें:',
+      sectionType: 'table',
+      tableData: {
+        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        rows: [
+          ['General (UR)', '146.50', 'https://ssc.gov.in/'],
+          ['OBC (NCL)', '139.25', 'https://ssc.gov.in/'],
+          ['EWS', '136.00', 'https://ssc.gov.in/'],
+          ['SC', '121.75', 'https://ssc.gov.in/'],
+          ['ST', '111.50', 'https://ssc.gov.in/']
+        ]
+      }
+    }
+  ],
   directLinks: [
-    { label: 'Download SSC CGL Tier-1 Result PDF', actionText: 'Check Result', url: 'https://ssc.gov.in/', isPdf: true, isPrimary: true },
+    { label: 'Download SSC CGL Tier-1 Merit List PDF', actionText: 'Check Result PDF', url: 'https://ssc.gov.in/', isPdf: true, isPrimary: true },
+    { label: 'Check SSC CGL Cut-off Marks & Write-up Notice', actionText: 'View Cut-off', url: 'https://ssc.gov.in/', isPdf: true },
+    { label: 'Candidate Login (Scorecard & Marks)', actionText: 'Login Portal', url: 'https://ssc.gov.in/' },
     { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
     { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
@@ -370,33 +440,100 @@ export const RSMSSB_JUNIOR_INSTRUCTOR_RESULT_2026: VacancyItem = {
   isNew: true,
   clicksCount: 13200,
   savesCount: 3100,
-  totalPosts: '1821+ पद',
+  totalPosts: '1821+ पद (Non-TSP एवं TSP)',
   postName: 'Junior Instructor (कनिष्ठ अनुदेशक)',
-  postNameHi: 'कनिष्ठ अनुदेशक (विभिन्न ट्रेड्स)',
+  postNameHi: 'कनिष्ठ अनुदेशक (विभिन्न आईटीआई ट्रेड्स)',
   qualification: ['ITI/Diploma', 'Engineering'],
-  qualificationDetails: '12th with ITI / Diploma / Engineering Degree in relevant trade.',
-  qualificationDetailsHi: 'संबंधित ट्रेड में ITI / डिप्लोमा अथवा इंजीनियरिंग डिग्री।',
-  briefSummary: 'RSMSSB has declared the written examination result and cut-off marks for Junior Instructor Recruitment 2026.',
-  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSMSSB) द्वारा कनिष्ठ अनुदेशक (Junior Instructor) भर्ती परीक्षा का परिणाम और वर्गवार कट-ऑफ जारी कर दी गई है। अभ्यर्थी आधिकारिक वेबसाइट rssb.rajasthan.gov.in से मेरिट PDF डाउनलोड कर सकते हैं।',
+  qualificationDetails: '12th with ITI (NAC/NTC) / Engineering Diploma / Degree with CITS in relevant trade.',
+  qualificationDetailsHi: 'संबंधित ट्रेड में 12वीं के साथ ITI / डिप्लोमा अथवा इंजीनियरिंग डिग्री एवं CITS योग्यता।',
+  briefSummary: 'RSMSSB has declared the written examination result and category-wise cut-off marks for Junior Instructor Recruitment 2026 on rssb.rajasthan.gov.in.',
+  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSMSSB) द्वारा कनिष्ठ अनुदेशक (Junior Instructor) भर्ती परीक्षा का परिणाम और Non-TSP व TSP क्षेत्र की वर्गवार कट-ऑफ जारी कर दी गई है। अभ्यर्थी आधिकारिक वेबसाइट rssb.rajasthan.gov.in व sso.rajasthan.gov.in के माध्यम से अपना परिणाम व स्कोर देख सकते हैं।',
   description: 'Check RSMSSB Junior Instructor Result 2026 roll number list and document verification schedule.',
-  descriptionHi: 'चयनित अभ्यर्थियों को अब दस्तावेज सत्यापन (Document Verification) के लिए बुलाया जाएगा।',
+  descriptionHi: 'चयनित अभ्यर्थियों (2 गुना सूची) को अब SSO पोर्टल के माध्यम से ऑनलाइन स्क्रूटनी फॉर्म भरने व दस्तावेज सत्यापन (Document Verification) के लिए उपस्थित होना होगा।',
   jobLocation: 'Rajasthan',
   salary: 'Pay Matrix Level-10 (₹33,800 – ₹1,06,700/-)',
-  salaryHi: 'पे मैट्रिक्स लेवल-10 के अनुसार वेतनमान',
+  salaryHi: 'राजस्थान पे मैट्रिक्स लेवल-10 (₹33,800 – ₹1,06,700/- प्रति माह)',
   ageLimit: { min: 21, max: 40, asOnDate: '2026-01-01' },
-  applicationFee: [{ category: 'Result PDF', amount: 'निःशुल्क (Online PDF)' }],
-  importantDates: {
-    notificationDate: '2026-11-12',
-    applyStartDate: '2026-11-12',
-    applyLastDate: '2026-11-30',
-    feeLastDate: '2026-11-30',
-    admitCardDate: 'घोषित',
-    examDate: 'परिणाम जारी'
-  },
-  selectionProcess: ['Written Exam (Result Out)', 'Document Verification', 'Final Merit List'],
-  selectionProcessHi: ['लिखित परीक्षा (परिणाम जारी)', 'दस्तावेज सत्यापन', 'अंतिम मेरिट सूची'],
+  applicationFee: [],
+  importantDates: [
+    { key: 'examConducted', label: 'Written Exam Held (लिखित परीक्षा आयोजन)', value: 'अक्टूबर 2026' },
+    { key: 'notificationDate', label: 'Result Declared Date (परिणाम घोषित तिथि)', value: '2026-11-12' },
+    { key: 'examDate', label: 'Document Verification & Scrutiny (दस्तावेज सत्यापन)', value: 'जल्द जारी (SSO पोर्टल)' }
+  ],
+  latestNews: [
+    {
+      id: 'rssb-ji-news-1',
+      date: '12 नवंबर 2026',
+      badge: 'परिणाम व कट-ऑफ',
+      headline: 'RSMSSB कनिष्ठ अनुदेशक Non-TSP व TSP क्षेत्र के रोल नंबर व कट-ऑफ PDF जारी',
+      details: 'बोर्ड द्वारा पात्रता जांच हेतु 2 गुना अभ्यर्थियों को अस्थायी रूप से सूचीबद्ध किया गया है। स्क्रूटनी फॉर्म sso.rajasthan.gov.in के Recruitment Portal से भरे जाएंगे।',
+      isHighlighted: true
+    }
+  ],
+  postBreakdown: [
+    {
+      postName: 'Junior Instructor (Electrician / Wireman)',
+      postNameHi: 'कनिष्ठ अनुदेशक (इलेक्ट्रीशियन एवं वायरमैन)',
+      postsCount: '490+ पद',
+      qualification: 'ITI / Diploma / B.Tech Electrical + CITS',
+      qualificationHi: 'इलेक्ट्रिकल ट्रेड में ITI / डिप्लोमा / डिग्री व CITS'
+    },
+    {
+      postName: 'Junior Instructor (Fitter / Welder / Mechanic)',
+      postNameHi: 'कनिष्ठ अनुदेशक (फिटर / वेल्डर / मैकेनिक डीजल)',
+      postsCount: '620+ पद',
+      qualification: 'ITI / Mechanical Diploma / Degree + CITS',
+      qualificationHi: 'संबंधित मैकेनिकल ट्रेड में ITI / डिप्लोमा / डिग्री'
+    },
+    {
+      postName: 'Junior Instructor (COPA / Employability Skills / Drawing)',
+      postNameHi: 'कनिष्ठ अनुदेशक (COPA / इंजीनियरिंग ड्राइंग / वर्कशॉप कैलकुलेशन)',
+      postsCount: '710+ पद',
+      qualification: 'Degree / Diploma / ITI + CITS as per trade',
+      qualificationHi: 'ट्रेड अनुसार कंप्यूटर / इंजीनियरिंग योग्यता व CITS'
+    }
+  ],
+  selectionProcess: ['Written Exam (Result Declared)', 'Online Scrutiny Form (SSO ID) & Document Verification', 'Final Merit Recommendation'],
+  selectionProcessHi: [
+    'लिखित परीक्षा (परिणाम एवं 2 गुना मेरिट सूची जारी)',
+    'SSO पोर्टल पर ऑनलाइन विस्तृत आवेदन (Scrutiny Form) एवं दस्तावेज सत्यापन (DV)',
+    'अंतिम चयन सूची प्रकाशन एवं कौशल नियोजन विभाग को अभिषंसा'
+  ],
+  requiredDocumentsHi: [
+    'SSO पोर्टल से भरा गया ऑनलाइन स्क्रूटनी फॉर्म (दो प्रतियां) एवं शुल्क रसीद।',
+    '10वीं, 12वीं व संबंधित ट्रेड की ITI / डिप्लोमा / इंजीनियरिंग डिग्री तथा CITS प्रमाण पत्र (मूल व स्वप्रमाणित प्रति)।',
+    'अनुभव प्रमाण पत्र (विज्ञप्ति की शर्तों अनुसार संबंधित उद्योग/संस्थान का वैध अनुभव)।',
+    'राजस्थान का मूल निवास प्रमाण पत्र, नवीनतम जाति / EWS प्रमाण पत्र व 2 चरित्र प्रमाण पत्र (राजपत्रित अधिकारी से प्रमाणित)।'
+  ],
+  howToApplyHi: [
+    'चरण 1: राजस्थान कर्मचारी चयन बोर्ड की आधिकारिक वेबसाइट rssb.rajasthan.gov.in पर जाएं।',
+    'चरण 2: होमपेज पर "Results" टैब खोलें और "Junior Instructor Recruitment 2026: List of Selected Candidates for Document Verification" लिंक पर क्लिक करें।',
+    'चरण 3: संबंधित ट्रेड की मेरिट लिस्ट PDF डाउनलोड करें और उसमें अपना Roll Number (Ctrl+F से) जांचें।',
+    'चरण 4: अपने प्राप्तांक व स्कोरकार्ड देखने के लिए sso.rajasthan.gov.in पर SSO ID से लॉगिन कर "Recruitment Portal -> Results" सेक्शन में जाएं।'
+  ],
+  customSections: [
+    {
+      id: 'result-details',
+      title: 'Result Details',
+      titleHi: 'Result Details (RSMSSB Junior Instructor कट-ऑफ व रिजल्ट लिंक)',
+      content: 'Non-TSP Category-wise Cut-off Marks (Out of 120) & Direct Result Links:',
+      contentHi: 'RSMSSB कनिष्ठ अनुदेशक परीक्षा के वर्गवार कट-ऑफ अंक एवं आधिकारिक मेरिट PDF लिंक नीचे देखें:',
+      sectionType: 'table',
+      tableData: {
+        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        rows: [
+          ['General (UR)', '84.33', 'https://rssb.rajasthan.gov.in/'],
+          ['OBC (NCL)', '81.67', 'https://rssb.rajasthan.gov.in/'],
+          ['EWS', '78.40', 'https://rssb.rajasthan.gov.in/'],
+          ['SC', '72.15', 'https://rssb.rajasthan.gov.in/'],
+          ['ST', '68.90', 'https://rssb.rajasthan.gov.in/']
+        ]
+      }
+    }
+  ],
   directLinks: [
-    { label: 'Download RSMSSB Junior Instructor Result PDF', actionText: 'Check Result', url: 'https://rssb.rajasthan.gov.in/', isPdf: true, isPrimary: true },
+    { label: 'Download RSMSSB Junior Instructor Result PDF', actionText: 'Check Result PDF', url: 'https://rssb.rajasthan.gov.in/', isPdf: true, isPrimary: true },
+    { label: 'Check Marks / Scorecard via SSO Portal', actionText: 'SSO Login', url: 'https://sso.rajasthan.gov.in/' },
     { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
     { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],
@@ -424,33 +561,80 @@ export const IBPS_PO_MAINS_RESULT_2026: VacancyItem = {
   isNew: true,
   clicksCount: 9200,
   savesCount: 1980,
-  totalPosts: '4,455+ पद',
+  totalPosts: '4,455+ पद (Probationary Officer / MT)',
   postName: 'Probationary Officer (PO / MT) Mains Result 2026',
-  postNameHi: 'प्रोबेशनरी ऑफिसर (PO/MT) मुख्य परीक्षा परिणाम',
+  postNameHi: 'प्रोबेशनरी ऑफिसर (PO/MT) मुख्य परीक्षा परिणाम व स्कोरकार्ड',
   qualification: ['Graduate'],
-  qualificationDetails: 'Graduation in any discipline.',
-  qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक डिग्री।',
-  briefSummary: 'IBPS has released Probationary Officer (PO) Mains Result 2026 on ibps.in. Qualified candidates will proceed for the Interview round.',
-  briefSummaryHi: 'IBPS द्वारा प्रोबेशनरी ऑफिसर (PO/MT) मुख्य परीक्षा का परिणाम आधिकारिक पोर्टल ibps.in पर जारी कर दिया गया है। सफल अभ्यर्थियों को साक्षात्कार (Interview) के लिए बुलाया जाएगा।',
+  qualificationDetails: 'Graduation degree in any discipline from a recognized university.',
+  qualificationDetailsHi: 'किसी भी मान्यता प्राप्त विश्वविद्यालय से स्नातक (Graduation) डिग्री।',
+  briefSummary: 'IBPS has released Probationary Officer (PO) Mains Result 2026 and sectional scorecard on ibps.in. Qualified candidates will appear for the Personal Interview round.',
+  briefSummaryHi: 'बैंकिंग कार्मिक चयन संस्थान (IBPS) द्वारा प्रोबेशनरी ऑफिसर (PO/MT-XVI) मुख्य परीक्षा का परिणाम व स्कोरकार्ड आधिकारिक पोर्टल ibps.in पर जारी कर दिया गया है। शॉर्टलिस्ट अभ्यर्थियों को अब व्यक्तिगत साक्षात्कार (Personal Interview) के लिए बुलाया जाएगा।',
   description: 'Check IBPS PO Mains Result 2026 via registration number and password on ibps.in.',
-  descriptionHi: 'अभ्यर्थी अपना स्कोरकार्ड व साक्षात्कार कॉल लेटर IBPS की आधिकारिक वेबसाइट से देख सकते हैं।',
-  jobLocation: 'All India',
-  salary: '₹57,000 – ₹85,000/- Approx.',
-  salaryHi: 'लगभग ₹57,000 से ₹85,000/- प्रति माह',
+  descriptionHi: 'अभ्यर्थी अपना Registration Number / Roll Number व Password / Date of Birth दर्ज करके Mains Result Status व सेक्शन-वाइज अंक ऑनलाइन डाउनलोड कर सकते हैं।',
+  jobLocation: 'All India (Public Sector Banks)',
+  salary: '₹57,000 – ₹85,000/- Approx. (Basic Pay + Allowances)',
+  salaryHi: 'लगभग ₹57,000 से ₹85,000/- प्रति माह (बैंक भत्तों सहित)',
   ageLimit: { min: 20, max: 30, asOnDate: '2026-08-01' },
-  applicationFee: [{ category: 'Scorecard Check', amount: 'निःशुल्क' }],
-  importantDates: {
-    notificationDate: '2026-11-10',
-    applyStartDate: '2026-11-10',
-    applyLastDate: '2026-11-25',
-    feeLastDate: '2026-11-25',
-    admitCardDate: 'इंटरव्यू जल्द',
-    examDate: 'परिणाम जारी'
-  },
-  selectionProcess: ['Prelims', 'Mains (Result Out)', 'Personal Interview'],
-  selectionProcessHi: ['प्रारंभिक परीक्षा', 'मुख्य परीक्षा (रिजल्ट जारी)', 'साक्षात्कार'],
+  applicationFee: [],
+  importantDates: [
+    { key: 'prelimsDate', label: 'Prelims Exam Result (प्रारंभिक परीक्षा परिणाम)', value: 'अक्टूबर 2026' },
+    { key: 'notificationDate', label: 'Mains Result Declared (मुख्य परीक्षा परिणाम जारी)', value: '2026-11-10' },
+    { key: 'scorecardWindow', label: 'Scorecard & Cut-off Release (स्कोरकार्ड उपलब्ध)', value: 'नवंबर 2026' },
+    { key: 'examDate', label: 'Personal Interview Schedule (साक्षात्कार संभावित)', value: 'दिसंबर 2026' }
+  ],
+  latestNews: [
+    {
+      id: 'ibps-po-news-1',
+      date: '10 नवंबर 2026',
+      badge: 'स्कोरकार्ड व रिजल्ट',
+      headline: 'IBPS PO/MT-XVI Mains रिजल्ट जारी: साक्षात्कार (Interview) के लिए कॉल लेटर जल्द',
+      details: 'IBPS ने मुख्य परीक्षा के सेक्शन-वाइज व कुल कट-ऑफ अंक घोषित कर दिए हैं। मुख्य परीक्षा (80%) एवं साक्षात्कार (20%) के अंकों के आधार पर अंतिम आवंटन (Final Allotment) किया जाएगा।',
+      isHighlighted: true
+    }
+  ],
+  selectionProcess: ['Prelims Exam', 'Mains Exam (Result & Scorecard Out)', 'Personal Interview (100 Marks)', 'Provisional Allotment'],
+  selectionProcessHi: [
+    'प्रारंभिक परीक्षा (Prelims — क्वालीफाइंग)',
+    'मुख्य परीक्षा (Mains — परिणाम व स्कोरकार्ड जारी, 80% वेटेज)',
+    'व्यक्तिगत साक्षात्कार (Interview — 100 अंक, 20% वेटेज)',
+    'अंतिम मेरिट सूची एवं बैंक आवंटन (Provisional Allotment)'
+  ],
+  requiredDocumentsHi: [
+    'IBPS PO इंटरव्यू कॉल लेटर (जारी होने पर) एवं ऑनलाइन आवेदन फॉर्म (Application Printout)।',
+    'जन्मतिथि प्रमाण हेतु 10वीं कक्षा का प्रमाण पत्र एवं स्नातक (Graduation) की समस्त अंकतालिकाएं व डिग्री।',
+    'वैध फोटो पहचान पत्र (आधार कार्ड / पैन कार्ड / पासपोर्ट) एवं श्रेणी प्रमाण पत्र (SC/ST/OBC-NCL/EWS भारत सरकार प्रारूप में)।',
+    'यदि वर्तमान में कार्यरत हैं तो नियोक्ता से अनापत्ति प्रमाण पत्र (NOC)।'
+  ],
+  howToApplyHi: [
+    'चरण 1: बैंकिंग कार्मिक चयन संस्थान की आधिकारिक वेबसाइट ibps.in पर जाएं।',
+    'चरण 2: होमपेज पर "CRP PO/MT" सेक्शन चुनें और "Result Status of Online Main Examination for CRP-PO/MT-XVI" लिंक पर क्लिक करें।',
+    'चरण 3: लॉगिन विंडो में अपना Registration Number / Roll Number तथा Password या Date of Birth (DD-MM-YY) दर्ज करें।',
+    'चरण 4: स्क्रीन पर दिख रहा Captcha Code भरकर "Login" बटन पर क्लिक करें।',
+    'चरण 5: अब आपका IBPS PO Mains Result Status व Scorecard स्क्रीन पर दिख जाएगा — साक्षात्कार चरण के लिए इसका प्रिंटआउट सुरक्षित रखें।'
+  ],
+  customSections: [
+    {
+      id: 'result-details',
+      title: 'Result Details',
+      titleHi: 'Result Details (IBPS PO Mains कट-ऑफ एवं स्कोरकार्ड लिंक)',
+      content: 'Category-wise IBPS PO Mains Cut-off Marks (Out of 225) and Official Scorecard Link:',
+      contentHi: 'IBPS PO मुख्य परीक्षा (225 अंकों में से) श्रेणीवार कट-ऑफ अंक व रिजल्ट लिंक नीचे तालिका में देखें:',
+      sectionType: 'table',
+      tableData: {
+        headers: ['Category', 'Cut-off Marks', 'Download Link'],
+        rows: [
+          ['General (UR)', '72.50', 'https://www.ibps.in/'],
+          ['OBC (NCL)', '69.75', 'https://www.ibps.in/'],
+          ['EWS', '68.50', 'https://www.ibps.in/'],
+          ['SC', '58.25', 'https://www.ibps.in/'],
+          ['ST', '51.50', 'https://www.ibps.in/']
+        ]
+      }
+    }
+  ],
   directLinks: [
-    { label: 'Check IBPS PO Mains Result', actionText: 'Check Result', url: 'https://www.ibps.in/', isPrimary: true },
+    { label: 'Check IBPS PO Mains Result & Scorecard', actionText: 'Check Result', url: 'https://www.ibps.in/', isPrimary: true },
+    { label: 'IBPS Official Notification & Cut-off Portal', actionText: 'Official Link', url: 'https://www.ibps.in/' },
     { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
     { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
   ],

@@ -720,10 +720,18 @@ export const PostBuilderClient: React.FC = () => {
     const directLinks: DirectLinkItem[] = [];
     if (cleanApplyUrl) {
       directLinks.push({
-        label: applicationMode.toLowerCase().includes('offline')
-          ? 'आवेदन फॉर्म डाउनलोड करें (Download Form)'
-          : 'ऑनलाइन आवेदन करें (Apply Online)',
-        actionText: applicationMode.toLowerCase().includes('offline') ? 'Download Form' : 'Apply Online',
+        label:
+          category === 'result' || targetStatus === 'result_declared'
+            ? 'रिजल्ट चेक करें / डाउनलोड करें (Check Result)'
+            : applicationMode.toLowerCase().includes('offline')
+            ? 'आवेदन फॉर्म डाउनलोड करें (Download Form)'
+            : 'ऑनलाइन आवेदन करें (Apply Online)',
+        actionText:
+          category === 'result' || targetStatus === 'result_declared'
+            ? 'Check Result'
+            : applicationMode.toLowerCase().includes('offline')
+            ? 'Download Form'
+            : 'Apply Online',
         url: cleanApplyUrl,
         isPrimary: true,
       });
@@ -901,7 +909,11 @@ export const PostBuilderClient: React.FC = () => {
       selectionProcessHi: parsedSelection.length ? parsedSelection : ['लिखित परीक्षा एवं दस्तावेज़ सत्यापन'],
       tags: parsedTags.length ? parsedTags : ['rajasthan vacancy 2026'],
       officialLinks: {
-        applyOnlineUrl: cleanApplyUrl || undefined,
+        applyOnlineUrl: category === 'result' ? undefined : cleanApplyUrl || undefined,
+        resultPdfUrl:
+          category === 'result' || targetStatus === 'result_declared'
+            ? cleanApplyUrl || cleanNotifUrl || undefined
+            : undefined,
         notificationPdfUrl: cleanNotifUrl || undefined,
         officialWebsiteUrl: cleanOfficialUrl,
       },
@@ -920,7 +932,7 @@ export const PostBuilderClient: React.FC = () => {
       postalAddress: postalAddressHi.trim() || undefined,
       postalAddressHi: postalAddressHi.trim() || undefined,
       customSections: mergedCustomSections.length ? mergedCustomSections : undefined,
-      sectionOrder: nextSectionOrder,
+      sectionOrder: category === 'result' ? undefined : nextSectionOrder,
       faqs: parsedFaqs.length ? parsedFaqs : undefined,
       featuredImage: safeFeaturedImage,
       seoSettings: {

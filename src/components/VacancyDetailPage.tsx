@@ -98,6 +98,7 @@ export const normalizePost = (v: VacancyItem): any => {
       ];
 
   const isYojanaPost = v.category === 'scheme';
+  const isResultPostNorm = v.category === 'result' || v.status === 'result_declared';
   const resolvedDates = resolveJobDates(v);
   const defaultDatesArray = isYojanaPost
     ? [
@@ -108,6 +109,15 @@ export const normalizePost = (v: VacancyItem): any => {
           ? [{ key: 'examDate', label: 'सत्यापन / लाभ वितरण स्थिति (Benefit / Verification Status)', value: resolvedDates.examDate }]
           : [])
       ]
+    : isResultPostNorm
+    ? (Array.isArray((v as any).importantDates) && (v as any).importantDates.length > 0
+        ? (v as any).importantDates
+        : [
+            { key: 'notificationDate', label: 'Result Declared Date (परिणाम घोषित तिथि)', value: resolvedDates.notificationDate },
+            ...(resolvedDates.examDate && !['शीघ्र', 'यथासमय घोषित'].includes(resolvedDates.examDate.trim())
+              ? [{ key: 'examDate', label: 'Next Selection Stage (आगामी चयन चरण)', value: resolvedDates.examDate }]
+              : [])
+          ])
     : [
         { key: 'notificationDate', label: 'Notification Released (विस्तृत अधिसूचना जारी तिथि)', value: resolvedDates.notificationDate },
         { key: 'applyStartDate', label: 'Application Begin (ऑनलाइन आवेदन प्रारंभ तिथि)', value: resolvedDates.applyStartDate },
@@ -117,8 +127,8 @@ export const normalizePost = (v: VacancyItem): any => {
         { key: 'examDate', label: 'Exam Date (परीक्षा तिथि)', value: resolvedDates.examDate },
       ];
 
-  // If user already had custom rows, preserve any extra rows
-  if (Array.isArray((v as any).importantDates)) {
+  // If user already had custom rows, preserve any extra rows (Result posts already preserve full array above)
+  if (!isResultPostNorm && Array.isArray((v as any).importantDates)) {
     const existing = (v as any).importantDates;
     for (const item of existing) {
       if (item && item.label) {
@@ -134,7 +144,9 @@ export const normalizePost = (v: VacancyItem): any => {
     }
   }
 
-  const defaultFeeArray = Array.isArray((v as any).applicationFee)
+  const defaultFeeArray = isResultPostNorm
+    ? (Array.isArray((v as any).applicationFee) ? (v as any).applicationFee : [])
+    : Array.isArray((v as any).applicationFee)
     ? (v as any).applicationFee
     : isYojanaPost
       ? [
@@ -148,7 +160,9 @@ export const normalizePost = (v: VacancyItem): any => {
           { category: 'Pay Exam Fee Through', amount: (v.applicationFee as any)?.paymentModeHi || (v.applicationFee as any)?.paymentMode || 'Online (Debit / Credit Card / Net Banking)' },
         ];
 
-  const defaultLatestNews = (v as any).latestNews && Array.isArray((v as any).latestNews) && (v as any).latestNews.length > 0
+  const defaultLatestNews = isResultPostNorm
+    ? (Array.isArray((v as any).latestNews) ? (v as any).latestNews : [])
+    : (v as any).latestNews && Array.isArray((v as any).latestNews) && (v as any).latestNews.length > 0
     ? (v as any).latestNews
     : [
         {
@@ -179,10 +193,14 @@ export const normalizePost = (v: VacancyItem): any => {
     importantDates: defaultDatesArray,
     applicationFee: defaultFeeArray,
     latestNews: defaultLatestNews,
-    requiredDocumentsHi: (v as any).requiredDocumentsHi && Array.isArray((v as any).requiredDocumentsHi) && (v as any).requiredDocumentsHi.length > 0
+    requiredDocumentsHi: isResultPostNorm
+      ? (Array.isArray((v as any).requiredDocumentsHi) ? (v as any).requiredDocumentsHi : [])
+      : (v as any).requiredDocumentsHi && Array.isArray((v as any).requiredDocumentsHi) && (v as any).requiredDocumentsHi.length > 0
       ? (v as any).requiredDocumentsHi
       : getHighestEligibilityDocuments(v, true),
-    howToApplyHi: (v as any).howToApplyHi && Array.isArray((v as any).howToApplyHi) && (v as any).howToApplyHi.length > 0
+    howToApplyHi: isResultPostNorm
+      ? (Array.isArray((v as any).howToApplyHi) ? (v as any).howToApplyHi : [])
+      : (v as any).howToApplyHi && Array.isArray((v as any).howToApplyHi) && (v as any).howToApplyHi.length > 0
       ? getHowToApplySteps(v, true)
       : getHowToApplySteps(v, true)
   };
@@ -460,6 +478,65 @@ export const getHowToApplySteps = (v: Partial<VacancyItem>, isHi = true): string
       'Step 8: Review the application preview, submit the form, and download/print the final confirmation page.'
     ];
   }
+};
+
+export const getHowToCheckResultSteps = (v: Partial<VacancyItem>, isHi = true): string[] => {
+  const isRajPost = isRajasthanRelatedPost(v);
+  if (isHi && Array.isArray(v.howToApplyHi) && v.howToApplyHi.length > 0) {
+    const looksLikeApplyForm = v.howToApplyHi.some((s) =>
+      /Apply Online|आवेदन पत्र|फॉर्म भरें|आवेदन शुल्क का नेट बैंकिंग/i.test(s)
+    );
+    if (!looksLikeApplyForm) {
+      return isRajPost
+        ? v.howToApplyHi
+        : v.howToApplyHi.map((s) =>
+            s
+              .replace(/sso\.rajasthan\.gov\.in/gi, 'आधिकारिक पोर्टल')
+              .replace(/SSO\s*ID/gi, 'रजिस्ट्रेशन / रोल नंबर')
+          );
+    }
+  }
+  if (!isHi && Array.isArray(v.howToApply) && v.howToApply.length > 0) {
+    const looksLikeApplyForm = v.howToApply.some((s) => /Apply Online|application preview/i.test(s));
+    if (!looksLikeApplyForm) {
+      return v.howToApply;
+    }
+  }
+
+  const shortTitle = (v.shortTitleHi || v.shortTitle || v.postNameHi || v.postName || 'परीक्षा').split(':')[0];
+  const orgLabel = v.departmentHi || v.department || v.organization || 'संबंधित भर्ती बोर्ड';
+  const portalHost = v.officialLinks?.officialWebsiteUrl
+    ? (() => {
+        try {
+          return new URL(v.officialLinks.officialWebsiteUrl).hostname;
+        } catch {
+          return 'आधिकारिक पोर्टल';
+        }
+      })()
+    : 'आधिकारिक वेबसाइट';
+  const hasPdf = Boolean(v.officialLinks?.resultPdfUrl);
+
+  if (isHi) {
+    return [
+      `चरण 1: सबसे पहले ${orgLabel} की आधिकारिक वेबसाइट (${portalHost}${isRajPost ? ' या sso.rajasthan.gov.in' : ''}) पर जाएं।`,
+      `चरण 2: होमपेज पर "Results / Latest News" सेक्शन में "${shortTitle}" परिणाम लिंक पर क्लिक करें।`,
+      hasPdf
+        ? 'चरण 3: मेरिट लिस्ट PDF डाउनलोड करें अथवा अपने Roll Number / Registration Number व जन्मतिथि से लॉगिन करें।'
+        : 'चरण 3: अपना Registration Number / Roll Number तथा Password या Date of Birth दर्ज कर सबमिट करें।',
+      'चरण 4: स्क्रीन पर दिख रहे परिणाम या PDF में अपना रोल नंबर (Ctrl+F द्वारा) व श्रेणीवार कट-ऑफ अंक जांचें।',
+      'चरण 5: भविष्य के आगामी चयन चरण / दस्तावेज सत्यापन के लिए स्कोरकार्ड या रिजल्ट पृष्ठ का प्रिंटआउट सुरक्षित रखें।'
+    ];
+  }
+
+  return [
+    `Step 1: Visit the official portal of ${orgLabel} (${portalHost}).`,
+    `Step 2: Open the "Results" section and click on the "${shortTitle}" link.`,
+    hasPdf
+      ? 'Step 3: Download the Merit List PDF or sign in with your Roll Number / Registration Number and DOB.'
+      : 'Step 3: Enter your Registration Number / Roll Number and Password or Date of Birth.',
+    'Step 4: Check your qualification status and category-wise cut-off marks.',
+    'Step 5: Download or print the result / scorecard for upcoming selection stages.'
+  ];
 };
 
 export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
@@ -861,6 +938,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
   const sectionLabels: Record<string, string> = {
     overview: 'संक्षिप्त विवरण तालिका (Quick Overview)',
+    result_overview: 'परिणाम का संक्षिप्त विवरण (Result Overview)',
+    result_how_to_check: 'रिजल्ट कैसे चेक करें (How to Check Result)',
     admit_released: 'एडमिट कार्ड जारी सूचना (Admit Card Released)',
     admit_exam_time: 'परीक्षा तिथि व समय (Exam Date & Time)',
     admit_how_to_download: 'एडमिट कार्ड कैसे डाउनलोड करें',
@@ -1385,21 +1464,6 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       ]
     : isAdmitCardPost
     ? ADMIT_CARD_SECTION_ORDER
-    : isAdmitOrResult
-    ? [
-        'overview',
-        'latest_news',
-        'dates',
-        'application_fee',
-        'post_breakdown',
-        'qualification',
-        'selection_process',
-        'postal_address',
-        'documents',
-        'how_to_apply',
-        'important_links',
-        'faqs'
-      ]
     : [
         'overview',
         'latest_news',
@@ -1434,6 +1498,45 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
       return [...baseKeys, ...missingCustom];
     };
 
+    // Result category: no rigid recruitment section system — compose blocks dynamically from each post's actual data
+    if (isResultPost) {
+      const hasNews = Array.isArray(currentVacancy.latestNews) && currentVacancy.latestNews.length > 0;
+      const hasResultDates =
+        Array.isArray(currentVacancy.importantDates) &&
+        currentVacancy.importantDates.some((d: any) => {
+          const val = String(d?.value || '').trim();
+          const k = String(d?.key || '').toLowerCase();
+          return (
+            Boolean(val) &&
+            val !== 'शीघ्र' &&
+            val !== 'यथासमय घोषित' &&
+            !['applystartdate', 'applylastdate', 'feelastdate', 'admitcarddate'].includes(k)
+          );
+        });
+      const hasPostBreakdown = Array.isArray(currentVacancy.postBreakdown) && currentVacancy.postBreakdown.length > 0;
+      const hasQualification = Boolean(
+        (currentVacancy.qualificationDetailsHi || currentVacancy.qualificationDetails || '').trim()
+      );
+      const hasSelection =
+        Array.isArray(currentVacancy.selectionProcessHi) && currentVacancy.selectionProcessHi.length > 0;
+      const hasResultDocs =
+        Array.isArray(currentVacancy.requiredDocumentsHi) && currentVacancy.requiredDocumentsHi.length > 0;
+
+      return [
+        'result_overview',
+        ...allCustomKeys,
+        ...(hasNews ? ['latest_news'] : []),
+        ...(hasResultDates ? ['dates'] : []),
+        ...(hasPostBreakdown ? ['post_breakdown'] : []),
+        ...(hasQualification ? ['qualification'] : []),
+        'result_how_to_check',
+        ...(hasSelection ? ['selection_process'] : []),
+        ...(hasResultDocs ? ['documents'] : []),
+        'important_links',
+        'faqs'
+      ];
+    }
+
     if (isAdmitCardPost) {
       const customKeys = Array.from(
         new Set([...(savedOrder || []).filter((k) => k.startsWith('custom_')), ...allCustomKeys])
@@ -1452,7 +1555,21 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
     const filteredSaved = isAdmitOrResult ? normalizedSaved.filter((k) => k !== 'age_limit') : normalizedSaved;
     const missing = DEFAULT_SECTION_ORDER.filter((k) => !filteredSaved.includes(k));
     return insertMissingCustomKeys([...filteredSaved, ...missing]);
-  }, [currentVacancy.sectionOrder, currentVacancy.customSections, isYojana, isAdmitCardPost, isAdmitOrResult]);
+  }, [
+    currentVacancy.sectionOrder,
+    currentVacancy.customSections,
+    currentVacancy.latestNews,
+    currentVacancy.importantDates,
+    currentVacancy.postBreakdown,
+    currentVacancy.qualificationDetailsHi,
+    currentVacancy.qualificationDetails,
+    currentVacancy.selectionProcessHi,
+    currentVacancy.requiredDocumentsHi,
+    isYojana,
+    isAdmitCardPost,
+    isResultPost,
+    isAdmitOrResult
+  ]);
 
   return (
     <div className="w-full text-[#222222] space-y-3 sm:space-y-4">
@@ -1690,6 +1807,21 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         {isHi ? 'एडमिट कार्ड जारी (Download Available)' : 'Admit Card Released'}
                       </span>
                     </div>
+                  ) : isResultPost ? (
+                    <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
+                      <span 
+                        className="text-xs uppercase font-bold !text-[#34d399] block tracking-wider"
+                        style={{ color: '#34d399' }}
+                      >
+                        {isHi ? 'परिणाम स्थिति (Result Status)' : 'Result Status'}
+                      </span>
+                      <span 
+                        className="text-xl sm:text-2xl font-black !text-[#facc15] block mt-1 tracking-wide drop-shadow-xs leading-snug"
+                        style={{ color: '#facc15' }}
+                      >
+                        {isHi ? 'रिजल्ट जारी (Result Declared)' : 'Result Declared'}
+                      </span>
+                    </div>
                   ) : (!isFlexCategory || (editablePost.totalPosts && String(editablePost.totalPosts).trim() !== '' && String(editablePost.totalPosts) !== 'विभिन्न पद')) && (
                     <div className="bg-[#02261e] border border-[#10b981]/70 rounded-xl p-3.5 sm:p-4 text-center mt-3.5 w-full shadow-inner">
                       <span 
@@ -1768,7 +1900,42 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                         </div>
                       ))}
                     </div>
-                  ) : !isFlexCategory && (() => {
+                  ) : isResultPost ? (() => {
+                    const nextStageArr = Array.isArray(editablePost.selectionProcessHi) ? editablePost.selectionProcessHi : [];
+                    const nextStageVal =
+                      nextStageArr.find((s) => !/जारी|घोषित|declared|out/i.test(s)) ||
+                      nextStageArr[nextStageArr.length - 1] ||
+                      'दस्तावेज सत्यापन / मेरिट';
+                    const resultSnapshot = [
+                      { label: 'आयोजक संस्था', value: editablePost.organization || editablePost.department || 'Recruitment Board', isImportant: false },
+                      { label: 'परिणाम जारी तिथि', value: notificationDateDisplay, isImportant: true },
+                      { label: 'घोषित कुल पद', value: String(editablePost.totalPosts || 'विज्ञप्ति अनुसार'), isImportant: false },
+                      { label: 'अगला चरण', value: nextStageVal.split('(')[0].trim(), isImportant: false }
+                    ];
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3.5 pt-3.5 border-t border-[#10b981]/50 text-xs">
+                        {resultSnapshot.map((d, idx) => (
+                          <div 
+                            key={idx} 
+                            className={`rounded-xl p-2.5 text-center border transition-all ${d.isImportant ? 'bg-[#3b1200] border-[#f59e0b] ring-1 ring-amber-400/40 shadow-sm' : 'bg-[#02261e] border-[#10b981]/50'}`}
+                          >
+                            <span 
+                              className="text-[11px] uppercase font-bold block"
+                              style={{ color: d.isImportant ? '#fde047' : '#a7f3d0' }}
+                            >
+                              {d.label}
+                            </span>
+                            <span 
+                              className="font-extrabold text-xs sm:text-sm mt-0.5 block break-words"
+                              style={{ color: d.isImportant ? '#fde047' : '#ffffff' }}
+                            >
+                              {d.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })() : !isFlexCategory && (() => {
                     const rawDates = [
                       { label: 'नोटिफिकेशन तिथि', value: notificationDateDisplay, isImportant: false },
                       { label: 'आवेदन शुरू', value: applyStartDateDisplay, isImportant: false },
@@ -1888,6 +2055,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           ? (editablePost.briefSummaryHi || editablePost.yojanaGeneralInfo?.descriptionHi || `${editablePost.departmentHi || editablePost.organization || 'राजस्थान सरकार'} द्वारा ${shortJobName} के अंतर्गत पात्र नागरिकों को आर्थिक व कल्याणकारी सहायता प्रदान की जा रही है।`)
                           : isAdmitCardPost
                           ? (editablePost.briefSummaryHi || `${editablePost.departmentHi || editablePost.organization} द्वारा ${shortJobName} परीक्षा के प्रवेश पत्र (Admit Card) जारी किए गए हैं। परीक्षा में सम्मिलित होने वाले सभी अभ्यर्थी आधिकारिक पोर्टल से अपना ई-एडमिट कार्ड डाउनलोड कर सकते हैं।`)
+                          : isResultPost
+                          ? (editablePost.briefSummaryHi || `${editablePost.departmentHi || editablePost.organization} द्वारा ${shortJobName} (${editablePost.totalPosts || 'विभिन्न पद'}) का आधिकारिक परिणाम जारी कर दिया गया है।`)
                           : (editablePost.briefSummaryHi || `${editablePost.organization} द्वारा आधिकारिक नोटिफिकेशन जारी कर दिया गया है। इसके अंतर्गत कुल ${editablePost.totalPosts || 'विभिन्न'} पदों पर भर्ती हेतु योग्य अभ्यर्थियों से ऑनलाइन आवेदन आमंत्रित किए गए हैं।`)
                       }
                       onChange={(val) => {
@@ -1906,9 +2075,16 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           ? `इस परीक्षा के लिए एडमिट कार्ड ${admitCardDateDisplay} से आधिकारिक पोर्टल पर उपलब्ध हैं तथा परीक्षा का आयोजन ${examDateDisplay} को निर्धारित परीक्षा केंद्रों पर किया जाएगा। एडमिट कार्ड डाउनलोड करने की स्टेप-बाय-स्टेप प्रक्रिया, परीक्षा का समय, रिपोर्टिंग टाइम, परीक्षा केंद्र पर ले जाने वाले दस्तावेज एवं महत्वपूर्ण डायरेक्ट लिंक नीचे दिए गए हैं।`
                           : `Admit cards are available from ${admitCardDateDisplay} on the official portal, and the examination will be conducted on ${examDateDisplay}. Check complete exam timings, download procedure, reporting rules, documents to carry, and direct links below.`)
                       : isResultPost
-                      ? (isHi
-                          ? `इस परीक्षा के लिए आधिकारिक परिणाम व मेरिट लिस्ट जारी कर दी गई है। सभी अभ्यर्थी नीचे दिए गए महत्वपूर्ण डायरेक्ट लिंक के माध्यम से अपना रिजल्ट, कट-ऑफ अंक व स्कोरकार्ड ऑनलाइन देख सकते हैं।`
-                          : `The official examination result and merit list have been released. Candidates can check their result, category-wise cut-off marks, and direct PDF links below.`)
+                      ? (() => {
+                          const portalHost = editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'आधिकारिक पोर्टल';
+                          const orgDisplay = editablePost.departmentHi || editablePost.department || editablePost.organization;
+                          const nextStageText = Array.isArray(editablePost.selectionProcessHi) && editablePost.selectionProcessHi.length > 0
+                            ? editablePost.selectionProcessHi.join(' → ')
+                            : 'दस्तावेज सत्यापन एवं अंतिम चयन';
+                          return isHi
+                            ? `${orgDisplay} द्वारा ${shortJobName} का आधिकारिक परिणाम ${notificationDateDisplay} को ${portalHost} पर घोषित किया गया है।${editablePost.descriptionHi ? ` ${editablePost.descriptionHi}` : ''} इस भर्ती के अगले चयन चरण (${nextStageText}), श्रेणीवार कट-ऑफ अंक, रिजल्ट चेक करने की प्रक्रिया एवं डायरेक्ट डाउनलोड लिंक इस पोस्ट के विवरण अनुसार नीचे दिए गए हैं।`
+                            : `${orgDisplay} declared ${shortJobName} on ${notificationDateDisplay} via ${portalHost}. Check post-specific cut-off details, next selection stage (${nextStageText}), step-by-step checking instructions, and official links below.`;
+                        })()
                       : (isHi 
                           ? `इस भर्ती के लिए आधिकारिक अधिसूचना ${notificationDateDisplay} को जारी की गई थी और ऑनलाइन आवेदन ${applyStartDateDisplay} से प्रारंभ हो चुके हैं। इच्छुक व पात्र अभ्यर्थी निर्धारित अंतिम तिथि ${applyLastDateDisplay} तक आधिकारिक पोर्टल पर जाकर ऑनलाइन आवेदन कर सकते हैं। भर्ती के एडमिट कार्ड ${admitCardDateDisplay} को जारी होंगे तथा परीक्षा ${examDateDisplay} को आयोजित की जाएगी। भर्ती से संबंधित विस्तृत विवरण जैसे शैक्षणिक योग्यता, आयु सीमा, आवेदन शुल्क, चयन प्रक्रिया और महत्वपूर्ण तिथियां नीचे दी गई हैं।`
                           : `Official notification was released on ${notificationDateDisplay} and online applications began on ${applyStartDateDisplay}. The last date to submit the application form is ${applyLastDateDisplay}. Admit cards will be released on ${admitCardDateDisplay} and examination will be conducted on ${examDateDisplay}. Check the detailed overview, eligibility criteria, application fee, and direct links below.`)}
@@ -1936,6 +2112,164 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   const key = sectionKey === 'fee' ? 'application_fee' : sectionKey === 'salary' ? 'salary_table' : sectionKey;
 
                   switch (key) {
+                    case 'result_overview': {
+                      const portalHost =
+                        editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') ||
+                        'आधिकारिक पोर्टल';
+                      const isPlaceholder = (val: string | undefined, placeholders: string[]) => {
+                        if (!val || !val.trim()) return true;
+                        return placeholders.some((p) => val.trim().toLowerCase() === p.toLowerCase());
+                      };
+                      const selectionSummary =
+                        Array.isArray(editablePost.selectionProcessHi) && editablePost.selectionProcessHi.length > 0
+                          ? editablePost.selectionProcessHi.join(' → ')
+                          : '';
+                      const resultOverviewRows = [
+                        {
+                          label: 'भर्ती / परीक्षा परिणाम का नाम',
+                          val: editablePost.postNameHi || editablePost.postName || shortJobName,
+                          isEdit: true,
+                          keyName: 'postNameHi',
+                          show: true
+                        },
+                        {
+                          label: 'आयोजक संस्था / भर्ती बोर्ड',
+                          val: editablePost.departmentHi || editablePost.department || editablePost.organization,
+                          isEdit: true,
+                          keyName: 'departmentHi',
+                          show: true
+                        },
+                        {
+                          label: 'विज्ञापन / संदर्भ संख्या',
+                          val: editablePost.advtNo || '',
+                          isEdit: true,
+                          keyName: 'advtNo',
+                          show: !isPlaceholder(editablePost.advtNo, ['विज्ञप्ति अनुसार', 'official notice 2026'])
+                        },
+                        {
+                          label: 'घोषित कुल पद',
+                          val: String(editablePost.totalPosts || ''),
+                          isEdit: true,
+                          keyName: 'totalPosts',
+                          show: !isPlaceholder(String(editablePost.totalPosts || ''), ['विभिन्न पद', 'विभिन्न', 'various posts'])
+                        },
+                        {
+                          label: 'परिणाम स्थिति (Result Status)',
+                          val: editablePost.status === 'result_declared' ? 'आधिकारिक परिणाम घोषित (Result Declared)' : 'परिणाम अपडेट जारी',
+                          isEdit: false,
+                          show: true
+                        },
+                        {
+                          label: 'परिणाम जारी तिथि (Declared Date)',
+                          val: notificationDateDisplay,
+                          isEdit: false,
+                          show: !isPlaceholder(notificationDateDisplay, ['शीघ्र', 'यथासमय घोषित'])
+                        },
+                        {
+                          label: 'निर्धारित शैक्षणिक योग्यता',
+                          val: editablePost.qualificationDetailsHi || editablePost.qualificationDetails || '',
+                          isEdit: true,
+                          keyName: 'qualificationDetailsHi',
+                          show: !isPlaceholder(editablePost.qualificationDetailsHi || editablePost.qualificationDetails, ['आधिकारिक नोटिफिकेशन देखें।', 'refer to official notification.'])
+                        },
+                        {
+                          label: 'वेतनमान (Pay Scale)',
+                          val: editablePost.salaryHi || editablePost.salary || '',
+                          isEdit: true,
+                          keyName: 'salaryHi',
+                          show: !isPlaceholder(editablePost.salaryHi || editablePost.salary, ['नियमानुसार वेतनमान देय', 'as per govt pay matrix'])
+                        },
+                        {
+                          label: 'चयन प्रक्रिया / अगला चरण',
+                          val: selectionSummary,
+                          isEdit: false,
+                          show: Boolean(selectionSummary)
+                        },
+                        {
+                          label: 'कार्यक्षेत्र / स्थान',
+                          val: editablePost.jobLocation || '',
+                          isEdit: true,
+                          keyName: 'jobLocation',
+                          show: Boolean(editablePost.jobLocation && editablePost.jobLocation.trim())
+                        }
+                      ].filter((r) => r.show);
+
+                      return (
+                        <div key="result_overview">
+                          <div className="flex items-center justify-between gap-2 mb-2 pt-2">
+                            <EditableText
+                              as="h2"
+                              value={getSectionTitle('result_overview', `${shortJobName} संक्षिप्त विवरण (Result Overview)`)}
+                              onChange={(val) => setSectionTitle('result_overview', val)}
+                              titlePrefix="रिजल्ट विवरण शीर्षक"
+                              className="headlight font-bold text-slate-900"
+                              style={{
+                                fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                                fontSize: '11.5pt',
+                                color: '#0f172a'
+                              }}
+                            />
+                            <a
+                              href={getWhatsAppShareUrl(editablePost)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs rounded shadow-2xs transition cursor-pointer active:scale-95"
+                              title="WhatsApp पर रिजल्ट विवरण शेयर करें"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 fill-white text-[#25D366]" />
+                              <span>शेयर करें</span>
+                            </a>
+                          </div>
+                          <div className="wp-block-table overflow-x-auto border border-slate-300 bg-white rounded-md">
+                            <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
+                              <thead>
+                                <tr className="bg-slate-50 border-b border-slate-300">
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-200 w-1/3">भर्ती विवरण</th>
+                                  <th className="p-2.5 sm:p-3 font-bold text-slate-800">जानकारी</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                {resultOverviewRows.map((row, idx) => (
+                                  <tr key={idx} className="border-b border-slate-200 last:border-b-0">
+                                    <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200 w-1/3">
+                                      {row.label}
+                                    </td>
+                                    <td className="p-2.5 sm:p-3 text-slate-700 bg-white font-semibold">
+                                      {row.isEdit && row.keyName ? (
+                                        <EditableText
+                                          value={row.val}
+                                          onChange={(val) => setEditablePost((prev) => ({ ...prev, [row.keyName!]: val }))}
+                                          titlePrefix={row.label}
+                                        />
+                                      ) : (
+                                        <span>{row.val}</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                                <tr>
+                                  <td className="p-2.5 sm:p-3 font-bold text-slate-800 bg-white border-r border-slate-200">
+                                    आधिकारिक वेबसाइट / रिजल्ट पोर्टल
+                                  </td>
+                                  <td className="p-2.5 sm:p-3 bg-white">
+                                    <a
+                                      href={editablePost.officialLinks?.resultPdfUrl || editablePost.officialLinks?.officialWebsiteUrl || 'https://rajasthan.gov.in'}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-800 underline font-semibold inline-flex items-center gap-1"
+                                    >
+                                      <span>{portalHost}</span>
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     case 'overview': {
                       if (isSectionDeleted('overview')) return null;
 
@@ -2682,6 +3016,71 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                       );
                     }
 
+                    case 'result_how_to_check': {
+                      const portalHost =
+                        editablePost.officialLinks?.officialWebsiteUrl?.replace(/^https?:\/\//, '').replace(/\/.*$/, '') ||
+                        'आधिकारिक वेबसाइट';
+                      const resultUrl =
+                        editablePost.officialLinks?.resultPdfUrl ||
+                        editablePost.officialLinks?.officialWebsiteUrl ||
+                        'https://rajasthan.gov.in';
+                      const checkSteps = getHowToCheckResultSteps(editablePost, isHi);
+                      return (
+                        <div key="result_how_to_check" className="space-y-3 pt-2">
+                          <EditableText
+                            as="h2"
+                            value={getSectionTitle('result_how_to_check', `${shortJobName} रिजल्ट कैसे चेक करें?`)}
+                            onChange={(val) => setSectionTitle('result_how_to_check', val)}
+                            titlePrefix="रिजल्ट चेक करने की विधि शीर्षक"
+                            className="headlight font-bold text-slate-900"
+                            style={{
+                              fontFamily: "'Mangal', 'Noto Sans Devanagari', sans-serif",
+                              fontSize: '11.5pt',
+                              color: '#0f172a'
+                            }}
+                          />
+                          <p className="post-item text-slate-800" style={{ fontSize: '12pt' }}>
+                            <strong>{editablePost.departmentHi || editablePost.department || editablePost.organization}</strong> द्वारा जारी{' '}
+                            <strong>{editablePost.postNameHi || shortJobName}</strong> परिणाम ऑनलाइन जांचने के लिए निम्नलिखित चरण अपनाएं:
+                          </p>
+                          <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                            {checkSteps.map((step, idx) => (
+                              <li key={idx}>
+                                {isDirectEditMode ? (
+                                  <EditableText
+                                    value={step}
+                                    onChange={(val) => {
+                                      const list = [...checkSteps];
+                                      list[idx] = val;
+                                      setEditablePost((prev) => ({ ...prev, howToApplyHi: list }));
+                                    }}
+                                    titlePrefix={`रिजल्ट चरण ${idx + 1}`}
+                                  />
+                                ) : (
+                                  <span>{step}</span>
+                                )}
+                              </li>
+                            ))}
+                          </ol>
+                          <div className="p-3 sm:p-3.5 rounded-md bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="text-xs sm:text-sm text-emerald-950 font-semibold space-y-0.5">
+                              <div>अधिकृत रिजल्ट पोर्टल: <span className="font-bold">{portalHost}</span></div>
+                              <div>परिणाम घोषित तिथि: <span className="font-bold">{notificationDateDisplay}</span></div>
+                            </div>
+                            <a
+                              href={resultUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-[#046c4e] hover:bg-[#03543f] text-white font-bold text-xs sm:text-sm rounded-md shadow-2xs transition shrink-0"
+                            >
+                              <span>रिजल्ट / मेरिट लिस्ट देखें</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    }
+
                     case 'yojana_info': {
                       if (!isYojana || isSectionDeleted('yojana_info')) return null;
                       const genInfo = editablePost.yojanaGeneralInfo;
@@ -2808,7 +3207,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     case 'latest_news': {
                       if (isYojana || isSectionDeleted('latest_news')) return null;
                       const newsList = Array.isArray(editablePost?.latestNews) ? editablePost.latestNews : [];
-                      if (isFlexCategory && newsList.length === 0) return null;
+                      if ((isFlexCategory || isResultPost) && newsList.length === 0) return null;
 
                       return (
                         <div key="latest_news" className="my-4 border border-slate-300 bg-white rounded-md shadow-2xs overflow-hidden">
@@ -2816,7 +3215,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             <div className="flex items-center gap-2">
                               <Bell className="w-4 h-4 text-slate-600 inline-block" />
                               <h2 className="font-bold uppercase tracking-wide text-slate-900" style={{ fontSize: '11.5pt' }}>
-                                <span>{shortJobName} Latest News (ताज़ा समाचार)</span>
+                                <span>{shortJobName} {isResultPost ? 'परिणाम अपडेट (Result Update)' : 'Latest News (ताज़ा समाचार)'}</span>
                               </h2>
                             </div>
 
@@ -2946,11 +3345,22 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                     case 'dates': {
                       if (isSectionDeleted('dates')) return null;
                       const rawDatesList = Array.isArray(editablePost?.importantDates) ? editablePost.importantDates : [];
-                      const datesList = isFlexCategory
+                      const datesList = isResultPost
+                        ? rawDatesList.filter((d: any) => {
+                            const val = String(d?.value || '').trim();
+                            const k = String(d?.key || '').toLowerCase();
+                            return (
+                              Boolean(val) &&
+                              val !== 'शीघ्र' &&
+                              val !== 'यथासमय घोषित' &&
+                              !['applystartdate', 'applylastdate', 'feelastdate', 'admitcarddate'].includes(k)
+                            );
+                          })
+                        : isFlexCategory
                         ? rawDatesList.filter((d: any) => d.value && d.value.trim() !== '' && d.value !== 'शीघ्र' && d.value !== 'यथासमय घोषित')
                         : rawDatesList;
 
-                      if (isFlexCategory && datesList.length === 0) return null;
+                      if ((isFlexCategory || isResultPost) && datesList.length === 0) return null;
 
                       return (
                         <div key="dates" className="space-y-2">
@@ -2963,7 +3373,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              {shortJobName} Important Dates
+                              {isResultPost ? `${shortJobName} परीक्षा व परिणाम तिथियाँ (Result Schedule)` : `${shortJobName} Important Dates`}
                             </h2>
                             <div className="flex items-center gap-1.5">
                               {renderSectionShareButton('dates', `${shortJobName} Important Dates`)}
@@ -3233,8 +3643,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                     case 'qualification': {
                       if (isSectionDeleted('qualification') || isYojana) return null;
-                      const qualText = vacancy.qualificationDetailsHi || vacancy.qualificationDetails;
-                      if (isFlexCategory && !qualText) return null;
+                      const qualText = editablePost.qualificationDetailsHi || editablePost.qualificationDetails || vacancy.qualificationDetailsHi || vacancy.qualificationDetails;
+                      if ((isFlexCategory || isResultPost) && !qualText) return null;
 
                       return (
                         <div key="qualification">
@@ -3247,43 +3657,61 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              {shortJobName} शैक्षणिक योग्यता
+                              {isResultPost ? `${shortJobName} निर्धारित शैक्षणिक योग्यता` : `${shortJobName} शैक्षणिक योग्यता`}
                             </h2>
                             <div className="flex items-center gap-1.5">
                               {renderSectionShareButton('qualification', `${shortJobName} शैक्षणिक योग्यता`)}
                               {renderAdminSectionControls('qualification', 'शैक्षणिक योग्यता')}
                             </div>
                           </div>
-                          <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
-                            <li>
-                              <EditableText
-                                value={(editablePost as any).qualificationNote1 || 'मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।'}
-                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote1: val } as any))}
-                                titlePrefix="योग्यता नियम 1"
-                              />
-                            </li>
-                            <li>
-                              <EditableText
-                                value={editablePost.qualificationDetailsHi || editablePost.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}
-                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
-                                titlePrefix="मुख्य शैक्षणिक योग्यता"
-                              />
-                            </li>
-                            <li>
-                              <EditableText
-                                value={(editablePost as any).qualificationNote2 || 'आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।'}
-                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote2: val } as any))}
-                                titlePrefix="योग्यता नियम 2"
-                              />
-                            </li>
-                            <li>
-                              <EditableText
-                                value={(editablePost as any).qualificationNote3 || 'विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।'}
-                                onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote3: val } as any))}
-                                titlePrefix="योग्यता नियम 3"
-                              />
-                            </li>
-                          </ul>
+                          {isResultPost ? (
+                            <div className="p-3.5 rounded-md border border-slate-300 bg-white space-y-2 text-slate-700" style={{ fontSize: '12pt' }}>
+                              <p className="post-item">
+                                <EditableText
+                                  value={qualText}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
+                                  titlePrefix="मुख्य शैक्षणिक योग्यता"
+                                />
+                              </p>
+                              {(editablePost.salaryHi || editablePost.salary) && (
+                                <p className="post-item text-sm text-slate-800">
+                                  <strong>वेतनमान / पे मैट्रिक्स: </strong>
+                                  <span>{editablePost.salaryHi || editablePost.salary}</span>
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <ul className="list-disc pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
+                              <li>
+                                <EditableText
+                                  value={(editablePost as any).qualificationNote1 || 'मान्यता प्राप्त बोर्ड या संस्थान से संबंधित शैक्षणिक परीक्षा उत्तीर्ण हो।'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote1: val } as any))}
+                                  titlePrefix="योग्यता नियम 1"
+                                />
+                              </li>
+                              <li>
+                                <EditableText
+                                  value={editablePost.qualificationDetailsHi || editablePost.qualificationDetails || '10वीं / 12वीं / स्नातक अथवा संबंधित विषय में आवश्यक डिग्री/डिप्लोमा।'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationDetailsHi: val, qualificationDetails: val }))}
+                                  titlePrefix="मुख्य शैक्षणिक योग्यता"
+                                />
+                              </li>
+                              <li>
+                                <EditableText
+                                  value={(editablePost as any).qualificationNote2 || 'आवेदन जमा करने की अंतिम तिथि तक सभी आवश्यक शैक्षणिक एवं तकनीकी योग्यता पूर्ण होनी चाहिए।'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote2: val } as any))}
+                                  titlePrefix="योग्यता नियम 2"
+                                />
+                              </li>
+                              <li>
+                                <EditableText
+                                  value={(editablePost as any).qualificationNote3 || 'विस्तृत एवं पदवार शैक्षणिक योग्यता की जानकारी आधिकारिक नोटिफिकेशन से प्राप्त करें।'}
+                                  onChange={(val) => setEditablePost(prev => ({ ...prev, qualificationNote3: val } as any))}
+                                  titlePrefix="योग्यता नियम 3"
+                                />
+                              </li>
+                            </ul>
+                          )}
                           {getSectionTable('qualification') && renderCustomTableComponent(
                             getSectionTable('qualification')!,
                             (updatedTable) => setSectionTable('qualification', updatedTable),
@@ -3459,9 +3887,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           ];
                       const stepsList = (Array.isArray(editablePost.selectionProcessHi) && editablePost.selectionProcessHi.length > 0)
                         ? editablePost.selectionProcessHi
+                        : isResultPost
+                        ? []
                         : defaultSelectionSteps;
 
-                      if (isFlexCategory && (!stepsList || stepsList.length === 0)) return null;
+                      if ((isFlexCategory || isResultPost) && (!stepsList || stepsList.length === 0)) return null;
 
                       return (
                         <div key="selection_process">
@@ -3474,7 +3904,11 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              {isYojana ? `${shortJobName} सत्यापन एवं लाभ प्राप्ति प्रक्रिया` : 'चयन प्रक्रिया और मेरिट की गणना'}
+                              {isYojana
+                                ? `${shortJobName} सत्यापन एवं लाभ प्राप्ति प्रक्रिया`
+                                : isResultPost
+                                ? `${shortJobName} रिजल्ट के बाद आगे की चयन प्रक्रिया`
+                                : 'चयन प्रक्रिया और मेरिट की गणना'}
                             </h2>
                             <div className="flex items-center gap-1.5">
                               {renderSectionShareButton('selection_process', isYojana ? `${shortJobName} लाभ प्राप्ति प्रक्रिया` : `${shortJobName} चयन प्रक्रिया`)}
@@ -3484,6 +3918,8 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
                             {isYojana
                               ? 'इस योजना के अंतर्गत आवेदन सत्यापन तथा लाभ वितरण निम्नलिखित चरणों के अनुसार किया जाता है:'
+                              : isResultPost
+                              ? 'इस परीक्षा परिणाम में सफल घोषित अभ्यर्थियों की आगामी चयन प्रक्रिया इस प्रकार रहेगी:'
                               : 'इस भर्ती में चयन प्रक्रिया निम्नलिखित चरणों के आधार पर की जाएगी:'}
                           </p>
                           <ol className="list-decimal pl-5 space-y-1.5 text-slate-700" style={{ fontSize: '12pt' }}>
@@ -3581,7 +4017,14 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
 
                     case 'documents': {
                       if (isSectionDeleted('documents')) return null;
-                      if (isFlexCategory && (!documentsList || documentsList.length === 0)) return null;
+                      const activeDocs = isResultPost
+                        ? (Array.isArray(editablePost.requiredDocumentsHi) && editablePost.requiredDocumentsHi.length > 0
+                            ? editablePost.requiredDocumentsHi
+                            : Array.isArray(editablePost.requiredDocuments) && editablePost.requiredDocuments.length > 0
+                            ? editablePost.requiredDocuments
+                            : [])
+                        : documentsList;
+                      if ((isFlexCategory || isResultPost) && (!activeDocs || activeDocs.length === 0)) return null;
 
                       return (
                         <div key="documents">
@@ -3594,7 +4037,9 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                 color: '#0f172a'
                               }}
                             >
-                              आवेदन के लिए आवश्यक दस्तावेज
+                              {isResultPost
+                                ? `${shortJobName} दस्तावेज सत्यापन / अगले चरण हेतु आवश्यक दस्तावेज`
+                                : 'आवेदन के लिए आवश्यक दस्तावेज'}
                             </h2>
                             <div className="flex items-center gap-1.5">
                               {renderSectionShareButton('documents', `${shortJobName} आवश्यक दस्तावेज`)}
@@ -3604,17 +4049,19 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                           <p className="post-item mb-2" style={{ fontSize: '12pt' }}>
                             {isYojana
                               ? 'योजना के अंतर्गत ऑनलाइन आवेदन करने से पूर्व लाभार्थी निम्नलिखित आवश्यक दस्तावेज तैयार रखें:'
+                              : isResultPost
+                              ? 'इस परीक्षा परिणाम में सफल अभ्यर्थी आगामी चयन चरण व दस्तावेज सत्यापन (Document Verification) हेतु निम्नलिखित मूल दस्तावेज तैयार रखें:'
                               : 'ऑनलाइन फॉर्म भरने से पूर्व अभ्यर्थी पद की अधिकतम योग्यता अनुसार निम्नलिखित दस्तावेज तैयार रखें:'}
                           </p>
                           <ul className="list-disc pl-5 space-y-1.5 text-slate-700 mb-3" style={{ fontSize: '12pt' }}>
-                            {documentsList.map((doc, i) => (
+                            {activeDocs.map((doc, i) => (
                               <li key={i} className="group">
                                 {isDirectEditMode ? (
                                   <div className="flex items-center gap-2">
                                     <EditableText
                                       value={doc}
                                       onChange={(val) => {
-                                        const list = [...documentsList];
+                                        const list = [...activeDocs];
                                         list[i] = val;
                                         setEditablePost({ ...editablePost, requiredDocumentsHi: list });
                                       }}
@@ -3623,7 +4070,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const list = documentsList.filter((_, idx) => idx !== i);
+                                        const list = activeDocs.filter((_, idx) => idx !== i);
                                         setEditablePost({ ...editablePost, requiredDocumentsHi: list });
                                       }}
                                       className="text-rose-500 hover:text-rose-700 text-xs px-1 cursor-pointer"
@@ -3642,7 +4089,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             <button
                               type="button"
                               onClick={() => {
-                                const list = [...documentsList, 'नया आवश्यक शैक्षणिक/श्रेणी दस्तावेज'];
+                                const list = [...activeDocs, 'नया आवश्यक शैक्षणिक/श्रेणी दस्तावेज'];
                                 setEditablePost({ ...editablePost, requiredDocumentsHi: list });
                               }}
                               className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1 rounded border border-slate-300 mb-3 flex items-center gap-1 cursor-pointer"
@@ -3652,7 +4099,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                             </button>
                           )}
 
-                          {!isFlexCategory && (
+                          {!isFlexCategory && !isResultPost && (
                             <div className="wp-block-table overflow-x-auto border border-slate-300 rounded-md bg-white">
                               <table className="w-full border-collapse text-left" style={{ fontSize: '12pt' }}>
                                 <thead>
@@ -3831,11 +4278,15 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                       ? `${shortJobName} आवेदन प्रारंभ (Scheme Apply Start)`
                                       : isAdmitCardPost
                                       ? `${shortJobName} एडमिट कार्ड जारी / परीक्षा तिथि`
+                                      : isResultPost
+                                      ? `${shortJobName} परिणाम स्थिति / जारी तिथि`
                                       : `Start ${shortJobName} form (आवेदन प्रारंभ)`}
                                   </td>
                                   <td className="p-2.5 sm:p-3 font-semibold text-slate-800 w-1/2 bg-white">
                                     {isAdmitCardPost
                                       ? `${admitCardDateDisplay} (Exam: ${examDateDisplay})`
+                                      : isResultPost
+                                      ? `परिणाम घोषित (${notificationDateDisplay})`
                                       : applyStartDateDisplay}
                                   </td>
                                 </tr>
@@ -4032,7 +4483,7 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                                     </tr>
                                   );
                                 })}
-                                {!isAdmitCardPost && !(Array.isArray(editablePost?.directLinks) && editablePost.directLinks.some((l: any) => typeof l?.url === 'string' && l.url.includes('photo-signature-resize-tool'))) && (
+                                {!isAdmitCardPost && !isResultPost && !(Array.isArray(editablePost?.directLinks) && editablePost.directLinks.some((l: any) => typeof l?.url === 'string' && l.url.includes('photo-signature-resize-tool'))) && (
                                   <tr className="border-b border-slate-300 last:border-b-0">
                                     <td className="p-2.5 sm:p-3 font-bold text-slate-800 border-r border-slate-300 w-1/2 bg-white">
                                       {isHi
@@ -4300,15 +4751,37 @@ export const VacancyDetailPage: React.FC<VacancyDetailPageProps> = ({
                   <Folder className="w-4 h-4 text-[#0056b3]" />
                   <span className="text-slate-700 font-bold">Categories:</span>
                   <a
-                    href={isYojana ? '/?category=scheme' : '/?category=latest_job'}
+                    href={
+                      isYojana
+                        ? '/?category=scheme'
+                        : isResultPost
+                        ? '/?category=result'
+                        : isAdmitCardPost
+                        ? '/?category=admit_card'
+                        : '/?category=latest_job'
+                    }
                     onClick={(e) => {
                       e.preventDefault();
-                      onSelectCategory?.(isYojana ? 'scheme' : 'latest_job');
+                      onSelectCategory?.(
+                        isYojana
+                          ? 'scheme'
+                          : isResultPost
+                          ? 'result'
+                          : isAdmitCardPost
+                          ? 'admit_card'
+                          : 'latest_job'
+                      );
                     }}
                     className="text-[#0056b3] hover:text-blue-800 hover:underline cursor-pointer font-semibold transition"
                     style={{ color: '#0056b3' }}
                   >
-                    {isYojana ? 'Sarkari Yojana' : 'Latest Job'}
+                    {isYojana
+                      ? 'Sarkari Yojana'
+                      : isResultPost
+                      ? 'Result'
+                      : isAdmitCardPost
+                      ? 'Admit Card'
+                      : 'Latest Job'}
                   </a>
                   <span className="text-slate-400">,</span>
                   <a
