@@ -50,7 +50,6 @@ const KNOWN_CATEGORIES = new Set([
 
 const ACTIVE_VACANCY_SLUGS: readonly string[] = [
   'uptet-2026-notification-online-form',
-  'csir-npl-mts-recruitment-2026',
   'rrc-nr-apprentice-recruitment-2026',
   'dsssb-sweeper-chowkidar-recruitment-2026',
   'indian-army-tes-57-recruitment-2026',

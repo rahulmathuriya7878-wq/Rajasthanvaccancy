@@ -4,6 +4,7 @@ import React, { lazy, Suspense, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getPortalSectionTitle, usePortal, type PolicyViewType } from '../context/PortalContext';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
+import { filterVacanciesByCategory, normalizePortalCategory } from '../utils/categoryFilter';
 import { FastUpdatesGrid } from './FastUpdatesGrid';
 
 const FullPagePostView = lazy(() =>
@@ -114,16 +115,21 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
     );
   }, [initialVacancyId, vacancies]);
 
-  const initialResolvedCategory = useMemo(() => {
-    if (!initialCategory || initialCategory.toUpperCase() === 'ALL') return 'ALL';
-    return initialCategory === 'ugc_net' || initialCategory === 'job' ? 'latest_job' : initialCategory;
-  }, [initialCategory]);
+  const initialResolvedCategory = useMemo(
+    () => normalizePortalCategory(initialCategory),
+    [initialCategory]
+  );
 
   const effectivePolicy = hasHydrated ? activePolicyView : (activePolicyView ?? initialResolvedPolicy);
   const effectiveVacancy = hasHydrated ? selectedVacancy : (selectedVacancy ?? initialResolvedVacancy);
   const effectiveCategory = hasHydrated
     ? selectedCategory
     : (selectedCategory !== 'ALL' ? selectedCategory : initialResolvedCategory);
+
+  const categoryArchiveVacancies = useMemo(
+    () => filterVacanciesByCategory(vacancies, effectiveCategory, searchQuery),
+    [vacancies, effectiveCategory, searchQuery]
+  );
 
   return (
     <div className="w-full space-y-6">
@@ -185,7 +191,7 @@ export const PortalHomeClient: React.FC<PortalHomeClientProps> = ({
             categoryKey={effectiveCategory}
             categoryTitle={getPortalSectionTitle(effectiveCategory, lang)}
             categoryTitleHi={getPortalSectionTitle(effectiveCategory, lang)}
-            vacancies={filteredVacancies}
+            vacancies={categoryArchiveVacancies}
             allVacancies={vacancies}
             lang={lang}
             onSelectVacancy={handleSelectVacancy}

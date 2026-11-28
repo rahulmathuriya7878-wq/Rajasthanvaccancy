@@ -2,10 +2,10 @@ import { VacancyItem } from '../types';
 
 export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
   id: 'rajasthan-cet-admit-card-2026',
-  title: 'Rajasthan CET Admit Card 2026: Senior Secondary (12th Level) Hall Ticket Releasing on 26 November 2026, Exam 01–03 Dec',
-  titleHi: 'Rajasthan CET Admit Card 2026: राजस्थान सीईटी एडमिट कार्ड 26 नवंबर को जारी होंगे, परीक्षा 01 से 03 दिसंबर 2026 तक',
-  shortTitle: 'Rajasthan CET Admit Card 2026 (26 Nov)',
-  shortTitleHi: 'राजस्थान CET एडमिट कार्ड 2026 (26 नवंबर को जारी)',
+  title: 'Rajasthan CET Admit Card 2026: राजस्थान सीईटी एडमिट कार्ड जारी',
+  titleHi: 'Rajasthan CET Admit Card 2026: राजस्थान सीईटी एडमिट कार्ड जारी',
+  shortTitle: 'Rajasthan CET Admit Card 2026 Released',
+  shortTitleHi: 'राजस्थान CET एडमिट कार्ड 2026 जारी',
   organization: 'RSMSSB',
   department: 'Rajasthan Staff Selection Board (RSSB / RSMSSB), Jaipur',
   departmentHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB), जयपुर',
@@ -23,10 +23,10 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
   qualification: ['12th'],
   qualificationDetails: '12th Pass (Senior Secondary) candidates who submitted the RSSB CET 2026 online application form.',
   qualificationDetailsHi: 'राजस्थान कर्मचारी चयन बोर्ड की CET (12वीं स्तर) 2026 परीक्षा हेतु सफलतापूर्वक आवेदन करने वाले अभ्यर्थी।',
-  briefSummary: 'Rajasthan CET (12th Level) Admit Card 2026 will be released on 26 November 2026 by RSSB/RSMSSB ahead of the 01–03 December 2026 exam.',
-  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB) द्वारा समान पात्रता परीक्षा (CET सीनियर सेकेंडरी / 12वीं स्तर) 2026 के प्रवेश पत्र (Admit Card) 26 नवंबर 2026 को जारी किए जाएंगे। बोर्ड के संशोधित परीक्षा कैलेंडर के अनुसार परीक्षा 01, 02 एवं 03 दिसंबर 2026 को आयोजित की जाएगी। अभ्यर्थी अपने SSO ID (sso.rajasthan.gov.in) व एप्लीकेशन नंबर से एडमिट कार्ड डाउनलोड कर सकेंगे।',
-  description: 'Download Rajasthan CET 12th Level Admit Card 2026 releasing on 26 November 2026 via sso.rajasthan.gov.in and rssb.rajasthan.gov.in.',
-  descriptionHi: 'राजस्थान CET 12th लेवल परीक्षा में शामिल होने वाले लाखों अभ्यर्थियों के लिए बड़ी खबर है। RSSB द्वारा 26 नवंबर 2026 को ऑनलाइन ई-एडमिट कार्ड अपलोड कर दिए जाएंगे। परीक्षा 01 दिसंबर से 03 दिसंबर 2026 तक निर्धारित केंद्रों पर दो पारियों में संपन्न होगी। परीक्षा केंद्र पर प्रवेश पत्र के साथ मूल फोटो पहचान पत्र (आधार कार्ड/पैन कार्ड/वोटर आईडी) और नवीनतम रंगीन फोटो साथ ले जाना अनिवार्य होगा।',
+  briefSummary: 'Rajasthan CET (12th Level) Admit Card 2026 has been released by RSSB/RSMSSB ahead of the 01–03 December 2026 exam.',
+  briefSummaryHi: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB / RSMSSB) द्वारा समान पात्रता परीक्षा (CET सीनियर सेकेंडरी / 12वीं स्तर) 2026 के प्रवेश पत्र (Admit Card) जारी कर दिए गए हैं। बोर्ड के संशोधित परीक्षा कैलेंडर के अनुसार परीक्षा 01, 02 एवं 03 दिसंबर 2026 को आयोजित की जाएगी। अभ्यर्थी अपने SSO ID (sso.rajasthan.gov.in) व एप्लीकेशन नंबर से एडमिट कार्ड डाउनलोड कर सकते हैं।',
+  description: 'Download Rajasthan CET 12th Level Admit Card 2026 released via sso.rajasthan.gov.in and rssb.rajasthan.gov.in.',
+  descriptionHi: 'राजस्थान CET 12th लेवल परीक्षा में शामिल होने वाले लाखों अभ्यर्थियों के लिए बड़ी खबर है। RSSB द्वारा ऑनलाइन ई-एडमिट कार्ड जारी कर दिए गए हैं। परीक्षा 01 दिसंबर से 03 दिसंबर 2026 तक निर्धारित केंद्रों पर दो पारियों में संपन्न होगी। परीक्षा केंद्र पर प्रवेश पत्र के साथ मूल फोटो पहचान पत्र (आधार कार्ड/पैन कार्ड/वोटर आईडी) और नवीनतम रंगीन फोटो साथ ले जाना अनिवार्य होगा।',
   jobLocation: 'Rajasthan (All Districts Exam Centres)',
   salary: 'पात्रता परीक्षा (Rajasthan Govt 12th Level Vacancies)',
   salaryHi: 'राजस्थान सरकार की 12वीं स्तर भर्तियों (पटवारी/पुलिस/एलडीसी/वनपाल) हेतु पात्रता परीक्षा',
@@ -43,10 +43,10 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
   latestNews: [
     {
       id: 'cet-admit-26-nov',
-      date: '2026-11-19',
-      badge: 'ADMIT CARD DATE',
-      headline: 'Rajasthan CET एडमिट कार्ड 26 नवंबर 2026 को जारी होंगे',
-      details: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा CET (सीनियर सेकेंडरी 12वीं स्तर) परीक्षा 01, 02 व 03 दिसंबर 2026 को आयोजित की जाएगी, जिसके प्रवेश पत्र 26 नवंबर 2026 को SSO पोर्टल एवं बोर्ड की वेबसाइट पर जारी होंगे।',
+      date: '2026-11-26',
+      badge: 'ADMIT CARD OUT',
+      headline: 'Rajasthan CET एडमिट कार्ड 2026 जारी',
+      details: 'राजस्थान कर्मचारी चयन बोर्ड (RSSB) द्वारा CET (सीनियर सेकेंडरी 12वीं स्तर) परीक्षा 01, 02 व 03 दिसंबर 2026 को आयोजित की जाएगी, जिसके प्रवेश पत्र SSO पोर्टल एवं बोर्ड की वेबसाइट पर जारी कर दिए गए हैं।',
       linkUrl: 'https://sso.rajasthan.gov.in/',
       linkText: 'SSO Portal पर जाएं',
       isHighlighted: true
@@ -93,7 +93,7 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
     'चरण 5: स्क्रीन पर आपका प्रवेश पत्र खुल जाएगा — परीक्षा तिथि, पारी और केंद्र की जांच कर PDF प्रिंट निकाल लें।'
   ],
   directLinks: [
-    { label: 'Download Admit Card (SSO Rajasthan Portal - 26 Nov से सक्रिय)', actionText: 'SSO Portal', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
+    { label: 'Download Admit Card (SSO Rajasthan Portal)', actionText: 'SSO Portal', url: 'https://sso.rajasthan.gov.in/', isPrimary: true },
     { label: 'RSSB Official Website (Admit Card Section)', actionText: 'Visit RSSB', url: 'https://rssb.rajasthan.gov.in/' },
     { label: 'Join Official WhatsApp Channel', actionText: 'Join WhatsApp', url: 'https://whatsapp.com/channel/0029VbEOVh74dTnTUUmjcS0j' },
     { label: 'Join Telegram Channel', actionText: 'Join Telegram', url: 'https://t.me/rajsthan_vacancy' }
@@ -105,10 +105,10 @@ export const RAJASTHAN_CET_ADMIT_CARD_NOV_2026: VacancyItem = {
   },
   faqs: [
     {
-      q: 'When will Rajasthan CET Admit Card 2026 be released?',
-      qHi: 'राजस्थान CET एडमिट कार्ड 2026 कब जारी होगा?',
-      a: 'Rajasthan CET (12th Level) Admit Card 2026 will be released on 26 November 2026.',
-      aHi: 'राजस्थान CET (सीनियर सेकेंडरी 12वीं स्तर) एडमिट कार्ड 26 नवंबर 2026 को आधिकारिक रूप से जारी किए जाएंगे।'
+      q: 'Has Rajasthan CET Admit Card 2026 been released?',
+      qHi: 'क्या राजस्थान CET एडमिट कार्ड 2026 जारी हो गया है?',
+      a: 'Yes, Rajasthan CET (12th Level) Admit Card 2026 has been released on 26 November 2026.',
+      aHi: 'हाँ, राजस्थान CET (सीनियर सेकेंडरी 12वीं स्तर) एडमिट कार्ड 26 नवंबर 2026 को आधिकारिक रूप से जारी कर दिया गया है।'
     },
     {
       q: 'What are the Rajasthan CET 12th Level Exam Dates 2026?',

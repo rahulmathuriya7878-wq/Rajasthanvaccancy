@@ -6,7 +6,7 @@ import { VacancyItem, LanguageMode, CategoryType } from '../types';
 import { AdSection } from './AdSection';
 import { AdSlotWrapper } from './AdSlotWrapper';
 
-import { compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { filterVacanciesByCategory } from '../utils/categoryFilter';
 
 interface FastUpdatesGridProps {
   vacancies: VacancyItem[];
@@ -29,41 +29,14 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
 }) => {
   const isHi = lang === 'hi';
 
-  // Memoize all 6 category buckets & newest-first sorting so unrelated UI updates stay instant
+  // Memoize all 6 category buckets using the exact same strict filter as View More / CategoryArchiveView
   const { row1Sections, row2Sections } = useMemo(() => {
-    const sortByNewest = (items: VacancyItem[]) => [...items].sort(compareVacanciesNewestFirst);
-
-    const admitCards = sortByNewest(vacancies.filter((v) =>
-      v.category === 'admit_card' || v.status === 'admit_card_out'
-    ));
-
-    const results = sortByNewest(vacancies.filter((v) =>
-      v.category === 'result' || v.status === 'result_declared'
-    ));
-
-    const examDates = sortByNewest(vacancies.filter((v) =>
-      v.category === 'exam_date' || v.category === 'answer_key' || v.title.toLowerCase().includes('exam date') || v.titleHi?.includes('परीक्षा तिथि')
-    ));
-
-    const latestNews = sortByNewest(vacancies.filter((v) =>
-      v.category === 'news' || v.title.toLowerCase().includes('news') || v.tags?.includes('news') || v.title.toLowerCase().includes('chunav') || v.title.toLowerCase().includes('apprentice') || v.id?.includes('ctet')
-    ));
-
-    const sarkariYojanas = sortByNewest(vacancies.filter((v) =>
-      v.category === 'scheme' || v.organization === 'Sarkari Yojana' || v.tags?.includes('yojana')
-    ));
-
-    const latestJobs = sortByNewest(vacancies.filter((v) => {
-      if (v.category === 'latest_job' || (v as any).category === 'job' || v.category === 'ugc_net' || !v.category) {
-        return true;
-      }
-      const isAdmit = v.category === 'admit_card';
-      const isResult = v.category === 'result';
-      const isExamDate = v.category === 'exam_date';
-      const isNews = v.category === 'news';
-      const isYojana = v.category === 'scheme';
-      return !(isAdmit || isResult || isExamDate || isNews || isYojana);
-    }));
+    const latestJobs = filterVacanciesByCategory(vacancies, 'latest_job');
+    const admitCards = filterVacanciesByCategory(vacancies, 'admit_card');
+    const results = filterVacanciesByCategory(vacancies, 'result');
+    const examDates = filterVacanciesByCategory(vacancies, 'exam_date');
+    const latestNews = filterVacanciesByCategory(vacancies, 'news');
+    const sarkariYojanas = filterVacanciesByCategory(vacancies, 'scheme');
 
     return {
       row1Sections: [
@@ -205,11 +178,10 @@ export const FastUpdatesGrid: React.FC<FastUpdatesGridProps> = ({
             <a
               href={`/?category=${encodeURIComponent(sec.categoryType)}`}
               onClick={(e) => {
-                e.preventDefault();
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
                 if (onFilterCategory) {
+                  e.preventDefault();
                   onFilterCategory(sec.categoryType);
-                } else if (sec.items.length > 0) {
-                  onSelectVacancy(sec.items[0]);
                 }
               }}
               aria-label={

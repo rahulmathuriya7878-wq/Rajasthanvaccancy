@@ -10,16 +10,19 @@ import { useDynamicFaqSchema } from '../hooks/useDynamicFaqSchema';
 import { getSocialOgImageUrl } from '../utils/shareUtils';
 import {
   AUTO_DELETE_MAX_AGE_DAYS,
-  compareVacanciesNewestFirst,
   filterActivePostsWithinDays,
   isPostOlderThanDays,
 } from '../utils/dateUtils';
+import {
+  filterVacanciesByCategory,
+  normalizePortalCategory,
+} from '../utils/categoryFilter';
 import { INITIAL_VACANCIES } from '../data/mockVacancies';
 import type { VacancyItem, CategoryType, LanguageMode } from '../types';
 
 export type PolicyViewType = 'privacy' | 'terms' | 'contact' | 'about' | 'disclaimer' | 'sitemap';
 
-const STORAGE_KEY_VACANCIES = 'raj_vacancies_v32';
+const STORAGE_KEY_VACANCIES = 'raj_vacancies_v33';
 
 export function getPortalSectionTitle(cat: string, lang: LanguageMode = 'hi'): string {
   const isHi = lang === 'hi';
@@ -120,6 +123,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         'ugc-net-2026-dec',
         'bsf-si-ldce-recruitment-2026',
         'rajasthan-cet-2027-updated-recruitment',
+        'csir-npl-mts-recruitment-2026',
       ]);
 
       const mergedMap = new Map<string, VacancyItem>();
@@ -202,7 +206,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             v.id !== 'ugc-net-2026-june' &&
             v.id !== 'ugc-net-2026-dec' &&
             v.id !== 'bsf-si-ldce-recruitment-2026' &&
-            v.id !== 'rajasthan-cet-2027-updated-recruitment'
+            v.id !== 'rajasthan-cet-2027-updated-recruitment' &&
+            v.id !== 'csir-npl-mts-recruitment-2026'
         ),
         AUTO_DELETE_MAX_AGE_DAYS
       );
@@ -398,10 +403,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return;
       }
 
-      if (params.category && params.category !== 'ALL') {
+      if (params.category && params.category.toUpperCase() !== 'ALL') {
         isUnresolvedInitialUrlRef.current = false;
-        const normalizedCat = params.category === 'ugc_net' || params.category === 'job' ? 'latest_job' : params.category;
-        setSelectedCategory(normalizedCat as CategoryType);
+        const normalizedCat = normalizePortalCategory(params.category);
+        setSelectedCategory(normalizedCat);
         setActivePolicyView(null);
         setSelectedVacancy(null);
         return;
@@ -546,11 +551,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSelectedVacancy(found || null);
         setSelectedCategory('ALL');
         setActivePolicyView(null);
-      } else if (categoryParam && categoryParam !== 'ALL') {
+      } else if (categoryParam && categoryParam.toUpperCase() !== 'ALL') {
         setSelectedVacancy(null);
         setActivePolicyView(null);
-        const normalizedCat = categoryParam === 'ugc_net' || categoryParam === 'job' ? 'latest_job' : categoryParam;
-        setSelectedCategory(normalizedCat as CategoryType);
+        const normalizedCat = normalizePortalCategory(categoryParam);
+        setSelectedCategory(normalizedCat);
       } else if (
         policyParam === 'privacy' ||
         policyParam === 'terms' ||
@@ -634,8 +639,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const handleSelectCategory = useCallback((cat: string) => {
     isUnresolvedInitialUrlRef.current = false;
-    const normalizedCat = cat === 'ugc_net' || cat === 'job' ? 'latest_job' : cat;
-    setSelectedCategory(normalizedCat as CategoryType | 'ALL');
+    const normalizedCat = normalizePortalCategory(cat);
+    setSearchQuery('');
+    setSelectedCategory(normalizedCat);
     setSelectedVacancy(null);
     setActivePolicyView(null);
     const nextUrl = normalizedCat === 'ALL' ? '/' : `/?category=${encodeURIComponent(normalizedCat)}`;
@@ -723,93 +729,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     [vacancies, lang, showToast]
   );
 
-  const filteredVacancies = useMemo(() => {
-    return vacancies
-      .filter((item) => {
-        if (searchQuery.trim()) {
-          const query = searchQuery.toLowerCase().trim();
-          const inTitle = item.title.toLowerCase().includes(query);
-          const inTitleHi = item.titleHi.toLowerCase().includes(query);
-          const inDept = item.department.toLowerCase().includes(query);
-          const inAdvt = item.advtNo.toLowerCase().includes(query);
-          const inPost = item.postName.toLowerCase().includes(query);
-          const inTags = item.tags.some((t) => t.toLowerCase().includes(query));
-          if (!inTitle && !inTitleHi && !inDept && !inAdvt && !inPost && !inTags) {
-            return false;
-          }
-        }
-
-        if (selectedCategory !== 'ALL') {
-          if (item.category === selectedCategory) {
-            // match
-          } else if (
-            selectedCategory === 'admit_card' &&
-            (item.category === 'admit_card' ||
-              item.status === 'admit_card_out' ||
-              item.title.toLowerCase().includes('admit card') ||
-              item.titleHi?.includes('प्रवेश पत्र'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'result' &&
-            (item.category === 'result' ||
-              item.status === 'result_declared' ||
-              item.title.toLowerCase().includes('result') ||
-              item.titleHi?.includes('रिजल्ट') ||
-              item.titleHi?.includes('परिणाम'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'scheme' &&
-            (item.category === 'scheme' || item.organization === 'Sarkari Yojana' || item.titleHi?.includes('योजना'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'exam_date' &&
-            (item.category === 'exam_date' ||
-              item.title.toLowerCase().includes('exam date') ||
-              item.titleHi?.includes('परीक्षा तिथि'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'news' &&
-            (item.category === 'news' ||
-              item.title.toLowerCase().includes('news') ||
-              item.tags?.includes('news') ||
-              item.title.toLowerCase().includes('chunav') ||
-              item.titleHi?.includes('न्यूज़') ||
-              item.titleHi?.includes('चुनाव'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'answer_key' &&
-            (item.category === 'answer_key' ||
-              item.status === 'answer_key_out' ||
-              item.title.toLowerCase().includes('answer key') ||
-              item.titleHi?.includes('उत्तर कुंजी'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'syllabus' &&
-            (item.category === 'syllabus' ||
-              item.title.toLowerCase().includes('syllabus') ||
-              item.titleHi?.includes('पाठ्यक्रम') ||
-              item.titleHi?.includes('सिलेबस'))
-          ) {
-            // match
-          } else if (
-            selectedCategory === 'latest_job' &&
-            (item.category === 'latest_job' || item.category === 'ugc_net')
-          ) {
-            // match
-          } else {
-            return false;
-          }
-        }
-        return true;
-      })
-      .sort(compareVacanciesNewestFirst);
-  }, [vacancies, searchQuery, selectedCategory]);
+  const filteredVacancies = useMemo(
+    () => filterVacanciesByCategory(vacancies, selectedCategory, searchQuery),
+    [vacancies, selectedCategory, searchQuery]
+  );
 
   return (
     <PortalContext.Provider

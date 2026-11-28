@@ -12,6 +12,7 @@ import {
 import { VacancyItem, LanguageMode } from '../types';
 import { AdSection } from './AdSection';
 import { formatDisplayDate, compareVacanciesNewestFirst } from '../utils/dateUtils';
+import { matchesVacancyCategory } from '../utils/categoryFilter';
 
 interface CategoryArchiveViewProps {
   categoryKey: string;
@@ -45,6 +46,10 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
   onDeleteVacancy,
 }) => {
   const isHi = lang === 'hi';
+
+  const strictCategoryVacancies = vacancies.filter((item) =>
+    matchesVacancyCategory(item, categoryKey)
+  );
 
   // 10 recent posts for the authentic GeneratePress sidebar
   const recentPosts = [...allVacancies]
@@ -92,7 +97,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
             </span>
             <span aria-hidden="true" className="text-slate-300">·</span>
             <span className="text-slate-500 font-medium tabular-nums">
-              {vacancies.length} {categoryKey === 'scheme' ? (isHi ? 'योजनाएं उपलब्ध' : 'Schemes found') : (isHi ? 'पोस्ट उपलब्ध' : 'Posts found')}
+              {strictCategoryVacancies.length} {categoryKey === 'scheme' ? (isHi ? 'योजनाएं उपलब्ध' : 'Schemes found') : (isHi ? 'पोस्ट उपलब्ध' : 'Posts found')}
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 headlight">
@@ -124,9 +129,9 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Posts Archive List (70% width) */}
         <div className="lg:col-span-8 space-y-4">
-          {vacancies.length > 0 ? (
+          {strictCategoryVacancies.length > 0 ? (
             <div className="space-y-4">
-              {vacancies.map((item) => {
+              {strictCategoryVacancies.map((item) => {
                 const title = isHi ? (item.titleHi || item.title) : item.title;
                 const date = formatDisplayDate(item.updatedAt || item.importantDates?.notificationDate || item.createdAt);
 
@@ -258,6 +263,7 @@ export const CategoryArchiveView: React.FC<CategoryArchiveViewProps> = ({
                     key={sec.key}
                     href={`/?category=${encodeURIComponent(sec.key)}`}
                     onClick={(e) => {
+                      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
                       e.preventDefault();
                       onSelectCategory(sec.key);
                     }}
