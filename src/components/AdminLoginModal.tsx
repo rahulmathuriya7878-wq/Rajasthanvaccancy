@@ -6,14 +6,10 @@ import {
   ShieldCheck,
   X,
   KeyRound,
-  Cloud,
-  CloudOff,
   Search,
   LogOut,
-  CheckCircle2,
   Loader2,
   LayoutDashboard,
-  FilePlus2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LanguageMode } from '../types';
@@ -34,29 +30,12 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   onOpenUrlIndexation,
 }) => {
   const isHi = lang === 'hi';
-  const { user, isAdmin, isCloudAdmin, signInWithGoogle, loginWithPasscode, logout } = useAuth();
+  const { isAdmin, loginWithPasscode, logout } = useAuth();
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [passcodeLoading, setPasscodeLoading] = useState(false);
 
   if (!isOpen) return null;
-
-  const handleGoogleLogin = async () => {
-    setErrorMsg('');
-    setGoogleLoading(true);
-    try {
-      const res = await signInWithGoogle();
-      if (res.ok) {
-        if (onSuccess) onSuccess();
-        onClose();
-      } else {
-        setErrorMsg(res.error || (isHi ? 'Google लॉगिन पूरा नहीं हो सका।' : 'Google sign-in failed.'));
-      }
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,8 +83,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     ? 'एडमिन कंट्रोल पैनल (Admin Panel)'
                     : 'Admin Control Panel'
                   : isHi
-                    ? 'एडमिन लॉगिन (Cloud Sync)'
-                    : 'Admin Login (Cloud Sync)'}
+                    ? 'एडमिन लॉगिन (Admin Login)'
+                    : 'Admin Login'}
               </h3>
               <p className="text-xs text-slate-300">
                 {isAdmin
@@ -113,8 +92,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
                     ? 'एडमिन डैशबोर्ड (/admin) खोलें और URL इंडेक्स कराएं'
                     : 'Open Admin Dashboard (/admin) & manage indexing'
                   : isHi
-                    ? 'नई पोस्ट व इन-प्लेस अपडेट सभी फोन पर लाइव करने के लिए लॉगिन करें'
-                    : 'Sign in to publish new posts & edits live across all devices'}
+                    ? 'एडमिन मोड अनलॉक करने के लिए पासवर्ड दर्ज करें'
+                    : 'Enter admin password to unlock admin controls'}
               </p>
             </div>
           </div>
@@ -132,60 +111,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         <div className="p-6 space-y-4">
           {isAdmin ? (
             <>
-              {/* Logged-in Admin Cloud Sync Status */}
-              {isCloudAdmin ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-start gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-                  <div className="text-xs text-emerald-950">
-                    <div className="font-extrabold">
-                      {isHi ? 'Firebase Live Cloud Sync सक्रिय' : 'Firebase Live Cloud Sync Active'}
-                    </div>
-                    <p className="text-emerald-800 mt-0.5">
-                      {user?.email || 'Verified Admin'} —{' '}
-                      {isHi
-                        ? 'अब आप /admin डैशबोर्ड से नई पोस्ट सभी मोबाइल पर लाइव पब्लिश कर सकते हैं।'
-                        : 'You can now publish new posts directly from /admin to all devices.'}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-amber-50 border border-amber-300 rounded-xl p-3.5 space-y-2.5">
-                  <div className="flex items-start gap-2 text-xs text-amber-950">
-                    <CloudOff className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                    <p className="font-semibold leading-relaxed">
-                      {isHi
-                        ? 'आप अभी लोकल एडमिन मोड में हैं। सभी यूज़र्स को लाइव नई पोस्ट दिखाने के लिए Google एडमिन खाते से कनेक्ट करें।'
-                        : 'Local admin mode active. Connect Google Admin account to publish live to all devices.'}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    disabled={googleLoading}
-                    onClick={handleGoogleLogin}
-                    className="w-full py-2.5 px-3.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-                    <span>{isHi ? 'Google क्लाउड सिंक चालू करें' : 'Enable Google Cloud Sync'}</span>
-                  </button>
-                </div>
-              )}
-
-              {errorMsg && (
-                <p className="text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-xs text-left font-medium">
-                  {errorMsg}
-                </p>
-              )}
-
               {/* Direct Quick Actions */}
               <div className="space-y-2.5 pt-1">
-                <Link
-                  href="/admin/posts/new"
-                  onClick={onClose}
-                  className="no-link-color w-full py-3 px-4 rounded-xl bg-[#15803d] hover:bg-[#166534] !text-white font-extrabold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm no-underline active:scale-98"
-                >
-                  <FilePlus2 className="w-4 h-4 text-white" />
-                  <span>{isHi ? '+ नई पोस्ट जोड़ें (New Post Builder)' : '+ Create New Post'}</span>
-                </Link>
 
                 <Link
                   href="/admin"
@@ -219,52 +146,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
             </>
           ) : (
             <>
-              {/* Recommended Google Sign-In for Cross-Device Cloud Sync */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
-                <div className="flex items-start gap-2 text-xs text-emerald-950 text-left">
-                  <Cloud className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                  <p className="font-medium leading-relaxed">
-                    {isHi
-                      ? 'नई भर्ती सीधे पब्लिश करने और सभी फोन पर रियल-टाइम अपडेट (Cloud Sync) दिखाने के लिए अपने एडमिन Google खाते (rahulmathuriya7878@gmail.com) से लॉगिन करें।'
-                      : 'Sign in with your admin Google account to publish new vacancies and edits live across all phones and browsers.'}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  disabled={googleLoading}
-                  onClick={handleGoogleLogin}
-                  className="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold text-sm transition flex items-center justify-center gap-2.5 cursor-pointer shadow-sm"
-                >
-                  {googleLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ShieldCheck className="w-4 h-4" />
-                  )}
-                  <span>
-                    {googleLoading
-                      ? isHi
-                        ? 'Google लॉगिन हो रहा है...'
-                        : 'Signing in...'
-                      : isHi
-                        ? 'Google से लॉगिन करें (Live Firebase Sync)'
-                        : 'Sign in with Google (Live Sync)'}
-                  </span>
-                </button>
-              </div>
-
               {errorMsg && (
                 <p className="text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-xs text-left font-medium">
                   {errorMsg}
                 </p>
               )}
-
-              <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink mx-3 text-slate-400 text-[11px] font-semibold">
-                  {isHi ? 'या लोकल पासवर्ड' : 'OR LOCAL PASSWORD'}
-                </span>
-                <div className="flex-grow border-t border-slate-200"></div>
-              </div>
 
               <form onSubmit={handlePasswordSubmit} className="space-y-3">
                 <div>

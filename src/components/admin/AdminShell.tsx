@@ -14,10 +14,7 @@ import {
   Menu,
   X,
   ShieldCheck,
-  Cloud,
-  CloudOff,
   KeyRound,
-  Loader2,
   Globe,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -33,7 +30,7 @@ interface AdminShellProps {
 
 export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
   const pathname = usePathname();
-  const { user, loading, isAdmin, isCloudAdmin, signInWithGoogle, loginWithPasscode, logout } = useAuth();
+  const { isAdmin, loginWithPasscode, logout } = useAuth();
   const {
     lang,
     vacancies,
@@ -57,28 +54,6 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
 
   const isPostBuilder = pathname?.startsWith('/admin/posts');
   const breadcrumbLabel = isPostBuilder ? 'Post Builder' : 'Dashboard';
-
-  const handleGoogleSignIn = async () => {
-    setLoginError('');
-    setSigningIn(true);
-    try {
-      const res = await signInWithGoogle();
-      if (!res.ok) {
-        const msg = res.error || 'Google sign-in failed.';
-        setLoginError(msg);
-        showToast(msg);
-      } else {
-        setLoginError('');
-        showToast('Connected to Firebase Google Cloud!');
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Google sign-in failed.';
-      setLoginError(msg);
-      showToast(msg);
-    } finally {
-      setSigningIn(false);
-    }
-  };
 
   const handlePasscodeSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,58 +151,8 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
         </div>
       </nav>
 
-      {/* Account & Firebase Cloud Sync Footer */}
+      {/* Admin Sign Out Footer */}
       <div className="p-4 border-t border-neutral-200 space-y-3 shrink-0">
-        <div className="text-xs space-y-1">
-          <div className="flex items-center gap-1.5 font-semibold text-neutral-900">
-            {isCloudAdmin ? (
-              <>
-                <Cloud className="w-3.5 h-3.5 text-[#15803d] shrink-0" aria-hidden="true" />
-                <span>Firebase Cloud Sync</span>
-              </>
-            ) : (
-              <>
-                <CloudOff className="w-3.5 h-3.5 text-amber-700 shrink-0" aria-hidden="true" />
-                <span>Local Mode Only</span>
-              </>
-            )}
-          </div>
-          <p className="text-neutral-500 truncate font-mono text-[11px]">
-            {user?.email || 'Local admin session'}
-          </p>
-        </div>
-
-        {!isCloudAdmin && (
-          <div className="space-y-2">
-            <button
-              type="button"
-              disabled={signingIn}
-              onClick={handleGoogleSignIn}
-              className="w-full px-3 py-2 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-            >
-              {signingIn ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
-              ) : (
-                <Cloud className="w-3.5 h-3.5" aria-hidden="true" />
-              )}
-              <span>{signingIn ? 'Connecting...' : 'Connect Google Cloud'}</span>
-            </button>
-            {loginError && (
-              <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-[11px] font-medium text-red-800 leading-snug space-y-1.5">
-                <p>{loginError}</p>
-                <a
-                  href={pathname || '/admin'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-semibold text-[#15803d] hover:underline no-underline"
-                >
-                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
-                  <span>Open in New Tab to Connect</span>
-                </a>
-              </div>
-            )}
-          </div>
-        )}
 
         <button
           type="button"
@@ -258,7 +183,7 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
               Rajasthan Vacancy Admin (/admin)
             </h1>
             <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              नई पोस्ट जोड़ने, एडिट/डिलीट करने और JSON/Markdown जनरेट करने के लिए अपना एडमिन पासवर्ड/पिन दर्ज करें या Google एडमिन से लॉगिन करें।
+              नई पोस्ट जोड़ने, एडिट/डिलीट करने और JSON/Markdown जनरेट करने के लिए अपना एडमिन पासवर्ड/पिन दर्ज करें।
             </p>
           </div>
 
@@ -294,34 +219,9 @@ export const AdminShell: React.FC<AdminShellProps> = ({ children }) => {
             </button>
           </form>
 
-          <div className="relative flex items-center py-0.5">
-            <div className="flex-grow border-t border-neutral-200" />
-            <span className="px-3 text-xs text-neutral-400">या क्लाउड सिंक के लिए (or Firebase Cloud)</span>
-            <div className="flex-grow border-t border-neutral-200" />
-          </div>
-
-          <button
-            type="button"
-            disabled={signingIn || loading}
-            onClick={handleGoogleSignIn}
-            className="w-full py-2.5 px-4 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 disabled:opacity-60 text-neutral-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
-          >
-            {signingIn ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4 text-[#15803d]" />}
-            <span>{signingIn ? 'Signing in...' : 'Sign in with Google Admin (Live Firebase)'}</span>
-          </button>
-
           {loginError && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800 leading-relaxed space-y-1.5">
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800 leading-relaxed">
               <p>{loginError}</p>
-              <a
-                href={pathname || '/admin'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-semibold text-[#15803d] hover:underline no-underline"
-              >
-                <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Open in New Tab to Connect</span>
-              </a>
             </div>
           )}
 

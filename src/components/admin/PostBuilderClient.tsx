@@ -190,7 +190,7 @@ export const PostBuilderClient: React.FC = () => {
   const initialCategoryParam = !editId ? searchParams.get('category')?.trim() || null : null;
   const matchedInitialCategory = CATEGORIES.find((c) => c.value === initialCategoryParam);
 
-  const { user, isCloudAdmin, signInWithGoogle, getAdminAuthHeaders } = useAuth();
+  const { user, isCloudAdmin, getAdminAuthHeaders } = useAuth();
   const { vacancies, handleUpdateVacancy, handleDeleteVacancy, showToast } = usePortal();
 
   const existingPost = useMemo(
@@ -287,7 +287,6 @@ export const PostBuilderClient: React.FC = () => {
   const [deletingPost, setDeletingPost] = useState(false);
   const [confirmDeletePost, setConfirmDeletePost] = useState(false);
   const [indexingNow, setIndexingNow] = useState(false);
-  const [connectingCloud, setConnectingCloud] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successInfo, setSuccessInfo] = useState<{
     slug: string;
@@ -3136,44 +3135,6 @@ export const PostBuilderClient: React.FC = () => {
 
           <div className="bg-white border border-neutral-200 rounded-xl p-4 space-y-2.5 text-xs">
             <div className="font-semibold text-neutral-900">Publish Checklist</div>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-neutral-600">
-                <span>Firebase Cloud Auth</span>
-                <span className={isCloudAdmin ? 'font-semibold text-[#15803d]' : 'font-semibold text-amber-700'}>
-                  {isCloudAdmin ? 'Connected' : 'Local Only'}
-                </span>
-              </div>
-              {!isCloudAdmin && (
-                <button
-                  type="button"
-                  disabled={connectingCloud}
-                  onClick={async () => {
-                    setErrorMsg('');
-                    setConnectingCloud(true);
-                    try {
-                      const res = await signInWithGoogle();
-                      if (!res.ok) {
-                        const msg = res.error || 'Google Cloud sign-in failed.';
-                        setErrorMsg(msg);
-                        showToast(msg);
-                      } else {
-                        showToast('Connected to Firebase Google Cloud!');
-                      }
-                    } finally {
-                      setConnectingCloud(false);
-                    }
-                  }}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#15803d] hover:bg-[#166534] disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  {connectingCloud ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Cloud className="w-3.5 h-3.5" />
-                  )}
-                  <span>{connectingCloud ? 'Connecting...' : 'Connect Google Cloud'}</span>
-                </button>
-              )}
-            </div>
             <div className="flex items-center justify-between text-neutral-600">
               <span>Date Rows</span>
               <span className="font-mono tabular-nums text-neutral-900">
