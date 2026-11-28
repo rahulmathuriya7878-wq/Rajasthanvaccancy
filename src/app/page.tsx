@@ -61,12 +61,21 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<PageSearchParams>;
 }): Promise<Metadata> {
-  const sp = await searchParams;
+  let sp: PageSearchParams = {};
+  try {
+    sp = (await searchParams) || {};
+  } catch {
+    sp = {};
+  }
   const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
 
-  const vacancyParam = typeof sp.vacancy === 'string' ? sp.vacancy.trim() : '';
-  const categoryParam = typeof sp.category === 'string' ? sp.category.trim() : '';
-  const policyParam = typeof sp.policy === 'string' ? sp.policy.trim().toLowerCase() : '';
+  const rawVacancy = sp.vacancy;
+  const rawCategory = sp.category;
+  const rawPolicy = sp.policy;
+
+  const vacancyParam = typeof rawVacancy === 'string' ? rawVacancy.trim() : Array.isArray(rawVacancy) ? String(rawVacancy[0] || '').trim() : '';
+  const categoryParam = typeof rawCategory === 'string' ? rawCategory.trim() : Array.isArray(rawCategory) ? String(rawCategory[0] || '').trim() : '';
+  const policyParam = typeof rawPolicy === 'string' ? rawPolicy.trim().toLowerCase() : Array.isArray(rawPolicy) ? String(rawPolicy[0] || '').trim().toLowerCase() : '';
 
   if (policyParam && POLICY_META[policyParam]) {
     const pMeta = POLICY_META[policyParam];
@@ -163,11 +172,21 @@ export default async function HomePage({
 }: {
   searchParams: Promise<PageSearchParams>;
 }) {
-  const sp = await searchParams;
-  const vacancyParam = typeof sp.vacancy === 'string' ? sp.vacancy.trim() : null;
-  const categoryParam = typeof sp.category === 'string' ? sp.category.trim() : null;
-  const policyParam = typeof sp.policy === 'string' ? sp.policy.trim().toLowerCase() : null;
-  const searchQuery = typeof sp.search === 'string' ? sp.search.trim() : null;
+  let sp: PageSearchParams = {};
+  try {
+    sp = (await searchParams) || {};
+  } catch {
+    sp = {};
+  }
+  const rawVacancy = sp.vacancy;
+  const rawCategory = sp.category;
+  const rawPolicy = sp.policy;
+  const rawSearch = sp.search;
+
+  const vacancyParam = typeof rawVacancy === 'string' ? rawVacancy.trim() : Array.isArray(rawVacancy) ? String(rawVacancy[0] || '').trim() : null;
+  const categoryParam = typeof rawCategory === 'string' ? rawCategory.trim() : Array.isArray(rawCategory) ? String(rawCategory[0] || '').trim() : null;
+  const policyParam = typeof rawPolicy === 'string' ? rawPolicy.trim().toLowerCase() : Array.isArray(rawPolicy) ? String(rawPolicy[0] || '').trim().toLowerCase() : null;
+  const searchQuery = typeof rawSearch === 'string' ? rawSearch.trim() : Array.isArray(rawSearch) ? String(rawSearch[0] || '').trim() : null;
 
   const activeVacancies = filterActivePostsWithinDays(INITIAL_VACANCIES);
   const matchedVacancy = vacancyParam
